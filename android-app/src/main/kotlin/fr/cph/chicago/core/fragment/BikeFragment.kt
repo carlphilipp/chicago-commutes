@@ -22,16 +22,21 @@ package fr.cph.chicago.core.fragment
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
+import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.ListView
+import android.widget.RelativeLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.adapter.BikeAdapter
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.redux.AppState
-import fr.cph.chicago.redux.LoadBikeStationAction
+import fr.cph.chicago.redux.BikeStationAction
 import fr.cph.chicago.redux.mainStore
+import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 
@@ -41,28 +46,28 @@ import org.rekotlin.StoreSubscriber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BikeFragment : Fragment(R.layout.fragment_bike), StoreSubscriber<AppState> {
+class BikeFragment : Fragment(R.layout.fragment_bus_bike), StoreSubscriber<AppState> {
 
     @BindView(R.id.fragment_bike_swipe_refresh_layout)
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
-    @BindView(R.id.bike_list)
+    @BindView(R.id.success)
+    lateinit var successLayout: LinearLayout
+    @BindView(R.id.failure)
+    lateinit var failureLayout: RelativeLayout
+    @BindView(R.id.list)
     lateinit var bikeListView: ListView
-    @BindView(R.id.bike_filter)
+    @BindView(R.id.filter)
     lateinit var filter: EditText
+    @BindView(R.id.retry_button)
+    lateinit var retryButton: Button
 
     private lateinit var bikeAdapter: BikeAdapter
     private var bikeStations = listOf<BikeStation>()
 
     override fun onCreateView(savedInstanceState: Bundle?) {
-        loadingState()
-
-        swipeRefreshLayout.setOnRefreshListener { mainStore.dispatch(LoadBikeStationAction()) }
-
-        mainActivity.toolbar.setOnMenuItemClickListener {
-            mainStore.dispatch(LoadBikeStationAction())
-            swipeRefreshLayout.isRefreshing = true
-            true
-        }
+        swipeRefreshLayout.setOnRefreshListener { startRefreshing() }
+        mainActivity.toolbar.setOnMenuItemClickListener { startRefreshing(); true }
+        retryButton.setOnClickListener { startRefreshing() }
     }
 
     override fun onResume() {
@@ -76,11 +81,18 @@ class BikeFragment : Fragment(R.layout.fragment_bike), StoreSubscriber<AppState>
     }
 
     override fun newState(state: AppState) {
-        this.bikeStations = state.bikeStations
-        if (bikeStations.isEmpty()) {
-            errorState()
-        } else {
-            displayData()
+        when {
+            state.lastAction is BikeStationAction && state.bikeStationsError -> {
+                Util.showSnackBar(swipeRefreshLayout, state.bikeStationsErrorMessage)
+            }
+            state.bikeStationsError -> {
+                showFailureLayout()
+            }
+            else -> {
+                this.bikeStations = state.bikeStations
+                showSuccessLayout()
+                displayData()
+            }
         }
         swipeRefreshLayout.isRefreshing = false
     }
@@ -106,27 +118,21 @@ class BikeFragment : Fragment(R.layout.fragment_bike), StoreSubscriber<AppState>
                 bikeAdapter.notifyDataSetChanged()
             }
         })
-        successState()
     }
 
-    private fun successState() {
-        filter.visibility = ListView.VISIBLE
-        bikeListView.visibility = ListView.VISIBLE
-
-        //loadingLayout.visibility = RelativeLayout.INVISIBLE
+    private fun showSuccessLayout() {
+        successLayout.visibility = View.VISIBLE
+        failureLayout.visibility = View.GONE
     }
 
-    private fun loadingState() {
-        //loadingLayout.visibility = RelativeLayout.VISIBLE
-
-        filter.visibility = ListView.INVISIBLE
-        bikeListView.visibility = ListView.INVISIBLE
+    private fun showFailureLayout() {
+        successLayout.visibility = View.GONE
+        failureLayout.visibility = View.VISIBLE
     }
 
-    private fun errorState() {
-        //loadingLayout.visibility = RelativeLayout.INVISIBLE
-        filter.visibility = ListView.INVISIBLE
-        bikeListView.visibility = ListView.INVISIBLE
+    private fun startRefreshing() {
+        swipeRefreshLayout.isRefreshing = true
+        mainStore.dispatch(BikeStationAction())
     }
 
     companion object {

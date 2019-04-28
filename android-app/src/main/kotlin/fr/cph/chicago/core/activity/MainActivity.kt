@@ -44,7 +44,7 @@ import fr.cph.chicago.core.fragment.TrainFragment
 import fr.cph.chicago.util.RateUtil
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import java.util.concurrent.*
+import java.util.concurrent.TimeUnit
 
 class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView.OnNavigationItemSelectedListener {
 
@@ -102,11 +102,6 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
 
         currentPosition = savedInstanceState?.getInt(SELECTED_ID) ?: R.id.navigation_favorites
         itemSelection(currentPosition)
-
-        checkForErrorInBundle()
-    }
-
-    private fun checkForErrorInBundle() {
     }
 
     override fun onBackPressed() {
@@ -159,7 +154,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
                 setBarTitle(bus)
                 busFragment = busFragment ?: BusFragment.newInstance(position + 1)
                 supportFragmentManager.beginTransaction().replace(R.id.container, busFragment as androidx.fragment.app.Fragment).commit()
-                closeDrawerAndUpdateActionBar(false)
+                closeDrawerAndUpdateActionBar(true)
             }
             R.id.navigation_bike -> {
                 setBarTitle(divvy)

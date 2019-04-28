@@ -33,6 +33,15 @@
     <dimen name="activity_train_line_padding_bottom">8dp</dimen>
     <dimen name="activity_train_line_padding_right">10dp</dimen>
 
+    <!-- Fragment train and bus -->
+    <dimen name="fragment_train_bus_error_padding_top">80dp</dimen>
+    <dimen name="fragment_train_bus_error_message_padding_top">30dp</dimen>
+
+    <dimen name="list_view_padding_left">10dp</dimen>
+    <dimen name="list_view_padding_right">10dp</dimen>
+    <dimen name="list_view_padding_top">0dp</dimen>
+    <dimen name="list_view_padding_bottom">0dp</dimen>
+
     <!-- Checkbox size -->
     <dimen name="checkbox_train_direction">100dp</dimen>
 

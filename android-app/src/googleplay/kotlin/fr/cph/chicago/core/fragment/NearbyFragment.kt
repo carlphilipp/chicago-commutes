@@ -55,6 +55,7 @@ import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.marker.MarkerDataHolder
+import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.util.GoogleMapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
@@ -256,8 +257,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
     }
 
     private fun handleNearbyData(position: Position) {
-        val bikeStations = mainActivity.intent.extras?.getParcelableArrayList(bundleBikeStations)
-            ?: listOf<BikeStation>()
+        val bikeStations = mainStore.state.bikeStations
         var finalPosition = position
         if (position.longitude == 0.0 && position.latitude == 0.0) {
             Log.w(TAG, "Could not get current user location")

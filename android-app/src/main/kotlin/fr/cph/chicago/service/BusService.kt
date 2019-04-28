@@ -229,6 +229,7 @@ object BusService {
                 }
                 accumulator
             }
+
     }
 
     private fun getBusArrivals(params: MultiValuedMap<String, String>): List<BusArrival> {

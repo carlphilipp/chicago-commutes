@@ -42,7 +42,7 @@ import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.redux.AppState
-import fr.cph.chicago.redux.LoadBusStopArrivalsAction
+import fr.cph.chicago.redux.BusStopArrivalsAction
 import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.service.PreferenceService
@@ -125,7 +125,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
     private var latitude: Double = 0.0
     private var longitude: Double = 0.0
     private var isFavorite: Boolean = false
-    private lateinit var loadBusStopArrivalsAction: LoadBusStopArrivalsAction
+    private lateinit var busStopArrivalsAction: BusStopArrivalsAction
 
     override fun create(savedInstanceState: Bundle?) {
         busStopId = intent.getIntExtra(bundleBusStopId, 0)
@@ -134,7 +134,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
         boundTitle = intent.getStringExtra(bundleBusBoundTitle)
         busRouteName = intent.getStringExtra(bundleBusRouteName)
 
-        loadBusStopArrivalsAction = LoadBusStopArrivalsAction(
+        busStopArrivalsAction = BusStopArrivalsAction(
             requestRt = requestRt,
             busRouteId = busRouteId,
             requestStopId = requestStopId,
@@ -154,7 +154,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
             if (latitude == 0.0 && longitude == 0.0) {
                 loadStopDetailsAndStreetImage()
             } else {
-                mainStore.dispatch(loadBusStopArrivalsAction)
+                mainStore.dispatch(busStopArrivalsAction)
                 // FIXME: Identify if it's the place holder or not. This is not great
                 if (streetViewImage.scaleType == ImageView.ScaleType.CENTER) {
                     loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewProgressBar)
@@ -178,7 +178,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
     override fun onResume() {
         super.onResume()
         mainStore.subscribe(this)
-        mainStore.dispatch(loadBusStopArrivalsAction)
+        mainStore.dispatch(busStopArrivalsAction)
     }
 
     override fun newState(state: AppState) {
@@ -239,7 +239,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
         toolbar.inflateMenu(R.menu.main)
         toolbar.setOnMenuItemClickListener {
             swipeRefreshLayout.isRefreshing = true
-            mainStore.dispatch(loadBusStopArrivalsAction)
+            mainStore.dispatch(busStopArrivalsAction)
             false
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -260,7 +260,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
         busRouteName = savedInstanceState.getString(bundleBusRouteName) ?: ""
         latitude = savedInstanceState.getDouble(bundleBusLatitude)
         longitude = savedInstanceState.getDouble(bundleBusLongitude)
-        loadBusStopArrivalsAction = LoadBusStopArrivalsAction(
+        busStopArrivalsAction = BusStopArrivalsAction(
             requestRt = requestRt,
             busRouteId = busRouteId,
             requestStopId = requestStopId,

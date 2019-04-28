@@ -17,17 +17,16 @@
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <include
         layout="@layout/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <fragment xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
@@ -44,23 +43,25 @@
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:orientation="vertical"
+        android:paddingStart="@dimen/list_view_padding_left"
+        android:paddingTop="@dimen/list_view_padding_top"
+        android:paddingEnd="@dimen/list_view_padding_right"
+        android:paddingBottom="@dimen/list_view_padding_bottom"
         android:visibility="visible">
 
         <EditText
             android:id="@+id/bus_filter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text"
             android:hint="@string/bus_fragment_filter"
-            android:paddingEnd="@dimen/activity_train_line_padding_right"
-            android:paddingStart="16dp">
-        </EditText>
+            android:inputType="text"
+            android:paddingStart="16dp"
+            android:paddingEnd="@dimen/activity_train_line_padding_right" />
 
         <ListView
             android:id="@+id/list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        </ListView>
+            android:layout_height="match_parent" />
     </LinearLayout>
 
 </LinearLayout>

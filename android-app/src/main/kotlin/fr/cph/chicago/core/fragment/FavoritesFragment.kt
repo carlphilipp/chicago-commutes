@@ -36,9 +36,9 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.adapter.FavoritesAdapter
 import fr.cph.chicago.redux.AppState
-import fr.cph.chicago.redux.LoadBusRoutesAction
-import fr.cph.chicago.redux.LoadFavoritesDataAction
-import fr.cph.chicago.redux.LoadFirstDataAction
+import fr.cph.chicago.redux.BusRoutesAction
+import fr.cph.chicago.redux.BusRoutesAndBikeStationAction
+import fr.cph.chicago.redux.FavoritesAction
 import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.task.RefreshTimingTask
@@ -89,10 +89,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
 
         swipeRefreshLayout.setOnRefreshListener { reloadData() }
 
-        mainActivity.toolbar.setOnMenuItemClickListener {
-            reloadData()
-            true
-        }
+        mainActivity.toolbar.setOnMenuItemClickListener { reloadData(); true }
 
         startRefreshTask()
         rateUtil.displayRateSnackBarIfNeeded(swipeRefreshLayout, mainActivity)
@@ -118,11 +115,11 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
         super.onResume()
         mainStore.subscribe(this)
         if (mainStore.state.busRoutes.isEmpty() || mainStore.state.bikeStations.isEmpty()) {
-            mainStore.dispatch(LoadFirstDataAction())
+            mainStore.dispatch(BusRoutesAndBikeStationAction())
         }
         if (App.instance.refresh) {
             App.instance.refresh = false
-            mainStore.dispatch(LoadFavoritesDataAction())
+            mainStore.dispatch(FavoritesAction())
         }
         favoritesAdapter.refreshFavorites()
         favoritesAdapter.notifyDataSetChanged()
@@ -134,30 +131,26 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
 
     override fun newState(state: AppState) {
         Log.d(TAG, "Favorites new state: $state")
-        if (state.error != null && state.error) {
+        if (state.trainArrivalsDTO.error || state.busArrivalsDTO.error || state.bikeStationsError) {
             displayError(R.string.message_something_went_wrong)
-        } else {
-            if (state.busRoutesError || state.bikeStationsError) {
-                displayError(R.string.message_something_went_wrong)
-            }
-            favoritesAdapter.updateData(
-                date = state.lastFavoritesUpdate,
-                trainArrivals = state.trainArrivalsDTO.trainArrivalSparseArray,
-                busArrivals = state.busArrivalsDTO.busArrivals,
-                bikeStations = state.bikeStations
-            )
-            if (state.lastAction is LoadFavoritesDataAction) {
-                highlightBackground()
-            }
+        }
+        favoritesAdapter.updateData(
+            date = state.lastFavoritesUpdate,
+            trainArrivals = state.trainArrivalsDTO.trainsArrivals,
+            busArrivals = state.busArrivalsDTO.busArrivals,
+            bikeStations = state.bikeStations
+        )
+        if (state.lastAction is FavoritesAction) {
+            highlightBackground()
         }
         stopRefreshing()
     }
 
     private fun reloadData() {
         startRefreshing()
-        mainStore.dispatch(LoadFavoritesDataAction())
-        if (mainStore.state.busRoutes.isEmpty()) {
-            mainStore.dispatch(LoadBusRoutesAction())
+        mainStore.dispatch(FavoritesAction())
+        if (mainStore.state.busRoutes.isEmpty()) { // Bike station is done already in the previous action
+            mainStore.dispatch(BusRoutesAction())
         }
     }
 

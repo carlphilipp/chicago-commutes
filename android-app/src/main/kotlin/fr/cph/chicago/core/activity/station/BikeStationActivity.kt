@@ -38,7 +38,7 @@ import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.redux.AppState
-import fr.cph.chicago.redux.LoadBikeStationAction
+import fr.cph.chicago.redux.BikeStationAction
 import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.Color
@@ -93,7 +93,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
         val longitude = bikeStation.longitude
 
         swipeRefreshLayout.setOnRefreshListener {
-            mainStore.dispatch(LoadBikeStationAction())
+            mainStore.dispatch(BikeStationAction())
             // FIXME: Identify if it's the place holder or not. This is not great
             if (streetViewImage.scaleType == ImageView.ScaleType.CENTER) {
                 loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewProgressBar)
@@ -155,7 +155,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
         toolbar.inflateMenu(R.menu.main)
         toolbar.setOnMenuItemClickListener {
             swipeRefreshLayout.isRefreshing = true
-            mainStore.dispatch(LoadBikeStationAction())
+            mainStore.dispatch(BikeStationAction())
             false
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

@@ -92,7 +92,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         val lastUpdateTextView: TextView = view.findViewById(R.id.last_update)
         val stationNameTextView: TextView = view.findViewById(R.id.favorites_station_name)
         val favoriteImage: ImageView = view.findViewById(R.id.favorites_icon)
-        val detailsButton: Button = view.findViewById(R.id.details_button)
+        val detailsButton: Button = view.findViewById(R.id.retry_button)
         val mapButton: Button = view.findViewById(R.id.view_map_button)
 
         init {

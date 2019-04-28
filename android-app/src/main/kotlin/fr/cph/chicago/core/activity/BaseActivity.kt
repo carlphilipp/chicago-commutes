@@ -21,11 +21,10 @@ package fr.cph.chicago.core.activity
 
 import android.content.Intent
 import android.os.Bundle
-import butterknife.BindString
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.redux.AppState
-import fr.cph.chicago.redux.LoadLocalAndFavoritesDataAction
+import fr.cph.chicago.redux.BaseAction
 import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.repository.RealmConfig
 import org.rekotlin.StoreSubscriber
@@ -39,17 +38,12 @@ import org.rekotlin.StoreSubscriber
  */
 class BaseActivity : ButterKnifeActivity(R.layout.loading), StoreSubscriber<AppState> {
 
-    @BindString(R.string.bundle_error)
-    lateinit var bundleError: String
-    @BindString(R.string.message_something_went_wrong)
-    lateinit var somethingWentWrong: String
-
     private val realmConfig: RealmConfig = RealmConfig
 
     override fun create(savedInstanceState: Bundle?) {
         mainStore.subscribe(this)
         setUpRealm()
-        loadLocalAndFavoritesData()
+        mainStore.dispatch(BaseAction())
     }
 
     private fun setUpRealm() {
@@ -57,45 +51,16 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading), StoreSubscriber<AppS
     }
 
     override fun newState(state: AppState) {
-        if (state.error != null && state.error) {
-            mainStore.unsubscribe(this)
-            startMainActivity()
-        } else if (state.error != null && !state.error) {
+        if (state.lastAction is BaseAction) {
             mainStore.unsubscribe(this)
             startMainActivity()
         }
     }
 
-    private fun loadLocalAndFavoritesData() {
-        mainStore.dispatch(LoadLocalAndFavoritesDataAction())
-    }
-
-    /**
-     * Finish current activity and start main activity with custom transition
-     *
-     * @param result the trains and buses arrivals
-     */
     private fun startMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
         finish()
         startActivity(intent)
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-    }
-
-    // FIXME: If delete that block, delete error activity and layout XML
-/*    private fun startErrorActivity(error: Throwable) {
-        Log.e(TAG, error.message, error)
-
-        // Start error activity
-        val intent = Intent(this, ErrorActivity::class.java)
-        val extras = Bundle()
-        extras.putString(bundleError, somethingWentWrong)
-        intent.putExtras(extras)
-        finish()
-        startActivity(intent)
-    }*/
-
-    companion object {
-        private val TAG = BaseActivity::class.java.simpleName
     }
 }

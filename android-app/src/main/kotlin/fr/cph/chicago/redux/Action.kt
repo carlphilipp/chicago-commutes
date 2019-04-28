@@ -12,16 +12,12 @@ import fr.cph.chicago.core.model.dto.FavoritesDTO
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import org.rekotlin.Action
 
-data class LoadLocalAndFavoritesDataAction(
-    val error: Boolean = false,
-    val throwable: Throwable? = null,
+data class BaseAction(
     val trainArrivalsDTO: TrainArrivalDTO = TrainArrivalDTO(SparseArray(), false),
     val busArrivalsDTO: BusArrivalDTO = BusArrivalDTO(listOf(), false)
 ) : Action
 
-data class LoadFavoritesDataAction(
-    val error: Boolean = false,
-    val throwable: Throwable? = null,
+data class FavoritesAction(
     val favoritesDTO: FavoritesDTO = FavoritesDTO(
         trainArrivalDTO = TrainArrivalDTO(SparseArray(), false),
         busArrivalDTO = BusArrivalDTO(listOf(), false),
@@ -31,49 +27,46 @@ data class LoadFavoritesDataAction(
 ) : Action
 
 // Bus Routes
-data class LoadBusRoutesAction(
+data class BusRoutesAction(
+    val busRoutes: List<BusRoute> = listOf(),
     val error: Boolean = false,
-    val busRoutes: List<BusRoute> = listOf()
-) : Action
-
-// Bike stations
-data class LoadBikesAction(
-    val bikeStationsError: Boolean = false,
-    val bikeStations: List<BikeStation> = listOf()
+    val errorMessage: Int = R.string.message_something_went_wrong
 ) : Action
 
 // Bus Routes + Bike stations
-data class LoadFirstDataAction(
-    val busRoutesError: Boolean = false,
-    val bikeStationsError: Boolean = false,
+data class BusRoutesAndBikeStationAction(
     val busRoutes: List<BusRoute> = listOf(),
-    val bikeStations: List<BikeStation> = listOf()
+    val bikeStations: List<BikeStation> = listOf(),
+    val busRoutesError: Boolean = false,
+    val bikeStationsError: Boolean = false
 ) : Action
 
 // Train station activity
-data class LoadTrainStationAction(
+data class TrainStationAction(
     val trainStation: TrainStation = TrainStation.buildEmptyStation(),
+    val trainArrival: TrainArrival = TrainArrival(),
     val error: Boolean = false,
-    val errorMessage: Int = R.string.message_something_went_wrong,
-    val trainArrival: TrainArrival = TrainArrival()
+    val errorMessage: Int = R.string.message_something_went_wrong
 ) : Action
 
 // Bus stop activity
-data class LoadBusStopArrivalsAction(
-    val error: Boolean = false,
-    val errorMessage: Int = R.string.message_something_went_wrong,
+data class BusStopArrivalsAction(
+    // input
     val requestRt: String = "",
     val busRouteId: String = "",
     val requestStopId: String = "",
     val busStopId: Int = 0,
     val bound: String = "",
     val boundTitle: String = "",
-    val busArrivalStopDTO: BusArrivalStopDTO = BusArrivalStopDTO()
+    // output
+    val busArrivalStopDTO: BusArrivalStopDTO = BusArrivalStopDTO(),
+    val error: Boolean = false,
+    val errorMessage: Int = R.string.message_something_went_wrong
 ) : Action
 
-// Bike station activity
-data class LoadBikeStationAction(
+// Bike station
+data class BikeStationAction(
+    val bikeStations: List<BikeStation> = listOf(),
     val error: Boolean = false,
-    val errorMessage: Int = R.string.message_something_went_wrong,
-    val bikeStations: List<BikeStation> = listOf()
+    val errorMessage: Int = R.string.message_something_went_wrong
 ) : Action

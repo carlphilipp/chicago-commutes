@@ -2,26 +2,35 @@ package fr.cph.chicago.redux
 
 import android.util.Log
 import fr.cph.chicago.R
+import fr.cph.chicago.core.model.dto.BusArrivalDTO
+import fr.cph.chicago.core.model.dto.FavoritesDTO
+import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import fr.cph.chicago.exception.ConnectException
 import fr.cph.chicago.rx.RxUtil
 import org.rekotlin.Middleware
 import org.rekotlin.StateType
 
-internal val loadLocalAndFavoritesDataMiddleware: Middleware<StateType> = { _, _ ->
+internal val baseMiddleware: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->
-            (action as? LoadLocalAndFavoritesDataAction)?.let {
-                RxUtil.createLocalAndFavoritesDataSingle()
+            (action as? BaseAction)?.let {
+                RxUtil.local()
+                    .flatMap { RxUtil.baseFavorites() }
                     .subscribe(
                         { favoritesDTO ->
-                            next(LoadLocalAndFavoritesDataAction(
-                                error = false,
-                                trainArrivalsDTO = favoritesDTO.trainArrivalDTO,
-                                busArrivalsDTO = favoritesDTO.busArrivalDTO))
+                            val trainArrivals = if (favoritesDTO.trainArrivalDTO.error)
+                                TrainArrivalDTO(mainStore.state.trainArrivalsDTO.trainsArrivals, true)
+                            else
+                                favoritesDTO.trainArrivalDTO
+                            val busArrivals = if (favoritesDTO.busArrivalDTO.error)
+                                BusArrivalDTO(mainStore.state.busArrivalsDTO.busArrivals, true)
+                            else
+                                favoritesDTO.busArrivalDTO
+                            next(BaseAction(trainArrivalsDTO = trainArrivals, busArrivalsDTO = busArrivals))
                         },
                         { throwable ->
                             Log.e(TAG, throwable.message, throwable)
-                            next(LoadLocalAndFavoritesDataAction(error = true, throwable = throwable))
+                            next(BaseAction())
                         }
                     )
             } ?: next(action)
@@ -29,14 +38,14 @@ internal val loadLocalAndFavoritesDataMiddleware: Middleware<StateType> = { _, _
     }
 }
 
-internal val loadFirstDataMiddleware: Middleware<StateType> = { _, _ ->
+internal val busRoutesAndBikeStationMiddleware: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->
-            (action as? LoadFirstDataAction)?.let {
-                RxUtil.createOnFirstLoadObs()
+            (action as? BusRoutesAndBikeStationAction)?.let {
+                RxUtil.busRoutesAndBikeStation()
                     .subscribe(
                         { (busRoutesError, bikeStationsError, busRoutes, bikeStations) ->
-                            next(LoadFirstDataAction(
+                            next(BusRoutesAndBikeStationAction(
                                 busRoutesError = busRoutesError,
                                 bikeStationsError = bikeStationsError,
                                 busRoutes = busRoutes,
@@ -53,22 +62,24 @@ internal val loadFirstDataMiddleware: Middleware<StateType> = { _, _ ->
     }
 }
 
-internal val loadBusRoutesMiddleware: Middleware<StateType> = { _, _ ->
+internal val busRoutesMiddleware: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->
-            (action as? LoadBusRoutesAction)?.let {
-                RxUtil.createBusRoutesSingle()
+            (action as? BusRoutesAction)?.let {
+                RxUtil.busRoutes()
                     .subscribe(
-                        { busRoutes ->
+                        { busRoutes -> next(BusRoutesAction(error = false, busRoutes = busRoutes)) },
+                        { throwable ->
+                            Log.e(TAG, throwable.message, throwable)
+                            val errorMessage = if (throwable is ConnectException)
+                                R.string.message_connect_error
+                            else
+                                R.string.message_something_went_wrong
                             next(
-                                LoadBusRoutesAction(
-                                    error = false,
-                                    busRoutes = busRoutes)
+                                BusRoutesAction(
+                                    error = true,
+                                    errorMessage = errorMessage)
                             )
-                        },
-                        { throwable ->
-                            Log.e(TAG, throwable.message, throwable)
-                            next(LoadBusRoutesAction(error = true))
                         }
                     )
             } ?: next(action)
@@ -76,31 +87,41 @@ internal val loadBusRoutesMiddleware: Middleware<StateType> = { _, _ ->
     }
 }
 
-internal val loadFavoritesDataMiddleware: Middleware<StateType> = { _, _ ->
+internal val favoritesMiddleware: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->
-            (action as? LoadFavoritesDataAction)?.let {
-                RxUtil.createAllDataSingle()
-                    .subscribe(
-                        { next(LoadFavoritesDataAction(favoritesDTO = it)) },
-                        { throwable ->
-                            Log.e(TAG, throwable.message, throwable)
-                            next(LoadFavoritesDataAction(error = true, throwable = throwable))
-                        }
-                    )
+            (action as? FavoritesAction)?.let {
+                RxUtil.favorites()
+                    .subscribe { favoritesDTO ->
+                        val trainArrivals = if (favoritesDTO.trainArrivalDTO.error)
+                            TrainArrivalDTO(mainStore.state.trainArrivalsDTO.trainsArrivals, true)
+                        else
+                            favoritesDTO.trainArrivalDTO
+                        val busArrivals = if (favoritesDTO.busArrivalDTO.error)
+                            BusArrivalDTO(mainStore.state.busArrivalsDTO.busArrivals, true)
+                        else
+                            favoritesDTO.busArrivalDTO
+                        val newFavorites = FavoritesDTO(
+                            trainArrivalDTO = trainArrivals,
+                            busArrivalDTO = busArrivals,
+                            bikeStations = if (favoritesDTO.bikeError) mainStore.state.bikeStations else favoritesDTO.bikeStations,
+                            bikeError = favoritesDTO.bikeError
+                        )
+                        next(FavoritesAction(favoritesDTO = newFavorites))
+                    }
             } ?: next(action)
         }
     }
 }
 
-internal val loadTrainStationMiddleware: Middleware<StateType> = { _, _ ->
+internal val trainStationMiddleware: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->
-            (action as? LoadTrainStationAction)?.let {
-                RxUtil.createTrainArrivalsSingle(action.trainStation)
+            (action as? TrainStationAction)?.let {
+                RxUtil.trainStation(action.trainStation)
                     .subscribe(
                         { trainArrival ->
-                            next(LoadTrainStationAction(
+                            next(TrainStationAction(
                                 trainStation = action.trainStation,
                                 error = false,
                                 trainArrival = trainArrival))
@@ -111,7 +132,7 @@ internal val loadTrainStationMiddleware: Middleware<StateType> = { _, _ ->
                                 R.string.message_connect_error
                             else
                                 R.string.message_something_went_wrong
-                            next(LoadTrainStationAction(
+                            next(TrainStationAction(
                                 trainStation = action.trainStation,
                                 error = true,
                                 errorMessage = errorMessage)
@@ -123,19 +144,20 @@ internal val loadTrainStationMiddleware: Middleware<StateType> = { _, _ ->
     }
 }
 
-internal val loadBusStopArrivalsMiddleware: Middleware<StateType> = { _, _ ->
+internal val busStopArrivalsMiddleware: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->
-            (action as? LoadBusStopArrivalsAction)?.let {
+            (action as? BusStopArrivalsAction)?.let {
                 RxUtil.createBusArrivalObs(action.requestRt, action.busRouteId, action.requestStopId, action.busStopId, action.bound, action.boundTitle)
                     .subscribe(
-                        { busArrivalStopDTO -> next(LoadBusStopArrivalsAction(busArrivalStopDTO = busArrivalStopDTO)) },
+                        { busArrivalStopDTO -> next(BusStopArrivalsAction(busArrivalStopDTO = busArrivalStopDTO)) },
                         { throwable ->
+                            Log.e(TAG, throwable.message, throwable)
                             val errorMessage = if (throwable is ConnectException)
                                 R.string.message_connect_error
                             else
                                 R.string.message_something_went_wrong
-                            next(LoadBusStopArrivalsAction(
+                            next(BusStopArrivalsAction(
                                 error = true,
                                 errorMessage = errorMessage)
                             )
@@ -146,19 +168,20 @@ internal val loadBusStopArrivalsMiddleware: Middleware<StateType> = { _, _ ->
     }
 }
 
-internal val loadBikeStationMiddleware: Middleware<StateType> = { _, _ ->
+internal val bikeStationMiddleware: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->
-            (action as? LoadBikeStationAction)?.let {
-                RxUtil.createAllBikeStationsSingle()
+            (action as? BikeStationAction)?.let {
+                RxUtil.bikeStation()
                     .subscribe(
-                        { bikeStations -> next(LoadBikeStationAction(bikeStations = bikeStations)) },
+                        { bikeStations -> next(BikeStationAction(bikeStations = bikeStations)) },
                         { throwable ->
+                            Log.e(TAG, throwable.message, throwable)
                             val errorMessage = if (throwable is ConnectException)
                                 R.string.message_connect_error
                             else
                                 R.string.message_something_went_wrong
-                            next(LoadBikeStationAction(
+                            next(BikeStationAction(
                                 error = true,
                                 errorMessage = errorMessage)
                             )

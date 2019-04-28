@@ -54,6 +54,9 @@ Donation can be made by Bitcoin to `13WUmCX1AePEKFGv5U1qRgBockFahsm21o`
 
 [![Bitcoin](images/qrcode.png)](bitcoin:13WUmCX1AePEKFGv5U1qRgBockFahsm21o)
 
+## Credits
+Error icon made by [pixelmeetup](https://www.flaticon.com/authors/pixelmeetup) from www.flaticon.com
+
 ## License
 ```
 Copyright 2019 Carl-Philipp Harmant

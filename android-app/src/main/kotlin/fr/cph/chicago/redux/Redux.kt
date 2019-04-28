@@ -3,19 +3,19 @@ package fr.cph.chicago.redux
 import android.util.Log
 import org.rekotlin.Action
 import org.rekotlin.Store
-import java.util.*
+import java.util.Date
 
 val mainStore = Store(
     reducer = ::reducer,
     state = null,
     middleware = listOf(
-        loadLocalAndFavoritesDataMiddleware,
-        loadFirstDataMiddleware,
-        loadFavoritesDataMiddleware,
-        loadTrainStationMiddleware,
-        loadBusStopArrivalsMiddleware,
-        loadBikeStationMiddleware,
-        loadBusRoutesMiddleware
+        baseMiddleware,
+        busRoutesAndBikeStationMiddleware,
+        favoritesMiddleware,
+        trainStationMiddleware,
+        busStopArrivalsMiddleware,
+        bikeStationMiddleware,
+        busRoutesMiddleware
     )
 )
 
@@ -24,82 +24,82 @@ fun reducer(action: Action, oldState: AppState?): AppState {
     var state = oldState ?: AppState()
 
     when (action) {
-        is LoadFirstDataAction -> {
+        is BusRoutesAndBikeStationAction -> {
             state = state.copy(
                 lastStateChange = Date(),
-                lastAction = LoadFirstDataAction(),
+                lastAction = BusRoutesAndBikeStationAction(),
                 busRoutesError = action.busRoutesError,
                 bikeStationsError = action.bikeStationsError,
                 busRoutes = action.busRoutes,
                 bikeStations = action.bikeStations
             )
         }
-        is LoadLocalAndFavoritesDataAction -> {
+        is BaseAction -> {
             state = state.copy(
                 lastStateChange = Date(),
-                lastAction = LoadLocalAndFavoritesDataAction(),
+                lastAction = BaseAction(),
                 lastFavoritesUpdate = Date(),
-                error = action.error,
                 trainArrivalsDTO = action.trainArrivalsDTO,
                 busArrivalsDTO = action.busArrivalsDTO
             )
         }
-        is LoadFavoritesDataAction -> {
+        is FavoritesAction -> {
             state = state.copy(
                 lastStateChange = Date(),
-                lastAction = LoadFavoritesDataAction(),
+                lastAction = FavoritesAction(),
                 lastFavoritesUpdate = Date(),
-                error = action.error,
                 trainArrivalsDTO = action.favoritesDTO.trainArrivalDTO,
                 busArrivalsDTO = action.favoritesDTO.busArrivalDTO,
-                bikeStations = action.favoritesDTO.bikeStations
+                bikeStations = action.favoritesDTO.bikeStations,
+                bikeStationsError = action.favoritesDTO.bikeError
             )
         }
-        is LoadTrainStationAction -> {
+        is TrainStationAction -> {
             if (action.error) {
                 state = state.copy(
                     lastStateChange = Date(),
-                    lastAction = LoadTrainStationAction(),
+                    lastAction = TrainStationAction(),
                     trainStationError = true,
                     trainStationErrorMessage = action.errorMessage
                 )
             } else {
-                state.trainArrivalsDTO.trainArrivalSparseArray.remove(action.trainStation.id)
-                state.trainArrivalsDTO.trainArrivalSparseArray.put(action.trainStation.id, action.trainArrival)
+                state.trainArrivalsDTO.trainsArrivals.remove(action.trainStation.id)
+                state.trainArrivalsDTO.trainsArrivals.put(action.trainStation.id, action.trainArrival)
                 val newTrainArrivals = state.trainArrivalsDTO
                 state = state.copy(
                     lastStateChange = Date(),
-                    lastAction = LoadTrainStationAction(),
+                    lastAction = TrainStationAction(),
                     trainArrivalsDTO = newTrainArrivals,
                     trainStationError = false,
                     trainStationArrival = action.trainArrival
                 )
             }
         }
-        is LoadBusStopArrivalsAction -> {
+        is BusStopArrivalsAction -> {
             state = state.copy(
                 lastStateChange = Date(),
-                lastAction = LoadBusStopArrivalsAction(),
+                lastAction = BusStopArrivalsAction(),
                 busStopError = action.error,
                 busStopErrorMessage = action.errorMessage,
                 busArrivalStopDTO = action.busArrivalStopDTO
             )
         }
-        is LoadBikeStationAction -> {
+        is BikeStationAction -> {
             state = state.copy(
                 lastStateChange = Date(),
-                lastAction = LoadBikeStationAction(),
+                lastAction = BikeStationAction(),
                 bikeStationsError = action.error,
                 bikeStationsErrorMessage = action.errorMessage,
-                bikeStations = action.bikeStations
+                bikeStations = if (action.error) mainStore.state.bikeStations else action.bikeStations
             )
         }
-        is LoadBusRoutesAction -> {
+        is BusRoutesAction -> {
             state = state.copy(
                 lastStateChange = Date(),
-                lastAction = LoadBusRoutesAction(),
-                busRoutes = action.busRoutes,
-                busRoutesError = action.error
+                lastAction = BusRoutesAction(),
+                busRoutes = if (action.error) state.busRoutes else action.busRoutes,
+                busRoutesError = action.error,
+                busRoutesErrorMessage = action.errorMessage
             )
         }
         else -> Log.w(TAG, "Action $action unknown")

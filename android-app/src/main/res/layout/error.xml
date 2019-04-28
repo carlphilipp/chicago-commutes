@@ -15,51 +15,35 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/failure"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:visibility="visible">
 
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <ImageView
+        android:id="@+id/error_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/fragment_train_bus_error_padding_top"
+        android:src="@drawable/error" />
 
-    <!-- Loading progress -->
+    <TextView
+        android:id="@+id/error_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/error_image"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/fragment_train_bus_error_message_padding_top"
+        android:text="@string/bus_bike_error_message" />
 
-    <include layout="@layout/loading"/>
-
-    <!-- Login form -->
-
-    <ScrollView
-        android:id="@+id/error_form"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <ImageView
-                android:id="@+id/icon2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:contentDescription="@string/error_desc"
-                android:padding="10dp"
-                android:src="@drawable/ic_launcher_web"/>
-
-            <TextView
-                android:id="@+id/error_message"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textIsSelectable="false"
-                android:textStyle="bold"/>
-
-            <Button
-                android:id="@+id/retry_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="16dp"
-                android:paddingLeft="32dp"
-                android:paddingRight="32dp"
-                android:text="@string/error_retry"/>
-        </LinearLayout>
-    </ScrollView>
-</merge>
+    <Button
+        android:id="@+id/retry_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/error_message"
+        android:layout_centerHorizontal="true"
+        android:text="@string/bus_bike_retry_button"
+        android:theme="?attr/favoriteButton" />
+</RelativeLayout>

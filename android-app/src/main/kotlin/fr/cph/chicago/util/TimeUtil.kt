@@ -2,7 +2,8 @@ package fr.cph.chicago.util
 
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 object TimeUtil {
 

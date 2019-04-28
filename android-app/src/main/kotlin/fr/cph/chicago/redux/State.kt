@@ -11,13 +11,12 @@ import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import org.rekotlin.Action
 import org.rekotlin.ReKotlinInit
 import org.rekotlin.StateType
-import java.util.*
+import java.util.Date
 
 data class AppState(
     val lastStateChange: Date = Date(), // Field to ensure the update of the state
     val lastAction: Action = ReKotlinInit(), // Not sure this is a smart idea.
     val lastFavoritesUpdate: Date = Date(), // Field displayed in favorites
-    val error: Boolean? = null,
 
     // Trains and Buses arrivals
     val trainArrivalsDTO: TrainArrivalDTO = TrainArrivalDTO(SparseArray(), false),
@@ -25,6 +24,7 @@ data class AppState(
 
     // Bus routes
     val busRoutesError: Boolean = false,
+    val busRoutesErrorMessage: Int = R.string.message_something_went_wrong,
     val busRoutes: List<BusRoute> = listOf(),
 
     // Bikes

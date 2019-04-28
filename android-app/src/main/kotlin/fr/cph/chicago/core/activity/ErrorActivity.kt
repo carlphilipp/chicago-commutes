@@ -22,10 +22,7 @@ package fr.cph.chicago.core.activity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
-import android.widget.TextView
-import butterknife.BindString
 import butterknife.BindView
 import butterknife.ButterKnife
 import fr.cph.chicago.R
@@ -39,17 +36,8 @@ import fr.cph.chicago.service.PreferenceService
  */
 class ErrorActivity : Activity() {
 
-    @BindView(R.id.loading_layout)
-    lateinit var loadLayout: View
-    @BindView(R.id.error_message)
-    lateinit var errorText: TextView
     @BindView(R.id.retry_button)
     lateinit var button: Button
-
-    @BindString(R.string.bundle_error)
-    lateinit var bundleError: String
-
-    private lateinit var error: String
 
     private val preferenceService: PreferenceService = PreferenceService
 
@@ -59,26 +47,10 @@ class ErrorActivity : Activity() {
         setContentView(R.layout.error)
         ButterKnife.bind(this)
 
-        loadLayout.visibility = View.GONE
-        error = intent.getStringExtra(bundleError)
-
-        errorText.text = error
-
         button.setOnClickListener {
             val intent = Intent(this@ErrorActivity, BaseActivity::class.java)
-            intent.putExtra(bundleError, true)
             finish()
             startActivity(intent)
         }
-    }
-
-    public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        error = savedInstanceState.getString(bundleError) ?: ""
-    }
-
-    public override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.putString(bundleError, error)
-        super.onSaveInstanceState(savedInstanceState)
     }
 }

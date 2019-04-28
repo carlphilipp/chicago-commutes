@@ -51,9 +51,8 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function3
-import io.reactivex.functions.Function4
 import io.reactivex.schedulers.Schedulers
-import java.util.concurrent.*
+import java.util.concurrent.Callable
 
 object RxUtil {
 
@@ -89,7 +88,7 @@ object RxUtil {
         return createSingleFromCallable(Callable { busService.loadBusArrivals(requestRt, busRouteId, requestStopId, busStopId, bound, boundTitle) })
     }
 
-    fun createTrainArrivalsSingle(trainStation: TrainStation): Single<TrainArrival> {
+    fun trainStation(trainStation: TrainStation): Single<TrainArrival> {
         return createSingleFromCallable(Callable { trainService.loadStationTrainArrival(trainStation.id) })
     }
 
@@ -98,9 +97,8 @@ object RxUtil {
             .onErrorReturn(handleError())
     }
 
-    fun createAllBikeStationsSingle(): Single<List<BikeStation>> {
+    fun bikeStation(): Single<List<BikeStation>> {
         return createSingleFromCallable(Callable { bikeService.loadAllBikeStations() })
-            .onErrorReturn(handleError())
     }
 
     fun createBikeStationsSingle(bikeStation: BikeStation): Single<BikeStation> {
@@ -184,37 +182,42 @@ object RxUtil {
         return createSingleFromCallable(Callable { BusArrivalDTO(busService.loadFavoritesBuses(), false) })
             .onErrorReturn { throwable ->
                 Log.e(TAG, "Could not load bus arrivals", throwable)
-                BusArrivalDTO()
+                BusArrivalDTO(listOf(), true)
             }
     }
 
-    // Combined
-    fun createLocalAndFavoritesDataSingle(): Single<FavoritesDTO> {
+    fun local(): Single<Unit> {
         // Train local data
         val trainLocalData = createLocalTrainDataSingle()
 
         // Bus local data
         val busLocalData = createLocalBusDataSingle()
-
-        // Train online favorites
-        val trainOnlineFavorites = createFavoritesTrainArrivalsSingle()
-
-        // Bus online favorites
-        val busOnlineFavorites = createFavoritesBusArrivalsSingle()
-
-        // Run local first and then online: Ensure that local data is loaded first
-        return Single.zip(trainLocalData, busLocalData, trainOnlineFavorites, busOnlineFavorites, Function4 { _: Any, _: Any, trainArrivalsDTO: TrainArrivalDTO, busArrivalsDTO: BusArrivalDTO ->
-            FavoritesDTO(trainArrivalsDTO, busArrivalsDTO, false, listOf())
-        })
+        return Single.zip(trainLocalData, busLocalData, BiFunction { _: Any, _: Any -> })
     }
 
-    fun createAllDataSingle(): Single<FavoritesDTO> {
+    // Combined
+    fun baseFavorites(): Single<FavoritesDTO> {
+        // Train online favorites
+        val favoritesTrainArrivals = createFavoritesTrainArrivalsSingle().observeOn(Schedulers.computation())
+
+        // Bus online favorites
+        val favoritesBusArrivals = createFavoritesBusArrivalsSingle().observeOn(Schedulers.computation())
+
+        return Single.zip(
+            favoritesTrainArrivals,
+            favoritesBusArrivals,
+            BiFunction { trainArrivalsDTO: TrainArrivalDTO, busArrivalsDTO: BusArrivalDTO ->
+                FavoritesDTO(trainArrivalsDTO, busArrivalsDTO, false, listOf())
+            })
+    }
+
+    fun favorites(): Single<FavoritesDTO> {
         // Train online favorites
         val trainArrivalsObservable = createFavoritesTrainArrivalsSingle()
         // Bus online favorites
         val busArrivalsObservable = createFavoritesBusArrivalsSingle()
         // Bikes online all stations
-        val bikeStationsObservable = createAllBikeStationsSingle()
+        val bikeStationsObservable = bikeStation().onErrorReturn(handleError())
         return Single.zip(busArrivalsObservable, trainArrivalsObservable, bikeStationsObservable,
             Function3 { busArrivalDTO: BusArrivalDTO, trainArrivalsDTO: TrainArrivalDTO, bikeStations: List<BikeStation>
                 ->
@@ -222,12 +225,12 @@ object RxUtil {
             })
     }
 
-    fun createBusRoutesSingle(): Single<List<BusRoute>> {
+    fun busRoutes(): Single<List<BusRoute>> {
         return createSingleFromCallable(Callable { busService.loadBusRoutes() })
     }
 
-    fun createOnFirstLoadObs(): Single<FirstLoadDTO> {
-        val busRoutesSingle = createBusRoutesSingle()
+    fun busRoutesAndBikeStation(): Single<FirstLoadDTO> {
+        val busRoutesSingle = busRoutes()
             .onErrorReturn(handleError())
 
         val bikeStationsSingle = createSingleFromCallable(Callable { bikeService.loadAllBikeStations() })

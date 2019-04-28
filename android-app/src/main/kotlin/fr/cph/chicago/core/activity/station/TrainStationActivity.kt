@@ -50,7 +50,7 @@ import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.redux.AppState
-import fr.cph.chicago.redux.LoadTrainStationAction
+import fr.cph.chicago.redux.TrainStationAction
 import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
@@ -138,7 +138,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
             streetViewImage.setOnClickListener(GoogleStreetOnClickListener(position.latitude, position.longitude))
             streetViewImage.layoutParams = params
             swipeRefreshLayout.setOnRefreshListener {
-                mainStore.dispatch(LoadTrainStationAction(trainStation))
+                mainStore.dispatch(TrainStationAction(trainStation))
                 // FIXME: Identify if it's the place holder or not. This is not great
                 if (streetViewImage.scaleType == ImageView.ScaleType.CENTER) {
                     loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
@@ -193,7 +193,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
                 checkBox.setOnCheckedChangeListener { _, isChecked -> preferenceService.saveTrainFilter(stationId, line, stop.direction, isChecked) }
                 checkBox.setOnClickListener {
                     if (checkBox.isChecked) {
-                        mainStore.dispatch(LoadTrainStationAction(trainStation))
+                        mainStore.dispatch(TrainStationAction(trainStation))
                     }
                 }
                 checkBox.isChecked = preferenceService.getTrainFilter(stationId, line, stop.direction)
@@ -226,7 +226,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
         toolbar.inflateMenu(R.menu.main)
         toolbar.setOnMenuItemClickListener {
             swipeRefreshLayout.isRefreshing = true
-            mainStore.dispatch(LoadTrainStationAction(trainStation))
+            mainStore.dispatch(TrainStationAction(trainStation))
             false
         }
 
@@ -250,7 +250,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
     override fun onResume() {
         super.onResume()
         mainStore.subscribe(this)
-        mainStore.dispatch(LoadTrainStationAction(trainStation))
+        mainStore.dispatch(TrainStationAction(trainStation))
     }
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
