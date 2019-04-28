@@ -77,5 +77,3 @@ data class LoadBikeStationAction(
     val errorMessage: Int = R.string.message_something_went_wrong,
     val bikeStations: List<BikeStation> = listOf()
 ) : Action
-
-data class HighlightBackgroundDone(val unit: Unit = Unit) : Action

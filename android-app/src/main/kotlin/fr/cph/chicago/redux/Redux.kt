@@ -26,8 +26,8 @@ fun reducer(action: Action, oldState: AppState?): AppState {
     when (action) {
         is LoadFirstDataAction -> {
             state = state.copy(
-                lastAction = Date(),
-                highlightBackground = false,
+                lastStateChange = Date(),
+                lastAction = LoadFirstDataAction(),
                 busRoutesError = action.busRoutesError,
                 bikeStationsError = action.bikeStationsError,
                 busRoutes = action.busRoutes,
@@ -36,9 +36,9 @@ fun reducer(action: Action, oldState: AppState?): AppState {
         }
         is LoadLocalAndFavoritesDataAction -> {
             state = state.copy(
-                lastAction = Date(),
-                lastUpdate = Date(),
-                highlightBackground = false,
+                lastStateChange = Date(),
+                lastAction = LoadLocalAndFavoritesDataAction(),
+                lastFavoritesUpdate = Date(),
                 error = action.error,
                 trainArrivalsDTO = action.trainArrivalsDTO,
                 busArrivalsDTO = action.busArrivalsDTO
@@ -46,9 +46,9 @@ fun reducer(action: Action, oldState: AppState?): AppState {
         }
         is LoadFavoritesDataAction -> {
             state = state.copy(
-                lastAction = Date(),
-                lastUpdate = Date(),
-                highlightBackground = true,
+                lastStateChange = Date(),
+                lastAction = LoadFavoritesDataAction(),
+                lastFavoritesUpdate = Date(),
                 error = action.error,
                 trainArrivalsDTO = action.favoritesDTO.trainArrivalDTO,
                 busArrivalsDTO = action.favoritesDTO.busArrivalDTO,
@@ -58,8 +58,8 @@ fun reducer(action: Action, oldState: AppState?): AppState {
         is LoadTrainStationAction -> {
             if (action.error) {
                 state = state.copy(
-                    lastAction = Date(),
-                    highlightBackground = false,
+                    lastStateChange = Date(),
+                    lastAction = LoadTrainStationAction(),
                     trainStationError = true,
                     trainStationErrorMessage = action.errorMessage
                 )
@@ -68,8 +68,8 @@ fun reducer(action: Action, oldState: AppState?): AppState {
                 state.trainArrivalsDTO.trainArrivalSparseArray.put(action.trainStation.id, action.trainArrival)
                 val newTrainArrivals = state.trainArrivalsDTO
                 state = state.copy(
-                    lastAction = Date(),
-                    highlightBackground = false,
+                    lastStateChange = Date(),
+                    lastAction = LoadTrainStationAction(),
                     trainArrivalsDTO = newTrainArrivals,
                     trainStationError = false,
                     trainStationArrival = action.trainArrival
@@ -78,8 +78,8 @@ fun reducer(action: Action, oldState: AppState?): AppState {
         }
         is LoadBusStopArrivalsAction -> {
             state = state.copy(
-                lastAction = Date(),
-                highlightBackground = false,
+                lastStateChange = Date(),
+                lastAction = LoadBusStopArrivalsAction(),
                 busStopError = action.error,
                 busStopErrorMessage = action.errorMessage,
                 busArrivalStopDTO = action.busArrivalStopDTO
@@ -87,8 +87,8 @@ fun reducer(action: Action, oldState: AppState?): AppState {
         }
         is LoadBikeStationAction -> {
             state = state.copy(
-                lastAction = Date(),
-                highlightBackground = false,
+                lastStateChange = Date(),
+                lastAction = LoadBikeStationAction(),
                 bikeStationsError = action.error,
                 bikeStationsErrorMessage = action.errorMessage,
                 bikeStations = action.bikeStations
@@ -96,14 +96,11 @@ fun reducer(action: Action, oldState: AppState?): AppState {
         }
         is LoadBusRoutesAction -> {
             state = state.copy(
-                lastAction = Date(),
-                highlightBackground = false,
+                lastStateChange = Date(),
+                lastAction = LoadBusRoutesAction(),
                 busRoutes = action.busRoutes,
                 busRoutesError = action.error
             )
-        }
-        is HighlightBackgroundDone -> {
-            state = state.copy(highlightBackground = false)
         }
         else -> Log.w(TAG, "Action $action unknown")
 

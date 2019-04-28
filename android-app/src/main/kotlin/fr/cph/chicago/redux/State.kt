@@ -8,13 +8,15 @@ import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.dto.BusArrivalDTO
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
+import org.rekotlin.Action
+import org.rekotlin.ReKotlinInit
 import org.rekotlin.StateType
 import java.util.*
 
 data class AppState(
-    val lastAction: Date = Date(), // Field to ensure the update of the state
-    val lastUpdate: Date = Date(), // Field displayed in favorites
-    val highlightBackground: Boolean = false,
+    val lastStateChange: Date = Date(), // Field to ensure the update of the state
+    val lastAction: Action = ReKotlinInit(), // Not sure this is a smart idea.
+    val lastFavoritesUpdate: Date = Date(), // Field displayed in favorites
     val error: Boolean? = null,
 
     // Trains and Buses arrivals

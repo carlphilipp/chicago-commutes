@@ -199,7 +199,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
     }
 
     fun refreshLastUpdateView() {
-        lastUpdate = TimeUtil.formatTimeDifference(mainStore.state.lastUpdate, Calendar.getInstance().time)
+        lastUpdate = TimeUtil.formatTimeDifference(mainStore.state.lastFavoritesUpdate, Calendar.getInstance().time)
         notifyDataSetChanged()
     }
 

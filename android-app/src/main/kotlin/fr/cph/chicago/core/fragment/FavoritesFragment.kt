@@ -36,7 +36,6 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.adapter.FavoritesAdapter
 import fr.cph.chicago.redux.AppState
-import fr.cph.chicago.redux.HighlightBackgroundDone
 import fr.cph.chicago.redux.LoadBusRoutesAction
 import fr.cph.chicago.redux.LoadFavoritesDataAction
 import fr.cph.chicago.redux.LoadFirstDataAction
@@ -142,12 +141,12 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
                 displayError(R.string.message_something_went_wrong)
             }
             favoritesAdapter.updateData(
-                date = state.lastUpdate,
+                date = state.lastFavoritesUpdate,
                 trainArrivals = state.trainArrivalsDTO.trainArrivalSparseArray,
                 busArrivals = state.busArrivalsDTO.busArrivals,
                 bikeStations = state.bikeStations
             )
-            if (state.highlightBackground) {
+            if (state.lastAction is LoadFavoritesDataAction) {
                 highlightBackground()
             }
         }
@@ -180,7 +179,6 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
         val currentBackground = rootView.background
         rootView.setBackgroundResource(R.drawable.highlight_selector)
         rootView.postDelayed({ rootView.background = currentBackground }, 100)
-        mainStore.dispatch(HighlightBackgroundDone())
     }
 
     /**
