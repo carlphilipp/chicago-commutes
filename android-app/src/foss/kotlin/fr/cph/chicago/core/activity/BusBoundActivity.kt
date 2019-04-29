@@ -171,7 +171,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
         toolbar.navigationIcon = arrowBackWhite
         toolbar.setOnClickListener { finish() }
 
-        rxUtil.createBusStopsForRouteBoundSingle(busRouteId, bound)
+        rxUtil.busStopsForRouteBound(busRouteId, bound)
             .subscribe(
                 { onNext ->
                     busStops = onNext
@@ -194,7 +194,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
             uiSettings.isRotateGesturesEnabled = false
             uiSettings.isTiltGesturesEnabled = false
         }
-        rxUtil.createBusPatternSingle(busRouteId, bound)
+        rxUtil.busPatterns(busRouteId, bound)
             .observeOn(Schedulers.computation())
             .map { busPattern: BusPattern ->
                 val pair = MapUtil.getBounds(busPattern.busStopsPatterns.map { it.position })

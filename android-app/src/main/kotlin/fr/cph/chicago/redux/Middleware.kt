@@ -5,8 +5,10 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.model.dto.BusArrivalDTO
 import fr.cph.chicago.core.model.dto.FavoritesDTO
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
+import fr.cph.chicago.exception.BaseException
 import fr.cph.chicago.exception.ConnectException
 import fr.cph.chicago.rx.RxUtil
+import io.reactivex.android.schedulers.AndroidSchedulers
 import org.rekotlin.Middleware
 import org.rekotlin.StateType
 
@@ -15,7 +17,13 @@ internal val baseMiddleware: Middleware<StateType> = { _, _ ->
         { action ->
             (action as? BaseAction)?.let {
                 RxUtil.local()
-                    .flatMap { RxUtil.baseFavorites() }
+                    .flatMap { localDTO ->
+                        if (localDTO.busLocalError || localDTO.trainLocalError) {
+                            throw BaseException()
+                        }
+                        RxUtil.baseFavorites()
+                    }
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                         { favoritesDTO ->
                             val trainArrivals = if (favoritesDTO.trainArrivalDTO.error)
@@ -30,7 +38,7 @@ internal val baseMiddleware: Middleware<StateType> = { _, _ ->
                         },
                         { throwable ->
                             Log.e(TAG, throwable.message, throwable)
-                            next(BaseAction())
+                            next(BaseAction(localError = true))
                         }
                     )
             } ?: next(action)
@@ -100,7 +108,7 @@ internal val favoritesMiddleware: Middleware<StateType> = { _, _ ->
                             busArrivalDTO = busArrivals,
                             bikeStations = if (favoritesDTO.bikeError) mainStore.state.bikeStations else favoritesDTO.bikeStations,
                             bikeError = favoritesDTO.bikeError)
-                        next(FavoritesAction(favoritesDTO = newFavorites))
+                        next(FavoritesAction(favoritesDTO = newFavorites, forceUpdate = action.forceUpdate))
                     }
             } ?: next(action)
         }
@@ -111,18 +119,18 @@ internal val trainStationMiddleware: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->
             (action as? TrainStationAction)?.let {
-                RxUtil.trainStation(action.trainStation)
+                RxUtil.trainStation(action.trainStationId)
                     .subscribe(
                         { trainArrival ->
                             next(TrainStationAction(
-                                trainStation = action.trainStation,
+                                trainStationId = action.trainStationId,
                                 error = false,
                                 trainArrival = trainArrival))
                         },
                         { throwable ->
                             Log.e(TAG, throwable.message, throwable)
                             next(TrainStationAction(
-                                trainStation = action.trainStation,
+                                trainStationId = action.trainStationId,
                                 error = true,
                                 errorMessage = buildErrorMessage(throwable)))
                         }
@@ -136,7 +144,7 @@ internal val busStopArrivalsMiddleware: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->
             (action as? BusStopArrivalsAction)?.let {
-                RxUtil.createBusArrivalObs(action.requestRt, action.busRouteId, action.requestStopId, action.busStopId, action.bound, action.boundTitle)
+                RxUtil.busArrivalsForStop(action.requestRt, action.busRouteId, action.requestStopId, action.busStopId, action.bound, action.boundTitle)
                     .subscribe(
                         { busArrivalStopDTO -> next(BusStopArrivalsAction(busArrivalStopDTO = busArrivalStopDTO)) },
                         { throwable ->
@@ -155,7 +163,7 @@ internal val bikeStationMiddleware: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->
             (action as? BikeStationAction)?.let {
-                RxUtil.bikeStation()
+                RxUtil.bikeAllStations()
                     .subscribe(
                         { bikeStations -> next(BikeStationAction(bikeStations = bikeStations)) },
                         { throwable ->

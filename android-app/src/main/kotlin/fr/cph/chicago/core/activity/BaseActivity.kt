@@ -21,16 +21,22 @@ package fr.cph.chicago.core.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.widget.Button
+import android.widget.RelativeLayout
+import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.redux.AppState
 import fr.cph.chicago.redux.BaseAction
+import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.repository.RealmConfig
 import org.rekotlin.StoreSubscriber
 
 /**
- * This class represents the base activity of the application It will load the loading screen and/or the main
+ * This class represents the base activity of the application It will load the loading screen and then the main
  * activity
  *
  * @author Carl-Philipp Harmant
@@ -38,12 +44,24 @@ import org.rekotlin.StoreSubscriber
  */
 class BaseActivity : ButterKnifeActivity(R.layout.loading), StoreSubscriber<AppState> {
 
+    @BindView(R.id.loading_layout)
+    lateinit var loadingLayout: RelativeLayout
+    @BindView(R.id.failure)
+    lateinit var failureLayout: RelativeLayout
+    @BindView(R.id.retry_button)
+    lateinit var retryButton: Button
+
     private val realmConfig: RealmConfig = RealmConfig
 
     override fun create(savedInstanceState: Bundle?) {
         mainStore.subscribe(this)
         setUpRealm()
         mainStore.dispatch(BaseAction())
+        retryButton.setOnClickListener {
+            if (failureLayout.visibility != View.GONE) failureLayout.visibility = View.GONE
+            if (loadingLayout.visibility != View.VISIBLE) loadingLayout.visibility = View.VISIBLE
+            mainStore.dispatch(BaseAction())
+        }
     }
 
     private fun setUpRealm() {
@@ -51,9 +69,20 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading), StoreSubscriber<AppS
     }
 
     override fun newState(state: AppState) {
-        if (state.lastAction is BaseAction) {
-            mainStore.unsubscribe(this)
-            startMainActivity()
+        when (state.status) {
+            Status.SUCCESS -> {
+                mainStore.unsubscribe(this)
+                startMainActivity()
+            }
+            Status.FAILURE -> {
+                mainStore.unsubscribe(this)
+                startMainActivity()
+            }
+            Status.FULL_FAILURE -> {
+                if (failureLayout.visibility != View.VISIBLE) failureLayout.visibility = View.VISIBLE
+                if (loadingLayout.visibility != View.GONE) loadingLayout.visibility = View.GONE
+            }
+            else -> Log.d(TAG, "Unknown status on new state")
         }
     }
 
@@ -62,5 +91,9 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading), StoreSubscriber<AppS
         finish()
         startActivity(intent)
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+    }
+
+    companion object {
+        private val TAG = BaseActivity::class.java.simpleName
     }
 }

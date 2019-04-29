@@ -43,6 +43,7 @@ import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.redux.AppState
 import fr.cph.chicago.redux.BusStopArrivalsAction
+import fr.cph.chicago.redux.ForceUpdateFavorites
 import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.service.PreferenceService
@@ -195,7 +196,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
     @SuppressLint("CheckResult")
     private fun loadStopDetailsAndStreetImage() {
         // Load bus stop details and google street image
-        RxUtil.createBusStopsForRouteBoundSingle(busRouteId, boundTitle)
+        RxUtil.busStopsForRouteBound(busRouteId, boundTitle)
             .observeOn(Schedulers.computation())
             .flatMap { stops ->
                 val busStop: BusStop? = stops.firstOrNull { busStop -> busStop.id == busStopId }
@@ -271,11 +272,16 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
         savedInstanceState.putInt(bundleBusStopId, busStopId)
-        savedInstanceState.putString(bundleBusRouteId, busRouteId)
-        savedInstanceState.putString(bundleBusBound, bound)
-        savedInstanceState.putString(bundleBusBoundTitle, boundTitle)
-        savedInstanceState.putString(bundleBusStopName, busStopName)
-        savedInstanceState.putString(bundleBusRouteName, busRouteName)
+        if(::busRouteId.isInitialized)
+            savedInstanceState.putString(bundleBusRouteId, busRouteId)
+        if(::bound.isInitialized)
+            savedInstanceState.putString(bundleBusBound, bound)
+        if(::boundTitle.isInitialized)
+            savedInstanceState.putString(bundleBusBoundTitle, boundTitle)
+        if(::busStopName.isInitialized)
+            savedInstanceState.putString(bundleBusStopName, busStopName)
+        if(::busRouteName.isInitialized)
+            savedInstanceState.putString(bundleBusRouteName, busRouteName)
         savedInstanceState.putDouble(bundleBusLatitude, latitude)
         savedInstanceState.putDouble(bundleBusLongitude, longitude)
         super.onSaveInstanceState(savedInstanceState)
@@ -353,7 +359,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
             preferenceService.addBusRouteNameMapping(busStopId.toString(), busRouteName)
             preferenceService.addBusStopNameMapping(busStopId.toString(), busStopName)
             favoritesImage.setColorFilter(Color.yellowLineDark)
-            App.instance.refresh = true
+            mainStore.dispatch(ForceUpdateFavorites(forceUpdate = true))
             true
         }
     }

@@ -23,6 +23,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -38,6 +39,7 @@ import fr.cph.chicago.core.model.dto.AlertType
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.redux.AlertAction
 import fr.cph.chicago.redux.AppState
+import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
@@ -64,11 +66,11 @@ class AlertFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<A
     @BindView(R.id.retry_button)
     lateinit var retryButton: Button
 
-    private lateinit var alertAdapter: AlertAdapter
+    private lateinit var adapter: AlertAdapter
 
     override fun onCreateView(savedInstanceState: Bundle?) {
-        alertAdapter = AlertAdapter()
-        listView.adapter = alertAdapter
+        adapter = AlertAdapter()
+        listView.adapter = adapter
         swipeRefreshLayout.setOnRefreshListener { startRefreshing() }
         mainActivity.toolbar.setOnMenuItemClickListener { startRefreshing(); true }
         retryButton.setOnClickListener { startRefreshing() }
@@ -89,25 +91,31 @@ class AlertFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<A
     }
 
     override fun newState(state: AppState) {
-        when {
-            state.lastAction is AlertAction && state.alertError && state.alertsDTO.isEmpty() -> {
-                showFailureLayout()
+        Log.d(TAG, "Alert new state")
+        when (state.alertStatus) {
+            Status.SUCCESS -> {
+                swipeRefreshLayout.isRefreshing = false
+                showSuccessLayout()
             }
-            state.lastAction is AlertAction && state.alertError -> {
+            Status.FAILURE -> {
+                swipeRefreshLayout.isRefreshing = false
                 Util.showSnackBar(swipeRefreshLayout, state.alertErrorMessage)
             }
-            state.alertError -> showFailureLayout()
-            else -> showSuccessLayout()
+            Status.FULL_FAILURE -> {
+                swipeRefreshLayout.isRefreshing = false
+                Util.showSnackBar(swipeRefreshLayout, state.alertErrorMessage)
+                showFailureLayout()
+            }
+            else -> Log.d(TAG, "Unknown status on new state")
         }
         updateData(state.alertsDTO)
-        swipeRefreshLayout.isRefreshing = false
     }
 
     private fun updateData(alertDTO: List<RoutesAlertsDTO>) {
-        alertAdapter.setAlerts(alertDTO)
-        alertAdapter.notifyDataSetChanged()
+        adapter.setAlerts(alertDTO)
+        adapter.notifyDataSetChanged()
         listView.setOnItemClickListener { _, _, position, _ ->
-            val (id1, routeName, _, _, _, _, alertType) = alertAdapter.getItem(position)
+            val (id1, routeName, _, _, _, _, alertType) = adapter.getItem(position)
             val intent = Intent(context, AlertActivity::class.java)
             val extras = Bundle()
             extras.putString("routeId", id1)
@@ -134,8 +142,8 @@ class AlertFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<A
             }
 
             override fun afterTextChanged(s: Editable) {
-                alertAdapter.setAlerts(routesAlertsDTOS)
-                alertAdapter.notifyDataSetChanged()
+                adapter.setAlerts(routesAlertsDTOS)
+                adapter.notifyDataSetChanged()
             }
         })
     }
@@ -156,6 +164,8 @@ class AlertFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<A
     }
 
     companion object {
+
+        private val TAG = AlertFragment::class.java.simpleName
 
         /**
          * Returns a new instance of this fragment for the given section number.

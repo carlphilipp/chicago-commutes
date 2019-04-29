@@ -73,7 +73,7 @@ class BusAdapter(private var busRoutes: List<BusRoute> = listOf()) : BaseAdapter
 
         view?.setOnClickListener {
             holder.detailsLayout.visibility = LinearLayout.VISIBLE
-            RxUtil.createBusDirectionsSingle(route.id)
+            RxUtil.busDirections(route.id)
                 .subscribe(BusDirectionObserver(App.instance.screenWidth, parent, holder.detailsLayout, route))
         }
         return view

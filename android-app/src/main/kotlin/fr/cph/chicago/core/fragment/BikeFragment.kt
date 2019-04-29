@@ -22,6 +22,7 @@ package fr.cph.chicago.core.fragment
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -35,6 +36,7 @@ import fr.cph.chicago.core.adapter.BikeAdapter
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.redux.AppState
 import fr.cph.chicago.redux.BikeStationAction
+import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
@@ -74,7 +76,7 @@ class BikeFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<Ap
     override fun onResume() {
         super.onResume()
         mainStore.subscribe(this)
-        if (mainStore.state.alertsDTO.isEmpty()) {
+        if (mainStore.state.bikeStations.isEmpty()) {
             mainStore.dispatch(BikeStationAction())
         }
     }
@@ -85,16 +87,24 @@ class BikeFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<Ap
     }
 
     override fun newState(state: AppState) {
-        when {
-            state.lastAction is BikeStationAction && state.bikeStationsError -> {
+        Log.d(TAG, "Bike stations new state")
+        when (state.bikeStationsStatus) {
+            Status.SUCCESS -> showSuccessLayout()
+            Status.FAILURE -> {
                 Util.showSnackBar(swipeRefreshLayout, state.bikeStationsErrorMessage)
-            }
-            state.bikeStationsError -> showFailureLayout()
-            else -> {
                 showSuccessLayout()
-                updateData(state.bikeStations)
+            }
+            Status.FULL_FAILURE -> {
+                Util.showSnackBar(swipeRefreshLayout, state.bikeStationsErrorMessage)
+                showFailureLayout()
+            }
+            else -> {
+                Log.d(TAG, "Unknown status on new state")
+                Util.showSnackBar(swipeRefreshLayout, state.bikeStationsErrorMessage)
+                showFailureLayout()
             }
         }
+        updateData(state.bikeStations)
         swipeRefreshLayout.isRefreshing = false
     }
 
@@ -138,6 +148,8 @@ class BikeFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<Ap
     }
 
     companion object {
+
+        private val TAG = BikeFragment::class.java.simpleName
 
         /**
          * Returns a new trainService of this fragment for the given section number.

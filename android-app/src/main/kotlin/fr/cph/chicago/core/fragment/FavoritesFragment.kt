@@ -25,6 +25,7 @@ import android.os.AsyncTask.Status
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.RelativeLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -32,13 +33,18 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.BindView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fr.cph.chicago.R
-import fr.cph.chicago.core.App
+import fr.cph.chicago.R.string
 import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.adapter.FavoritesAdapter
 import fr.cph.chicago.redux.AppState
 import fr.cph.chicago.redux.BusRoutesAction
 import fr.cph.chicago.redux.BusRoutesAndBikeStationAction
 import fr.cph.chicago.redux.FavoritesAction
+import fr.cph.chicago.redux.Status.FAILURE
+import fr.cph.chicago.redux.Status.FULL_FAILURE
+import fr.cph.chicago.redux.Status.SUCCESS
+import fr.cph.chicago.redux.Status.SUCCESS_HIGHLIGHT
+import fr.cph.chicago.redux.Status.UNKNOWN
 import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.task.RefreshTimingTask
@@ -62,18 +68,22 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
     lateinit var recyclerView: RecyclerView
     @BindView(R.id.floating_button)
     lateinit var floatingButton: FloatingActionButton
+    @BindView(R.id.failure)
+    lateinit var failureLayout: RelativeLayout
+    @BindView(R.id.retry_button)
+    lateinit var retryButton: Button
 
     private val rateUtil: RateUtil = RateUtil
     private val util: Util = Util
     private val preferenceService: PreferenceService = PreferenceService
 
-    private lateinit var favoritesAdapter: FavoritesAdapter
+    private lateinit var adapter: FavoritesAdapter
     private lateinit var refreshTimingTask: RefreshTimingTask
 
     override fun onCreateView(savedInstanceState: Bundle?) {
-        favoritesAdapter = FavoritesAdapter(mainActivity)
+        adapter = FavoritesAdapter(mainActivity)
 
-        recyclerView.adapter = favoritesAdapter
+        recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(mainActivity)
         floatingButton.setOnClickListener { mainActivity.startActivity(Intent(mainActivity, SearchActivity::class.java)) }
 
@@ -86,9 +96,8 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
                 }
             }
         })
-
         swipeRefreshLayout.setOnRefreshListener { reloadData() }
-
+        retryButton.setOnClickListener { reloadData() }
         mainActivity.toolbar.setOnMenuItemClickListener { reloadData(); true }
 
         startRefreshTask()
@@ -113,37 +122,63 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
 
     override fun onResume() {
         super.onResume()
+        Log.d(TAG, "On Resume, subscribe to main store")
         mainStore.subscribe(this)
         if (mainStore.state.busRoutes.isEmpty() || mainStore.state.bikeStations.isEmpty()) {
             mainStore.dispatch(BusRoutesAndBikeStationAction())
         }
-        if (App.instance.refresh) {
-            App.instance.refresh = false
-            mainStore.dispatch(FavoritesAction())
+        if (mainStore.state.forceRefreshFavorites) {
+            Log.d(TAG, "On Resume, dispatch new action: favorites actions")
+            mainStore.dispatch(FavoritesAction(forceUpdate = false))
         }
-        favoritesAdapter.refreshFavorites()
-        favoritesAdapter.notifyDataSetChanged()
+        adapter.refreshFavorites()
+        adapter.notifyDataSetChanged()
         if (refreshTimingTask.status == Status.FINISHED) {
             startRefreshTask()
         }
-        welcomeLayout.visibility = if (preferenceService.hasFavorites()) View.GONE else View.VISIBLE
     }
 
     override fun newState(state: AppState) {
-        Log.d(TAG, "Favorites new state: $state")
-        if (state.trainArrivalsDTO.error || state.busArrivalsDTO.error || state.bikeStationsError) {
-            displayError(R.string.message_something_went_wrong)
+        Log.d(TAG, "Favorites new state with status ${state.status}")
+        when (state.status) {
+            SUCCESS -> {
+                showSuccessUi()
+                stopRefreshing()
+            }
+            SUCCESS_HIGHLIGHT -> {
+                showSuccessUi()
+                highlightBackground()
+                stopRefreshing()
+            }
+            FAILURE -> {
+                showSuccessUi()
+                displayErrorSnackBar(string.message_something_went_wrong)
+                stopRefreshing()
+            }
+            FULL_FAILURE -> {
+                showFullFailureUi()
+                displayErrorSnackBar(string.message_something_went_wrong)
+                stopRefreshing()
+            }
+            UNKNOWN -> Log.d(TAG, "Unknown status on new state")
         }
-        favoritesAdapter.updateData(
+        adapter.updateData(
             date = state.lastFavoritesUpdate,
             trainArrivals = state.trainArrivalsDTO.trainsArrivals,
             busArrivals = state.busArrivalsDTO.busArrivals,
-            bikeStations = state.bikeStations
-        )
-        if (state.lastAction is FavoritesAction) {
-            highlightBackground()
-        }
-        stopRefreshing()
+            bikeStations = state.bikeStations)
+    }
+
+    private fun showSuccessUi() {
+        if (failureLayout.visibility != View.GONE) failureLayout.visibility = View.GONE
+        welcomeLayout.visibility = if (preferenceService.hasFavorites()) View.GONE else View.VISIBLE
+        if (recyclerView.visibility != View.VISIBLE) recyclerView.visibility = View.VISIBLE
+    }
+
+    private fun showFullFailureUi() {
+        if (failureLayout.visibility != View.VISIBLE) failureLayout.visibility = View.VISIBLE
+        if (welcomeLayout.visibility != View.GONE) welcomeLayout.visibility = View.GONE
+        if (recyclerView.visibility != View.GONE) recyclerView.visibility = View.GONE
     }
 
     private fun reloadData() {
@@ -154,7 +189,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
         }
     }
 
-    private fun displayError(message: Int) {
+    private fun displayErrorSnackBar(message: Int) {
         util.showSnackBar(swipeRefreshLayout, message)
         stopRefreshing()
     }
@@ -178,8 +213,8 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
      * Start refreshBusAndStation task
      */
     private fun startRefreshTask() {
-        refreshTimingTask = RefreshTimingTask(favoritesAdapter).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR) as RefreshTimingTask
-        favoritesAdapter.refreshLastUpdateView()
+        refreshTimingTask = RefreshTimingTask(adapter).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR) as RefreshTimingTask
+        adapter.refreshLastUpdateView()
     }
 
     companion object {

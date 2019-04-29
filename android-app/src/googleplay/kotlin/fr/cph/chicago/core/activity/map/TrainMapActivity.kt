@@ -205,7 +205,7 @@ class TrainMapActivity : FragmentMapActivity() {
                         if (!refreshingInfoWindow) {
                             selectedMarker = marker
                             val runNumber = marker.snippet
-                            observableUtil.createLoadTrainEtaSingle(runNumber, false)
+                            observableUtil.trainEtas(runNumber, false)
                                 .subscribe(TrainEtaObserver(view!!, this@TrainMapActivity))
                             status[marker] = false
                         }
@@ -222,7 +222,7 @@ class TrainMapActivity : FragmentMapActivity() {
                     selectedMarker = marker
                     val runNumber = marker.snippet
                     val current = status[marker] ?: false
-                    observableUtil.createLoadTrainEtaSingle(runNumber, !current)
+                    observableUtil.trainEtas(runNumber, !current)
                         .subscribe(TrainEtaObserver(view!!, this@TrainMapActivity))
                     status[marker] = !current
                 }
@@ -234,9 +234,9 @@ class TrainMapActivity : FragmentMapActivity() {
     private fun loadActivityData() {
         if (Util.isNetworkAvailable()) {
             // Load train location
-            val trainsObservable = observableUtil.createTrainLocationSingle(line)
+            val trainsObservable = observableUtil.trainLocations(line)
             // Load pattern from local file
-            val positionsObservable = observableUtil.createTrainPatternSingle(line)
+            val positionsObservable = observableUtil.trainPatterns(line)
 
             if (drawLine) {
                 Single.zip(trainsObservable, positionsObservable, BiFunction { trains: List<Train>, positions: List<TrainStationPattern> ->

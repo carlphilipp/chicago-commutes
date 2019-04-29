@@ -103,9 +103,9 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
         // check if search intent
         if (Intent.ACTION_SEARCH == intent.action) {
             // FIXME: Make that code work like before
-            //val bikeStations = getIntent().extras?.getParcelableArrayList(bundleBikeStations)
+            //val bikeOneStation = getIntent().extras?.getParcelableArrayList(bundleBikeStations)
             //    ?: listOf<BikeStation>()
-            //intent.putParcelableArrayListExtra(bundleBikeStations, util.asParcelableArrayList(bikeStations))
+            //intent.putParcelableArrayListExtra(bundleBikeStations, util.asParcelableArrayList(bikeOneStation))
         }
         super.startActivity(intent)
     }

@@ -22,6 +22,7 @@ package fr.cph.chicago.core.fragment
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -35,6 +36,7 @@ import fr.cph.chicago.core.adapter.BusAdapter
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.redux.AppState
 import fr.cph.chicago.redux.BusRoutesAction
+import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
@@ -82,16 +84,22 @@ class BusFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<App
     }
 
     override fun newState(state: AppState) {
-        when {
-            state.lastAction is BusRoutesAction && state.busRoutesError && state.busRoutes.isEmpty() -> {
+        Log.d(TAG, "Bus stops new state")
+        when (state.busRoutesStatus) {
+            Status.SUCCESS -> showSuccessLayout()
+            Status.FAILURE -> {
+                Util.showSnackBar(swipeRefreshLayout, state.busRoutesErrorMessage)
+                showSuccessLayout()
+            }
+            Status.FULL_FAILURE -> {
                 Util.showSnackBar(swipeRefreshLayout, state.busRoutesErrorMessage)
                 showFailureLayout()
             }
-            state.lastAction is BusRoutesAction && state.busRoutesError -> {
+            else -> {
+                Log.d(TAG, "Unknown status on new state")
                 Util.showSnackBar(swipeRefreshLayout, state.busRoutesErrorMessage)
+                showFailureLayout()
             }
-            state.busRoutesError -> showFailureLayout()
-            else -> showSuccessLayout()
         }
         updateData(state.busRoutes)
         swipeRefreshLayout.isRefreshing = false
@@ -136,6 +144,8 @@ class BusFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<App
     }
 
     companion object {
+
+        private val TAG = BusFragment::class.java.simpleName
 
         /**
          * Returns a new trainService of this fragment for the given section number.

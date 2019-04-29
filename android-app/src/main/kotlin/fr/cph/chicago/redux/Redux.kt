@@ -3,7 +3,7 @@ package fr.cph.chicago.redux
 import android.util.Log
 import org.rekotlin.Action
 import org.rekotlin.Store
-import java.util.Date
+import java.util.*
 
 val mainStore = Store(
     reducer = ::reducer,
@@ -25,93 +25,142 @@ fun reducer(action: Action, oldState: AppState?): AppState {
     var state = oldState ?: AppState()
 
     when (action) {
-        is BusRoutesAndBikeStationAction -> {
-            state = state.copy(
-                lastStateChange = Date(),
-                lastAction = BusRoutesAndBikeStationAction(),
-                busRoutesError = action.busRoutesError,
-                bikeStationsError = action.bikeStationsError,
-                busRoutes = action.busRoutes,
-                bikeStations = action.bikeStations
-            )
-        }
         is BaseAction -> {
+            val status = when {
+                action.localError -> Status.FULL_FAILURE
+                action.trainArrivalsDTO.error || action.busArrivalsDTO.error -> Status.FAILURE
+                else -> Status.SUCCESS
+            }
             state = state.copy(
                 lastStateChange = Date(),
-                lastAction = BaseAction(),
+                status = status,
                 lastFavoritesUpdate = Date(),
                 trainArrivalsDTO = action.trainArrivalsDTO,
                 busArrivalsDTO = action.busArrivalsDTO
             )
         }
-        is FavoritesAction -> {
+        is BusRoutesAndBikeStationAction -> {
+            val status = when {
+                state.trainArrivalsDTO.error && state.busArrivalsDTO.error && action.bikeStationsError -> Status.FULL_FAILURE
+                state.trainArrivalsDTO.error || state.busArrivalsDTO.error || action.bikeStationsError -> Status.FAILURE
+                else -> Status.SUCCESS
+            }
+            val busRoutes = if (action.busRoutesError) state.busRoutes else action.busRoutes
+            val busRoutesStatus = when {
+                action.busRoutesError && busRoutes.isEmpty() -> Status.FULL_FAILURE
+                action.busRoutesError && busRoutes.isNotEmpty() -> Status.FAILURE
+                else -> Status.SUCCESS
+            }
+            val bikeStations = if (action.bikeStationsError) state.bikeStations else action.bikeStations
+            val bikeStationsStatus = when {
+                action.bikeStationsError && bikeStations.isEmpty() -> Status.FULL_FAILURE
+                action.bikeStationsError && bikeStations.isNotEmpty() -> Status.FAILURE
+                else -> Status.SUCCESS
+            }
             state = state.copy(
                 lastStateChange = Date(),
-                lastAction = FavoritesAction(),
+                status = status,
+                busRoutesStatus = busRoutesStatus,
+                bikeStationsStatus = bikeStationsStatus,
+                busRoutes = busRoutes,
+                bikeStations = bikeStations
+            )
+        }
+        is FavoritesAction -> {
+            val status = when {
+                action.favoritesDTO.trainArrivalDTO.error && action.favoritesDTO.busArrivalDTO.error && action.favoritesDTO.bikeError -> {
+                    Status.FULL_FAILURE
+                }
+                action.favoritesDTO.trainArrivalDTO.error || action.favoritesDTO.busArrivalDTO.error || action.favoritesDTO.bikeError -> {
+                    Status.FAILURE
+                }
+                else -> Status.SUCCESS_HIGHLIGHT
+            }
+            val bikeStations = if (action.favoritesDTO.bikeError) state.bikeStations else action.favoritesDTO.bikeStations
+            val bikeStationsStatus = when {
+                action.favoritesDTO.bikeError && bikeStations.isEmpty() -> Status.FULL_FAILURE
+                action.favoritesDTO.bikeError && bikeStations.isNotEmpty() -> Status.FAILURE
+                else -> Status.SUCCESS
+            }
+            state = state.copy(
+                lastStateChange = Date(),
+                status = status,
                 lastFavoritesUpdate = Date(),
+                forceRefreshFavorites = action.forceUpdate,
                 trainArrivalsDTO = action.favoritesDTO.trainArrivalDTO,
                 busArrivalsDTO = action.favoritesDTO.busArrivalDTO,
-                bikeStations = action.favoritesDTO.bikeStations,
-                bikeStationsError = action.favoritesDTO.bikeError
+                bikeStations = bikeStations,
+                bikeStationsStatus = bikeStationsStatus
             )
         }
         is TrainStationAction -> {
-            if (action.error) {
-                state = state.copy(
-                    lastStateChange = Date(),
-                    lastAction = TrainStationAction(),
-                    trainStationError = true,
-                    trainStationErrorMessage = action.errorMessage
-                )
-            } else {
-                state.trainArrivalsDTO.trainsArrivals.remove(action.trainStation.id)
-                state.trainArrivalsDTO.trainsArrivals.put(action.trainStation.id, action.trainArrival)
-                val newTrainArrivals = state.trainArrivalsDTO
-                state = state.copy(
-                    lastStateChange = Date(),
-                    lastAction = TrainStationAction(),
-                    trainArrivalsDTO = newTrainArrivals,
-                    trainStationError = false,
-                    trainStationArrival = action.trainArrival
-                )
+            val trainStationStatus = when {
+                action.error -> Status.FAILURE
+                else -> Status.SUCCESS
             }
+            if (trainStationStatus == Status.SUCCESS) {
+                state.trainArrivalsDTO.trainsArrivals.remove(action.trainStationId)
+                state.trainArrivalsDTO.trainsArrivals.put(action.trainStationId, action.trainArrival)
+            }
+
+            state = state.copy(
+                lastStateChange = Date(),
+                trainArrivalsDTO = state.trainArrivalsDTO,
+                trainStationStatus = trainStationStatus,
+                trainStationArrival = action.trainArrival
+            )
         }
         is BusStopArrivalsAction -> {
             state = state.copy(
                 lastStateChange = Date(),
-                lastAction = BusStopArrivalsAction(),
                 busStopError = action.error,
                 busStopErrorMessage = action.errorMessage,
                 busArrivalStopDTO = action.busArrivalStopDTO
             )
         }
         is BikeStationAction -> {
+            val bikeStations = if (action.error) state.bikeStations else action.bikeStations
+            val bikeStationsStatus = when {
+                action.error && bikeStations.isEmpty() -> Status.FULL_FAILURE
+                action.error && bikeStations.isNotEmpty() -> Status.FAILURE
+                else -> Status.SUCCESS
+            }
             state = state.copy(
                 lastStateChange = Date(),
-                lastAction = BikeStationAction(),
-                bikeStationsError = action.error,
+                bikeStationsStatus = bikeStationsStatus,
                 bikeStationsErrorMessage = action.errorMessage,
-                bikeStations = if (action.error) mainStore.state.bikeStations else action.bikeStations
+                bikeStations = bikeStations
             )
         }
         is BusRoutesAction -> {
+            val busRoutes = if (action.error) state.busRoutes else action.busRoutes
+            val status = when {
+                action.error && busRoutes.isEmpty() -> Status.FULL_FAILURE
+                action.error && busRoutes.isNotEmpty() -> Status.FAILURE
+                else -> Status.SUCCESS
+            }
             state = state.copy(
                 lastStateChange = Date(),
-                lastAction = BusRoutesAction(),
                 busRoutes = if (action.error) state.busRoutes else action.busRoutes,
-                busRoutesError = action.error,
+                busRoutesStatus = status,
                 busRoutesErrorMessage = action.errorMessage
             )
         }
         is AlertAction -> {
+            val alertsDTO = if (action.error) state.alertsDTO else action.routesAlertsDTO
+            val status = when {
+                action.error && alertsDTO.isEmpty() -> Status.FULL_FAILURE
+                action.error && alertsDTO.isNotEmpty() -> Status.FAILURE
+                else -> Status.SUCCESS
+            }
             state = state.copy(
                 lastStateChange = Date(),
-                lastAction = AlertAction(),
-                alertError = action.error,
+                alertStatus = status,
                 alertErrorMessage = action.errorMessage,
-                alertsDTO = if (action.error) mainStore.state.alertsDTO else action.routesAlertsDTO
+                alertsDTO = alertsDTO
             )
         }
+        is ForceUpdateFavorites -> state = state.copy(forceRefreshFavorites = action.forceUpdate)
         else -> Log.w(TAG, "Action $action unknown")
     }
     return state

@@ -24,6 +24,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils.TruncateAt
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -50,6 +51,8 @@ import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.redux.AppState
+import fr.cph.chicago.redux.ForceUpdateFavorites
+import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.TrainStationAction
 import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.service.PreferenceService
@@ -138,7 +141,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
             streetViewImage.setOnClickListener(GoogleStreetOnClickListener(position.latitude, position.longitude))
             streetViewImage.layoutParams = params
             swipeRefreshLayout.setOnRefreshListener {
-                mainStore.dispatch(TrainStationAction(trainStation))
+                mainStore.dispatch(TrainStationAction(trainStation.id))
                 // FIXME: Identify if it's the place holder or not. This is not great
                 if (streetViewImage.scaleType == ImageView.ScaleType.CENTER) {
                     loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
@@ -163,11 +166,14 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
     }
 
     override fun newState(state: AppState) {
-        if (state.trainStationError) {
-            util.showSnackBar(swipeRefreshLayout, state.trainStationErrorMessage)
-        } else {
-            hideAllArrivalViews()
-            state.trainStationArrival.trainEtas.forEach { drawAllArrivalsTrain(it) }
+        Log.d(TAG, "New state")
+        when (state.trainStationStatus) {
+            Status.SUCCESS -> {
+                hideAllArrivalViews()
+                state.trainStationArrival.trainEtas.forEach { drawAllArrivalsTrain(it) }
+            }
+            Status.FAILURE -> util.showSnackBar(swipeRefreshLayout, state.trainStationErrorMessage)
+            else -> Log.d(TAG, "Status not handled")
         }
         stopRefreshing()
     }
@@ -193,7 +199,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
                 checkBox.setOnCheckedChangeListener { _, isChecked -> preferenceService.saveTrainFilter(stationId, line, stop.direction, isChecked) }
                 checkBox.setOnClickListener {
                     if (checkBox.isChecked) {
-                        mainStore.dispatch(TrainStationAction(trainStation))
+                        mainStore.dispatch(TrainStationAction(trainStation.id))
                     }
                 }
                 checkBox.isChecked = preferenceService.getTrainFilter(stationId, line, stop.direction)
@@ -226,7 +232,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
         toolbar.inflateMenu(R.menu.main)
         toolbar.setOnMenuItemClickListener {
             swipeRefreshLayout.isRefreshing = true
-            mainStore.dispatch(TrainStationAction(trainStation))
+            mainStore.dispatch(TrainStationAction(trainStation.id))
             false
         }
 
@@ -250,7 +256,8 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
     override fun onResume() {
         super.onResume()
         mainStore.subscribe(this)
-        mainStore.dispatch(TrainStationAction(trainStation))
+        mainStore.dispatch(TrainStationAction(trainStation.id))
+        swipeRefreshLayout.isRefreshing = true
     }
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -276,7 +283,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
         swipeRefreshLayout.isRefreshing = false
     }
 
-    fun hideAllArrivalViews() {
+    private fun hideAllArrivalViews() {
         trainStation.lines
             .flatMap { trainLine -> TrainDirection.values().map { trainDirection -> trainLine.toString() + "_" + trainDirection.toString() } }
             .forEach { key ->
@@ -304,7 +311,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
      *
      * @param trainEta the trainEta
      */
-    fun drawAllArrivalsTrain(trainEta: TrainEta) {
+    private fun drawAllArrivalsTrain(trainEta: TrainEta) {
         val line = trainEta.routeName
         val stop = trainEta.stop
         val key = line.toString() + "_" + stop.direction.toString()
@@ -353,7 +360,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
         } else {
             preferenceService.addToTrainFavorites(stationId, scrollView)
             favoritesImage.setColorFilter(Color.yellowLineDark)
-            App.instance.refresh = true
+            mainStore.dispatch(ForceUpdateFavorites(forceUpdate = true))
         }
         isFavorite = !isFavorite
     }
@@ -362,5 +369,9 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
         val random = Random()
         val keys = stops.keys
         return keys.elementAt(random.nextInt(keys.size))
+    }
+
+    companion object {
+        private val TAG = TrainStationActivity::class.java.simpleName
     }
 }

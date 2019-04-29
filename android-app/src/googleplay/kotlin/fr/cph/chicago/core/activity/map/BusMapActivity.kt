@@ -64,7 +64,7 @@ class BusMapActivity : FragmentMapActivity() {
     @BindString(R.string.bundle_bus_bounds)
     lateinit var bundleBusBounds: String
 
-    private val observableUtil: RxUtil = RxUtil
+    private val rxUtil: RxUtil = RxUtil
     private val busService: BusService = BusService
 
     private var busMarkers: List<Marker> = listOf()
@@ -110,7 +110,7 @@ class BusMapActivity : FragmentMapActivity() {
     override fun setToolbar() {
         super.setToolbar()
         toolbar.setOnMenuItemClickListener { _ ->
-            observableUtil.createBusListSingle(busRouteId).subscribe(BusObserver(this@BusMapActivity, false, layout))
+            rxUtil.busForRouteId(busRouteId).subscribe(BusObserver(this@BusMapActivity, false, layout))
             false
         }
 
@@ -222,7 +222,7 @@ class BusMapActivity : FragmentMapActivity() {
                     if (!refreshingInfoWindow) {
                         selectedMarker = marker
                         val busId = marker.snippet
-                        observableUtil.createFollowBusSingle(busId)
+                        rxUtil.followBus(busId)
                             .subscribe(BusFollowObserver(this@BusMapActivity, layout, view!!, false))
                         status[marker] = false
                     }
@@ -240,7 +240,7 @@ class BusMapActivity : FragmentMapActivity() {
                     selectedMarker = marker
                     val runNumber = marker.snippet
                     val current = status[marker]
-                    observableUtil.createFollowBusSingle(runNumber)
+                    rxUtil.followBus(runNumber)
                         .subscribe(BusFollowObserver(this@BusMapActivity, layout, view!!, !current!!))
                     status[marker] = !current
                 }
@@ -252,7 +252,7 @@ class BusMapActivity : FragmentMapActivity() {
     @SuppressLint("CheckResult")
     private fun loadActivityData() {
         if (Util.isNetworkAvailable()) {
-            observableUtil.createBusListSingle(busRouteId).subscribe(BusObserver(this@BusMapActivity, true, layout))
+            rxUtil.busForRouteId(busRouteId).subscribe(BusObserver(this@BusMapActivity, true, layout))
             if (loadPattern) {
                 Observable.fromCallable {
                     val patterns: MutableList<BusPattern> = mutableListOf()

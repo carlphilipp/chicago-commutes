@@ -18,7 +18,7 @@ object SnackBarUtil {
                 ?.let { pair ->
                     snackbars.remove(pair)
                     snackbars.toList()
-                        .filter { p -> TimeUtil.isLessThan1SecondDifference(pair.first, p.first) }
+                        .filter { p -> TimeUtil.isLessThan2SecondDifference(pair.first, p.first) }
                         .let { result -> snackbars.removeAll(result) }
                     if (snackbars.size > 0) {
                         displaySnackBar(snackbars[0].second)

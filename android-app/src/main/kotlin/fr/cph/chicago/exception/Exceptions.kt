@@ -36,4 +36,6 @@ class CtaException(response: Any) : Exception("CTA error response [$response]")
 
 class ParserException(e: Exception) : TrackerException("Parse exception", e)
 
+class BaseException : RuntimeException()
+
 

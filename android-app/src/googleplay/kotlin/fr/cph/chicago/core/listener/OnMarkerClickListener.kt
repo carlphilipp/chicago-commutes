@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.listener
 
+import android.annotation.SuppressLint
 import android.util.Log
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
@@ -54,17 +55,19 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
         }
     }
 
+    @SuppressLint("CheckResult")
     private fun loadTrainArrivals(trainTrainStation: TrainStation) {
         nearbyFragment.slidingUpAdapter.updateTitleTrain(trainTrainStation.name)
-        observableUtil.trainStation(trainTrainStation)
+        observableUtil.trainStation(trainTrainStation.id)
             .subscribe(
                 { nearbyFragment.slidingUpAdapter.addTrainStation(it) },
                 { onError -> Log.e(TAG, onError.message, onError) })
     }
 
+    @SuppressLint("CheckResult")
     private fun loadBusArrivals(busStop: BusStop) {
         nearbyFragment.slidingUpAdapter.updateTitleBus(busStop.name)
-        observableUtil.createBusArrivalsObs(busStop)
+        observableUtil.busArrivals(busStop)
             .subscribe(
                 { result ->
                     val busArrivalRouteDTO = BusArrivalRouteDTO(BusArrivalRouteDTO.busComparator)
@@ -74,9 +77,10 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
             ) { onError -> Log.e(TAG, onError.message, onError) }
     }
 
+    @SuppressLint("CheckResult")
     private fun loadBikes(bikeStation: BikeStation) {
         nearbyFragment.slidingUpAdapter.updateTitleBike(bikeStation.name)
-        observableUtil.createBikeStationsSingle(bikeStation)
+        observableUtil.bikeOneStation(bikeStation)
             .subscribe(
                 { nearbyFragment.slidingUpAdapter.addBike(it) },
                 { onError -> Log.e(TAG, onError.message, onError) }

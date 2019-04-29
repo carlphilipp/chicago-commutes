@@ -31,7 +31,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.BindString
 import butterknife.BindView
 import fr.cph.chicago.R
-import fr.cph.chicago.core.App
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
@@ -39,6 +38,8 @@ import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.redux.AppState
 import fr.cph.chicago.redux.BikeStationAction
+import fr.cph.chicago.redux.ForceUpdateFavorites
+import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.Color
@@ -130,7 +131,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
     }
 
     override fun newState(state: AppState) {
-        if (state.bikeStationsError) {
+        if (state.bikeStationsStatus == Status.FAILURE || state.bikeStationsStatus == Status.FULL_FAILURE) {
             util.showSnackBar(swipeRefreshLayout, state.bikeStationsErrorMessage)
         } else {
             state.bikeStations
@@ -226,7 +227,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
             preferenceService.addToBikeFavorites(bikeStation.id, swipeRefreshLayout)
             preferenceService.addBikeRouteNameMapping(bikeStation.id.toString(), bikeStation.name)
             favoritesImage.setColorFilter(Color.yellowLineDark)
-            App.instance.refresh = true
+            mainStore.dispatch(ForceUpdateFavorites(forceUpdate = true))
             true
         }
     }

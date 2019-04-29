@@ -38,6 +38,7 @@ import fr.cph.chicago.core.model.dto.BusArrivalDTO
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.core.model.dto.FavoritesDTO
 import fr.cph.chicago.core.model.dto.FirstLoadDTO
+import fr.cph.chicago.core.model.dto.LocalDTO
 import fr.cph.chicago.core.model.dto.RouteAlertsDTO
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
@@ -65,43 +66,52 @@ object RxUtil {
     private val positionUtil = MapUtil
 
     // Local
-    private fun createLocalTrainDataSingle(): Single<SparseArray<TrainStation>> {
-        return Single.fromCallable { trainService.loadLocalTrainData() }
+    fun local(): Single<LocalDTO> {
+        // Train local data
+        val trainLocalData: Single<Boolean> = Single.fromCallable { trainService.loadLocalTrainData() }
+            .map { it.size() == 0 }
             .subscribeOn(Schedulers.computation())
             .onErrorReturn { throwable ->
                 Log.e(TAG, "Could not create local train data", throwable)
-                SparseArray()
+                true
             }
-    }
 
-    private fun createLocalBusDataSingle(): Single<Any> {
-        return Single.fromCallable { busService.loadLocalBusData() }
+        // Bus local data
+        val busLocalData: Single<Boolean> = Single.fromCallable { busService.loadLocalBusData() }
+            .map { false }
             .subscribeOn(Schedulers.computation())
             .onErrorReturn { throwable ->
                 Log.e(TAG, "Could not create local bus data", throwable)
-                Any()
+                true
             }
+        return Single.zip(
+            trainLocalData,
+            busLocalData,
+            BiFunction { trainLocalError: Boolean, busLocalError: Boolean ->
+                LocalDTO(trainLocalError, busLocalError)
+            }
+        )
     }
 
     // Http call
-    fun createBusArrivalObs(requestRt: String, busRouteId: String, requestStopId: String, busStopId: Int, bound: String, boundTitle: String): Single<BusArrivalStopDTO> {
+    fun busArrivalsForStop(requestRt: String, busRouteId: String, requestStopId: String, busStopId: Int, bound: String, boundTitle: String): Single<BusArrivalStopDTO> {
         return createSingleFromCallable(Callable { busService.loadBusArrivals(requestRt, busRouteId, requestStopId, busStopId, bound, boundTitle) })
     }
 
-    fun trainStation(trainStation: TrainStation): Single<TrainArrival> {
-        return createSingleFromCallable(Callable { trainService.loadStationTrainArrival(trainStation.id) })
+    fun trainStation(trainStationId: Int): Single<TrainArrival> {
+        return createSingleFromCallable(Callable { trainService.loadStationTrainArrival(trainStationId) })
     }
 
-    fun createBusArrivalsObs(busStop: BusStop): Single<List<BusArrival>> {
+    fun busArrivals(busStop: BusStop): Single<List<BusArrival>> {
         return createSingleFromCallable(Callable { busService.loadAroundBusArrivals(busStop) })
             .onErrorReturn(handleError())
     }
 
-    fun bikeStation(): Single<List<BikeStation>> {
+    fun bikeAllStations(): Single<List<BikeStation>> {
         return createSingleFromCallable(Callable { bikeService.loadAllBikeStations() })
     }
 
-    fun createBikeStationsSingle(bikeStation: BikeStation): Single<BikeStation> {
+    fun bikeOneStation(bikeStation: BikeStation): Single<BikeStation> {
         return createSingleFromCallable(Callable { bikeService.findBikeStation(bikeStation.id) })
             .onErrorReturn { throwable ->
                 Log.e(TAG, "Could not load bike stations", throwable)
@@ -109,54 +119,54 @@ object RxUtil {
             }
     }
 
-    fun createBusStopsForRouteBoundSingle(route: String, bound: String): Single<List<BusStop>> {
+    fun busStopsForRouteBound(route: String, bound: String): Single<List<BusStop>> {
         return createSingleFromCallable(Callable { busService.loadAllBusStopsForRouteBound(route, bound) })
     }
 
-    fun createBusDirectionsSingle(busRouteId: String): Single<BusDirections> {
+    fun busDirections(busRouteId: String): Single<BusDirections> {
         return createSingleFromCallable(Callable { busService.loadBusDirections(busRouteId) })
     }
 
-    fun createFollowBusSingle(busId: String): Single<List<BusArrival>> {
+    fun followBus(busId: String): Single<List<BusArrival>> {
         return createSingleFromCallable(Callable { busService.loadFollowBus(busId) })
             .onErrorReturn(handleError())
     }
 
-    fun createBusPatternSingle(busRouteId: String, bound: String): Single<BusPattern> {
+    fun busPatterns(busRouteId: String, bound: String): Single<BusPattern> {
         return createSingleFromCallable(Callable { busService.loadBusPattern(busRouteId, bound) })
     }
 
-    fun createBusListSingle(busRouteId: String): Single<List<Bus>> {
+    fun busForRouteId(busRouteId: String): Single<List<Bus>> {
         return createSingleFromCallable(Callable { busService.loadBus(busRouteId) })
             .onErrorReturn(handleError())
     }
 
-    fun createTrainLocationSingle(line: String): Single<List<Train>> {
+    fun trainLocations(line: String): Single<List<Train>> {
         return createSingleFromCallable(Callable { trainService.getTrainLocation(line) })
             .onErrorReturn(handleError())
     }
 
-    fun createTrainPatternSingle(line: String): Single<List<TrainStationPattern>> {
+    fun trainPatterns(line: String): Single<List<TrainStationPattern>> {
         return createSingleFromCallable(Callable { trainService.readPatterns(TrainLine.fromXmlString(line)) })
             .onErrorReturn(handleError())
     }
 
-    fun createTrainStationAroundSingle(position: Position): Single<List<TrainStation>> {
+    fun trainStationAround(position: Position): Single<List<TrainStation>> {
         return createSingleFromCallable(Callable { trainService.readNearbyStation(position) })
             .onErrorReturn(handleError())
     }
 
-    fun createBusStopsAroundSingle(position: Position): Single<List<BusStop>> {
+    fun busStopsAround(position: Position): Single<List<BusStop>> {
         return createSingleFromCallable(Callable { busService.getBusStopsAround(position) })
             .onErrorReturn(handleError())
     }
 
-    fun createBikeStationAroundSingle(position: Position, bikeStations: List<BikeStation>): Single<List<BikeStation>> {
+    fun bikeStationAround(position: Position, bikeStations: List<BikeStation>): Single<List<BikeStation>> {
         return createSingleFromCallable(Callable { positionUtil.readNearbyStation(bikeStations, position) })
             .onErrorReturn(handleError())
     }
 
-    fun createLoadTrainEtaSingle(runNumber: String, loadAll: Boolean): Single<List<TrainEta>> {
+    fun trainEtas(runNumber: String, loadAll: Boolean): Single<List<TrainEta>> {
         return createSingleFromCallable(Callable { trainService.loadTrainEta(runNumber, loadAll) })
             .onErrorReturn(handleError())
     }
@@ -165,11 +175,11 @@ object RxUtil {
         return createSingleFromCallable(Callable { alertService.getAlerts() })
     }
 
-    fun createAlertRouteSingle(id: String): Single<List<RouteAlertsDTO>> {
+    fun routeAlertForId(id: String): Single<List<RouteAlertsDTO>> {
         return createSingleFromCallable(Callable { alertService.getRouteAlert(id) })
     }
 
-    private fun createFavoritesTrainArrivalsSingle(): Single<TrainArrivalDTO> {
+    private fun favoritesTrainArrivalDTO(): Single<TrainArrivalDTO> {
         return createSingleFromCallable(Callable { TrainArrivalDTO(trainService.loadFavoritesTrain(), false) })
             .onErrorReturn { throwable ->
                 Log.e(TAG, "Could not load favorites trains", throwable)
@@ -177,7 +187,7 @@ object RxUtil {
             }
     }
 
-    private fun createFavoritesBusArrivalsSingle(): Single<BusArrivalDTO> {
+    private fun favoritesBusArrivalDTO(): Single<BusArrivalDTO> {
         return createSingleFromCallable(Callable { BusArrivalDTO(busService.loadFavoritesBuses(), false) })
             .onErrorReturn { throwable ->
                 Log.e(TAG, "Could not load bus arrivals", throwable)
@@ -185,22 +195,13 @@ object RxUtil {
             }
     }
 
-    fun local(): Single<Unit> {
-        // Train local data
-        val trainLocalData = createLocalTrainDataSingle()
-
-        // Bus local data
-        val busLocalData = createLocalBusDataSingle()
-        return Single.zip(trainLocalData, busLocalData, BiFunction { _: Any, _: Any -> })
-    }
-
     // Combined
     fun baseFavorites(): Single<FavoritesDTO> {
         // Train online favorites
-        val favoritesTrainArrivals = createFavoritesTrainArrivalsSingle().observeOn(Schedulers.computation())
+        val favoritesTrainArrivals = favoritesTrainArrivalDTO().observeOn(Schedulers.computation())
 
         // Bus online favorites
-        val favoritesBusArrivals = createFavoritesBusArrivalsSingle().observeOn(Schedulers.computation())
+        val favoritesBusArrivals = favoritesBusArrivalDTO().observeOn(Schedulers.computation())
 
         return Single.zip(
             favoritesTrainArrivals,
@@ -212,11 +213,11 @@ object RxUtil {
 
     fun favorites(): Single<FavoritesDTO> {
         // Train online favorites
-        val trainArrivalsObservable = createFavoritesTrainArrivalsSingle()
+        val trainArrivalsObservable = favoritesTrainArrivalDTO()
         // Bus online favorites
-        val busArrivalsObservable = createFavoritesBusArrivalsSingle()
+        val busArrivalsObservable = favoritesBusArrivalDTO()
         // Bikes online all stations
-        val bikeStationsObservable = bikeStation().onErrorReturn(handleError())
+        val bikeStationsObservable = bikeAllStations().onErrorReturn(handleError())
         return Single.zip(busArrivalsObservable, trainArrivalsObservable, bikeStationsObservable,
             Function3 { busArrivalDTO: BusArrivalDTO, trainArrivalsDTO: TrainArrivalDTO, bikeStations: List<BikeStation>
                 ->

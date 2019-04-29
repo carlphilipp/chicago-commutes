@@ -28,6 +28,8 @@ import fr.cph.chicago.core.model.TrainArrival
 import org.apache.commons.lang3.StringUtils
 import java.util.TreeMap
 
+data class LocalDTO(val trainLocalError: Boolean, val busLocalError: Boolean)
+
 data class BusArrivalDTO(val busArrivals: List<BusArrival>, val error: Boolean)
 
 data class TrainArrivalDTO(val trainsArrivals: SparseArray<TrainArrival>, val error: Boolean)

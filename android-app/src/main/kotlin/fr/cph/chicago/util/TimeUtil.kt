@@ -7,8 +7,8 @@ import java.util.Date
 
 object TimeUtil {
 
-    fun isLessThan1SecondDifference(old: Date, new: Date): Boolean {
-        return new.time - old.time < 1000L
+    fun isLessThan2SecondDifference(old: Date, new: Date): Boolean {
+        return new.time - old.time < 2000L
     }
 
     /**

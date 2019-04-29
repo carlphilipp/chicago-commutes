@@ -38,7 +38,7 @@ import io.reactivex.plugins.RxJavaPlugins
  */
 class App : Application() {
 
-    var refresh: Boolean = false // TODO put in redux state
+    //var refresh: Boolean = false // TODO put in redux state
 
     val screenWidth: Int by lazy {
         screenSize[0]

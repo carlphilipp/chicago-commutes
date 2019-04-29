@@ -5,7 +5,6 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.TrainArrival
-import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusArrivalDTO
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.core.model.dto.FavoritesDTO
@@ -14,6 +13,7 @@ import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import org.rekotlin.Action
 
 data class BaseAction(
+    val localError: Boolean = false,
     val trainArrivalsDTO: TrainArrivalDTO = TrainArrivalDTO(SparseArray(), false),
     val busArrivalsDTO: BusArrivalDTO = BusArrivalDTO(listOf(), false)
 ) : Action
@@ -23,8 +23,8 @@ data class FavoritesAction(
         trainArrivalDTO = TrainArrivalDTO(SparseArray(), false),
         busArrivalDTO = BusArrivalDTO(listOf(), false),
         bikeError = false,
-        bikeStations = listOf()
-    )
+        bikeStations = listOf()),
+    val forceUpdate: Boolean = false
 ) : Action
 
 // Bus Routes
@@ -44,7 +44,7 @@ data class BusRoutesAndBikeStationAction(
 
 // Train station activity
 data class TrainStationAction(
-    val trainStation: TrainStation = TrainStation.buildEmptyStation(),
+    val trainStationId: Int = 0,
     val trainArrival: TrainArrival = TrainArrival(),
     val error: Boolean = false,
     val errorMessage: Int = R.string.message_something_went_wrong
@@ -77,3 +77,5 @@ data class AlertAction(
     val error: Boolean = false,
     val errorMessage: Int = R.string.message_something_went_wrong
 ) : Action
+
+data class ForceUpdateFavorites(val forceUpdate: Boolean) : Action

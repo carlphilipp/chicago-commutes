@@ -265,9 +265,9 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
             finalPosition = chicagoPosition
         }
 
-        val trainStationAroundObservable = observableUtil.createTrainStationAroundSingle(finalPosition)
-        val busStopsAroundObservable = observableUtil.createBusStopsAroundSingle(finalPosition)
-        val bikeStationsObservable = observableUtil.createBikeStationAroundSingle(finalPosition, bikeStations)
+        val trainStationAroundObservable = observableUtil.trainStationAround(finalPosition)
+        val busStopsAroundObservable = observableUtil.busStopsAround(finalPosition)
+        val bikeStationsObservable = observableUtil.bikeStationAround(finalPosition, bikeStations)
         Single.zip(trainStationAroundObservable, busStopsAroundObservable, bikeStationsObservable, Function3 { trains: List<TrainStation>, buses: List<BusStop>, divvies: List<BikeStation> ->
             googleMapUtil.centerMap(mapFragment, finalPosition)
             updateMarkersAndModel(buses, trains, divvies)
