@@ -46,7 +46,7 @@ import org.rekotlin.StoreSubscriber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusFragment : Fragment(R.layout.fragment_bus_bike), StoreSubscriber<AppState> {
+class BusFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<AppState> {
 
     @BindView(R.id.fragment_bike_swipe_refresh_layout)
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
@@ -54,17 +54,18 @@ class BusFragment : Fragment(R.layout.fragment_bus_bike), StoreSubscriber<AppSta
     lateinit var successLayout: LinearLayout
     @BindView(R.id.failure)
     lateinit var failureLayout: RelativeLayout
-    @BindView(R.id.filter)
-    lateinit var textFilter: EditText
     @BindView(R.id.list)
     lateinit var listView: ListView
+    @BindView(R.id.filter)
+    lateinit var filter: EditText
     @BindView(R.id.retry_button)
     lateinit var retryButton: Button
 
     private lateinit var busAdapter: BusAdapter
-    private var busRoutes = listOf<BusRoute>()
 
     override fun onCreateView(savedInstanceState: Bundle?) {
+        busAdapter = BusAdapter()
+        listView.adapter = busAdapter
         swipeRefreshLayout.setOnRefreshListener { startRefreshing() }
         mainActivity.toolbar.setOnMenuItemClickListener { startRefreshing(); true }
         retryButton.setOnClickListener { startRefreshing() }
@@ -89,15 +90,10 @@ class BusFragment : Fragment(R.layout.fragment_bus_bike), StoreSubscriber<AppSta
             state.lastAction is BusRoutesAction && state.busRoutesError -> {
                 Util.showSnackBar(swipeRefreshLayout, state.busRoutesErrorMessage)
             }
-            state.busRoutesError -> {
-                showFailureLayout()
-            }
-            else -> {
-                this.busRoutes = state.busRoutes
-                showSuccessLayout()
-                displayData()
-            }
+            state.busRoutesError -> showFailureLayout()
+            else -> showSuccessLayout()
         }
+        updateData(state.busRoutes)
         swipeRefreshLayout.isRefreshing = false
     }
 
@@ -116,25 +112,24 @@ class BusFragment : Fragment(R.layout.fragment_bus_bike), StoreSubscriber<AppSta
         mainStore.dispatch(BusRoutesAction())
     }
 
-    private fun displayData() {
-        busAdapter = BusAdapter(this.busRoutes)
-        listView.adapter = busAdapter
-        textFilter.addTextChangedListener(object : TextWatcher {
+    private fun updateData(busRoutes: List<BusRoute>) {
+        busAdapter.updateBusRoutes(busRoutes)
+        busAdapter.notifyDataSetChanged()
+        filter.addTextChangedListener(object : TextWatcher {
 
-            private var busRoutes: List<BusRoute> = listOf()
+            private var busRoutesLocal: List<BusRoute> = listOf()
 
             override fun beforeTextChanged(c: CharSequence, start: Int, count: Int, after: Int) {
-                busRoutes = listOf()
+                busRoutesLocal = listOf()
             }
 
             override fun onTextChanged(c: CharSequence, start: Int, before: Int, count: Int) {
-                val busRoutes = this@BusFragment.busRoutes
                 val trimmed = c.toString().trim { it <= ' ' }
-                this.busRoutes = busRoutes.filter { (id, name) -> StringUtils.containsIgnoreCase(id, trimmed) || StringUtils.containsIgnoreCase(name, trimmed) }
+                this.busRoutesLocal = busRoutes.filter { (id, name) -> StringUtils.containsIgnoreCase(id, trimmed) || StringUtils.containsIgnoreCase(name, trimmed) }
             }
 
             override fun afterTextChanged(s: Editable) {
-                busAdapter.updateBusRoutes(this.busRoutes)
+                busAdapter.updateBusRoutes(this.busRoutesLocal)
                 busAdapter.notifyDataSetChanged()
             }
         })

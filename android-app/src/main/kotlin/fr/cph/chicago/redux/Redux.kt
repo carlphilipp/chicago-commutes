@@ -15,7 +15,8 @@ val mainStore = Store(
         trainStationMiddleware,
         busStopArrivalsMiddleware,
         bikeStationMiddleware,
-        busRoutesMiddleware
+        busRoutesMiddleware,
+        alertMiddleware
     )
 )
 
@@ -102,8 +103,16 @@ fun reducer(action: Action, oldState: AppState?): AppState {
                 busRoutesErrorMessage = action.errorMessage
             )
         }
+        is AlertAction -> {
+            state = state.copy(
+                lastStateChange = Date(),
+                lastAction = AlertAction(),
+                alertError = action.error,
+                alertErrorMessage = action.errorMessage,
+                alertsDTO = if (action.error) mainStore.state.alertsDTO else action.routesAlertsDTO
+            )
+        }
         else -> Log.w(TAG, "Action $action unknown")
-
     }
     return state
 }

@@ -183,7 +183,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
                 setBarTitle(ctaAlert)
                 alertFragment = alertFragment ?: AlertFragment.newInstance(position + 1)
                 supportFragmentManager.beginTransaction().replace(R.id.container, alertFragment as androidx.fragment.app.Fragment).commit()
-                closeDrawerAndUpdateActionBar(false)
+                closeDrawerAndUpdateActionBar(true)
             }
             R.id.rate_this_app -> rateUtil.rateThisApp(this)
             R.id.settings -> {

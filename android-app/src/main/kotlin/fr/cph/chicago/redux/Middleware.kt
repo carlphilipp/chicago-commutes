@@ -49,8 +49,7 @@ internal val busRoutesAndBikeStationMiddleware: Middleware<StateType> = { _, _ -
                                 busRoutesError = busRoutesError,
                                 bikeStationsError = bikeStationsError,
                                 busRoutes = busRoutes,
-                                bikeStations = bikeStations)
-                            )
+                                bikeStations = bikeStations))
                         },
                         { throwable ->
                             Log.e(TAG, throwable.message, throwable)
@@ -71,15 +70,10 @@ internal val busRoutesMiddleware: Middleware<StateType> = { _, _ ->
                         { busRoutes -> next(BusRoutesAction(error = false, busRoutes = busRoutes)) },
                         { throwable ->
                             Log.e(TAG, throwable.message, throwable)
-                            val errorMessage = if (throwable is ConnectException)
-                                R.string.message_connect_error
-                            else
-                                R.string.message_something_went_wrong
                             next(
                                 BusRoutesAction(
                                     error = true,
-                                    errorMessage = errorMessage)
-                            )
+                                    errorMessage = buildErrorMessage(throwable)))
                         }
                     )
             } ?: next(action)
@@ -105,8 +99,7 @@ internal val favoritesMiddleware: Middleware<StateType> = { _, _ ->
                             trainArrivalDTO = trainArrivals,
                             busArrivalDTO = busArrivals,
                             bikeStations = if (favoritesDTO.bikeError) mainStore.state.bikeStations else favoritesDTO.bikeStations,
-                            bikeError = favoritesDTO.bikeError
-                        )
+                            bikeError = favoritesDTO.bikeError)
                         next(FavoritesAction(favoritesDTO = newFavorites))
                     }
             } ?: next(action)
@@ -128,15 +121,10 @@ internal val trainStationMiddleware: Middleware<StateType> = { _, _ ->
                         },
                         { throwable ->
                             Log.e(TAG, throwable.message, throwable)
-                            val errorMessage = if (throwable is ConnectException)
-                                R.string.message_connect_error
-                            else
-                                R.string.message_something_went_wrong
                             next(TrainStationAction(
                                 trainStation = action.trainStation,
                                 error = true,
-                                errorMessage = errorMessage)
-                            )
+                                errorMessage = buildErrorMessage(throwable)))
                         }
                     )
             } ?: next(action)
@@ -153,14 +141,9 @@ internal val busStopArrivalsMiddleware: Middleware<StateType> = { _, _ ->
                         { busArrivalStopDTO -> next(BusStopArrivalsAction(busArrivalStopDTO = busArrivalStopDTO)) },
                         { throwable ->
                             Log.e(TAG, throwable.message, throwable)
-                            val errorMessage = if (throwable is ConnectException)
-                                R.string.message_connect_error
-                            else
-                                R.string.message_something_went_wrong
                             next(BusStopArrivalsAction(
                                 error = true,
-                                errorMessage = errorMessage)
-                            )
+                                errorMessage = buildErrorMessage(throwable)))
                         }
                     )
             } ?: next(action)
@@ -177,14 +160,9 @@ internal val bikeStationMiddleware: Middleware<StateType> = { _, _ ->
                         { bikeStations -> next(BikeStationAction(bikeStations = bikeStations)) },
                         { throwable ->
                             Log.e(TAG, throwable.message, throwable)
-                            val errorMessage = if (throwable is ConnectException)
-                                R.string.message_connect_error
-                            else
-                                R.string.message_something_went_wrong
                             next(BikeStationAction(
                                 error = true,
-                                errorMessage = errorMessage)
-                            )
+                                errorMessage = buildErrorMessage(throwable)))
                         }
                     )
             } ?: next(action)
@@ -192,5 +170,30 @@ internal val bikeStationMiddleware: Middleware<StateType> = { _, _ ->
     }
 }
 
+internal val alertMiddleware: Middleware<StateType> = { _, _ ->
+    { next ->
+        { action ->
+            (action as? AlertAction)?.let {
+                RxUtil.alerts()
+                    .subscribe(
+                        { routesAlertsDTO -> next(AlertAction(routesAlertsDTO = routesAlertsDTO)) },
+                        { throwable ->
+                            Log.e(TAG, throwable.message, throwable)
+                            next(AlertAction(
+                                error = true,
+                                errorMessage = buildErrorMessage(throwable)))
+                        }
+                    )
+            } ?: next(action)
+        }
+    }
+}
+
+private fun buildErrorMessage(throwable: Throwable): Int {
+    return if (throwable is ConnectException)
+        R.string.message_connect_error
+    else
+        R.string.message_something_went_wrong
+}
 
 private const val TAG = "Middleware"

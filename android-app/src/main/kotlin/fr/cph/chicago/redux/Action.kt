@@ -9,6 +9,7 @@ import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusArrivalDTO
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.core.model.dto.FavoritesDTO
+import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import org.rekotlin.Action
 
@@ -67,6 +68,12 @@ data class BusStopArrivalsAction(
 // Bike station
 data class BikeStationAction(
     val bikeStations: List<BikeStation> = listOf(),
+    val error: Boolean = false,
+    val errorMessage: Int = R.string.message_something_went_wrong
+) : Action
+
+data class AlertAction(
+    val routesAlertsDTO: List<RoutesAlertsDTO> = listOf(),
     val error: Boolean = false,
     val errorMessage: Int = R.string.message_something_went_wrong
 ) : Action

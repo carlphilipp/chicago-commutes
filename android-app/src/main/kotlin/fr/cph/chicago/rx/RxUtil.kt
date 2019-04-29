@@ -161,9 +161,8 @@ object RxUtil {
             .onErrorReturn(handleError())
     }
 
-    fun createAlertRoutesSingle(): Single<List<RoutesAlertsDTO>> {
+    fun alerts(): Single<List<RoutesAlertsDTO>> {
         return createSingleFromCallable(Callable { alertService.getAlerts() })
-            .onErrorReturn(handleError())
     }
 
     fun createAlertRouteSingle(id: String): Single<List<RouteAlertsDTO>> {

@@ -19,101 +19,141 @@
 
 package fr.cph.chicago.core.fragment
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
+import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.RelativeLayout
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.AlertActivity
 import fr.cph.chicago.core.adapter.AlertAdapter
 import fr.cph.chicago.core.model.dto.AlertType
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
-import fr.cph.chicago.rx.RxUtil
+import fr.cph.chicago.redux.AlertAction
+import fr.cph.chicago.redux.AppState
+import fr.cph.chicago.redux.mainStore
+import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
+import org.rekotlin.StoreSubscriber
 
 /**
- * Train Fragment
+ * Alert Fragment
  *
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class AlertFragment : Fragment(R.layout.fragment_alert) {
+class AlertFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<AppState> {
 
-    @BindView(R.id.alert_filter)
-    lateinit var textFilter: EditText
-    @BindView(R.id.alert_list)
+    @BindView(R.id.fragment_bike_swipe_refresh_layout)
+    lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    @BindView(R.id.success)
+    lateinit var successLayout: LinearLayout
+    @BindView(R.id.failure)
+    lateinit var failureLayout: RelativeLayout
+    @BindView(R.id.list)
     lateinit var listView: ListView
-    @BindView(R.id.loading_relativeLayout)
-    lateinit var loading: RelativeLayout
+    @BindView(R.id.filter)
+    lateinit var filter: EditText
+    @BindView(R.id.retry_button)
+    lateinit var retryButton: Button
 
-    @SuppressLint("CheckResult")
+    private lateinit var alertAdapter: AlertAdapter
+
     override fun onCreateView(savedInstanceState: Bundle?) {
-        loadingState()
-        RxUtil.createAlertRoutesSingle()
-            .subscribe { routesAlerts ->
-                val alertAdapter = AlertAdapter(routesAlerts)
-                listView.adapter = alertAdapter
-                listView.setOnItemClickListener { _, _, position, _ ->
-                    val (id1, routeName, _, _, _, _, alertType) = alertAdapter.getItem(position)
-                    val intent = Intent(context, AlertActivity::class.java)
-                    val extras = Bundle()
-                    extras.putString("routeId", id1)
-                    extras.putString("title", if (alertType === AlertType.TRAIN)
-                        routeName
-                    else
-                        "$id1 - $routeName")
-                    intent.putExtras(extras)
-                    startActivity(intent)
-                }
-                textFilter.addTextChangedListener(object : TextWatcher {
-
-                    var routesAlertsDTOS: List<RoutesAlertsDTO> = listOf()
-
-                    override fun beforeTextChanged(c: CharSequence, start: Int, count: Int, after: Int) {
-                        this.routesAlertsDTOS = listOf()
-                    }
-
-                    override fun onTextChanged(c: CharSequence, start: Int, before: Int, count: Int) {
-                        val trimmed = c.toString().trim { it <= ' ' }
-                        routesAlertsDTOS = routesAlerts.filter { (id, routeName) ->
-                            StringUtils.containsIgnoreCase(routeName, trimmed) || StringUtils.containsIgnoreCase(id, trimmed)
-                        }
-                    }
-
-                    override fun afterTextChanged(s: Editable) {
-                        alertAdapter.setAlerts(routesAlertsDTOS)
-                        alertAdapter.notifyDataSetChanged()
-                    }
-                })
-                successState()
-            }
+        alertAdapter = AlertAdapter()
+        listView.adapter = alertAdapter
+        swipeRefreshLayout.setOnRefreshListener { startRefreshing() }
+        mainActivity.toolbar.setOnMenuItemClickListener { startRefreshing(); true }
+        retryButton.setOnClickListener { startRefreshing() }
     }
 
     override fun onResume() {
         super.onResume()
-        textFilter.setText("")
+        mainStore.subscribe(this)
+        if (mainStore.state.alertsDTO.isEmpty()) {
+            swipeRefreshLayout.isRefreshing = true
+            mainStore.dispatch(AlertAction())
+        }
     }
 
-    private fun successState() {
-        textFilter.visibility = ListView.VISIBLE
-        listView.visibility = ListView.VISIBLE
-
-        loading.visibility = RelativeLayout.INVISIBLE
+    override fun onPause() {
+        super.onPause()
+        mainStore.unsubscribe(this)
     }
 
-    private fun loadingState() {
-        loading.visibility = RelativeLayout.VISIBLE
-
-        textFilter.visibility = ListView.INVISIBLE
-        listView.visibility = ListView.INVISIBLE
+    override fun newState(state: AppState) {
+        when {
+            state.lastAction is AlertAction && state.alertError && state.alertsDTO.isEmpty() -> {
+                showFailureLayout()
+            }
+            state.lastAction is AlertAction && state.alertError -> {
+                Util.showSnackBar(swipeRefreshLayout, state.alertErrorMessage)
+            }
+            state.alertError -> showFailureLayout()
+            else -> showSuccessLayout()
+        }
+        updateData(state.alertsDTO)
+        swipeRefreshLayout.isRefreshing = false
     }
 
-    // TODO: Create an error state
+    private fun updateData(alertDTO: List<RoutesAlertsDTO>) {
+        alertAdapter.setAlerts(alertDTO)
+        alertAdapter.notifyDataSetChanged()
+        listView.setOnItemClickListener { _, _, position, _ ->
+            val (id1, routeName, _, _, _, _, alertType) = alertAdapter.getItem(position)
+            val intent = Intent(context, AlertActivity::class.java)
+            val extras = Bundle()
+            extras.putString("routeId", id1)
+            extras.putString("title", if (alertType === AlertType.TRAIN)
+                routeName
+            else
+                "$id1 - $routeName")
+            intent.putExtras(extras)
+            startActivity(intent)
+        }
+        filter.addTextChangedListener(object : TextWatcher {
+
+            var routesAlertsDTOS: List<RoutesAlertsDTO> = listOf()
+
+            override fun beforeTextChanged(c: CharSequence, start: Int, count: Int, after: Int) {
+                this.routesAlertsDTOS = listOf()
+            }
+
+            override fun onTextChanged(c: CharSequence, start: Int, before: Int, count: Int) {
+                val trimmed = c.toString().trim { it <= ' ' }
+                routesAlertsDTOS = alertDTO.filter { (id, routeName) ->
+                    StringUtils.containsIgnoreCase(routeName, trimmed) || StringUtils.containsIgnoreCase(id, trimmed)
+                }
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                alertAdapter.setAlerts(routesAlertsDTOS)
+                alertAdapter.notifyDataSetChanged()
+            }
+        })
+    }
+
+    private fun showSuccessLayout() {
+        successLayout.visibility = View.VISIBLE
+        failureLayout.visibility = View.GONE
+    }
+
+    private fun showFailureLayout() {
+        successLayout.visibility = View.GONE
+        failureLayout.visibility = View.VISIBLE
+    }
+
+    private fun startRefreshing() {
+        swipeRefreshLayout.isRefreshing = true
+        mainStore.dispatch(AlertAction())
+    }
 
     companion object {
 

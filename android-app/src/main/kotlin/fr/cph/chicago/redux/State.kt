@@ -7,6 +7,7 @@ import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.dto.BusArrivalDTO
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
+import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import org.rekotlin.Action
 import org.rekotlin.ReKotlinInit
@@ -40,5 +41,10 @@ data class AppState(
     // Bus stop activity state
     val busStopError: Boolean = false,
     val busStopErrorMessage: Int = R.string.message_something_went_wrong,
-    val busArrivalStopDTO: BusArrivalStopDTO = BusArrivalStopDTO()
+    val busArrivalStopDTO: BusArrivalStopDTO = BusArrivalStopDTO(),
+
+    // Alerts
+    val alertError: Boolean = false,
+    val alertErrorMessage: Int = R.string.message_something_went_wrong,
+    val alertsDTO: List<RoutesAlertsDTO> = listOf()
 ) : StateType

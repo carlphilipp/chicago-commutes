@@ -46,7 +46,7 @@ import org.rekotlin.StoreSubscriber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BikeFragment : Fragment(R.layout.fragment_bus_bike), StoreSubscriber<AppState> {
+class BikeFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<AppState> {
 
     @BindView(R.id.fragment_bike_swipe_refresh_layout)
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
@@ -55,16 +55,17 @@ class BikeFragment : Fragment(R.layout.fragment_bus_bike), StoreSubscriber<AppSt
     @BindView(R.id.failure)
     lateinit var failureLayout: RelativeLayout
     @BindView(R.id.list)
-    lateinit var bikeListView: ListView
+    lateinit var listView: ListView
     @BindView(R.id.filter)
     lateinit var filter: EditText
     @BindView(R.id.retry_button)
     lateinit var retryButton: Button
 
     private lateinit var bikeAdapter: BikeAdapter
-    private var bikeStations = listOf<BikeStation>()
 
     override fun onCreateView(savedInstanceState: Bundle?) {
+        bikeAdapter = BikeAdapter()
+        listView.adapter = bikeAdapter
         swipeRefreshLayout.setOnRefreshListener { startRefreshing() }
         mainActivity.toolbar.setOnMenuItemClickListener { startRefreshing(); true }
         retryButton.setOnClickListener { startRefreshing() }
@@ -73,6 +74,9 @@ class BikeFragment : Fragment(R.layout.fragment_bus_bike), StoreSubscriber<AppSt
     override fun onResume() {
         super.onResume()
         mainStore.subscribe(this)
+        if (mainStore.state.alertsDTO.isEmpty()) {
+            mainStore.dispatch(BikeStationAction())
+        }
     }
 
     override fun onPause() {
@@ -85,36 +89,34 @@ class BikeFragment : Fragment(R.layout.fragment_bus_bike), StoreSubscriber<AppSt
             state.lastAction is BikeStationAction && state.bikeStationsError -> {
                 Util.showSnackBar(swipeRefreshLayout, state.bikeStationsErrorMessage)
             }
-            state.bikeStationsError -> {
-                showFailureLayout()
-            }
+            state.bikeStationsError -> showFailureLayout()
             else -> {
-                this.bikeStations = state.bikeStations
                 showSuccessLayout()
-                displayData()
+                updateData(state.bikeStations)
             }
         }
         swipeRefreshLayout.isRefreshing = false
     }
 
-    private fun displayData() {
-        bikeAdapter = BikeAdapter(bikeStations)
-        bikeListView.adapter = bikeAdapter
+    private fun updateData(bikeStations: List<BikeStation>) {
+        bikeAdapter.updateBikeStations(bikeStations)
+        bikeAdapter.notifyDataSetChanged()
+
         filter.addTextChangedListener(object : TextWatcher {
 
-            private lateinit var divvyStations: List<BikeStation>
+            private lateinit var bikeStationsLocal: List<BikeStation>
 
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-                divvyStations = listOf()
+                bikeStationsLocal = listOf()
             }
 
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                divvyStations = this@BikeFragment.bikeStations
+                bikeStationsLocal = bikeStations
                     .filter { station -> StringUtils.containsIgnoreCase(station.name, s.toString().trim { it <= ' ' }) }
             }
 
             override fun afterTextChanged(s: Editable) {
-                bikeAdapter.updateBikeStations(this.divvyStations)
+                bikeAdapter.updateBikeStations(this.bikeStationsLocal)
                 bikeAdapter.notifyDataSetChanged()
             }
         })
