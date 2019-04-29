@@ -1081,7 +1081,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 1608,1608,"Michigan & 32nd Street","Michigan & 32nd Street, Southbound, Westside of the Street",41.836222,-87.623465,0,,1
 1609,1609,"Michigan & 33rd Street","Michigan & 33rd Street, Southbound, Southwest Corner",41.83449802,-87.62343531,0,,1
 1610,1610,"Michigan & 34th Street","Michigan & 34th Street, Southbound, Westside of the Street",41.832755,-87.623357,0,,1
-1611,1611,"Michigan & 35th Street","Michigan & 35th Street, Southbound, Northwest Corner",41.83116438,-87.62335198,0,,1
 1616,1616,"4016 S Michigan","4016 S Michigan, Southbound, Westside of the Street",41.821493,-87.623215,0,,1
 1627,1627,"51st Street & Michigan","51st Street & Michigan, Eastbound, Southeast Corner",41.80196418,-87.62253139,0,,1
 1628,1628,"51st Street & Indiana","51st Street & Indiana, Eastbound, Southwest Corner",41.80196438,-87.62115448,0,,1
@@ -8721,7 +8720,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 13197,13197,"59th Street & Kimbark","59th Street & Kimbark, Westbound, Northeast Corner",41.78787138,-87.59450063,0,,1
 13198,13198,"Ontario & Wabash","Ontario & Wabash, Westbound, Northeast Corner",41.89329558,-87.62664133,0,,1
 14001,14001,"95th Red Line Station","95th Red Line Station, Eastbound, Bus Terminal",41.72279578,-87.62424697,0,40450,1
-14003,14003,"95th Red Line Station","95th Red Line Station, Northbound, Bus Terminal",41.72154005,-87.62463063,0,40450,1
+14003,14003,"95th Red Line Station","95th Red Line Station, Eastbound, Southside of the Street",41.72154005,-87.62463063,0,40450,1
 14004,14004,"95th Red Line Station","95th Red Line Station, Southbound, Bus Terminal",41.72126219,-87.62400546,0,40450,1
 14006,14006,"95th Red Line Station","95th Red Line Station, Northbound, Bus Terminal",41.72095268,-87.6243002,0,40450,1
 14007,14007,"95th Red Line Station","95th Red Line Station, Southbound, Bus Terminal",41.72138376,-87.62401326,0,40450,1
@@ -10486,7 +10485,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 17746,17746,"McClurg & Huron","McClurg & Huron, Southbound, Southwest Corner",41.89482759,-87.61785047,0,,1
 17747,17747,"103rd Street & Stony Island Garage Terminal","103rd Street & Stony Island Garage Terminal, Northwestbound, Bus Terminal",41.70874056,-87.58092719,0,,1
 17748,17748,"111th Street & Lawndale","111th Street & Lawndale, Westbound, Northwest Corner",41.69144563,-87.71354751,0,,1
-17749,17749,"St. Laurence/Queen of Peace H.S.","",41.75453625,-87.75865667,0,,1
 17751,17751,"Clark & Orchard","Clark & Orchard, Southbound, Northwest Corner",41.93463647,-87.64645429,0,,1
 17754,17754,"95th Street & King Drive","95th Street & King Drive, Westbound, Northwest Corner",41.72198826,-87.61444823,0,,1
 17766,17766,"Marine Drive & Montrose","Marine Drive & Montrose, Northbound, Northeast Corner",41.96216207,-87.64682975,0,,1
@@ -10516,7 +10514,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 17851,17851,"Niles Center & Greenleaf","Niles Center & Greenleaf, Northbound, Northeast Corner",42.03740466,-87.74927799,0,,1
 17852,17852,"Commercial & 102nd Street","Commercial & 102nd Street, Southbound, Southwest Corner",41.70980736,-87.55251086,0,,1
 17856,17856,"10700 S. Doty","10700 S. Doty, Southbound, Westside of the Street",41.69758,-87.59591667,0,,1
-17857,17857,"Doty & Walmart","Doty & Walmart, Eastbound, Bus Terminal",41.69509167,-87.59869833,0,,1
+17857,17857,"Doty & Walmart","Doty & Walmart, Eastbound, Southside of the Street",41.69509167,-87.59869833,0,,1
 17858,17858,"Doty & Walmart","Doty & Walmart, Westbound, Northside of the Street",41.69521833,-87.598285,0,,1
 17859,17859,"Western & 92nd Place","Western & 92nd Place, Northbound, Southeast Corner",41.72517167,-87.68209667,0,,1
 17860,17860,"Western & 92nd Place","Western & 92nd Place, Southbound, Southwest Corner",41.72510167,-87.68228667,0,,1
@@ -10837,7 +10835,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 18408,18408,"Jefferson Park Transit Center","Jefferson Park Transit Center, Northwestbound, Eastside of the Street",41.97034693,-87.76278385,0,,1
 18409,18409,"Jefferson Park Transit Center","",41.96970371,-87.76249045,0,,1
 18410,18410,"Jefferson Park Transit Center","Jefferson Park Transit Center, Southwestbound, Bus Terminal",41.96966986,-87.76152502,0,,1
-18411,18411,"Belmont & Kimball (Blue Line)","Belmont & Kimball (Blue Line), Eastbound, Southwest Corner",41.93919548,-87.71275946,0,,1
+18411,18411,"Belmont & Kimball (Blue Line)","Belmont & Kimball (Blue Line), Eastbound, Southeast Corner",41.93919548,-87.71275946,0,,1
 18412,18412,"Walton & Clark","Walton & Clark, Westbound, Northwest Corner",41.89986678,-87.63100262,0,,1
 18414,18414,"Vincennes & 77th Street","Vincennes & 77th Street, Southbound, Southwest Corner",41.75426333,-87.63334695,0,,1
 18415,18415,"8401 S Holland","8401 S Holland, Northbound, Northeast Corner",41.74149142,-87.63189751,0,,1
