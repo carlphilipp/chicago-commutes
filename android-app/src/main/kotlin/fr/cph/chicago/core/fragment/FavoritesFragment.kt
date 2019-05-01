@@ -34,6 +34,7 @@ import butterknife.BindView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fr.cph.chicago.R
 import fr.cph.chicago.R.string
+import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.adapter.FavoritesAdapter
 import fr.cph.chicago.redux.AppState
@@ -43,7 +44,6 @@ import fr.cph.chicago.redux.FavoritesAction
 import fr.cph.chicago.redux.Status.FAILURE
 import fr.cph.chicago.redux.Status.FULL_FAILURE
 import fr.cph.chicago.redux.Status.SUCCESS
-import fr.cph.chicago.redux.Status.SUCCESS_HIGHLIGHT
 import fr.cph.chicago.redux.Status.UNKNOWN
 import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.service.PreferenceService
@@ -127,9 +127,9 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
         if (mainStore.state.busRoutes.isEmpty() || mainStore.state.bikeStations.isEmpty()) {
             mainStore.dispatch(BusRoutesAndBikeStationAction())
         }
-        if (mainStore.state.forceRefreshFavorites) {
-            Log.d(TAG, "On Resume, dispatch new action: favorites actions")
-            mainStore.dispatch(FavoritesAction(forceUpdate = false))
+        if (App.instance.refresh) {
+            App.instance.refresh = false
+            mainStore.dispatch(FavoritesAction())
         }
         adapter.refreshFavorites()
         adapter.notifyDataSetChanged()
@@ -143,11 +143,6 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
         when (state.status) {
             SUCCESS -> {
                 showSuccessUi()
-                stopRefreshing()
-            }
-            SUCCESS_HIGHLIGHT -> {
-                showSuccessUi()
-                highlightBackground()
                 stopRefreshing()
             }
             FAILURE -> {
@@ -201,12 +196,6 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
 
     private fun stopRefreshing() {
         swipeRefreshLayout.isRefreshing = false
-    }
-
-    private fun highlightBackground() {
-        val currentBackground = rootView.background
-        rootView.setBackgroundResource(R.drawable.highlight_selector)
-        rootView.postDelayed({ rootView.background = currentBackground }, 100)
     }
 
     /**

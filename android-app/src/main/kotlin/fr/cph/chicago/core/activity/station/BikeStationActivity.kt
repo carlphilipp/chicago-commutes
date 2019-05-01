@@ -38,7 +38,6 @@ import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.redux.AppState
 import fr.cph.chicago.redux.BikeStationAction
-import fr.cph.chicago.redux.ForceUpdateFavorites
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.service.PreferenceService
@@ -149,7 +148,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
                     }
                 }
         }
-        stopRefreshing()
+        swipeRefreshLayout.isRefreshing = false
     }
 
     private fun setToolBar() {
@@ -193,7 +192,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.putParcelable(bundleBikeStation, bikeStation)
+        if (::bikeStation.isInitialized) savedInstanceState.putParcelable(bundleBikeStation, bikeStation)
         super.onSaveInstanceState(savedInstanceState)
     }
 
@@ -211,10 +210,6 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
         drawData()
     }
 
-    private fun stopRefreshing() {
-        swipeRefreshLayout.isRefreshing = false
-    }
-
     /**
      * Add/remove favorites
      */
@@ -227,7 +222,6 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
             preferenceService.addToBikeFavorites(bikeStation.id, swipeRefreshLayout)
             preferenceService.addBikeRouteNameMapping(bikeStation.id.toString(), bikeStation.name)
             favoritesImage.setColorFilter(Color.yellowLineDark)
-            mainStore.dispatch(ForceUpdateFavorites(forceUpdate = true))
             true
         }
     }

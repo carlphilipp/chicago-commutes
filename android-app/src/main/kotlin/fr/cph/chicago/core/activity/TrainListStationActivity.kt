@@ -76,7 +76,7 @@ class TrainListStationActivity : ButterKnifeActivity(R.layout.activity_train_sta
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.putString(bundleTrainLine, lineParam)
+        if (::lineParam.isInitialized) savedInstanceState.putString(bundleTrainLine, lineParam)
         super.onSaveInstanceState(savedInstanceState)
     }
 }

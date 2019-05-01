@@ -108,7 +108,7 @@ internal val favoritesMiddleware: Middleware<StateType> = { _, _ ->
                             busArrivalDTO = busArrivals,
                             bikeStations = if (favoritesDTO.bikeError) mainStore.state.bikeStations else favoritesDTO.bikeStations,
                             bikeError = favoritesDTO.bikeError)
-                        next(FavoritesAction(favoritesDTO = newFavorites, forceUpdate = action.forceUpdate))
+                        next(FavoritesAction(favoritesDTO = newFavorites))
                     }
             } ?: next(action)
         }

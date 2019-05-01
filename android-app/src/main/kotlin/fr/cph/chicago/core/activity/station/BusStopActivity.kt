@@ -43,7 +43,6 @@ import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.redux.AppState
 import fr.cph.chicago.redux.BusStopArrivalsAction
-import fr.cph.chicago.redux.ForceUpdateFavorites
 import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.service.PreferenceService
@@ -272,15 +271,15 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
         savedInstanceState.putInt(bundleBusStopId, busStopId)
-        if(::busRouteId.isInitialized)
+        if (::busRouteId.isInitialized)
             savedInstanceState.putString(bundleBusRouteId, busRouteId)
-        if(::bound.isInitialized)
+        if (::bound.isInitialized)
             savedInstanceState.putString(bundleBusBound, bound)
-        if(::boundTitle.isInitialized)
+        if (::boundTitle.isInitialized)
             savedInstanceState.putString(bundleBusBoundTitle, boundTitle)
-        if(::busStopName.isInitialized)
+        if (::busStopName.isInitialized)
             savedInstanceState.putString(bundleBusStopName, busStopName)
-        if(::busRouteName.isInitialized)
+        if (::busRouteName.isInitialized)
             savedInstanceState.putString(bundleBusRouteName, busRouteName)
         savedInstanceState.putDouble(bundleBusLatitude, latitude)
         savedInstanceState.putDouble(bundleBusLongitude, longitude)
@@ -359,7 +358,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
             preferenceService.addBusRouteNameMapping(busStopId.toString(), busRouteName)
             preferenceService.addBusStopNameMapping(busStopId.toString(), busStopName)
             favoritesImage.setColorFilter(Color.yellowLineDark)
-            mainStore.dispatch(ForceUpdateFavorites(forceUpdate = true))
+            App.instance.refresh = true
             true
         }
     }

@@ -3,7 +3,7 @@ package fr.cph.chicago.redux
 import android.util.Log
 import org.rekotlin.Action
 import org.rekotlin.Store
-import java.util.*
+import java.util.Date
 
 val mainStore = Store(
     reducer = ::reducer,
@@ -74,7 +74,7 @@ fun reducer(action: Action, oldState: AppState?): AppState {
                 action.favoritesDTO.trainArrivalDTO.error || action.favoritesDTO.busArrivalDTO.error || action.favoritesDTO.bikeError -> {
                     Status.FAILURE
                 }
-                else -> Status.SUCCESS_HIGHLIGHT
+                else -> Status.SUCCESS
             }
             val bikeStations = if (action.favoritesDTO.bikeError) state.bikeStations else action.favoritesDTO.bikeStations
             val bikeStationsStatus = when {
@@ -86,7 +86,6 @@ fun reducer(action: Action, oldState: AppState?): AppState {
                 lastStateChange = Date(),
                 status = status,
                 lastFavoritesUpdate = Date(),
-                forceRefreshFavorites = action.forceUpdate,
                 trainArrivalsDTO = action.favoritesDTO.trainArrivalDTO,
                 busArrivalsDTO = action.favoritesDTO.busArrivalDTO,
                 bikeStations = bikeStations,
@@ -160,7 +159,6 @@ fun reducer(action: Action, oldState: AppState?): AppState {
                 alertsDTO = alertsDTO
             )
         }
-        is ForceUpdateFavorites -> state = state.copy(forceRefreshFavorites = action.forceUpdate)
         else -> Log.w(TAG, "Action $action unknown")
     }
     return state

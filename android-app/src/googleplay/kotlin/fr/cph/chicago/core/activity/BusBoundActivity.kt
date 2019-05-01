@@ -98,7 +98,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
     private lateinit var busRouteName: String
     private lateinit var bound: String
     private lateinit var boundTitle: String
-    private lateinit var busBoundAdapter: BusBoundAdapter
+    private lateinit var adapter: BusBoundAdapter
     private var busStops: List<BusStop> = listOf()
 
     @SuppressLint("CheckResult")
@@ -110,9 +110,9 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
 
         mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
 
-        busBoundAdapter = BusBoundAdapter()
+        adapter = BusBoundAdapter()
         listView.setOnItemClickListener { _, _, position, _ ->
-            val busStop = busBoundAdapter.getItem(position) as BusStop
+            val busStop = adapter.getItem(position) as BusStop
             val intent = Intent(applicationContext, BusStopActivity::class.java)
 
             val extras = with(Bundle()) {
@@ -131,7 +131,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
         }
-        listView.adapter = busBoundAdapter
+        listView.adapter = adapter
 
         filter.addTextChangedListener(object : TextWatcher {
             private var busStopsFiltered: MutableList<BusStop> = mutableListOf()
@@ -147,8 +147,8 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
             }
 
             override fun afterTextChanged(s: Editable) {
-                busBoundAdapter.updateBusStops(busStopsFiltered)
-                busBoundAdapter.notifyDataSetChanged()
+                adapter.updateBusStops(busStopsFiltered)
+                adapter.notifyDataSetChanged()
             }
         })
 
@@ -161,8 +161,8 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
             .subscribe(
                 { onNext ->
                     busStops = onNext
-                    busBoundAdapter.updateBusStops(onNext)
-                    busBoundAdapter.notifyDataSetChanged()
+                    adapter.updateBusStops(onNext)
+                    adapter.notifyDataSetChanged()
                 },
                 { onError ->
                     Log.e(TAG, onError.message, onError)
@@ -225,10 +225,10 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.putString(bundleBusRouteId, busRouteId)
-        savedInstanceState.putString(bundleBusRouteName, busRouteName)
-        savedInstanceState.putString(bundleBusBound, bound)
-        savedInstanceState.putString(bundleBusBoundTitle, boundTitle)
+        if (::busRouteId.isInitialized) savedInstanceState.putString(bundleBusRouteId, busRouteId)
+        if (::busRouteName.isInitialized) savedInstanceState.putString(bundleBusRouteName, busRouteName)
+        if (::bound.isInitialized) savedInstanceState.putString(bundleBusBound, bound)
+        if (::boundTitle.isInitialized) savedInstanceState.putString(bundleBusBoundTitle, boundTitle)
         super.onSaveInstanceState(savedInstanceState)
     }
 

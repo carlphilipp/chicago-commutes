@@ -60,8 +60,8 @@ class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
     }
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.putString("routeId", routeId)
-        savedInstanceState.putString("title", title)
+        if (::routeId.isInitialized) savedInstanceState.putString("routeId", routeId)
+        if (::title.isInitialized) savedInstanceState.putString("title", title)
         super.onSaveInstanceState(savedInstanceState)
     }
 

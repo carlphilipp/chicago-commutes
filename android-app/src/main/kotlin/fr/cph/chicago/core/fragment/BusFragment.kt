@@ -141,6 +141,7 @@ class BusFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<App
                 busAdapter.notifyDataSetChanged()
             }
         })
+        filter.text = filter.text
     }
 
     companion object {

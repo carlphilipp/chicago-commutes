@@ -114,7 +114,7 @@ class TrainMapActivity : FragmentMapActivity() {
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.putString(bundleTrainLine, line)
+        if (::line.isInitialized) savedInstanceState.putString(bundleTrainLine, line)
         super.onSaveInstanceState(savedInstanceState)
     }
 

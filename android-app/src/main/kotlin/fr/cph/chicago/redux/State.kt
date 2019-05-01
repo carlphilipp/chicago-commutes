@@ -16,7 +16,6 @@ data class AppState(
     val lastStateChange: Date = Date(), // Field to ensure the update of the state
     val status: Status = Status.UNKNOWN,
     val lastFavoritesUpdate: Date = Date(), // Field displayed in favorites
-    val forceRefreshFavorites: Boolean = false,
 
     // Trains and Buses arrivals
     val trainArrivalsDTO: TrainArrivalDTO = TrainArrivalDTO(SparseArray(), false),
@@ -51,7 +50,6 @@ data class AppState(
 enum class Status {
     UNKNOWN,
     SUCCESS,
-    SUCCESS_HIGHLIGHT,
     FAILURE,
     FULL_FAILURE
 }

@@ -19,11 +19,13 @@
 
 package fr.cph.chicago.core.activity
 
+import android.app.Activity
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
@@ -45,6 +47,7 @@ import fr.cph.chicago.util.RateUtil
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
+
 
 class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView.OnNavigationItemSelectedListener {
 
@@ -80,6 +83,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
 
     private lateinit var drawerToggle: ActionBarDrawerToggle
     private lateinit var menuItem: MenuItem
+    private lateinit var inputMethodManager: InputMethodManager
 
     private var favoritesFragment: FavoritesFragment? = null
     private var trainFragment: TrainFragment? = null
@@ -96,6 +100,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
         initView()
         setToolbar()
 
+        inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         drawerToggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawerLayout.addDrawerListener(drawerToggle)
         drawerToggle.syncState()
@@ -201,6 +206,8 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
             showActionBarMenu()
         else
             hideActionBarMenu()
+        // Force keyboard to hide if present
+        inputMethodManager.hideSoftInputFromWindow(drawerLayout.windowToken, 0)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -218,7 +225,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
         savedInstanceState.putInt(SELECTED_ID, currentPosition)
-        savedInstanceState.putString(bundleTitle, title)
+        if (title != null) savedInstanceState.putString(bundleTitle, title)
         super.onSaveInstanceState(savedInstanceState)
     }
 

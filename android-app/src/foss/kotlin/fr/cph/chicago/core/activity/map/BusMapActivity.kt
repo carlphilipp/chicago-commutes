@@ -119,8 +119,8 @@ class BusMapActivity : FragmentMapActivity() {
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
         savedInstanceState.putInt(bundleBusId, busId)
-        savedInstanceState.putString(bundleBusRouteId, busRouteId)
-        savedInstanceState.putStringArray(bundleBusBounds, bounds)
+        if (::busRouteId.isInitialized) savedInstanceState.putString(bundleBusRouteId, busRouteId)
+        if (::bounds.isInitialized) savedInstanceState.putStringArray(bundleBusBounds, bounds)
         super.onSaveInstanceState(savedInstanceState)
     }
 

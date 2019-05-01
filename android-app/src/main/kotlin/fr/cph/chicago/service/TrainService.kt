@@ -44,8 +44,6 @@ import org.apache.commons.lang3.StringUtils
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import kotlin.collections.component1
-import kotlin.collections.component2
 
 object TrainService {
 

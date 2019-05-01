@@ -51,7 +51,6 @@ import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.redux.AppState
-import fr.cph.chicago.redux.ForceUpdateFavorites
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.TrainStationAction
 import fr.cph.chicago.redux.mainStore
@@ -360,7 +359,6 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
         } else {
             preferenceService.addToTrainFavorites(stationId, scrollView)
             favoritesImage.setColorFilter(Color.yellowLineDark)
-            mainStore.dispatch(ForceUpdateFavorites(forceUpdate = true))
         }
         isFavorite = !isFavorite
     }

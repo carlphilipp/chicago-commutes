@@ -23,8 +23,7 @@ data class FavoritesAction(
         trainArrivalDTO = TrainArrivalDTO(SparseArray(), false),
         busArrivalDTO = BusArrivalDTO(listOf(), false),
         bikeError = false,
-        bikeStations = listOf()),
-    val forceUpdate: Boolean = false
+        bikeStations = listOf())
 ) : Action
 
 // Bus Routes
@@ -77,5 +76,3 @@ data class AlertAction(
     val error: Boolean = false,
     val errorMessage: Int = R.string.message_something_went_wrong
 ) : Action
-
-data class ForceUpdateFavorites(val forceUpdate: Boolean) : Action
