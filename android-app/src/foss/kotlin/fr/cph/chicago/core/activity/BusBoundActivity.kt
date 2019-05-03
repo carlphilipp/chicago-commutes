@@ -26,7 +26,6 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.WindowManager
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -57,6 +56,7 @@ import fr.cph.chicago.util.Util
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import org.apache.commons.lang3.StringUtils
+import timber.log.Timber
 
 /**
  * Activity that represents the bus bound activity
@@ -179,7 +179,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
                     busBoundAdapter.notifyDataSetChanged()
                 },
                 { error ->
-                    Log.e(TAG, error.message, error)
+                    Timber.e(error)
                     util.showOopsSomethingWentWrong(listView)
                 })
         // Preventing keyboard from moving background when showing up
@@ -215,7 +215,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
                     mapBox.addPolyline(pair.second)
                 },
                 { error ->
-                    Log.e(TAG, error.message, error)
+                    Timber.e(error)
                     util.handleConnectOrParserException(error, layout)
                 })
     }
@@ -260,9 +260,5 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
     override fun onDestroy() {
         super.onDestroy()
         mapView?.onDestroy()
-    }
-
-    companion object {
-        private val TAG = BusBoundActivity::class.java.simpleName
     }
 }

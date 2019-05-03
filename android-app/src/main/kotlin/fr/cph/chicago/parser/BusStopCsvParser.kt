@@ -19,17 +19,16 @@
 
 package fr.cph.chicago.parser
 
-import android.util.Log
 import com.univocity.parsers.csv.CsvParser
 import com.univocity.parsers.csv.CsvParserSettings
 import fr.cph.chicago.core.App
 import fr.cph.chicago.util.Util
+import timber.log.Timber
 import java.io.IOException
 import java.io.InputStreamReader
 
 object BusStopCsvParser {
 
-    private val TAG = BusStopCsvParser::class.java.simpleName
     private const val STOP_FILE_PATH = "bus_stops.txt"
 
     private val parser: CsvParser
@@ -48,7 +47,7 @@ object BusStopCsvParser {
             inputStreamReader = InputStreamReader(App.instance.assets.open(STOP_FILE_PATH))
             parser.parse(inputStreamReader)
         } catch (e: IOException) {
-            Log.e(TAG, e.message, e)
+            Timber.e(e, "Error while parsing CSV")
         } finally {
             Util.closeQuietly(inputStreamReader)
         }

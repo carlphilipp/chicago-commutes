@@ -23,7 +23,6 @@ import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import butterknife.BindString
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
@@ -61,6 +60,7 @@ import fr.cph.chicago.util.Util
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 
 /**
  * @author Carl-Philipp Harmant
@@ -206,7 +206,7 @@ class BusMapActivity : FragmentMapActivity() {
             .subscribe(
                 { view -> update(feature, id, view) },
                 { error ->
-                    Log.e(TAG, error.message, error)
+                    Timber.e(error)
                     Util.showSnackBar(layout, R.string.message_no_data)
                     showProgress(false)
                 })
@@ -223,7 +223,7 @@ class BusMapActivity : FragmentMapActivity() {
             .subscribe(
                 { view -> update(feature, id, view) },
                 { error ->
-                    Log.e(TAG, error.message, error)
+                    Timber.e(error)
                     Util.showSnackBar(layout, R.string.message_no_data)
                     showProgress(false)
                 })
@@ -292,7 +292,7 @@ class BusMapActivity : FragmentMapActivity() {
                         }
                     },
                     { error ->
-                        Log.e(TAG, error.message, error)
+                        Timber.e(error)
                         Util.handleConnectOrParserException(error, layout)
                     })
         }
@@ -323,7 +323,7 @@ class BusMapActivity : FragmentMapActivity() {
                     }
                 },
                 { error ->
-                    Log.e(TAG, error.message, error)
+                    Timber.e(error)
                     Util.handleConnectOrParserException(error, layout)
                 })
     }
@@ -334,9 +334,5 @@ class BusMapActivity : FragmentMapActivity() {
 
     private val redIcon: Icon by lazy {
         IconFactory.getInstance(this@BusMapActivity).fromResource(R.drawable.red_marker)
-    }
-
-    companion object {
-        private val TAG = BusMapActivity::class.java.simpleName
     }
 }

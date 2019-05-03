@@ -23,7 +23,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -44,6 +43,7 @@ import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
+import timber.log.Timber
 
 /**
  * Alert Fragment
@@ -91,7 +91,7 @@ class AlertFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<A
     }
 
     override fun newState(state: AppState) {
-        Log.d(TAG, "Alert new state")
+        Timber.d("Alert new state")
         when (state.alertStatus) {
             Status.SUCCESS -> {
                 swipeRefreshLayout.isRefreshing = false
@@ -106,7 +106,7 @@ class AlertFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<A
                 Util.showSnackBar(swipeRefreshLayout, state.alertErrorMessage)
                 showFailureLayout()
             }
-            else -> Log.d(TAG, "Unknown status on new state")
+            else -> Timber.d("Unknown status on new state")
         }
         updateData(state.alertsDTO)
     }
@@ -164,8 +164,6 @@ class AlertFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<A
     }
 
     companion object {
-
-        private val TAG = AlertFragment::class.java.simpleName
 
         /**
          * Returns a new instance of this fragment for the given section number.

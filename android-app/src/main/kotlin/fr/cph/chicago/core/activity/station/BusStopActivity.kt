@@ -22,7 +22,6 @@ package fr.cph.chicago.core.activity.station
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -53,6 +52,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import org.rekotlin.StoreSubscriber
+import timber.log.Timber
 
 /**
  * Activity that represents the bus stop
@@ -211,7 +211,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
                 busStop
             }
             .doOnError { throwable ->
-                Log.e(TAG, throwable.message, throwable)
+                Timber.e(throwable, "Error while loading street image and stop details")
                 onError()
             }
             .subscribe(
@@ -224,7 +224,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
                     walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(latitude, longitude))
                 },
                 { throwable ->
-                    Log.e(TAG, throwable.message, throwable)
+                    Timber.e(throwable, "Error while loading street image and stop details")
                     onError()
                 })
     }
@@ -361,9 +361,5 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
             App.instance.refresh = true
             true
         }
-    }
-
-    companion object {
-        private val TAG = BusStopActivity::class.java.simpleName
     }
 }

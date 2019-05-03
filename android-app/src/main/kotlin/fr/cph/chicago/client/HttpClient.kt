@@ -19,29 +19,28 @@
 
 package fr.cph.chicago.client
 
-import android.util.Log
 import fr.cph.chicago.exception.ConnectException
+import timber.log.Timber
 import java.io.IOException
 import java.io.InputStream
 import java.net.URL
 
 object HttpClient {
 
-    private val TAG = HttpClient::class.java.simpleName
     private const val TIMEOUT = 5000
 
     @Throws(ConnectException::class)
     fun connect(address: String): InputStream {
         try {
-            Log.d(TAG, "Address: $address")
+            Timber.d("Address: $address")
             val url = URL(address)
             val con = url.openConnection()
             con.connectTimeout = TIMEOUT
             con.readTimeout = TIMEOUT
             return con.getInputStream()
-        } catch (e: IOException) {
-            Log.e(TAG, e.message, e)
-            throw ConnectException.defaultException(e)
+        } catch (exception: IOException) {
+            Timber.e(exception)
+            throw ConnectException.defaultException(exception)
         }
     }
 }

@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.service
 
-import android.util.Log
 import fr.cph.chicago.R
 import fr.cph.chicago.client.CtaClient
 import fr.cph.chicago.client.CtaRequestType.BUS_ARRIVALS
@@ -54,12 +53,12 @@ import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 object BusService {
 
-    private val TAG = BusService::class.java.simpleName
     private val busStopCsvParser = BusStopCsvParser
     private val preferenceService = PreferenceService
     private val busRepository = BusRepository
@@ -98,7 +97,7 @@ object BusService {
 
     fun loadLocalBusData(): Any {
         if (busRepository.hasBusStopsEmpty()) {
-            Log.d(TAG, "Load bus stop from CSV")
+            Timber.d("Load bus stop from CSV")
             busStopCsvParser.parse()
         }
         return Any()

@@ -19,7 +19,7 @@
 
 package fr.cph.chicago.core.model.enumeration
 
-import android.util.Log
+import timber.log.Timber
 import java.util.Locale
 
 /**
@@ -38,10 +38,9 @@ enum class BusDirection constructor(val text: String, val shortUpperCase: String
     UNKNOWN("Unknown", "UNKNOWN", "Unknown");
 
     companion object {
-        private val TAG = BusDirection::class.java.simpleName
 
         fun fromString(text: String): BusDirection {
-            for (busDirectionEnum in BusDirection.values()) {
+            for (busDirectionEnum in values()) {
                 when {
                     text.equals(busDirectionEnum.text, ignoreCase = true) -> return busDirectionEnum
                     text.equals(busDirectionEnum.shortUpperCase, ignoreCase = true) -> return busDirectionEnum
@@ -50,7 +49,7 @@ enum class BusDirection constructor(val text: String, val shortUpperCase: String
                     }
                 }
             }
-            Log.w(TAG, "Bus direction enum not found: $text")
+            Timber.w("Bus direction enum not found: %s", text)
             return UNKNOWN
         }
     }

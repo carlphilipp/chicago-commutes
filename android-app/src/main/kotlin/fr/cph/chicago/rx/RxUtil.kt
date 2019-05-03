@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.rx
 
-import android.util.Log
 import android.util.SparseArray
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Bus
@@ -53,11 +52,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function3
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 import java.util.concurrent.Callable
 
 object RxUtil {
-
-    private val TAG = RxUtil::class.java.simpleName
 
     private val trainService = TrainService
     private val busService = BusService
@@ -72,7 +70,7 @@ object RxUtil {
             .map { it.size() == 0 }
             .subscribeOn(Schedulers.computation())
             .onErrorReturn { throwable ->
-                Log.e(TAG, "Could not create local train data", throwable)
+                Timber.e(throwable, "Could not create local train data")
                 true
             }
 
@@ -81,7 +79,7 @@ object RxUtil {
             .map { false }
             .subscribeOn(Schedulers.computation())
             .onErrorReturn { throwable ->
-                Log.e(TAG, "Could not create local bus data", throwable)
+                Timber.e(throwable, "Could not create local bus data")
                 true
             }
         return Single.zip(
@@ -114,7 +112,7 @@ object RxUtil {
     fun bikeOneStation(bikeStation: BikeStation): Single<BikeStation> {
         return createSingleFromCallable(Callable { bikeService.findBikeStation(bikeStation.id) })
             .onErrorReturn { throwable ->
-                Log.e(TAG, "Could not load bike stations", throwable)
+                Timber.e(throwable, "Could not load bike stations")
                 BikeStation.buildDefaultBikeStationWithName("error")
             }
     }
@@ -181,7 +179,7 @@ object RxUtil {
     private fun favoritesTrainArrivalDTO(): Single<TrainArrivalDTO> {
         return createSingleFromCallable(Callable { TrainArrivalDTO(trainService.loadFavoritesTrain(), false) })
             .onErrorReturn { throwable ->
-                Log.e(TAG, "Could not load favorites trains", throwable)
+                Timber.e(throwable, "Could not load favorites trains")
                 TrainArrivalDTO(SparseArray(), true)
             }
     }
@@ -189,7 +187,7 @@ object RxUtil {
     private fun favoritesBusArrivalDTO(): Single<BusArrivalDTO> {
         return createSingleFromCallable(Callable { BusArrivalDTO(busService.loadFavoritesBuses(), false) })
             .onErrorReturn { throwable ->
-                Log.e(TAG, "Could not load bus arrivals", throwable)
+                Timber.e(throwable, "Could not load bus arrivals")
                 BusArrivalDTO(listOf(), true)
             }
     }
@@ -251,7 +249,7 @@ object RxUtil {
     }
 
     private fun <T> handleError(): (Throwable) -> List<T> = { throwable ->
-        Log.e(TAG, throwable.message, throwable)
+        Timber.e(throwable)
         ArrayList()
     }
 }

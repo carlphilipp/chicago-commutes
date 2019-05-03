@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.rx
 
-import android.util.Log
 import android.view.View
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.map.BusMapActivity
@@ -27,6 +26,7 @@ import fr.cph.chicago.core.model.Bus
 import fr.cph.chicago.util.Util
 import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
+import timber.log.Timber
 
 class BusObserver(private val activity: BusMapActivity, private val centerMap: Boolean, private val view: View) : SingleObserver<List<Bus>> {
 
@@ -45,10 +45,6 @@ class BusObserver(private val activity: BusMapActivity, private val centerMap: B
 
     override fun onError(throwable: Throwable) {
         Util.handleConnectOrParserException(throwable, view)
-        Log.e(TAG, throwable.message, throwable)
-    }
-
-    companion object {
-        private val TAG = BusObserver::class.java.simpleName
+        Timber.e(throwable, "Error while loading buses")
     }
 }

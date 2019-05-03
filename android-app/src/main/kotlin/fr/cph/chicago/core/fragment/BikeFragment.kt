@@ -22,7 +22,6 @@ package fr.cph.chicago.core.fragment
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -41,6 +40,7 @@ import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
+import timber.log.Timber
 
 /**
  * Bike Fragment
@@ -87,7 +87,7 @@ class BikeFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<Ap
     }
 
     override fun newState(state: AppState) {
-        Log.d(TAG, "Bike stations new state")
+        Timber.d("Bike stations new state")
         when (state.bikeStationsStatus) {
             Status.SUCCESS -> showSuccessLayout()
             Status.FAILURE -> {
@@ -99,7 +99,7 @@ class BikeFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<Ap
                 showFailureLayout()
             }
             else -> {
-                Log.d(TAG, "Unknown status on new state")
+                Timber.d("Unknown status on new state")
                 Util.showSnackBar(swipeRefreshLayout, state.bikeStationsErrorMessage)
                 showFailureLayout()
             }
@@ -148,8 +148,6 @@ class BikeFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<Ap
     }
 
     companion object {
-
-        private val TAG = BikeFragment::class.java.simpleName
 
         /**
          * Returns a new trainService of this fragment for the given section number.

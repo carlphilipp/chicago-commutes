@@ -21,13 +21,13 @@ package fr.cph.chicago.repository
 
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
-import android.util.Log
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
+import timber.log.Timber
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -41,8 +41,6 @@ import java.util.regex.Pattern
  * @version 1
  */
 object PreferenceRepository {
-
-    private val TAG = PreferenceRepository::class.java.simpleName
 
     private val PATTERN = Pattern.compile("(\\d{1,3})")
     private val FORMAT = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
@@ -74,7 +72,7 @@ object PreferenceRepository {
         val sharedPref = getPrivatePreferences()
         val editor = sharedPref.edit()
         val set = favorites.map { it.toString() }.toSet()
-        Log.v(TAG, "Put train favorites: $favorites")
+        Timber.v("Put train favorites: %s", favorites)
         editor.putStringSet(PREFERENCE_FAVORITES_TRAIN, set)
         editor.apply()
     }
@@ -91,7 +89,7 @@ object PreferenceRepository {
         val sharedPref = getPrivatePreferences()
         val editor = sharedPref.edit()
         val set = favorites.map { it.toString() }.toSet()
-        Log.v(TAG, "Put bike favorites: $set")
+        Timber.v("Put bike favorites: %s", set)
         editor.putStringSet(PREFERENCE_FAVORITES_BIKE, set)
         editor.apply()
     }
@@ -99,7 +97,7 @@ object PreferenceRepository {
     fun getBikeFavorites(): List<Int> {
         val sharedPref = getPrivatePreferences()
         val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_BIKE, LinkedHashSet()) ?: setOf()
-        Log.v(TAG, "Read bike favorites : $setPref")
+        Timber.v("Read bike favorites : %s", setPref)
         return setPref.map { it.toInt() }.sorted()
     }
 
@@ -107,14 +105,14 @@ object PreferenceRepository {
         val sharedPref = getPrivatePreferencesBikeMapping()
         val editor = sharedPref.edit()
         editor.putString(bikeId.toString(), bikeName)
-        Log.v(TAG, "Add bike name mapping : $bikeId => $bikeName")
+        Timber.v("Add bike name mapping : %s => %s", bikeId, bikeName)
         editor.apply()
     }
 
     fun getBikeRouteNameMapping(bikeId: Int): String {
         val sharedPref = getPrivatePreferencesBikeMapping()
         val bikeName = sharedPref.getString(bikeId.toString(), StringUtils.EMPTY)!!
-        Log.v(TAG, "Get bike name mapping : $bikeId => $bikeName")
+        Timber.v("Get bike name mapping : %s => %s", bikeId, bikeName)
         return bikeName
     }
 
@@ -128,7 +126,7 @@ object PreferenceRepository {
         val editor = sharedPref.edit()
         val set = LinkedHashSet<String>()
         set.addAll(favorites)
-        Log.v(TAG, "Put bus favorites: $favorites")
+        Timber.v("Put bus favorites: %s", favorites)
         editor.putStringSet(PREFERENCE_FAVORITES_BUS, set)
         editor.apply()
     }
@@ -136,7 +134,7 @@ object PreferenceRepository {
     fun getBusFavorites(): List<String> {
         val sharedPref = getPrivatePreferences()
         val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_BUS, LinkedHashSet()) ?: setOf()
-        Log.v(TAG, "Read bus favorites : $setPref")
+        Timber.v("Read bus favorites : %s", setPref)
         return setPref.sortedWith(Comparator { str1, str2 ->
             val str1Decoded = util.decodeBusFavorite(str1).routeId
             val str2Decoded = util.decodeBusFavorite(str2).routeId
@@ -156,14 +154,14 @@ object PreferenceRepository {
         val sharedPref = getPrivatePreferencesBusRouteMapping()
         val editor = sharedPref.edit()
         editor.putString(busStopId, routeName)
-        Log.v(TAG, "Add bus route name mapping : $busStopId => $routeName")
+        Timber.v("Add bus route name mapping : %s => %s", busStopId, routeName)
         editor.apply()
     }
 
     fun getBusRouteNameMapping(busStopId: String): String {
         val sharedPref = getPrivatePreferencesBusRouteMapping()
         val routeName = sharedPref.getString(busStopId, "?")!!
-        Log.v(TAG, "Get bus route name mapping : $busStopId => $routeName")
+        Timber.v("Get bus route name mapping : %s => %s", busStopId, routeName)
         return routeName
     }
 
@@ -171,14 +169,14 @@ object PreferenceRepository {
         val sharedPref = getPrivatePreferencesBusStopMapping()
         val editor = sharedPref.edit()
         editor.putString(busStopId, stopName)
-        Log.v(TAG, "Add bus stop name mapping : $busStopId => $stopName")
+        Timber.v("Add bus stop name mapping : %s => %s", busStopId, stopName)
         editor.apply()
     }
 
     fun getBusStopNameMapping(busStopId: String): String? {
         val sharedPref = getPrivatePreferencesBusStopMapping()
         val stopName = sharedPref.getString(busStopId, null)
-        Log.v(TAG, "Get bus stop name mapping : $busStopId => $stopName")
+        Timber.v("Get bus stop name mapping : %s => %s", busStopId, stopName)
         return stopName
     }
 
@@ -186,7 +184,7 @@ object PreferenceRepository {
         val sharedPref = getPrivatePreferences()
         val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_TRAIN, LinkedHashSet())
             ?: setOf()
-        Log.v(TAG, "Read train favorites : $setPref")
+        Timber.v("Read train favorites : %s", setPref)
         return setPref
             .map { it.toInt() }
             .map { trainService.getStation(it) }

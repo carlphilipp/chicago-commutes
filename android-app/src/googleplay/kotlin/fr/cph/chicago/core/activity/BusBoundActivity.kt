@@ -26,7 +26,6 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.WindowManager
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -52,6 +51,7 @@ import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.util.GoogleMapUtil
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
+import timber.log.Timber
 
 /**
  * Activity that represents the bus bound activity
@@ -165,7 +165,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
                     adapter.notifyDataSetChanged()
                 },
                 { onError ->
-                    Log.e(TAG, onError.message, onError)
+                    Timber.e(onError, "Error while getting bus stops for route bound")
                     util.showOopsSomethingWentWrong(listView)
                 })
 
@@ -202,7 +202,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
                     },
                     { onError ->
                         util.handleConnectOrParserException(onError, layout)
-                        Log.e(TAG, onError.message, onError)
+                        Timber.e(onError, "Error while getting bus patterns")
                     })
         }
     }
@@ -230,9 +230,5 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
         if (::bound.isInitialized) savedInstanceState.putString(bundleBusBound, bound)
         if (::boundTitle.isInitialized) savedInstanceState.putString(bundleBusBoundTitle, boundTitle)
         super.onSaveInstanceState(savedInstanceState)
-    }
-
-    companion object {
-        private val TAG = BusBoundActivity::class.java.simpleName
     }
 }

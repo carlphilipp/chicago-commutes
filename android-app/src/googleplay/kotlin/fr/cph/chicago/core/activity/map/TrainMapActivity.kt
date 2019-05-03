@@ -22,7 +22,6 @@ package fr.cph.chicago.core.activity.map
 import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import butterknife.BindString
@@ -50,6 +49,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 
 /**
  * @author Carl-Philipp Harmant
@@ -172,6 +172,7 @@ class TrainMapActivity : FragmentMapActivity() {
         refreshTrainMarkers.refreshTrainAndStation(googleMap.cameraPosition, trainsMarker, stationMarkers)
     }
 
+    @SuppressLint("CheckResult")
     override fun onMapReady(googleMap: GoogleMap) {
         super.onMapReady(googleMap)
 
@@ -255,7 +256,7 @@ class TrainMapActivity : FragmentMapActivity() {
                 {},
                 { throwable ->
                     Util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_error_while_loading_data)
-                    Log.e(TAG, "Error not handled", throwable)
+                    Timber.e(throwable, "Error not handled")
                 }
             )
         } else {
@@ -284,9 +285,5 @@ class TrainMapActivity : FragmentMapActivity() {
             TrainLine.YELLOW -> R.drawable.yellow_marker
             TrainLine.NA -> R.drawable.red_marker_no_shade
         }
-    }
-
-    companion object {
-        private val TAG = TrainMapActivity::class.java.simpleName
     }
 }

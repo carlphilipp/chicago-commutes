@@ -26,14 +26,12 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
-import butterknife.BindString
 import butterknife.BindView
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -64,6 +62,7 @@ import io.reactivex.Single
 import io.reactivex.functions.Function3
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
+import timber.log.Timber
 
 /**
  * Nearby Fragment
@@ -256,7 +255,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
     private fun handleNearbyData(position: Position) {
         var finalPosition = position
         if (position.longitude == 0.0 && position.latitude == 0.0) {
-            Log.w(TAG, "Could not get current user location")
+            Timber.w("Could not get current user location")
             util.showSnackBar(mainActivity.drawer, R.string.message_cant_find_location)
             finalPosition = chicagoPosition
         }
@@ -272,8 +271,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
     }
 
     companion object {
-
-        private val TAG = NearbyFragment::class.java.simpleName
 
         fun newInstance(sectionNumber: Int): NearbyFragment {
             return fragmentWithBundle(NearbyFragment(), sectionNumber) as NearbyFragment

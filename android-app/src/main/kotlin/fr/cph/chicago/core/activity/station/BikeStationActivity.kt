@@ -21,7 +21,6 @@ package fr.cph.chicago.core.activity.station
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -44,6 +43,7 @@ import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.Color
 import fr.cph.chicago.util.Util
 import org.rekotlin.StoreSubscriber
+import timber.log.Timber
 
 /**
  * Activity the list of train stations
@@ -139,11 +139,11 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
                 .also { station ->
                     if (station.name != "error") {
                         // FIXME: Check if the updade is good and remove that line
-                        Log.d(TAG, "Station found: [${station.name} - ${station.availableBikes}/${station.availableDocks}]")
+                        Timber.d("Station found: [%s - %s/%s]", station.name, station.availableBikes, station.availableDocks)
                         refreshStation(station)
                         intent.extras?.putParcelable(getString(R.string.bundle_bike_station), station)
                     } else {
-                        Log.w(TAG, "Train station id [${bikeStation.id}] not found")
+                        Timber.w("Train station id [%s] not found", bikeStation.id)
                         util.showOopsSomethingWentWrong(swipeRefreshLayout)
                     }
                 }
@@ -227,7 +227,6 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
     }
 
     companion object {
-        private val TAG = BikeStationActivity::class.java.simpleName
         private val util = Util
     }
 }

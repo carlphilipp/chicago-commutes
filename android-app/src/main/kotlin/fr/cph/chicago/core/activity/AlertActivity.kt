@@ -22,7 +22,6 @@ package fr.cph.chicago.core.activity
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.widget.ListView
 import androidx.appcompat.widget.Toolbar
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -32,6 +31,7 @@ import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.adapter.AlertRouteAdapter
 import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.util.Util
+import timber.log.Timber
 
 class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
 
@@ -92,7 +92,7 @@ class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
                 hideAnimation()
             },
             { error ->
-                Log.e(TAG, error.message, error)
+                Timber.e(error, "Error while refreshing data")
                 Util.showOopsSomethingWentWrong(listView)
                 hideAnimation()
             })
@@ -102,9 +102,5 @@ class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
         if (scrollView.isRefreshing) {
             scrollView.isRefreshing = false
         }
-    }
-
-    companion object {
-        private val TAG = AlertActivity::class.java.simpleName
     }
 }

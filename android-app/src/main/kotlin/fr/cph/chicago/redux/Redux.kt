@@ -1,8 +1,8 @@
 package fr.cph.chicago.redux
 
-import android.util.Log
 import org.rekotlin.Action
 import org.rekotlin.Store
+import timber.log.Timber
 import java.util.Date
 
 val mainStore = Store(
@@ -159,9 +159,7 @@ fun reducer(action: Action, oldState: AppState?): AppState {
                 alertsDTO = alertsDTO
             )
         }
-        else -> Log.w(TAG, "Action $action unknown")
+        else -> Timber.w("Action %s unknown", action)
     }
     return state
 }
-
-private const val TAG = "Redux"

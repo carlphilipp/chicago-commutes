@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.service
 
-import android.util.Log
 import fr.cph.chicago.client.CtaClient
 import fr.cph.chicago.client.CtaRequestType
 import fr.cph.chicago.core.model.dto.AlertType
@@ -29,12 +28,12 @@ import fr.cph.chicago.entity.AlertsRouteResponse
 import fr.cph.chicago.entity.AlertsRoutesResponse
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
+import timber.log.Timber
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 object AlertService {
-    private val TAG = AlertService::class.java.simpleName
 
     private val ctaClient = CtaClient
     private val formatWithSeconds = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US)
@@ -45,7 +44,7 @@ object AlertService {
         val alertRoutes = ctaClient.get(CtaRequestType.ALERTS_ROUTES, buildAlertsParam(), AlertsRoutesResponse::class.java)
         if (alertRoutes.ctaRoutes.routeInfo.isEmpty()) {
             val errors = alertRoutes.ctaRoutes.errorMessage.joinToString()
-            Log.e(TAG, errors)
+            Timber.e(errors)
             return listOf()
         }
         return alertRoutes.ctaRoutes.routeInfo
@@ -66,7 +65,7 @@ object AlertService {
         val alertRoutes = ctaClient.get(CtaRequestType.ALERTS_ROUTE, buildAlertParam(id), AlertsRouteResponse::class.java)
 
         return if (alertRoutes.ctaAlerts.errorMessage != null) {
-            Log.e(TAG, alertRoutes.ctaAlerts.errorMessage.toString())
+            Timber.e(alertRoutes.ctaAlerts.errorMessage.toString())
             listOf()
         } else
             alertRoutes.ctaAlerts.alert

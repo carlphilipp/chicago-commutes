@@ -69,6 +69,12 @@
 	public static *** i(...);
 }
 
+-assumenosideeffects class timber.log.Timber {
+	public static *** d(...);
+	public static *** v(...);
+	public static *** i(...);
+}
+
 -dontwarn com.fasterxml.jackson.**
 
 -dontnote com.google.vending.**

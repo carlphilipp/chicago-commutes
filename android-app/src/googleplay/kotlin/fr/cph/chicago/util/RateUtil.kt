@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -15,12 +14,12 @@ import fr.cph.chicago.service.PreferenceService
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
 object RateUtil {
 
-    private val TAG = RateUtil::class.java.simpleName
     private val preferenceService = PreferenceService
 
     fun rateThisApp(activity: Activity) {
@@ -51,7 +50,7 @@ object RateUtil {
                         preferenceService.setRateLastSeen()
                     }
                 },
-                { error -> Log.e(TAG, error.message, error) })
+                { error -> Timber.e(error) })
     }
 
     private fun showRateSnackBar(view: View, activity: Activity) {

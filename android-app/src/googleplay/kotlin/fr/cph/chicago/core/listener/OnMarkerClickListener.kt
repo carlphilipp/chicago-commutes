@@ -20,7 +20,6 @@
 package fr.cph.chicago.core.listener
 
 import android.annotation.SuppressLint
-import android.util.Log
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
 import fr.cph.chicago.core.fragment.NearbyFragment
@@ -31,6 +30,7 @@ import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusArrivalRouteDTO
 import fr.cph.chicago.core.model.marker.MarkerDataHolder
 import fr.cph.chicago.rx.RxUtil
+import timber.log.Timber
 
 class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, private val nearbyFragment: NearbyFragment) : GoogleMap.OnMarkerClickListener {
 
@@ -61,7 +61,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
         observableUtil.trainArrivals(trainTrainStation.id)
             .subscribe(
                 { nearbyFragment.slidingUpAdapter.addTrainStation(it) },
-                { onError -> Log.e(TAG, onError.message, onError) })
+                { onError -> Timber.e(onError, "Error while loading train arrivals") })
     }
 
     @SuppressLint("CheckResult")
@@ -74,7 +74,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
                     result.forEach { busArrivalRouteDTO.addBusArrival(it) }
                     nearbyFragment.slidingUpAdapter.addBusArrival(busArrivalRouteDTO)
                 }
-            ) { onError -> Log.e(TAG, onError.message, onError) }
+            ) { onError -> Timber.e(onError, "Error while loading bus arrivals") }
     }
 
     @SuppressLint("CheckResult")
@@ -83,12 +83,11 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
         observableUtil.bikeOneStation(bikeStation)
             .subscribe(
                 { nearbyFragment.slidingUpAdapter.addBike(it) },
-                { onError -> Log.e(TAG, onError.message, onError) }
+                { onError -> Timber.e(onError, "Error while loading bike stations") }
             )
     }
 
     companion object {
-        private val TAG = OnMarkerClickListener::class.java.simpleName
         private val observableUtil = RxUtil
     }
 }

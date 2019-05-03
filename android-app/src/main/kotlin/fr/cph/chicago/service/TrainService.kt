@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.service
 
-import android.util.Log
 import android.util.SparseArray
 import fr.cph.chicago.R
 import fr.cph.chicago.client.CtaClient
@@ -41,13 +40,13 @@ import fr.cph.chicago.repository.TrainRepository
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.lang3.StringUtils
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
 object TrainService {
 
-    private val TAG = TrainService::class.java.simpleName
     private const val DEFAULT_RANGE = 0.008
 
     private val trainRepository = TrainRepository
@@ -147,7 +146,7 @@ object TrainService {
         val result = ctaClient.get(TRAIN_LOCATION, connectParam, TrainLocationResponse::class.java)
         if (result.ctatt.route == null) {
             val error = result.ctatt.errNm
-            Log.e(TAG, error)
+            Timber.e(error)
             return listOf()
         }
         return result.ctatt.route!!
@@ -194,7 +193,7 @@ object TrainService {
         return if (trainRepository.allStations.containsKey(line))
             trainRepository.allStations[line]!!
         else {
-            Log.e(TAG, "$line not found")
+            Timber.e("%s not found", line)
             // Fallback to blue
             trainRepository.allStations[TrainLine.BLUE]!!
         }
@@ -217,7 +216,7 @@ object TrainService {
         val result = SparseArray<TrainArrival>()
         if (trainArrivalResponse.ctatt.eta == null) {
             val error = trainArrivalResponse.ctatt.errNm
-            Log.e(TAG, "Error: $error")
+            Timber.e("Error: %s", error)
             return result
         }
         trainArrivalResponse.ctatt.eta.map { eta ->

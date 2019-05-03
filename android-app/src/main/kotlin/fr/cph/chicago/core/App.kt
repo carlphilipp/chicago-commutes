@@ -24,11 +24,13 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Point
 import android.graphics.drawable.Drawable
-import android.util.Log
 import android.view.WindowManager
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.ErrorActivity
 import io.reactivex.plugins.RxJavaPlugins
+import timber.log.Timber
+import timber.log.Timber.DebugTree
+
 
 /**
  * Main class that extends Application. Mainly used to get the context from anywhere in the app.
@@ -58,12 +60,16 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        Timber.plant(DebugTree())
+
         ctaTrainKey = applicationContext.getString(R.string.cta_train_key)
         ctaBusKey = applicationContext.getString(R.string.cta_bus_key)
         googleStreetKey = applicationContext.getString(R.string.google_maps_api_key)
         instance = this
+
         RxJavaPlugins.setErrorHandler { throwable ->
-            Log.e(TAG, "Error not handled", throwable)
+            Timber.e(throwable, "RxError not handled")
             startErrorActivity()
         }
     }
@@ -77,8 +83,6 @@ class App : Application() {
     }
 
     companion object {
-        private val TAG = App::class.java.simpleName
-
         lateinit var ctaTrainKey: String
         lateinit var ctaBusKey: String
         lateinit var googleStreetKey: String

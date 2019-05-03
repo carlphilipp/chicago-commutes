@@ -21,7 +21,6 @@ package fr.cph.chicago.core.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,6 +40,7 @@ import fr.cph.chicago.rx.BusDirectionObserver
 import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.Util
+import timber.log.Timber
 
 /**
  * Adapter that will handle search
@@ -107,7 +107,7 @@ class SearchAdapter(private val context: Context) : BaseAdapter() {
                     observableUtil.busDirections(busRoute.id)
                         .doOnError { error ->
                             util.handleConnectOrParserException(error, loadingTextView)
-                            Log.e(TAG, error.message, error)
+                            Timber.e(error, "Error while getting bus directions")
                         }.subscribe(BusDirectionObserver(App.instance.screenWidth, parent, loadingTextView, busRoute))
                 }
             }
@@ -132,7 +132,6 @@ class SearchAdapter(private val context: Context) : BaseAdapter() {
     }
 
     companion object {
-        private val TAG = SearchAdapter::class.java.simpleName
         private val util = Util
         private val observableUtil = RxUtil
         private val layoutUtil = LayoutUtil

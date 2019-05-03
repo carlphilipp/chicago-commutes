@@ -80,7 +80,6 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
     }
 
     companion object {
-        private val TAG = OnMarkerClickListener::class.java.simpleName
         private val rxUtil = RxUtil
     }
 }

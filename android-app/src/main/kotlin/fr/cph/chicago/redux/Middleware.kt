@@ -1,6 +1,5 @@
 package fr.cph.chicago.redux
 
-import android.util.Log
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.dto.BusArrivalDTO
 import fr.cph.chicago.core.model.dto.FavoritesDTO
@@ -11,6 +10,7 @@ import fr.cph.chicago.rx.RxUtil
 import io.reactivex.android.schedulers.AndroidSchedulers
 import org.rekotlin.Middleware
 import org.rekotlin.StateType
+import timber.log.Timber
 
 internal val baseMiddleware: Middleware<StateType> = { _, _ ->
     { next ->
@@ -37,7 +37,7 @@ internal val baseMiddleware: Middleware<StateType> = { _, _ ->
                             next(BaseAction(trainArrivalsDTO = trainArrivals, busArrivalsDTO = busArrivals))
                         },
                         { throwable ->
-                            Log.e(TAG, throwable.message, throwable)
+                            Timber.e(throwable)
                             next(BaseAction(localError = true))
                         }
                     )
@@ -60,7 +60,7 @@ internal val busRoutesAndBikeStationMiddleware: Middleware<StateType> = { _, _ -
                                 bikeStations = bikeStations))
                         },
                         { throwable ->
-                            Log.e(TAG, throwable.message, throwable)
+                            Timber.e(throwable)
                             next(action)
                         }
                     )
@@ -77,7 +77,7 @@ internal val busRoutesMiddleware: Middleware<StateType> = { _, _ ->
                     .subscribe(
                         { busRoutes -> next(BusRoutesAction(error = false, busRoutes = busRoutes)) },
                         { throwable ->
-                            Log.e(TAG, throwable.message, throwable)
+                            Timber.e(throwable)
                             next(
                                 BusRoutesAction(
                                     error = true,
@@ -128,7 +128,7 @@ internal val trainStationMiddleware: Middleware<StateType> = { _, _ ->
                                 trainArrival = trainArrival))
                         },
                         { throwable ->
-                            Log.e(TAG, throwable.message, throwable)
+                            Timber.e(throwable)
                             next(TrainStationAction(
                                 trainStationId = action.trainStationId,
                                 error = true,
@@ -148,7 +148,7 @@ internal val busStopArrivalsMiddleware: Middleware<StateType> = { _, _ ->
                     .subscribe(
                         { busArrivalStopDTO -> next(BusStopArrivalsAction(busArrivalStopDTO = busArrivalStopDTO)) },
                         { throwable ->
-                            Log.e(TAG, throwable.message, throwable)
+                            Timber.e(throwable)
                             next(BusStopArrivalsAction(
                                 error = true,
                                 errorMessage = buildErrorMessage(throwable)))
@@ -167,7 +167,7 @@ internal val bikeStationMiddleware: Middleware<StateType> = { _, _ ->
                     .subscribe(
                         { bikeStations -> next(BikeStationAction(bikeStations = bikeStations)) },
                         { throwable ->
-                            Log.e(TAG, throwable.message, throwable)
+                            Timber.e(throwable)
                             next(BikeStationAction(
                                 error = true,
                                 errorMessage = buildErrorMessage(throwable)))
@@ -186,7 +186,7 @@ internal val alertMiddleware: Middleware<StateType> = { _, _ ->
                     .subscribe(
                         { routesAlertsDTO -> next(AlertAction(routesAlertsDTO = routesAlertsDTO)) },
                         { throwable ->
-                            Log.e(TAG, throwable.message, throwable)
+                            Timber.e(throwable)
                             next(AlertAction(
                                 error = true,
                                 errorMessage = buildErrorMessage(throwable)))
@@ -203,5 +203,3 @@ private fun buildErrorMessage(throwable: Throwable): Int {
     else
         R.string.message_something_went_wrong
 }
-
-private const val TAG = "Middleware"

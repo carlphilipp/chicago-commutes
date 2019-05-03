@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.rx
 
-import android.util.Log
 import android.view.View
 import android.widget.ListView
 import android.widget.TextView
@@ -31,6 +30,7 @@ import fr.cph.chicago.util.Util
 import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
 import org.apache.commons.lang3.StringUtils
+import timber.log.Timber
 import java.util.Date
 
 class BusFollowObserver(private val activity: BusMapActivity, private val layout: View, private val view: View, private val loadAll: Boolean) : SingleObserver<List<BusArrival>> {
@@ -60,11 +60,10 @@ class BusFollowObserver(private val activity: BusMapActivity, private val layout
 
     override fun onError(throwable: Throwable) {
         util.handleConnectOrParserException(throwable, layout)
-        Log.e(TAG, throwable.message, throwable)
+        Timber.e(throwable, "Error while loading bus follow")
     }
 
     companion object {
-        private val TAG = BusFollowObserver::class.java.simpleName
         private val util = Util
     }
 }

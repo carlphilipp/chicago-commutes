@@ -20,8 +20,8 @@
 package fr.cph.chicago.task
 
 import android.os.AsyncTask
-import android.util.Log
 import fr.cph.chicago.core.adapter.FavoritesAdapter
+import timber.log.Timber
 
 class RefreshTimingTask(private val favoritesAdapter: FavoritesAdapter) : AsyncTask<Unit, Unit, Unit>() {
 
@@ -32,17 +32,13 @@ class RefreshTimingTask(private val favoritesAdapter: FavoritesAdapter) : AsyncT
 
     override fun doInBackground(vararg params: Unit) {
         while (!this.isCancelled) {
-            Log.v(TAG, "Update time. Thread id: " + Thread.currentThread().id)
+            Timber.v("Update time. Thread id: %s", Thread.currentThread().id)
             try {
                 publishProgress()
                 Thread.sleep(10000)
             } catch (e: InterruptedException) {
-                Log.d(TAG, "Stopping thread. Normal Behavior")
+                Timber.d("Stopping thread. Normal Behavior")
             }
         }
-    }
-
-    companion object {
-        private val TAG = RefreshTimingTask::class.java.simpleName
     }
 }

@@ -21,7 +21,6 @@ package fr.cph.chicago.core.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.RelativeLayout
@@ -34,6 +33,7 @@ import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.repository.RealmConfig
 import org.rekotlin.StoreSubscriber
+import timber.log.Timber
 
 /**
  * This class represents the base activity of the application It will load the loading screen and then the main
@@ -82,7 +82,7 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading), StoreSubscriber<AppS
                 if (failureLayout.visibility != View.VISIBLE) failureLayout.visibility = View.VISIBLE
                 if (loadingLayout.visibility != View.GONE) loadingLayout.visibility = View.GONE
             }
-            else -> Log.d(TAG, "Unknown status on new state")
+            else -> Timber.d("Unknown status on new state")
         }
     }
 
@@ -91,9 +91,5 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading), StoreSubscriber<AppS
         finish()
         startActivity(intent)
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-    }
-
-    companion object {
-        private val TAG = BaseActivity::class.java.simpleName
     }
 }

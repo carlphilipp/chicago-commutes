@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.repository
 
-import android.util.Log
 import android.util.SparseArray
 import com.univocity.parsers.csv.CsvParser
 import com.univocity.parsers.csv.CsvParserSettings
@@ -31,6 +30,7 @@ import fr.cph.chicago.core.model.TrainStationPattern
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.util.Util
+import timber.log.Timber
 import java.io.IOException
 import java.io.InputStreamReader
 import java.util.TreeMap
@@ -43,7 +43,6 @@ import java.util.TreeMap
  */
 object TrainRepository {
 
-    private val TAG = TrainRepository::class.java.simpleName
     // https://data.cityofchicago.org/Transportation/CTA-System-Information-List-of-L-Stops/8pix-ypme
     private const val TRAIN_FILE_PATH = "train_stops.csv"
 
@@ -184,11 +183,11 @@ object TrainRepository {
                 } else {
                     (currentStation.stops as MutableList).add(stop)
                 }
-                Log.d(TAG, "Load $station")
+                Timber.d("Load %s", station)
             }
             stationsOrderByLine = sortStation(stations)
         } catch (e: IOException) {
-            Log.e(TAG, e.message, e)
+            Timber.e(e, "Error while reading csv file")
         } finally {
             Util.closeQuietly(inputStreamReader)
         }
@@ -210,7 +209,7 @@ object TrainRepository {
                     TrainStationPattern(name, Position(latitude, longitude))
                 }
         } catch (e: IOException) {
-            Log.e(TAG, e.message, e)
+            Timber.e(e, "Error while reading train pattern csv file")
             listOf()
         } finally {
             Util.closeQuietly(inputStreamReader)

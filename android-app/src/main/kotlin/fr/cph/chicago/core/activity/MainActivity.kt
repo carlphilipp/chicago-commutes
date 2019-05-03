@@ -23,7 +23,6 @@ import android.app.Activity
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -46,6 +45,7 @@ import fr.cph.chicago.core.fragment.TrainFragment
 import fr.cph.chicago.util.RateUtil
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 
@@ -173,7 +173,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
                 Observable.fromCallable { drawerLayout.closeDrawer(GravityCompat.START) }
                     .delay(500, TimeUnit.MILLISECONDS)
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnError { throwable -> Log.e(TAG, throwable.message, throwable) }
+                    .doOnError { throwable -> Timber.e(throwable) }
                     .subscribe { supportFragmentManager.beginTransaction().replace(R.id.container, nearbyFragment as androidx.fragment.app.Fragment).commitAllowingStateLoss() }
                 drawerLayout.closeDrawer(GravityCompat.START)
                 hideActionBarMenu()
@@ -252,7 +252,6 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     }
 
     companion object {
-        private val TAG = MainActivity::class.java.simpleName
         private const val SELECTED_ID = "SELECTED_ID"
     }
 }

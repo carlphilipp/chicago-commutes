@@ -24,7 +24,6 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils.TruncateAt
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -41,7 +40,6 @@ import butterknife.BindDrawable
 import butterknife.BindString
 import butterknife.BindView
 import fr.cph.chicago.R
-import fr.cph.chicago.core.App
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
@@ -59,6 +57,7 @@ import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Color
 import fr.cph.chicago.util.Util
 import org.rekotlin.StoreSubscriber
+import timber.log.Timber
 import java.util.Random
 
 /**
@@ -165,14 +164,14 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
     }
 
     override fun newState(state: AppState) {
-        Log.d(TAG, "New state")
+        Timber.d("New state")
         when (state.trainStationStatus) {
             Status.SUCCESS -> {
                 hideAllArrivalViews()
                 state.trainStationArrival.trainEtas.forEach { drawAllArrivalsTrain(it) }
             }
             Status.FAILURE -> util.showSnackBar(swipeRefreshLayout, state.trainStationErrorMessage)
-            else -> Log.d(TAG, "Status not handled")
+            else -> Timber.d("Status not handled")
         }
         stopRefreshing()
     }
@@ -367,9 +366,5 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
         val random = Random()
         val keys = stops.keys
         return keys.elementAt(random.nextInt(keys.size))
-    }
-
-    companion object {
-        private val TAG = TrainStationActivity::class.java.simpleName
     }
 }

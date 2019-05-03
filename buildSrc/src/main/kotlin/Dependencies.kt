@@ -25,6 +25,7 @@ object Version {
     val rx_android = "2.1.1"
     val re_kotlin = "1.0.0"
     val sliding_up_panel = "3.4.0"
+    val timber = "4.7.1"
     val univocity = "2.8.1"
 
     // Update
@@ -66,6 +67,7 @@ object Lib {
     val rx_android = "io.reactivex.rxjava2:rxandroid:${Version.rx_android}"
     val re_kotlin = "org.rekotlin:rekotlin:${Version.re_kotlin}"
     val sliding_up_panel = "com.sothree.slidinguppanel:library:${Version.sliding_up_panel}"
+    val timber = "com.jakewharton.timber:timber:${Version.timber}"
 
     // Test
     val junit = "junit:junit:${Version.junit}"

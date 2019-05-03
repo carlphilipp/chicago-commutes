@@ -20,7 +20,6 @@
 package fr.cph.chicago.core.activity.station
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -31,6 +30,7 @@ import fr.cph.chicago.core.model.Position
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 
 abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentView) {
 
@@ -46,7 +46,7 @@ abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentVi
                     streetViewImage.scaleType = ImageView.ScaleType.CENTER_CROP
                 },
                 { error ->
-                    Log.e(TAG, error.message, error)
+                    Timber.e(error, "Error while loading street view image")
                     failStreetViewImage(streetViewImage)
                 }
             )
@@ -59,8 +59,4 @@ abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentVi
     }
 
     protected abstract fun isFavorite(): Boolean
-
-    companion object {
-        private val TAG = StationActivity::class.java.simpleName
-    }
 }

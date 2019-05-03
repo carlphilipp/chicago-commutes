@@ -22,7 +22,6 @@ package fr.cph.chicago.rx
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,6 +37,7 @@ import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.util.Util
 import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
+import timber.log.Timber
 
 class BusDirectionObserver(private val screenWidth: Int,
                            private val parent: ViewGroup,
@@ -97,10 +97,6 @@ class BusDirectionObserver(private val screenWidth: Int,
     override fun onError(throwable: Throwable) {
         util.handleConnectOrParserException(throwable, convertView)
         convertView.visibility = LinearLayout.GONE
-        Log.e(TAG, throwable.message, throwable)
-    }
-
-    companion object {
-        private val TAG = BusDirectionObserver::class.java.simpleName
+        Timber.e(throwable, "Error while loading bus directions")
     }
 }

@@ -153,6 +153,8 @@ dependencies {
     implementation(Lib.easypermissions)
     implementation(Lib.photoview)
     implementation(Lib.re_kotlin)
+    implementation(Lib.timber)
+
 
     // Google play flavor
     googleplayImplementation(Lib.google_services_map)

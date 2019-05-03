@@ -23,7 +23,6 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.widget.TextView
 import butterknife.BindString
@@ -63,6 +62,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 
 /**
  * @author Carl-Philipp Harmant
@@ -246,7 +246,7 @@ class TrainMapActivity : FragmentMapActivity() {
             .subscribe(
                 { view -> update(feature, runNumber, view) },
                 { error ->
-                    Log.e(TAG, error.message, error)
+                    Timber.e(error)
                     Util.showSnackBar(layout, R.string.message_no_data)
                     showProgress(false)
                 })
@@ -306,7 +306,7 @@ class TrainMapActivity : FragmentMapActivity() {
                 .subscribe(
                     { points -> centerMap(points) },
                     { error ->
-                        Log.e(TAG, error.message, error)
+                        Timber.e(error)
                         Util.showSnackBar(layout, R.string.message_error_while_loading_data)
                     })
         } else {
@@ -320,7 +320,7 @@ class TrainMapActivity : FragmentMapActivity() {
                         }
                     },
                     { error ->
-                        Log.e(TAG, error.message, error)
+                        Timber.e(error)
                         Util.showSnackBar(layout, R.string.message_error_while_loading_data)
                     })
         }
@@ -358,9 +358,5 @@ class TrainMapActivity : FragmentMapActivity() {
             TrainLine.YELLOW -> R.drawable.yellow_marker
             TrainLine.NA -> R.drawable.red_marker
         }
-    }
-
-    companion object {
-        private val TAG = TrainMapActivity::class.java.simpleName
     }
 }

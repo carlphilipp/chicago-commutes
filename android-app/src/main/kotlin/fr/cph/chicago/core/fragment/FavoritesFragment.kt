@@ -23,7 +23,6 @@ import android.content.Intent
 import android.os.AsyncTask
 import android.os.AsyncTask.Status
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.RelativeLayout
@@ -51,6 +50,7 @@ import fr.cph.chicago.task.RefreshTimingTask
 import fr.cph.chicago.util.RateUtil
 import fr.cph.chicago.util.Util
 import org.rekotlin.StoreSubscriber
+import timber.log.Timber
 
 /**
  * Favorites Fragment
@@ -122,7 +122,6 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "On Resume, subscribe to main store")
         mainStore.subscribe(this)
         if (mainStore.state.busRoutes.isEmpty() || mainStore.state.bikeStations.isEmpty()) {
             mainStore.dispatch(BusRoutesAndBikeStationAction())
@@ -139,7 +138,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
     }
 
     override fun newState(state: AppState) {
-        Log.d(TAG, "Favorites new state with status ${state.status}")
+        Timber.d("Favorites new state with status %s", state.status)
         when (state.status) {
             SUCCESS -> {
                 showSuccessUi()
@@ -155,7 +154,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
                 displayErrorSnackBar(string.message_something_went_wrong)
                 stopRefreshing()
             }
-            UNKNOWN -> Log.d(TAG, "Unknown status on new state")
+            UNKNOWN -> Timber.d("Unknown status on new state")
         }
         adapter.updateData(
             date = state.lastFavoritesUpdate,
@@ -207,8 +206,6 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
     }
 
     companion object {
-
-        private val TAG = FavoritesFragment::class.java.simpleName
 
         /**
          * Returns a new trainService of this fragment for the given section number.
