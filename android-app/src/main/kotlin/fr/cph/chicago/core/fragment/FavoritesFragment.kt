@@ -156,11 +156,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<Stat
             }
             UNKNOWN -> Timber.d("Unknown status on new state")
         }
-        adapter.updateData(
-            date = state.lastFavoritesUpdate,
-            trainArrivals = state.trainArrivalsDTO.trainsArrivals,
-            busArrivals = state.busArrivalsDTO.busArrivals,
-            bikeStations = state.bikeStations)
+        adapter.update()
     }
 
     private fun showSuccessUi() {
@@ -202,7 +198,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<Stat
      */
     private fun startRefreshTask() {
         refreshTimingTask = RefreshTimingTask(adapter).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR) as RefreshTimingTask
-        adapter.refreshLastUpdateView()
+        adapter.update()
     }
 
     companion object {

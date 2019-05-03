@@ -27,7 +27,7 @@ class RefreshTimingTask(private val favoritesAdapter: FavoritesAdapter) : AsyncT
 
     override fun onProgressUpdate(vararg values: Unit) {
         super.onProgressUpdate()
-        this.favoritesAdapter.refreshLastUpdateView()
+        this.favoritesAdapter.update()
     }
 
     override fun doInBackground(vararg params: Unit) {

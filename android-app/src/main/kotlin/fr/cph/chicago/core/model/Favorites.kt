@@ -20,9 +20,9 @@
 package fr.cph.chicago.core.model
 
 import android.os.Parcelable
-import android.util.SparseArray
 import fr.cph.chicago.core.model.dto.BusArrivalStopMappedDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.PreferenceService
@@ -45,10 +45,6 @@ object Favorites {
     private val bikeService = BikeService
     private val preferenceService = PreferenceService
     private val util = Util
-
-    private var trainArrivals = SparseArray<TrainArrival>()
-    private var busArrivals = listOf<BusArrival>()
-    private var bikeStations = listOf<BikeStation>()
 
     private var trainFavorites = listOf<Int>()
     private var busFavorites = listOf<String>()
@@ -80,14 +76,14 @@ object Favorites {
             busService.getBusRoute(routeId)
         } else {
             val index = position - (trainFavorites.size + fakeBusFavorites.size)
-            bikeStations
+            store.state.bikeStations
                 .filter { bikeStation -> bikeStation.id == bikeFavorites[index] }
                 .getOrElse(0) { bikeService.createEmptyBikeStation(bikeFavorites[index]) }
         }
     }
 
     fun getTrainArrivalByLine(stationId: Int, trainLine: TrainLine): Map<String, String> {
-        return trainArrivals
+        return store.state.trainArrivalsDTO.trainsArrivals
             .get(stationId, TrainArrival.buildEmptyTrainArrival())
             .getEtas(trainLine)
             .fold(TreeMap()) { accumulator, eta ->
@@ -104,7 +100,7 @@ object Favorites {
 
     fun getBusArrivalsMapped(routeId: String): BusArrivalStopMappedDTO {
         val busArrivalDTO = BusArrivalStopMappedDTO()
-        busArrivals
+        store.state.busArrivalsDTO.busArrivals
             .filter { (_, _, _, _, _, rId) -> rId == routeId }
             .filter { (_, _, _, stopId, _, _, routeDirection) -> isBusInFavorites(routeId, stopId, routeDirection) }
             .forEach { busArrivalDTO.addBusArrival(it) }
@@ -118,20 +114,14 @@ object Favorites {
         trainFavorites = preferenceService.getTrainFavorites()
         busFavorites = preferenceService.getBusFavorites()
         fakeBusFavorites = calculateActualRouteNumberBusFavorites(busFavorites)
-        bikeFavorites = if (bikeStations.isNotEmpty()) {
+        bikeFavorites = if (store.state.bikeStations.isNotEmpty()) {
             preferenceService.getBikeFavorites()
-                .flatMap { bikeStationId -> bikeStations.filter { station -> station.id == bikeStationId } }
+                .flatMap { bikeStationId -> store.state.bikeStations.filter { station -> station.id == bikeStationId } }
                 .sortedWith(util.bikeStationComparator)
                 .map { station -> station.id }
         } else {
             preferenceService.getBikeFavorites()
         }
-    }
-
-    fun updateData(trainArrivals: SparseArray<TrainArrival>, busArrivals: List<BusArrival>, bikeStations: List<BikeStation>) {
-        this.trainArrivals = trainArrivals
-        this.busArrivals = busArrivals
-        this.bikeStations = bikeStations
     }
 
     private fun calculateActualRouteNumberBusFavorites(busFavorites: List<String>): List<String> {
@@ -161,7 +151,8 @@ object Favorites {
             if (routeIdFav == routeId) {
                 val stopId = stopId1.toInt()
 
-                val stopName = preferenceService.getBusStopNameMapping(stopId.toString()) ?: stopId.toString()
+                val stopName = preferenceService.getBusStopNameMapping(stopId.toString())
+                    ?: stopId.toString()
 
                 // FIXME check if that logic works. I think it does not. In what case do we show that bus arrival?
                 if (!busArrivalDTO.containsStopNameAndBound(stopName, bound)) {

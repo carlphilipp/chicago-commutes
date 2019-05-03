@@ -70,6 +70,7 @@ class App : Application() {
             Timber.e(throwable, "RxError not handled")
             startErrorActivity()
         }
+
         val action = ApiKeysAction(
             ctaTrainKey = applicationContext.getString(R.string.cta_train_key),
             ctaBusKey = applicationContext.getString(R.string.cta_bus_key),
