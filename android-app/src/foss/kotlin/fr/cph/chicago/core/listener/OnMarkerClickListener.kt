@@ -20,12 +20,12 @@
 package fr.cph.chicago.core.listener
 
 import android.annotation.SuppressLint
-import android.util.Log
 import com.mapbox.mapboxsdk.annotations.Marker
 import fr.cph.chicago.core.fragment.NearbyFragment
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Station
+import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusArrivalRouteDTO
 import fr.cph.chicago.core.model.marker.MarkerDataHolder
@@ -57,33 +57,26 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
 
     private fun loadTrainArrivals(trainTrainStation: TrainStation) {
         nearbyFragment.slidingUpAdapter.updateTitleTrain(trainTrainStation.name)
-        rxUtil.trainStation(trainTrainStation.id)
-            .subscribe(
-                { nearbyFragment.slidingUpAdapter.addTrainStation(it) },
-                { error -> Log.e(TAG, error.message, error) }
-            )
+        rxUtil.trainArrivals(trainTrainStation.id)
+            .onErrorReturn { TrainArrival.buildEmptyTrainArrival() }
+            .subscribe { result -> nearbyFragment.slidingUpAdapter.addTrainStation(result) }
     }
 
     private fun loadBusArrivals(busStop: BusStop) {
         nearbyFragment.slidingUpAdapter.updateTitleBus(busStop.name)
         rxUtil.busArrivals(busStop)
-            .subscribe(
-                { result ->
-                    val busArrivalRouteDTO = BusArrivalRouteDTO(BusArrivalRouteDTO.busComparator)
-                    result.forEach { busArrivalRouteDTO.addBusArrival(it) }
-                    nearbyFragment.slidingUpAdapter.addBusArrival(busArrivalRouteDTO)
-                },
-                { error -> Log.e(TAG, error.message, error) }
-            )
+            .subscribe { result ->
+                val busArrivalRouteDTO = BusArrivalRouteDTO(BusArrivalRouteDTO.busComparator)
+                result.forEach { busArrivalRouteDTO.addBusArrival(it) }
+                nearbyFragment.slidingUpAdapter.addBusArrival(busArrivalRouteDTO)
+            }
     }
 
     private fun loadBikes(bikeStation: BikeStation) {
         nearbyFragment.slidingUpAdapter.updateTitleBike(bikeStation.name)
         rxUtil.bikeOneStation(bikeStation)
-            .subscribe(
-                { nearbyFragment.slidingUpAdapter.addBike(it) },
-                { error -> Log.e(TAG, error.message, error) }
-            )
+            .subscribe { result -> nearbyFragment.slidingUpAdapter.addBike(result) }
+
     }
 
     companion object {

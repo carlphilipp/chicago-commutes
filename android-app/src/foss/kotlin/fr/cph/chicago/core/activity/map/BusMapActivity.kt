@@ -231,74 +231,70 @@ class BusMapActivity : FragmentMapActivity() {
 
     @SuppressLint("CheckResult")
     private fun loadActivityData() {
-        if (Util.isNetworkAvailable()) {
-            loadBuses()
-            if (drawLine) {
-                val index = intArrayOf(0)
-                Observable.fromCallable {
-                    val patterns: MutableList<BusPattern> = mutableListOf()
-                    if (busId == 0) {
-                        // Search for directions
-                        val busDirections = busService.loadBusDirections(busRouteId)
-                        bounds = busDirections.busDirections.map { busDirection -> busDirection.text }.toTypedArray()
-                    }
-                    busService.loadBusPattern(busRouteId, bounds).forEach { patterns.add(it) }
-                    patterns
+        loadBuses()
+        if (drawLine) {
+            val index = intArrayOf(0)
+            Observable.fromCallable {
+                val patterns: MutableList<BusPattern> = mutableListOf()
+                if (busId == 0) {
+                    // Search for directions
+                    val busDirections = busService.loadBusDirections(busRouteId)
+                    bounds = busDirections.busDirections.map { busDirection -> busDirection.text }.toTypedArray()
                 }
-                    .observeOn(Schedulers.computation())
-                    .map { patterns ->
-                        centerMap(patterns.flatMap { it.busStopsPatterns.map { patternPoint -> LatLng(patternPoint.position.latitude, patternPoint.position.longitude) } })
-                        patterns.map { pattern ->
-                            val positions = pattern.busStopsPatterns.map { patternPoint ->
-                                val latLng = LatLng(patternPoint.position.latitude, patternPoint.position.longitude)
-                                var marketOptions: MarkerOptions? = null
-                                if ("S" == patternPoint.type) {
-                                    marketOptions = MarkerOptions()
-                                        .position(latLng)
-                                        .title(patternPoint.stopName)
-                                        .snippet(pattern.direction)
-                                    if (index[0] != 0) {
-                                        marketOptions.icon(blueIcon)
-                                    } else {
-                                        marketOptions.icon(redIcon)
-                                    }
-                                }
-                                Pair(latLng, marketOptions)
-                            }
-
-                            val poly = PolylineOptions()
-                                .color(if (index[0] == 0) Color.RED else if (index[0] == 1) Color.BLUE else Color.YELLOW)
-                                .width((application as App).lineWidthMapBox)
-                                .addAll(positions.map { it.first })
-
-                            index[0]++
-                            Pair<PolylineOptions, List<MarkerOptions>>(
-                                poly,
-                                positions
-                                    .map { it.second }
-                                    .filter { markerOptions -> markerOptions != null }
-                                    .map { markerOptions -> markerOptions!! }
-                            )
-                        }
-                    }
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                        { result ->
-                            if (result != null) {
-                                drawPolyline(result.map { pair -> pair.first })
-                                this.markerOptions = result.flatMap { pair -> pair.second }
-                            } else {
-                                Util.showSnackBar(layout, R.string.message_no_pattern_found)
-                            }
-                        },
-                        { error ->
-                            Log.e(TAG, error.message, error)
-                            Util.showSnackBar(layout, R.string.message_no_pattern_found)
-                        })
+                busService.loadBusPattern(busRouteId, bounds).forEach { patterns.add(it) }
+                patterns
             }
-        } else {
-            Util.showNetworkErrorMessage(layout)
+                .observeOn(Schedulers.computation())
+                .map { patterns ->
+                    centerMap(patterns.flatMap { it.busStopsPatterns.map { patternPoint -> LatLng(patternPoint.position.latitude, patternPoint.position.longitude) } })
+                    patterns.map { pattern ->
+                        val positions = pattern.busStopsPatterns.map { patternPoint ->
+                            val latLng = LatLng(patternPoint.position.latitude, patternPoint.position.longitude)
+                            var marketOptions: MarkerOptions? = null
+                            if ("S" == patternPoint.type) {
+                                marketOptions = MarkerOptions()
+                                    .position(latLng)
+                                    .title(patternPoint.stopName)
+                                    .snippet(pattern.direction)
+                                if (index[0] != 0) {
+                                    marketOptions.icon(blueIcon)
+                                } else {
+                                    marketOptions.icon(redIcon)
+                                }
+                            }
+                            Pair(latLng, marketOptions)
+                        }
+
+                        val poly = PolylineOptions()
+                            .color(if (index[0] == 0) Color.RED else if (index[0] == 1) Color.BLUE else Color.YELLOW)
+                            .width((application as App).lineWidthMapBox)
+                            .addAll(positions.map { it.first })
+
+                        index[0]++
+                        Pair<PolylineOptions, List<MarkerOptions>>(
+                            poly,
+                            positions
+                                .map { it.second }
+                                .filter { markerOptions -> markerOptions != null }
+                                .map { markerOptions -> markerOptions!! }
+                        )
+                    }
+                }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { result ->
+                        if (result != null) {
+                            drawPolyline(result.map { pair -> pair.first })
+                            this.markerOptions = result.flatMap { pair -> pair.second }
+                        } else {
+                            Util.showSnackBar(layout, R.string.message_no_pattern_found)
+                        }
+                    },
+                    { error ->
+                        Log.e(TAG, error.message, error)
+                        Util.handleConnectOrParserException(error, layout)
+                    })
         }
     }
 
@@ -328,7 +324,7 @@ class BusMapActivity : FragmentMapActivity() {
                 },
                 { error ->
                     Log.e(TAG, error.message, error)
-                    Util.showSnackBar(layout, R.string.message_error_while_loading_data)
+                    Util.handleConnectOrParserException(error, layout)
                 })
     }
 

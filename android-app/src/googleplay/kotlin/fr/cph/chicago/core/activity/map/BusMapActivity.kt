@@ -251,31 +251,27 @@ class BusMapActivity : FragmentMapActivity() {
 
     @SuppressLint("CheckResult")
     private fun loadActivityData() {
-        if (Util.isNetworkAvailable()) {
-            rxUtil.busForRouteId(busRouteId).subscribe(BusObserver(this@BusMapActivity, true, layout))
-            if (loadPattern) {
-                Observable.fromCallable {
-                    val patterns: MutableList<BusPattern> = mutableListOf()
-                    if (busId == 0) {
-                        // Search for directions
-                        val busDirections = busService.loadBusDirections(busRouteId)
-                        bounds = busDirections.busDirections.map { busDirection -> busDirection.text }.toTypedArray()
-                    }
-                    busService.loadBusPattern(busRouteId, bounds).forEach { patterns.add(it) }
-                    patterns
+        rxUtil.busForRouteId(busRouteId).subscribe(BusObserver(this@BusMapActivity, true, layout))
+        if (loadPattern) {
+            Observable.fromCallable {
+                val patterns: MutableList<BusPattern> = mutableListOf()
+                if (busId == 0) {
+                    // Search for directions
+                    val busDirections = busService.loadBusDirections(busRouteId)
+                    bounds = busDirections.busDirections.map { busDirection -> busDirection.text }.toTypedArray()
                 }
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe { result ->
-                        if (result != null) {
-                            drawPattern(result)
-                        } else {
-                            Util.showNetworkErrorMessage(layout)
-                        }
-                    }
+                busService.loadBusPattern(busRouteId, bounds).forEach { patterns.add(it) }
+                patterns
             }
-        } else {
-            Util.showNetworkErrorMessage(layout)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { result ->
+                    if (result != null) {
+                        drawPattern(result)
+                    } else {
+                        Util.showNetworkErrorMessage(layout)
+                    }
+                }
         }
     }
 }

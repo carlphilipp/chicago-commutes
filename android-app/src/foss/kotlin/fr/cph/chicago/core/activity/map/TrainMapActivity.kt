@@ -187,13 +187,13 @@ class TrainMapActivity : FragmentMapActivity() {
     override fun onMapClick(point: LatLng) {
         val finalPoint = map.projection.toScreenLocation(point)
         val vehicleInfoFeatures = map.queryRenderedFeatures(finalPoint, VEHICLE_INFO_LAYER_ID)
-        if (!vehicleInfoFeatures.isEmpty()) {
+        if (vehicleInfoFeatures.isNotEmpty()) {
             val feature = vehicleInfoFeatures[0]
             clickOnVehicleInfo(feature)
         } else {
             val rectangle = toRect(finalPoint)
             val markerFeatures = map.queryRenderedFeatures(rectangle, VEHICLE_LAYER_ID)
-            if (!markerFeatures.isEmpty()) {
+            if (markerFeatures.isNotEmpty()) {
                 val title = markerFeatures[0].getStringProperty(PROPERTY_TITLE)
                 val featureList = vehicleFeatureCollection!!.features()
                 for (i in featureList!!.indices) {
@@ -204,7 +204,7 @@ class TrainMapActivity : FragmentMapActivity() {
                 }
             } else {
                 val stationsInfoFeatures = map.queryRenderedFeatures(rectangle, STATION_LAYER_ID)
-                if (!stationsInfoFeatures.isEmpty()) {
+                if (stationsInfoFeatures.isNotEmpty()) {
                     val title = stationsInfoFeatures[0].getStringProperty(PROPERTY_TITLE)
                     val featureList = stationFeatureCollection!!.features()
                     for (i in featureList!!.indices) {
@@ -253,80 +253,76 @@ class TrainMapActivity : FragmentMapActivity() {
     }
 
     private fun loadActivityData() {
-        if (Util.isNetworkAvailable()) {
-            // Load train location
-            val featuresTrains = rxUtil.trainLocations(line)
+        // Load train location
+        val featuresTrains = rxUtil.trainLocations(line)
+            .observeOn(Schedulers.computation())
+            .map { trains: List<Train> ->
+                val features = trains.map { train ->
+                    val feature = Feature.fromGeometry(Point.fromLngLat(train.position.longitude, train.position.latitude))
+                    feature.addNumberProperty(PROPERTY_HEADING, train.heading)
+                    feature.addStringProperty(PROPERTY_TITLE, train.runNumber.toString())
+                    feature.addStringProperty(PROPERTY_DESTINATION, "To ${train.destName}")
+                    feature.addBooleanProperty(PROPERTY_FAVOURITE, false)
+                    feature
+                }
+                FeatureCollection.fromFeatures(features)
+            }
+
+        if (drawLine) {
+            // Load pattern from local file
+            val polylineObs: Single<Pair<PolylineOptions, FeatureCollection>> = rxUtil.trainPatterns(line)
                 .observeOn(Schedulers.computation())
-                .map { trains: List<Train> ->
-                    val features = trains.map { train ->
-                        val feature = Feature.fromGeometry(Point.fromLngLat(train.position.longitude, train.position.latitude))
-                        feature.addNumberProperty(PROPERTY_HEADING, train.heading)
-                        feature.addStringProperty(PROPERTY_TITLE, train.runNumber.toString())
-                        feature.addStringProperty(PROPERTY_DESTINATION, "To ${train.destName}")
-                        feature.addBooleanProperty(PROPERTY_FAVOURITE, false)
-                        feature
-                    }
-                    FeatureCollection.fromFeatures(features)
+                .map { trainStationPatterns ->
+                    val poly = PolylineOptions()
+                        .width((application as App).lineWidthMapBox)
+                        .color(TrainLine.fromXmlString(line).color)
+                        .addAll(trainStationPatterns.map { trainStationPattern: TrainStationPattern ->
+                            LatLng(trainStationPattern.position.latitude, trainStationPattern.position.longitude)
+                        })
+                    val features = trainStationPatterns
+                        .filter { trainStationPattern -> trainStationPattern.stationName != null }
+                        .map { trainStationPattern ->
+                            val feature = Feature.fromGeometry(Point.fromLngLat(trainStationPattern.position.longitude, trainStationPattern.position.latitude))
+                            feature.addStringProperty(PROPERTY_TITLE, trainStationPattern.stationName)
+                            feature
+                        }
+                    val featureCollection = FeatureCollection.fromFeatures(features)
+                    Pair(poly, featureCollection)
                 }
 
-            if (drawLine) {
-                // Load pattern from local file
-                val polylineObs: Single<Pair<PolylineOptions, FeatureCollection>> = rxUtil.trainPatterns(line)
-                    .observeOn(Schedulers.computation())
-                    .map { trainStationPatterns ->
-                        val poly = PolylineOptions()
-                            .width((application as App).lineWidthMapBox)
-                            .color(TrainLine.fromXmlString(line).color)
-                            .addAll(trainStationPatterns.map { trainStationPattern: TrainStationPattern ->
-                                LatLng(trainStationPattern.position.latitude, trainStationPattern.position.longitude)
-                            })
-                        val features = trainStationPatterns
-                            .filter { trainStationPattern -> trainStationPattern.stationName != null }
-                            .map { trainStationPattern ->
-                                val feature = Feature.fromGeometry(Point.fromLngLat(trainStationPattern.position.longitude, trainStationPattern.position.latitude))
-                                feature.addStringProperty(PROPERTY_TITLE, trainStationPattern.stationName)
-                                feature
-                            }
-                        val featureCollection = FeatureCollection.fromFeatures(features)
-                        Pair(poly, featureCollection)
+            Single.zip(
+                featuresTrains.observeOn(AndroidSchedulers.mainThread()),
+                polylineObs.observeOn(AndroidSchedulers.mainThread()),
+                BiFunction { featuresTrain: FeatureCollection, pair: Pair<PolylineOptions, FeatureCollection> ->
+                    addVehicleFeatureCollection(featuresTrain)
+                    addStationFeatureCollection(pair.second)
+                    addStationOnMap(pair.second)
+                    drawPolyline(listOf(pair.first))
+                    if (featuresTrain.features() != null && featuresTrain.features()!!.isEmpty()) {
+                        Util.showSnackBar(layout, R.string.message_no_train_found)
                     }
-
-                Single.zip(
-                    featuresTrains.observeOn(AndroidSchedulers.mainThread()),
-                    polylineObs.observeOn(AndroidSchedulers.mainThread()),
-                    BiFunction { featuresTrain: FeatureCollection, pair: Pair<PolylineOptions, FeatureCollection> ->
-                        addVehicleFeatureCollection(featuresTrain)
-                        addStationFeatureCollection(pair.second)
-                        addStationOnMap(pair.second)
-                        drawPolyline(listOf(pair.first))
-                        if (featuresTrain.features() != null && featuresTrain.features()!!.isEmpty()) {
+                    pair.first.points
+                })
+                .subscribe(
+                    { points -> centerMap(points) },
+                    { error ->
+                        Log.e(TAG, error.message, error)
+                        Util.showSnackBar(layout, R.string.message_error_while_loading_data)
+                    })
+        } else {
+            featuresTrains
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { featureCollection ->
+                        addVehicleFeatureCollection(featureCollection)
+                        if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
                             Util.showSnackBar(layout, R.string.message_no_train_found)
                         }
-                        pair.first.points
+                    },
+                    { error ->
+                        Log.e(TAG, error.message, error)
+                        Util.showSnackBar(layout, R.string.message_error_while_loading_data)
                     })
-                    .subscribe(
-                        { points -> centerMap(points) },
-                        { error ->
-                            Log.e(TAG, error.message, error)
-                            Util.showSnackBar(layout, R.string.message_error_while_loading_data)
-                        })
-            } else {
-                featuresTrains
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                        { featureCollection ->
-                            addVehicleFeatureCollection(featureCollection)
-                            if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
-                                Util.showSnackBar(layout, R.string.message_no_train_found)
-                            }
-                        },
-                        { error ->
-                            Log.e(TAG, error.message, error)
-                            Util.showSnackBar(layout, R.string.message_error_while_loading_data)
-                        })
-            }
-        } else {
-            Util.showNetworkErrorMessage(layout)
         }
     }
 

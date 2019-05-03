@@ -82,9 +82,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
     @BindView(R.id.search_area)
     lateinit var searchAreaButton: Button
 
-    @BindString(R.string.bundle_bike_stations)
-    lateinit var bundleBikeStations: String
-
     private val util: Util = Util
     private val googleMapUtil = GoogleMapUtil
     private val observableUtil: RxUtil = RxUtil
@@ -243,21 +240,20 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
 
     @SuppressLint("MissingPermission")
     private fun startLoadingNearby() {
-        if (util.isNetworkAvailable()) {
-            showProgress(true)
+        showProgress(true)
+        if (fusedLocationClient == null) {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(mainActivity)
-            fusedLocationClient!!.lastLocation.addOnSuccessListener { location ->
-                val position = if (location == null) Position() else Position(location.latitude, location.longitude)
-                handleNearbyData(position)
-            }
-        } else {
-            util.showNetworkErrorMessage(mainActivity.drawerLayout)
-            showProgress(false)
+        }
+        fusedLocationClient?.lastLocation?.addOnSuccessListener { location ->
+            val position = if (location == null)
+                Position()
+            else
+                Position(location.latitude, location.longitude)
+            handleNearbyData(position)
         }
     }
 
     private fun handleNearbyData(position: Position) {
-        val bikeStations = mainStore.state.bikeStations
         var finalPosition = position
         if (position.longitude == 0.0 && position.latitude == 0.0) {
             Log.w(TAG, "Could not get current user location")
@@ -265,12 +261,12 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
             finalPosition = chicagoPosition
         }
 
-        val trainStationAroundObservable = observableUtil.trainStationAround(finalPosition)
-        val busStopsAroundObservable = observableUtil.busStopsAround(finalPosition)
-        val bikeStationsObservable = observableUtil.bikeStationAround(finalPosition, bikeStations)
-        Single.zip(trainStationAroundObservable, busStopsAroundObservable, bikeStationsObservable, Function3 { trains: List<TrainStation>, buses: List<BusStop>, divvies: List<BikeStation> ->
+        val trainStationAround = observableUtil.trainStationAround(finalPosition)
+        val busStopsAround = observableUtil.busStopsAround(finalPosition)
+        val bikeStationsAround = observableUtil.bikeStationAround(finalPosition, mainStore.state.bikeStations)
+        Single.zip(trainStationAround, busStopsAround, bikeStationsAround, Function3 { trains: List<TrainStation>, buses: List<BusStop>, bikeStations: List<BikeStation> ->
             googleMapUtil.centerMap(mapFragment, finalPosition)
-            updateMarkersAndModel(buses, trains, divvies)
+            updateMarkersAndModel(buses, trains, bikeStations)
             Any()
         }).subscribe()
     }
@@ -280,7 +276,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
         private val TAG = NearbyFragment::class.java.simpleName
 
         fun newInstance(sectionNumber: Int): NearbyFragment {
-            return Fragment.fragmentWithBundle(NearbyFragment(), sectionNumber) as NearbyFragment
+            return fragmentWithBundle(NearbyFragment(), sectionNumber) as NearbyFragment
         }
     }
 }

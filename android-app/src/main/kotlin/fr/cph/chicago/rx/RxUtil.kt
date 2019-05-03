@@ -98,7 +98,7 @@ object RxUtil {
         return createSingleFromCallable(Callable { busService.loadBusArrivals(requestRt, busRouteId, requestStopId, busStopId, bound, boundTitle) })
     }
 
-    fun trainStation(trainStationId: Int): Single<TrainArrival> {
+    fun trainArrivals(trainStationId: Int): Single<TrainArrival> {
         return createSingleFromCallable(Callable { trainService.loadStationTrainArrival(trainStationId) })
     }
 
@@ -138,7 +138,6 @@ object RxUtil {
 
     fun busForRouteId(busRouteId: String): Single<List<Bus>> {
         return createSingleFromCallable(Callable { busService.loadBus(busRouteId) })
-            .onErrorReturn(handleError())
     }
 
     fun trainLocations(line: String): Single<List<Train>> {

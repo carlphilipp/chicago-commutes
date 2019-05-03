@@ -21,7 +21,6 @@ package fr.cph.chicago.util
 
 import android.app.Activity
 import android.content.Context
-import android.net.ConnectivityManager
 import android.os.Build
 import android.util.TypedValue
 import android.view.View
@@ -118,13 +117,6 @@ object Util {
         return BusFavoriteDTO(routeId, stopId, bound)
     }
 
-    // FIXME: To delete
-    fun isNetworkAvailable(): Boolean {
-        val connectivityManager = App.instance.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetworkInfo = connectivityManager.activeNetworkInfo
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected
-    }
-
     fun setWindowsColor(activity: Activity, toolbar: Toolbar, trainLine: TrainLine) {
         var backgroundColor = 0
         var statusBarColor = 0
@@ -208,11 +200,11 @@ object Util {
         SnackBarUtil.smartShow(view, text)
     }
 
-    fun handleConnectOrParserException(throwable: Throwable, parserView: View) {
+    fun handleConnectOrParserException(throwable: Throwable, view: View) {
         if (throwable is ConnectException) {
-            showNetworkErrorMessage(parserView)
+            showNetworkErrorMessage(view)
         } else {
-            showOopsSomethingWentWrong(parserView)
+            showOopsSomethingWentWrong(view)
         }
     }
 
@@ -238,15 +230,6 @@ object Util {
             closable?.close()
         } catch (ioe: IOException) {
             // ignore
-        }
-    }
-
-    fun <T> asParcelableArrayList(list: List<T>): ArrayList<T> {
-        // Make sure that we have an ArrayList and not a kotlin.collections.EmptyList
-        return if (list.isEmpty()) {
-            ArrayList()
-        } else {
-            list as ArrayList
         }
     }
 

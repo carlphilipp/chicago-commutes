@@ -119,7 +119,7 @@ internal val trainStationMiddleware: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->
             (action as? TrainStationAction)?.let {
-                RxUtil.trainStation(action.trainStationId)
+                RxUtil.trainArrivals(action.trainStationId)
                     .subscribe(
                         { trainArrival ->
                             next(TrainStationAction(

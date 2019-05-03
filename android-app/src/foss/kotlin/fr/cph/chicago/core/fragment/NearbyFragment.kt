@@ -33,7 +33,6 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
-import butterknife.BindString
 import butterknife.BindView
 import com.mapbox.android.core.location.LocationEngine
 import com.mapbox.android.core.location.LocationEngineListener
@@ -60,6 +59,7 @@ import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.marker.MarkerDataHolder
+import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.Util
@@ -88,8 +88,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
     @BindView(R.id.mapView)
     @JvmField
     var mapView: MapView? = null
-    @BindString(R.string.bundle_bike_stations)
-    lateinit var bundleBikeStations: String
 
     lateinit var slidingUpAdapter: SlidingUpAdapter
     private lateinit var markerDataHolder: MarkerDataHolder
@@ -137,21 +135,14 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
 
     @SuppressLint("MissingPermission")
     private fun startLoadingNearby() {
-        if (util.isNetworkAvailable()) {
-            showProgress(true)
-            initLocationEngine()
-            initLocationLayer()
-            val position = if (locationOrigin == null) Position() else Position(locationOrigin!!.latitude, locationOrigin!!.longitude)
-            handleNearbyData(position)
-        } else {
-            util.showNetworkErrorMessage(mainActivity.drawerLayout)
-            showProgress(false)
-        }
+        showProgress(true)
+        initLocationEngine()
+        initLocationLayer()
+        val position = if (locationOrigin == null) Position() else Position(locationOrigin!!.latitude, locationOrigin!!.longitude)
+        handleNearbyData(position)
     }
 
     private fun handleNearbyData(position: Position) {
-        val bikeStations = mainActivity.intent.extras?.getParcelableArrayList(bundleBikeStations)
-            ?: listOf<BikeStation>()
         var chicago: Position? = null
         if (position.longitude == 0.0 && position.latitude == 0.0) {
             chicago = Position(chicagoPosition.latitude, chicagoPosition.longitude)
@@ -161,13 +152,13 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         val finalPosition = chicago ?: position
         val trainStationAroundObservable = rxUtil.trainStationAround(finalPosition)
         val busStopsAroundObservable = rxUtil.busStopsAround(finalPosition)
-        val bikeStationsObservable = rxUtil.bikeStationAround(finalPosition, bikeStations)
-        Single.zip(trainStationAroundObservable, busStopsAroundObservable, bikeStationsObservable, Function3 { trains: List<TrainStation>, buses: List<BusStop>, divvies: List<BikeStation> ->
+        val bikeStationsObservable = rxUtil.bikeStationAround(finalPosition, mainStore.state.bikeStations)
+        Single.zip(trainStationAroundObservable, busStopsAroundObservable, bikeStationsObservable, Function3 { trains: List<TrainStation>, buses: List<BusStop>, bikeStations: List<BikeStation> ->
             map.cameraPosition = CameraPosition.Builder()
                 .target(LatLng(finalPosition.latitude, finalPosition.longitude))
                 .zoom(15.0)
                 .build()
-            updateMarkersAndModel(buses, trains, divvies)
+            updateMarkersAndModel(buses, trains, bikeStations)
             Any()
         }).subscribe()
     }

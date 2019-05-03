@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.activity.map
 
+import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
@@ -231,46 +232,43 @@ class TrainMapActivity : FragmentMapActivity() {
         loadActivityData()
     }
 
+    @SuppressLint("CheckResult")
     private fun loadActivityData() {
-        if (Util.isNetworkAvailable()) {
-            // Load train location
-            val trainsObservable = observableUtil.trainLocations(line)
-            // Load pattern from local file
-            val positionsObservable = observableUtil.trainPatterns(line)
+        // Load train location
+        val trainsObservable = observableUtil.trainLocations(line)
+        // Load pattern from local file
+        val positionsObservable = observableUtil.trainPatterns(line)
 
-            if (drawLine) {
-                Single.zip(trainsObservable, positionsObservable, BiFunction { trains: List<Train>, positions: List<TrainStationPattern> ->
+        if (drawLine) {
+            Single.zip(trainsObservable, positionsObservable, BiFunction { trains: List<Train>, positions: List<TrainStationPattern> ->
+                drawTrains(trains)
+                drawLine(positions.map { it.position })
+                if (trains.isNotEmpty()) {
+                    if (centerMap) {
+                        centerMapOnTrain(trains)
+                    }
+                } else {
+                    Util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_no_train_found)
+                }
+                Any()
+            }).subscribe(
+                {},
+                { throwable ->
+                    Util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_error_while_loading_data)
+                    Log.e(TAG, "Error not handled", throwable)
+                }
+            )
+        } else {
+            trainsObservable.subscribe { trains ->
+                if (trains != null) {
                     drawTrains(trains)
-                    drawLine(positions.map { it.position })
-                    if (trains.isNotEmpty()) {
-                        if (centerMap) {
-                            centerMapOnTrain(trains)
-                        }
-                    } else {
+                    if (trains.isEmpty()) {
                         Util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_no_train_found)
                     }
-                    Any()
-                }).subscribe(
-                    {},
-                    { throwable ->
-                        Util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_error_while_loading_data)
-                        Log.e(TAG, "Error not handled", throwable)
-                    }
-                )
-            } else {
-                trainsObservable.subscribe { trains ->
-                    if (trains != null) {
-                        drawTrains(trains)
-                        if (trains.isEmpty()) {
-                            Util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_no_train_found)
-                        }
-                    } else {
-                        Util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_error_while_loading_data)
-                    }
+                } else {
+                    Util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_error_while_loading_data)
                 }
             }
-        } else {
-            Util.showNetworkErrorMessage(layout)
         }
     }
 

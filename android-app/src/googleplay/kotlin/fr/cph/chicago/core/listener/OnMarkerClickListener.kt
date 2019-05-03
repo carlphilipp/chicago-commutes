@@ -58,7 +58,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
     @SuppressLint("CheckResult")
     private fun loadTrainArrivals(trainTrainStation: TrainStation) {
         nearbyFragment.slidingUpAdapter.updateTitleTrain(trainTrainStation.name)
-        observableUtil.trainStation(trainTrainStation.id)
+        observableUtil.trainArrivals(trainTrainStation.id)
             .subscribe(
                 { nearbyFragment.slidingUpAdapter.addTrainStation(it) },
                 { onError -> Log.e(TAG, onError.message, onError) })
