@@ -27,6 +27,7 @@ fun reducer(action: Action, oldState: State?): State {
     when (action) {
         is ApiKeysAction -> {
             state = state.copy(
+                lastStateChange = Date(),
                 ctaTrainKey = action.ctaTrainKey,
                 ctaBusKey = action.ctaBusKey,
                 googleStreetKey = action.googleStreetKey)
