@@ -77,19 +77,6 @@
 
 -dontwarn com.fasterxml.jackson.**
 
--dontnote com.google.vending.**
--dontnote com.android.vending.**
--dontnote android.support.**
--dontnote android.net.http.**
--dontnote org.apache.http.**
--dontnote com.google.android.gms.**
--dontnote com.univocity.parsers.common.beans.**
--dontnote pub.devrel.easypermissions.EasyPermissions
--dontnote kotlin.internal.PlatformImplementationsKt
--dontnote kotlin.reflect.jvm.internal.ReflectionFactoryImpl
--dontnote okio.BufferedSink
--dontnote com.mapbox.mapboxsdk.maps.MapView
-
 -keep class com.github.chrisbanes.photoview.** { *; }
 -keepnames class com.fasterxml.jackson.** { *; }
 -keep,includedescriptorclasses class io.realm.RealmModel { *; }
@@ -159,4 +146,44 @@
 -keep class com.google.gson.**
 -keep class okio.BufferedSink
 
+# Other
+-dontnote androidx.appcompat.**
 -dontnote androidx.core.graphics.**
+-dontnote androidx.core.text.**
+-dontnote androidx.core.app.SharedElementCallback
+-dontnote androidx.collection.LongSparseArray
+-dontnote androidx.cursoradapter.**
+-dontnote androidx.core.widget.NestedScrollView$OnScrollChangeListener
+-dontnote androidx.drawerlayout.**
+-dontnote androidx.fragment.app.Fragment
+-dontnote androidx.fragment.app.Fragment$SavedState
+-dontnote androidx.fragment.app.Fragment$OnStartEnterTransitionListener
+-dontnote androidx.lifecycle.Lifecycle$Event
+-dontnote androidx.lifecycle.MethodCallsLogger
+-dontnote androidx.lifecycle.LifecycleOwner
+-dontnote androidx.media.**
+-dontnote androidx.recyclerview.**
+-dontnote androidx.slidingpanelayout.**
+-dontnote androidx.swiperefreshlayout.**
+-dontnote androidx.viewpager.widget.**
+-dontnote android.arch.lifecycle.**
+-dontnote android.content.res.ThemedResourceCache
+-dontnote android.graphics.Insets
+-dontnote android.support.**
+-dontnote android.net.http.**
+-dontnote android.view.GhostView
+-dontnote com.android.vending.**
+-dontnote com.android.internal.view.menu.MenuBuilder
+-dontnote com.google.android.gms.**
+-dontnote com.google.android.material.**
+-dontnote com.google.vending.**
+-dontnote com.mapbox.mapboxsdk.maps.MapView
+-dontnote com.univocity.parsers.common.beans.**
+-dontnote java.lang.invoke.**
+-dontnote kotlin.internal.PlatformImplementationsKt
+-dontnote kotlin.reflect.jvm.internal.ReflectionFactoryImpl
+-dontnote libcore.icu.ICU
+-dontnote org.apache.http.**
+-dontnote okio.BufferedSink
+-dontnote pub.devrel.easypermissions.EasyPermissions
+-dontnote sun.misc.Unsafe
