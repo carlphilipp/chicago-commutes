@@ -5,7 +5,7 @@ import org.rekotlin.Store
 import timber.log.Timber
 import java.util.Date
 
-val mainStore = Store(
+val store = Store(
     reducer = ::reducer,
     state = null,
     middleware = listOf(
@@ -20,11 +20,17 @@ val mainStore = Store(
     )
 )
 
-fun reducer(action: Action, oldState: AppState?): AppState {
+fun reducer(action: Action, oldState: State?): State {
     // if no state has been provided, create the default state
-    var state = oldState ?: AppState()
+    var state = oldState ?: State()
 
     when (action) {
+        is ApiKeysAction -> {
+            state = state.copy(
+                ctaTrainKey = action.ctaTrainKey,
+                ctaBusKey = action.ctaBusKey,
+                googleStreetKey = action.googleStreetKey)
+        }
         is BaseAction -> {
             val status = when {
                 action.localError -> Status.FULL_FAILURE

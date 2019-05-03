@@ -37,9 +37,9 @@ import fr.cph.chicago.core.adapter.AlertAdapter
 import fr.cph.chicago.core.model.dto.AlertType
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.redux.AlertAction
-import fr.cph.chicago.redux.AppState
+import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
-import fr.cph.chicago.redux.mainStore
+import fr.cph.chicago.redux.store
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
@@ -51,7 +51,7 @@ import timber.log.Timber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class AlertFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<AppState> {
+class AlertFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<State> {
 
     @BindView(R.id.fragment_bike_swipe_refresh_layout)
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
@@ -78,19 +78,19 @@ class AlertFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<A
 
     override fun onResume() {
         super.onResume()
-        mainStore.subscribe(this)
-        if (mainStore.state.alertsDTO.isEmpty()) {
+        store.subscribe(this)
+        if (store.state.alertsDTO.isEmpty()) {
             swipeRefreshLayout.isRefreshing = true
-            mainStore.dispatch(AlertAction())
+            store.dispatch(AlertAction())
         }
     }
 
     override fun onPause() {
         super.onPause()
-        mainStore.unsubscribe(this)
+        store.unsubscribe(this)
     }
 
-    override fun newState(state: AppState) {
+    override fun newState(state: State) {
         Timber.d("Alert new state")
         when (state.alertStatus) {
             Status.SUCCESS -> {
@@ -160,7 +160,7 @@ class AlertFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<A
 
     private fun startRefreshing() {
         swipeRefreshLayout.isRefreshing = true
-        mainStore.dispatch(AlertAction())
+        store.dispatch(AlertAction())
     }
 
     companion object {

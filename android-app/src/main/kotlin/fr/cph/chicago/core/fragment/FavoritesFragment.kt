@@ -36,7 +36,7 @@ import fr.cph.chicago.R.string
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.adapter.FavoritesAdapter
-import fr.cph.chicago.redux.AppState
+import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.BusRoutesAction
 import fr.cph.chicago.redux.BusRoutesAndBikeStationAction
 import fr.cph.chicago.redux.FavoritesAction
@@ -44,7 +44,7 @@ import fr.cph.chicago.redux.Status.FAILURE
 import fr.cph.chicago.redux.Status.FULL_FAILURE
 import fr.cph.chicago.redux.Status.SUCCESS
 import fr.cph.chicago.redux.Status.UNKNOWN
-import fr.cph.chicago.redux.mainStore
+import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.task.RefreshTimingTask
 import fr.cph.chicago.util.RateUtil
@@ -58,7 +58,7 @@ import timber.log.Timber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppState> {
+class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<State> {
 
     @BindView(R.id.welcome)
     lateinit var welcomeLayout: RelativeLayout
@@ -107,7 +107,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
     override fun onPause() {
         super.onPause()
         refreshTimingTask.cancel(true)
-        mainStore.unsubscribe(this)
+        store.unsubscribe(this)
     }
 
     override fun onStop() {
@@ -122,13 +122,13 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
 
     override fun onResume() {
         super.onResume()
-        mainStore.subscribe(this)
-        if (mainStore.state.busRoutes.isEmpty() || mainStore.state.bikeStations.isEmpty()) {
-            mainStore.dispatch(BusRoutesAndBikeStationAction())
+        store.subscribe(this)
+        if (store.state.busRoutes.isEmpty() || store.state.bikeStations.isEmpty()) {
+            store.dispatch(BusRoutesAndBikeStationAction())
         }
         if (App.instance.refresh) {
             App.instance.refresh = false
-            mainStore.dispatch(FavoritesAction())
+            store.dispatch(FavoritesAction())
         }
         adapter.refreshFavorites()
         adapter.notifyDataSetChanged()
@@ -137,7 +137,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
         }
     }
 
-    override fun newState(state: AppState) {
+    override fun newState(state: State) {
         Timber.d("Favorites new state with status %s", state.status)
         when (state.status) {
             SUCCESS -> {
@@ -177,9 +177,9 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
 
     private fun reloadData() {
         startRefreshing()
-        mainStore.dispatch(FavoritesAction())
-        if (mainStore.state.busRoutes.isEmpty()) { // Bike station is done already in the previous action
-            mainStore.dispatch(BusRoutesAction())
+        store.dispatch(FavoritesAction())
+        if (store.state.busRoutes.isEmpty()) { // Bike station is done already in the previous action
+            store.dispatch(BusRoutesAction())
         }
     }
 

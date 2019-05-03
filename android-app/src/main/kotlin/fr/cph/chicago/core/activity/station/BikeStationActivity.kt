@@ -35,10 +35,10 @@ import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.redux.AppState
+import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.BikeStationAction
 import fr.cph.chicago.redux.Status
-import fr.cph.chicago.redux.mainStore
+import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.Color
 import fr.cph.chicago.util.Util
@@ -51,7 +51,7 @@ import timber.log.Timber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BikeStationActivity : StationActivity(R.layout.activity_bike_station), StoreSubscriber<AppState> {
+class BikeStationActivity : StationActivity(R.layout.activity_bike_station), StoreSubscriber<State> {
 
     @BindView(R.id.activity_station_swipe_refresh_layout)
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
@@ -93,7 +93,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
         val longitude = bikeStation.longitude
 
         swipeRefreshLayout.setOnRefreshListener {
-            mainStore.dispatch(BikeStationAction())
+            store.dispatch(BikeStationAction())
             // FIXME: Identify if it's the place holder or not. This is not great
             if (streetViewImage.scaleType == ImageView.ScaleType.CENTER) {
                 loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewProgressBar)
@@ -121,15 +121,15 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
 
     override fun onPause() {
         super.onPause()
-        mainStore.unsubscribe(this)
+        store.unsubscribe(this)
     }
 
     override fun onResume() {
         super.onResume()
-        mainStore.subscribe(this)
+        store.subscribe(this)
     }
 
-    override fun newState(state: AppState) {
+    override fun newState(state: State) {
         if (state.bikeStationsStatus == Status.FAILURE || state.bikeStationsStatus == Status.FULL_FAILURE) {
             util.showSnackBar(swipeRefreshLayout, state.bikeStationsErrorMessage)
         } else {
@@ -155,7 +155,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
         toolbar.inflateMenu(R.menu.main)
         toolbar.setOnMenuItemClickListener {
             swipeRefreshLayout.isRefreshing = true
-            mainStore.dispatch(BikeStationAction())
+            store.dispatch(BikeStationAction())
             false
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

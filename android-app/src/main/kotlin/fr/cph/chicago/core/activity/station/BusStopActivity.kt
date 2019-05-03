@@ -40,9 +40,9 @@ import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
-import fr.cph.chicago.redux.AppState
+import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.BusStopArrivalsAction
-import fr.cph.chicago.redux.mainStore
+import fr.cph.chicago.redux.store
 import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.Color
@@ -51,6 +51,7 @@ import fr.cph.chicago.util.Util
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
@@ -60,7 +61,7 @@ import timber.log.Timber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<AppState> {
+class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<State> {
 
     @BindView(R.id.activity_bus_stop_swipe_refresh_layout)
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
@@ -154,7 +155,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
             if (latitude == 0.0 && longitude == 0.0) {
                 loadStopDetailsAndStreetImage()
             } else {
-                mainStore.dispatch(busStopArrivalsAction)
+                store.dispatch(busStopArrivalsAction)
                 // FIXME: Identify if it's the place holder or not. This is not great
                 if (streetViewImage.scaleType == ImageView.ScaleType.CENTER) {
                     loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewProgressBar)
@@ -172,16 +173,16 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
 
     override fun onPause() {
         super.onPause()
-        mainStore.unsubscribe(this)
+        store.unsubscribe(this)
     }
 
     override fun onResume() {
         super.onResume()
-        mainStore.subscribe(this)
-        mainStore.dispatch(busStopArrivalsAction)
+        store.subscribe(this)
+        store.dispatch(busStopArrivalsAction)
     }
 
-    override fun newState(state: AppState) {
+    override fun newState(state: State) {
         if (state.busStopError) {
             util.showSnackBar(swipeRefreshLayout, state.busStopErrorMessage)
         } else {
@@ -239,7 +240,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
         toolbar.inflateMenu(R.menu.main)
         toolbar.setOnMenuItemClickListener {
             swipeRefreshLayout.isRefreshing = true
-            mainStore.dispatch(busStopArrivalsAction)
+            store.dispatch(busStopArrivalsAction)
             false
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -253,11 +254,11 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         busStopId = savedInstanceState.getInt(bundleBusStopId)
-        busRouteId = savedInstanceState.getString(bundleBusRouteId) ?: ""
-        bound = savedInstanceState.getString(bundleBusBound) ?: ""
-        boundTitle = savedInstanceState.getString(bundleBusBoundTitle) ?: ""
-        busStopName = savedInstanceState.getString(bundleBusStopName) ?: ""
-        busRouteName = savedInstanceState.getString(bundleBusRouteName) ?: ""
+        busRouteId = savedInstanceState.getString(bundleBusRouteId) ?: StringUtils.EMPTY
+        bound = savedInstanceState.getString(bundleBusBound) ?: StringUtils.EMPTY
+        boundTitle = savedInstanceState.getString(bundleBusBoundTitle) ?: StringUtils.EMPTY
+        busStopName = savedInstanceState.getString(bundleBusStopName) ?: StringUtils.EMPTY
+        busRouteName = savedInstanceState.getString(bundleBusRouteName) ?: StringUtils.EMPTY
         latitude = savedInstanceState.getDouble(bundleBusLatitude)
         longitude = savedInstanceState.getDouble(bundleBusLongitude)
         busStopArrivalsAction = BusStopArrivalsAction(
@@ -294,7 +295,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
         cleanLayout()
         if (busArrivals.isEmpty()) {
             destinationTextView.text = App.instance.getString(R.string.bus_activity_no_service)
-            arrivalsTextView.text = ""
+            arrivalsTextView.text = StringUtils.EMPTY
         } else {
             val key1 = busArrivals.keys.iterator().next()
             destinationTextView.text = key1
@@ -328,8 +329,8 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
     }
 
     private fun cleanLayout() {
-        destinationTextView.text = ""
-        arrivalsTextView.text = ""
+        destinationTextView.text = StringUtils.EMPTY
+        arrivalsTextView.text = StringUtils.EMPTY
         while (leftLayout.childCount >= 2) {
             val view = leftLayout.getChildAt(leftLayout.childCount - 1)
             leftLayout.removeView(view)

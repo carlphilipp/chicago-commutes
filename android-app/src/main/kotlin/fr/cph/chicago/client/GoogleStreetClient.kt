@@ -21,7 +21,7 @@ package fr.cph.chicago.client
 
 import android.graphics.drawable.Drawable
 import fr.cph.chicago.Constants.Companion.GOOGLE_STREET_VIEW_URL
-import fr.cph.chicago.core.App
+import fr.cph.chicago.redux.store
 import fr.cph.chicago.util.Util
 import java.io.InputStream
 
@@ -38,7 +38,7 @@ object GoogleStreetClient {
     private const val FOV = 120
 
     fun connect(latitude: Double, longitude: Double): Drawable {
-        val address = "$GOOGLE_STREET_VIEW_URL?key=${App.googleStreetKey}&sensor=false&size=${WIDTH}x$HEIGHT&fov=$FOV&location=$latitude,$longitude&source=outdoor"
+        val address = "$GOOGLE_STREET_VIEW_URL?key=${store.state.googleStreetKey}&sensor=false&size=${WIDTH}x$HEIGHT&fov=$FOV&location=$latitude,$longitude&source=outdoor"
         return connectUrl(address)
     }
 

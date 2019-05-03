@@ -41,7 +41,7 @@ class BusFollowObserver(private val activity: BusMapActivity, private val layout
         var busArrivals = busArrivalsParam.toMutableList()
         if (!loadAll && busArrivals.size > 7) {
             busArrivals = busArrivals.subList(0, 6)
-            val busArrival = BusArrival(Date(), "added bus", view.context.getString(R.string.bus_all_results), 0, 0, "", "", StringUtils.EMPTY, Date(), false)
+            val busArrival = BusArrival(Date(), "added bus", view.context.getString(R.string.bus_all_results), 0, 0, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, Date(), false)
             busArrivals.add(busArrival)
         }
         val arrivals: ListView = view.findViewById(R.id.arrivals)

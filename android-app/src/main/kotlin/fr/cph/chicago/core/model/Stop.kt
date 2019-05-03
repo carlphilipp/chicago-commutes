@@ -41,8 +41,8 @@ data class Stop(
 
     private constructor(source: Parcel) : this(
         id = source.readInt(),
-        description = source.readString() ?: "",
-        direction = TrainDirection.fromString(source.readString() ?: ""),
+        description = source.readString() ?: StringUtils.EMPTY,
+        direction = TrainDirection.fromString(source.readString() ?: StringUtils.EMPTY),
         position = source.readParcelable<Position>(Position::class.java.classLoader) ?: Position(),
         ada = source.readString()!!.toBoolean(),
         lines = source.createStringArrayList()?.map { TrainLine.fromXmlString(it) }?.toSet()

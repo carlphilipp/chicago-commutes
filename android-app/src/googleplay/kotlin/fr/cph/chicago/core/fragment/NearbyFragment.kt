@@ -53,7 +53,7 @@ import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.marker.MarkerDataHolder
-import fr.cph.chicago.redux.mainStore
+import fr.cph.chicago.redux.store
 import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.util.GoogleMapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
@@ -262,7 +262,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
 
         val trainStationAround = observableUtil.trainStationAround(finalPosition)
         val busStopsAround = observableUtil.busStopsAround(finalPosition)
-        val bikeStationsAround = observableUtil.bikeStationAround(finalPosition, mainStore.state.bikeStations)
+        val bikeStationsAround = observableUtil.bikeStationAround(finalPosition, store.state.bikeStations)
         Single.zip(trainStationAround, busStopsAround, bikeStationsAround, Function3 { trains: List<TrainStation>, buses: List<BusStop>, bikeStations: List<BikeStation> ->
             googleMapUtil.centerMap(mapFragment, finalPosition)
             updateMarkersAndModel(buses, trains, bikeStations)

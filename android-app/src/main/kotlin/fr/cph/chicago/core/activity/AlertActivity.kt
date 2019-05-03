@@ -31,6 +31,7 @@ import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.adapter.AlertRouteAdapter
 import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.util.Util
+import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
 class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
@@ -55,8 +56,8 @@ class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        routeId = savedInstanceState.getString("routeId") ?: ""
-        title = savedInstanceState.getString("title") ?: ""
+        routeId = savedInstanceState.getString("routeId") ?: StringUtils.EMPTY
+        title = savedInstanceState.getString("title") ?: StringUtils.EMPTY
     }
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {

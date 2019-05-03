@@ -29,6 +29,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.dto.RouteAlertsDTO
+import org.apache.commons.lang3.StringUtils
 
 /**
  * Adapter that handle alert lists
@@ -66,15 +67,14 @@ class AlertRouteAdapter(private val routeAlertsDTOS: List<RouteAlertsDTO>) : Bas
         impact.text = item.impact
 
         val start: TextView = view.findViewById(R.id.start)
-        start.text = "From: " + item.start
+        start.text = "From: ${item.start}"
 
         val end: TextView = view.findViewById(R.id.end)
-        if (item.end == "") {
+        if (item.end == StringUtils.EMPTY) {
             end.visibility = LinearLayout.GONE
         } else {
-            end.text = "To: " + item.end
+            end.text = "To: ${item.end}"
         }
-
         return view
     }
 }

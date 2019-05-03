@@ -48,8 +48,8 @@ data class TrainEta(
         trainStation = source.readParcelable<TrainStation>(TrainStation::class.java.classLoader)
             ?: TrainStation.buildEmptyStation(),
         stop = source.readParcelable<Stop>(Stop::class.java.classLoader) ?: Stop.buildEmptyStop(),
-        routeName = TrainLine.fromXmlString(source.readString() ?: ""),
-        destName = source.readString() ?: "",
+        routeName = TrainLine.fromXmlString(source.readString() ?: StringUtils.EMPTY),
+        destName = source.readString() ?: StringUtils.EMPTY,
         predictionDate = Date(source.readLong()),
         arrivalDepartureDate = Date(source.readLong()),
         isApp = source.readString()?.toBoolean() ?: false,

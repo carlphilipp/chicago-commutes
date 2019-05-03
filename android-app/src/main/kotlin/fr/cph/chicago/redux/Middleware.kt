@@ -27,11 +27,11 @@ internal val baseMiddleware: Middleware<StateType> = { _, _ ->
                     .subscribe(
                         { favoritesDTO ->
                             val trainArrivals = if (favoritesDTO.trainArrivalDTO.error)
-                                TrainArrivalDTO(mainStore.state.trainArrivalsDTO.trainsArrivals, true)
+                                TrainArrivalDTO(store.state.trainArrivalsDTO.trainsArrivals, true)
                             else
                                 favoritesDTO.trainArrivalDTO
                             val busArrivals = if (favoritesDTO.busArrivalDTO.error)
-                                BusArrivalDTO(mainStore.state.busArrivalsDTO.busArrivals, true)
+                                BusArrivalDTO(store.state.busArrivalsDTO.busArrivals, true)
                             else
                                 favoritesDTO.busArrivalDTO
                             next(BaseAction(trainArrivalsDTO = trainArrivals, busArrivalsDTO = busArrivals))
@@ -96,17 +96,17 @@ internal val favoritesMiddleware: Middleware<StateType> = { _, _ ->
                 RxUtil.favorites()
                     .subscribe { favoritesDTO ->
                         val trainArrivals = if (favoritesDTO.trainArrivalDTO.error)
-                            TrainArrivalDTO(mainStore.state.trainArrivalsDTO.trainsArrivals, true)
+                            TrainArrivalDTO(store.state.trainArrivalsDTO.trainsArrivals, true)
                         else
                             favoritesDTO.trainArrivalDTO
                         val busArrivals = if (favoritesDTO.busArrivalDTO.error)
-                            BusArrivalDTO(mainStore.state.busArrivalsDTO.busArrivals, true)
+                            BusArrivalDTO(store.state.busArrivalsDTO.busArrivals, true)
                         else
                             favoritesDTO.busArrivalDTO
                         val newFavorites = FavoritesDTO(
                             trainArrivalDTO = trainArrivals,
                             busArrivalDTO = busArrivals,
-                            bikeStations = if (favoritesDTO.bikeError) mainStore.state.bikeStations else favoritesDTO.bikeStations,
+                            bikeStations = if (favoritesDTO.bikeError) store.state.bikeStations else favoritesDTO.bikeStations,
                             bikeError = favoritesDTO.bikeError)
                         next(FavoritesAction(favoritesDTO = newFavorites))
                     }

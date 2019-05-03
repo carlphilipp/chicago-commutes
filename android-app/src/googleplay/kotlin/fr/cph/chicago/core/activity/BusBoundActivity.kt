@@ -218,10 +218,10 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        busRouteId = savedInstanceState.getString(bundleBusRouteId) ?: ""
-        busRouteName = savedInstanceState.getString(bundleBusRouteName) ?: ""
-        bound = savedInstanceState.getString(bundleBusBound) ?: ""
-        boundTitle = savedInstanceState.getString(bundleBusBoundTitle) ?: ""
+        busRouteId = savedInstanceState.getString(bundleBusRouteId) ?: StringUtils.EMPTY
+        busRouteName = savedInstanceState.getString(bundleBusRouteName) ?: StringUtils.EMPTY
+        bound = savedInstanceState.getString(bundleBusBound) ?: StringUtils.EMPTY
+        boundTitle = savedInstanceState.getString(bundleBusBoundTitle) ?: StringUtils.EMPTY
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {

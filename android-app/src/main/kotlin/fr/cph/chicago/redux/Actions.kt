@@ -10,7 +10,14 @@ import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.core.model.dto.FavoritesDTO
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
+import org.apache.commons.lang3.StringUtils
 import org.rekotlin.Action
+
+data class ApiKeysAction(
+    val ctaTrainKey: String,
+    val ctaBusKey: String,
+    val googleStreetKey: String
+) : Action
 
 data class BaseAction(
     val localError: Boolean = false,
@@ -52,12 +59,12 @@ data class TrainStationAction(
 // Bus stop activity
 data class BusStopArrivalsAction(
     // input
-    val requestRt: String = "",
-    val busRouteId: String = "",
-    val requestStopId: String = "",
+    val requestRt: String = StringUtils.EMPTY,
+    val busRouteId: String = StringUtils.EMPTY,
+    val requestStopId: String = StringUtils.EMPTY,
     val busStopId: Int = 0,
-    val bound: String = "",
-    val boundTitle: String = "",
+    val bound: String = StringUtils.EMPTY,
+    val boundTitle: String = StringUtils.EMPTY,
     // output
     val busArrivalStopDTO: BusArrivalStopDTO = BusArrivalStopDTO(),
     val error: Boolean = false,

@@ -49,6 +49,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
+import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
 /**
@@ -75,7 +76,7 @@ class TrainMapActivity : FragmentMapActivity() {
 
     override fun create(savedInstanceState: Bundle?) {
         line = if (savedInstanceState != null)
-            savedInstanceState.getString(bundleTrainLine) ?: ""
+            savedInstanceState.getString(bundleTrainLine) ?: StringUtils.EMPTY
         else
             intent.getStringExtra(bundleTrainLine)
 
@@ -111,7 +112,7 @@ class TrainMapActivity : FragmentMapActivity() {
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        line = savedInstanceState.getString(bundleTrainLine) ?: ""
+        line = savedInstanceState.getString(bundleTrainLine) ?: StringUtils.EMPTY
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
@@ -202,7 +203,7 @@ class TrainMapActivity : FragmentMapActivity() {
             override fun getInfoContents(marker: Marker): View? {
                 return when {
                     stationMarkers.contains(marker) -> null
-                    "" != marker.snippet -> {
+                    StringUtils.EMPTY != marker.snippet -> {
                         val view = views[marker]
                         if (!refreshingInfoWindow) {
                             selectedMarker = marker
@@ -218,7 +219,7 @@ class TrainMapActivity : FragmentMapActivity() {
             }
         })
         googleMap.setOnInfoWindowClickListener { marker ->
-            if ("" != marker.snippet) {
+            if (StringUtils.EMPTY != marker.snippet) {
                 val view = views[marker]
                 if (!refreshingInfoWindow) {
                     selectedMarker = marker

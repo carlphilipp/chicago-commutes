@@ -39,6 +39,7 @@ import fr.cph.chicago.core.adapter.SearchAdapter
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
+import org.apache.commons.lang3.StringUtils
 
 class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
 
@@ -55,7 +56,7 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
 
     private lateinit var searchView: SearchView
     private lateinit var searchAdapter: SearchAdapter
-    private var query: String = ""
+    private var query: String = StringUtils.EMPTY
 
     private val supportActionBarNotNull: ActionBar
         get() = supportActionBar ?: throw RuntimeException()
@@ -137,7 +138,7 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        query = savedInstanceState.getString(SearchManager.QUERY, "")
+        query = savedInstanceState.getString(SearchManager.QUERY, StringUtils.EMPTY)
         // FIXME: For some reason the query does not appear in the search view
         searchView.setQuery(query, true)
     }

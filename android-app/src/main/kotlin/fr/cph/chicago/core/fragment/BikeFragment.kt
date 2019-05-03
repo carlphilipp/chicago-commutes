@@ -33,10 +33,10 @@ import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.adapter.BikeAdapter
 import fr.cph.chicago.core.model.BikeStation
-import fr.cph.chicago.redux.AppState
+import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.BikeStationAction
 import fr.cph.chicago.redux.Status
-import fr.cph.chicago.redux.mainStore
+import fr.cph.chicago.redux.store
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
@@ -48,7 +48,7 @@ import timber.log.Timber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BikeFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<AppState> {
+class BikeFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<State> {
 
     @BindView(R.id.fragment_bike_swipe_refresh_layout)
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
@@ -75,18 +75,18 @@ class BikeFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<Ap
 
     override fun onResume() {
         super.onResume()
-        mainStore.subscribe(this)
-        if (mainStore.state.bikeStations.isEmpty()) {
-            mainStore.dispatch(BikeStationAction())
+        store.subscribe(this)
+        if (store.state.bikeStations.isEmpty()) {
+            store.dispatch(BikeStationAction())
         }
     }
 
     override fun onPause() {
         super.onPause()
-        mainStore.unsubscribe(this)
+        store.unsubscribe(this)
     }
 
-    override fun newState(state: AppState) {
+    override fun newState(state: State) {
         Timber.d("Bike stations new state")
         when (state.bikeStationsStatus) {
             Status.SUCCESS -> showSuccessLayout()
@@ -144,7 +144,7 @@ class BikeFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<Ap
 
     private fun startRefreshing() {
         swipeRefreshLayout.isRefreshing = true
-        mainStore.dispatch(BikeStationAction())
+        store.dispatch(BikeStationAction())
     }
 
     companion object {

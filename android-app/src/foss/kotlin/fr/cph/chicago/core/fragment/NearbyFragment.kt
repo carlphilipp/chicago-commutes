@@ -59,7 +59,7 @@ import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.marker.MarkerDataHolder
-import fr.cph.chicago.redux.mainStore
+import fr.cph.chicago.redux.store
 import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.Util
@@ -152,7 +152,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         val finalPosition = chicago ?: position
         val trainStationAroundObservable = rxUtil.trainStationAround(finalPosition)
         val busStopsAroundObservable = rxUtil.busStopsAround(finalPosition)
-        val bikeStationsObservable = rxUtil.bikeStationAround(finalPosition, mainStore.state.bikeStations)
+        val bikeStationsObservable = rxUtil.bikeStationAround(finalPosition, store.state.bikeStations)
         Single.zip(trainStationAroundObservable, busStopsAroundObservable, bikeStationsObservable, Function3 { trains: List<TrainStation>, buses: List<BusStop>, bikeStations: List<BikeStation> ->
             map.cameraPosition = CameraPosition.Builder()
                 .target(LatLng(finalPosition.latitude, finalPosition.longitude))

@@ -46,7 +46,7 @@ import fr.cph.chicago.entity.BusRoutesResponse
 import fr.cph.chicago.entity.BusStopsResponse
 import fr.cph.chicago.exception.CtaException
 import fr.cph.chicago.parser.BusStopCsvParser
-import fr.cph.chicago.redux.mainStore
+import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.BusRepository
 import fr.cph.chicago.util.Util
 import org.apache.commons.collections4.MultiValuedMap
@@ -150,7 +150,7 @@ object BusService {
                     direction = ptr.rtdir,
                     busStopsPatterns = ptr.pt
                         .map { pt ->
-                            BusStopPattern(Position(pt.lat, pt.lon), pt.typ, pt.stpnm ?: "")
+                            BusStopPattern(Position(pt.lat, pt.lon), pt.typ, pt.stpnm ?: StringUtils.EMPTY)
                         }
                         .toMutableList()
                 )
@@ -192,10 +192,10 @@ object BusService {
      *  We can't guaranty that the repo will be populated when we call that method
      */
     fun getBusRoute(routeId: String): BusRoute {
-        return if (mainStore.state.busRoutes.isEmpty()) {
+        return if (store.state.busRoutes.isEmpty()) {
             getBusRouteFromFavorites(routeId)
         } else {
-            return mainStore.state.busRoutes
+            return store.state.busRoutes
                 .filter { (id) -> id == routeId }
                 .getOrNull(0) ?: getBusRouteFromFavorites(routeId)
         }
@@ -208,7 +208,7 @@ object BusService {
 
     // TODO: not sure it's the right pattern to pass busRoutes here.
     fun searchBusRoutes(query: String): List<BusRoute> {
-        return mainStore.state.busRoutes
+        return store.state.busRoutes
             .filter { (id, name) -> containsIgnoreCase(id, query) || containsIgnoreCase(name, query) }
             .distinct()
             .sortedWith(util.busStopComparatorByName)

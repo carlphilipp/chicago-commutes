@@ -27,6 +27,8 @@ import android.graphics.drawable.Drawable
 import android.view.WindowManager
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.ErrorActivity
+import fr.cph.chicago.redux.ApiKeysAction
+import fr.cph.chicago.redux.store
 import io.reactivex.plugins.RxJavaPlugins
 import timber.log.Timber
 import timber.log.Timber.DebugTree
@@ -62,16 +64,17 @@ class App : Application() {
         super.onCreate()
 
         Timber.plant(DebugTree())
-
-        ctaTrainKey = applicationContext.getString(R.string.cta_train_key)
-        ctaBusKey = applicationContext.getString(R.string.cta_bus_key)
-        googleStreetKey = applicationContext.getString(R.string.google_maps_api_key)
         instance = this
 
         RxJavaPlugins.setErrorHandler { throwable ->
             Timber.e(throwable, "RxError not handled")
             startErrorActivity()
         }
+        val action = ApiKeysAction(
+            ctaTrainKey = applicationContext.getString(R.string.cta_train_key),
+            ctaBusKey = applicationContext.getString(R.string.cta_bus_key),
+            googleStreetKey = applicationContext.getString(R.string.google_maps_api_key))
+        store.dispatch(action)
     }
 
     private val screenSize: IntArray by lazy {
@@ -83,9 +86,6 @@ class App : Application() {
     }
 
     companion object {
-        lateinit var ctaTrainKey: String
-        lateinit var ctaBusKey: String
-        lateinit var googleStreetKey: String
         lateinit var instance: App
 
         private fun startErrorActivity() {

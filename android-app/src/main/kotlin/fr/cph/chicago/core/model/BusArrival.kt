@@ -46,13 +46,13 @@ data class BusArrival(
 
     private constructor(source: Parcel) : this(
         timeStamp = Date(source.readLong()),
-        errorMessage = source.readString() ?: "",
-        stopName = source.readString() ?: "",
+        errorMessage = source.readString() ?: StringUtils.EMPTY,
+        stopName = source.readString() ?: StringUtils.EMPTY,
         stopId = source.readInt(),
         busId = source.readInt(),
-        routeId = source.readString() ?: "",
-        routeDirection = source.readString() ?: "",
-        busDestination = source.readString() ?: "",
+        routeId = source.readString() ?: StringUtils.EMPTY,
+        routeDirection = source.readString() ?: StringUtils.EMPTY,
+        busDestination = source.readString() ?: StringUtils.EMPTY,
         predictionTime = Date(source.readLong()),
         isDelay = source.readString()!!.toBoolean())
 

@@ -39,7 +39,7 @@ class TrainStation(
 
     private constructor(source: Parcel) : this(
         id = source.readInt(),
-        name = source.readString() ?: "",
+        name = source.readString() ?: StringUtils.EMPTY,
         stops = source.createTypedArrayList(Stop.CREATOR) ?: listOf())
 
     val lines: Set<TrainLine>

@@ -60,6 +60,7 @@ import fr.cph.chicago.util.Util
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
 /**
@@ -87,7 +88,7 @@ class BusMapActivity : FragmentMapActivity() {
     override fun create(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             busId = savedInstanceState.getInt(bundleBusId)
-            busRouteId = savedInstanceState.getString(bundleBusRouteId) ?: ""
+            busRouteId = savedInstanceState.getString(bundleBusRouteId) ?: StringUtils.EMPTY
             bounds = savedInstanceState.getStringArray(bundleBusBounds) ?: arrayOf()
         } else {
             busId = intent.getIntExtra(bundleBusId, 0)
@@ -113,7 +114,7 @@ class BusMapActivity : FragmentMapActivity() {
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         busId = savedInstanceState.getInt(bundleBusId)
-        busRouteId = savedInstanceState.getString(bundleBusRouteId) ?: ""
+        busRouteId = savedInstanceState.getString(bundleBusRouteId) ?: StringUtils.EMPTY
         bounds = savedInstanceState.getStringArray(bundleBusBounds) ?: arrayOf()
     }
 

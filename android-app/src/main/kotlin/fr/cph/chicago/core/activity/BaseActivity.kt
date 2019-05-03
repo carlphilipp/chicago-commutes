@@ -27,10 +27,10 @@ import android.widget.RelativeLayout
 import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
-import fr.cph.chicago.redux.AppState
+import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.BaseAction
 import fr.cph.chicago.redux.Status
-import fr.cph.chicago.redux.mainStore
+import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.RealmConfig
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
@@ -42,7 +42,7 @@ import timber.log.Timber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BaseActivity : ButterKnifeActivity(R.layout.loading), StoreSubscriber<AppState> {
+class BaseActivity : ButterKnifeActivity(R.layout.loading), StoreSubscriber<State> {
 
     @BindView(R.id.loading_layout)
     lateinit var loadingLayout: RelativeLayout
@@ -54,13 +54,13 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading), StoreSubscriber<AppS
     private val realmConfig: RealmConfig = RealmConfig
 
     override fun create(savedInstanceState: Bundle?) {
-        mainStore.subscribe(this)
+        store.subscribe(this)
         setUpRealm()
-        mainStore.dispatch(BaseAction())
+        store.dispatch(BaseAction())
         retryButton.setOnClickListener {
             if (failureLayout.visibility != View.GONE) failureLayout.visibility = View.GONE
             if (loadingLayout.visibility != View.VISIBLE) loadingLayout.visibility = View.VISIBLE
-            mainStore.dispatch(BaseAction())
+            store.dispatch(BaseAction())
         }
     }
 
@@ -68,14 +68,14 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading), StoreSubscriber<AppS
         realmConfig.setUpRealm()
     }
 
-    override fun newState(state: AppState) {
+    override fun newState(state: State) {
         when (state.status) {
             Status.SUCCESS -> {
-                mainStore.unsubscribe(this)
+                store.unsubscribe(this)
                 startMainActivity()
             }
             Status.FAILURE -> {
-                mainStore.unsubscribe(this)
+                store.unsubscribe(this)
                 startMainActivity()
             }
             Status.FULL_FAILURE -> {

@@ -62,6 +62,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
+import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
 /**
@@ -83,7 +84,7 @@ class TrainMapActivity : FragmentMapActivity() {
 
     override fun create(savedInstanceState: Bundle?) {
         line = if (savedInstanceState != null)
-            savedInstanceState.getString(bundleTrainLine) ?: ""
+            savedInstanceState.getString(bundleTrainLine) ?: StringUtils.EMPTY
         else
             intent.getStringExtra(bundleTrainLine)
 
@@ -104,7 +105,7 @@ class TrainMapActivity : FragmentMapActivity() {
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        line = savedInstanceState.getString(bundleTrainLine) ?: ""
+        line = savedInstanceState.getString(bundleTrainLine) ?: StringUtils.EMPTY
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {

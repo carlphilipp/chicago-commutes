@@ -15,12 +15,12 @@ class BikeStation(
 
     private constructor(source: Parcel) : this(
         id = source.readInt(),
-        name = source.readString() ?: "",
+        name = source.readString() ?: StringUtils.EMPTY,
         availableDocks = source.readInt(),
         availableBikes = source.readInt(),
         latitude = source.readDouble(),
         longitude = source.readDouble(),
-        address = source.readString() ?: "")
+        address = source.readString() ?: StringUtils.EMPTY)
 
     override fun describeContents(): Int {
         return 0

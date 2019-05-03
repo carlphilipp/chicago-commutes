@@ -23,7 +23,7 @@ import fr.cph.chicago.client.DivvyClient
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.entity.DivvyResponse
 import fr.cph.chicago.parser.JsonParser
-import fr.cph.chicago.redux.mainStore
+import fr.cph.chicago.redux.store
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 
@@ -58,7 +58,7 @@ object BikeService {
     }
 
     fun searchBikeStations(query: String): List<BikeStation> {
-        return mainStore.state.bikeStations
+        return store.state.bikeStations
             .filter { station -> containsIgnoreCase(station.name, query) || containsIgnoreCase(station.address, query) }
             .distinct()
             .sortedWith(util.bikeStationComparator)

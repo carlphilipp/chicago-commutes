@@ -31,6 +31,7 @@ import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.adapter.TrainAdapter
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.util.Util
+import org.apache.commons.lang3.StringUtils
 
 /**
  * Activity the list of train stations
@@ -55,7 +56,7 @@ class TrainListStationActivity : ButterKnifeActivity(R.layout.activity_train_sta
     override fun create(savedInstanceState: Bundle?) {
         // Load data
         lineParam = if (savedInstanceState != null) savedInstanceState.getString(bundleTrainLine)
-            ?: "" else intent.getStringExtra(bundleTrainLine)
+            ?: StringUtils.EMPTY else intent.getStringExtra(bundleTrainLine)
 
         trainLine = TrainLine.fromString(lineParam)
         title = trainLine.toStringWithLine()
@@ -71,7 +72,7 @@ class TrainListStationActivity : ButterKnifeActivity(R.layout.activity_train_sta
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        lineParam = savedInstanceState.getString(bundleTrainLine) ?: ""
+        lineParam = savedInstanceState.getString(bundleTrainLine) ?: StringUtils.EMPTY
         trainLine = TrainLine.fromString(lineParam)
     }
 

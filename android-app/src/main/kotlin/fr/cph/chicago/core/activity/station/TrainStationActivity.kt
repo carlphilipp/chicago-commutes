@@ -48,14 +48,15 @@ import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.redux.AppState
+import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.TrainStationAction
-import fr.cph.chicago.redux.mainStore
+import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Color
 import fr.cph.chicago.util.Util
+import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 import java.util.Random
@@ -66,7 +67,7 @@ import java.util.Random
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSubscriber<AppState> {
+class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSubscriber<State> {
 
     @BindView(android.R.id.content)
     lateinit var viewGroup: ViewGroup
@@ -139,7 +140,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
             streetViewImage.setOnClickListener(GoogleStreetOnClickListener(position.latitude, position.longitude))
             streetViewImage.layoutParams = params
             swipeRefreshLayout.setOnRefreshListener {
-                mainStore.dispatch(TrainStationAction(trainStation.id))
+                store.dispatch(TrainStationAction(trainStation.id))
                 // FIXME: Identify if it's the place holder or not. This is not great
                 if (streetViewImage.scaleType == ImageView.ScaleType.CENTER) {
                     loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
@@ -163,7 +164,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
         }
     }
 
-    override fun newState(state: AppState) {
+    override fun newState(state: State) {
         Timber.d("New state")
         when (state.trainStationStatus) {
             Status.SUCCESS -> {
@@ -197,7 +198,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
                 checkBox.setOnCheckedChangeListener { _, isChecked -> preferenceService.saveTrainFilter(stationId, line, stop.direction, isChecked) }
                 checkBox.setOnClickListener {
                     if (checkBox.isChecked) {
-                        mainStore.dispatch(TrainStationAction(trainStation.id))
+                        store.dispatch(TrainStationAction(trainStation.id))
                     }
                 }
                 checkBox.isChecked = preferenceService.getTrainFilter(stationId, line, stop.direction)
@@ -230,7 +231,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
         toolbar.inflateMenu(R.menu.main)
         toolbar.setOnMenuItemClickListener {
             swipeRefreshLayout.isRefreshing = true
-            mainStore.dispatch(TrainStationAction(trainStation.id))
+            store.dispatch(TrainStationAction(trainStation.id))
             false
         }
 
@@ -248,13 +249,13 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
 
     override fun onPause() {
         super.onPause()
-        mainStore.unsubscribe(this)
+        store.unsubscribe(this)
     }
 
     override fun onResume() {
         super.onResume()
-        mainStore.subscribe(this)
-        mainStore.dispatch(TrainStationAction(trainStation.id))
+        store.subscribe(this)
+        store.dispatch(TrainStationAction(trainStation.id))
         swipeRefreshLayout.isRefreshing = true
     }
 
@@ -295,7 +296,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
                                 val view = arrivalTrainsLayout.getChildAt(i) as LinearLayout
                                 val timing = view.getChildAt(1) as TextView?
                                 if (timing != null) {
-                                    timing.text = ""
+                                    timing.text = StringUtils.EMPTY
                                 }
                             }
                         }

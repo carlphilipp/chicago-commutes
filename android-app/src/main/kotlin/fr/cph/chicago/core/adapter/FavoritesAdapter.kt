@@ -47,10 +47,11 @@ import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
-import fr.cph.chicago.redux.mainStore
+import fr.cph.chicago.redux.store
 import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.Util
+import org.apache.commons.lang3.StringUtils
 import java.util.Calendar
 import java.util.Date
 
@@ -67,7 +68,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
     private val util = Util
     private val favorites = Favorites
     private val layoutUtil = LayoutUtil
-    private var lastUpdate: String = ""
+    private var lastUpdate: String = StringUtils.EMPTY
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoritesViewHolder {
         // create a new view
@@ -199,7 +200,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
     }
 
     fun refreshLastUpdateView() {
-        lastUpdate = TimeUtil.formatTimeDifference(mainStore.state.lastFavoritesUpdate, Calendar.getInstance().time)
+        lastUpdate = TimeUtil.formatTimeDifference(store.state.lastFavoritesUpdate, Calendar.getInstance().time)
         notifyDataSetChanged()
     }
 

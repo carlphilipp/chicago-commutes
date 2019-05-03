@@ -33,10 +33,10 @@ import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.adapter.BusAdapter
 import fr.cph.chicago.core.model.BusRoute
-import fr.cph.chicago.redux.AppState
+import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.BusRoutesAction
 import fr.cph.chicago.redux.Status
-import fr.cph.chicago.redux.mainStore
+import fr.cph.chicago.redux.store
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
@@ -48,7 +48,7 @@ import timber.log.Timber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<AppState> {
+class BusFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<State> {
 
     @BindView(R.id.fragment_bike_swipe_refresh_layout)
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
@@ -75,15 +75,15 @@ class BusFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<App
 
     override fun onResume() {
         super.onResume()
-        mainStore.subscribe(this)
+        store.subscribe(this)
     }
 
     override fun onPause() {
         super.onPause()
-        mainStore.unsubscribe(this)
+        store.unsubscribe(this)
     }
 
-    override fun newState(state: AppState) {
+    override fun newState(state: State) {
         Timber.d("Bus stops new state")
         when (state.busRoutesStatus) {
             Status.SUCCESS -> showSuccessLayout()
@@ -117,7 +117,7 @@ class BusFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<App
 
     private fun startRefreshing() {
         swipeRefreshLayout.isRefreshing = true
-        mainStore.dispatch(BusRoutesAction())
+        store.dispatch(BusRoutesAction())
     }
 
     private fun updateData(busRoutes: List<BusRoute>) {
