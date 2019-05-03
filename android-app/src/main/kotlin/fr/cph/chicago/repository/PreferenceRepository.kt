@@ -27,6 +27,7 @@ import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
+import org.apache.commons.lang3.StringUtils
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -86,33 +87,33 @@ object PreferenceRepository {
         return !((setPref1 == null || setPref1.size == 0) && (setPref2 == null || setPref2.size == 0) && (setPref3 == null || setPref3.size == 0))
     }
 
-    fun saveBikeFavorites(favorites: List<String>) {
+    fun saveBikeFavorites(favorites: List<Int>) {
         val sharedPref = getPrivatePreferences()
         val editor = sharedPref.edit()
-        val set = favorites.toSet()
+        val set = favorites.map { it.toString() }.toSet()
         Log.v(TAG, "Put bike favorites: $set")
         editor.putStringSet(PREFERENCE_FAVORITES_BIKE, set)
         editor.apply()
     }
 
-    fun getBikeFavorites(): List<String> {
+    fun getBikeFavorites(): List<Int> {
         val sharedPref = getPrivatePreferences()
         val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_BIKE, LinkedHashSet()) ?: setOf()
         Log.v(TAG, "Read bike favorites : $setPref")
-        return setPref.sorted()
+        return setPref.map { it.toInt() }.sorted()
     }
 
-    fun addBikeRouteNameMapping(bikeId: String, bikeName: String) {
+    fun addBikeRouteNameMapping(bikeId: Int, bikeName: String) {
         val sharedPref = getPrivatePreferencesBikeMapping()
         val editor = sharedPref.edit()
-        editor.putString(bikeId, bikeName)
+        editor.putString(bikeId.toString(), bikeName)
         Log.v(TAG, "Add bike name mapping : $bikeId => $bikeName")
         editor.apply()
     }
 
-    fun getBikeRouteNameMapping(bikeId: String): String? {
+    fun getBikeRouteNameMapping(bikeId: Int): String {
         val sharedPref = getPrivatePreferencesBikeMapping()
-        val bikeName = sharedPref.getString(bikeId, null)
+        val bikeName = sharedPref.getString(bikeId.toString(), StringUtils.EMPTY)!!
         Log.v(TAG, "Get bike name mapping : $bikeId => $bikeName")
         return bikeName
     }
@@ -159,9 +160,9 @@ object PreferenceRepository {
         editor.apply()
     }
 
-    fun getBusRouteNameMapping(busStopId: String): String? {
+    fun getBusRouteNameMapping(busStopId: String): String {
         val sharedPref = getPrivatePreferencesBusRouteMapping()
-        val routeName = sharedPref.getString(busStopId, null)
+        val routeName = sharedPref.getString(busStopId, "?")!!
         Log.v(TAG, "Get bus route name mapping : $busStopId => $routeName")
         return routeName
     }

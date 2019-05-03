@@ -220,7 +220,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
             false
         } else {
             preferenceService.addToBikeFavorites(bikeStation.id, swipeRefreshLayout)
-            preferenceService.addBikeRouteNameMapping(bikeStation.id.toString(), bikeStation.name)
+            preferenceService.addBikeRouteNameMapping(bikeStation.id, bikeStation.name)
             favoritesImage.setColorFilter(Color.yellowLineDark)
             true
         }

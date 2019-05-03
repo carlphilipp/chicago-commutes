@@ -63,7 +63,7 @@ object PreferenceService {
         repo.saveTrainFilter(stationId, line, direction, value)
     }
 
-    fun addBikeRouteNameMapping(bikeId: String, bikeName: String) {
+    fun addBikeRouteNameMapping(bikeId: Int, bikeName: String) {
         repo.addBikeRouteNameMapping(bikeId, bikeName)
     }
 
@@ -99,15 +99,13 @@ object PreferenceService {
     }
 
     fun isBikeStationFavorite(bikeStationId: Int): Boolean {
-        return !repo.getBikeFavorites()
-            .firstOrNull { it.toInt() == bikeStationId }
-            .isNullOrBlank()
+        return repo.getBikeFavorites().any { id -> id == bikeStationId }
     }
 
     fun addToBikeFavorites(stationId: Int, view: View) {
         val favorites = repo.getBikeFavorites().toMutableList()
-        if (!favorites.contains(stationId.toString())) {
-            favorites.add(stationId.toString())
+        if (!favorites.contains(stationId)) {
+            favorites.add(stationId)
             repo.saveBikeFavorites(favorites)
             util.showSnackBar(view, R.string.message_add_fav)
         }
@@ -161,7 +159,7 @@ object PreferenceService {
 
     fun removeFromBikeFavorites(stationId: Int, view: View) {
         val favorites = repo.getBikeFavorites().toMutableList()
-        favorites.remove(stationId.toString())
+        favorites.remove(stationId)
         repo.saveBikeFavorites(favorites)
         util.showSnackBar(view, R.string.message_remove_fav)
     }
@@ -173,7 +171,7 @@ object PreferenceService {
         util.showSnackBar(view, R.string.message_remove_fav)
     }
 
-    fun getBikeFavorites(): List<String> {
+    fun getBikeFavorites(): List<Int> {
         return repo.getBikeFavorites()
     }
 
@@ -185,11 +183,11 @@ object PreferenceService {
         return repo.getBusFavorites()
     }
 
-    fun getBusRouteNameMapping(busStopId: String): String? {
+    fun getBusRouteNameMapping(busStopId: String): String {
         return repo.getBusRouteNameMapping(busStopId)
     }
 
-    fun getBikeRouteNameMapping(bikeId: String): String? {
+    fun getBikeRouteNameMapping(bikeId: Int): String {
         return repo.getBikeRouteNameMapping(bikeId)
     }
 

@@ -1,5 +1,6 @@
 package fr.cph.chicago.util
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
@@ -35,10 +36,11 @@ object RateUtil {
         }
     }
 
+    @SuppressLint("CheckResult")
     fun displayRateSnackBarIfNeeded(view: View, activity: Activity) {
         Observable.fromCallable { preferenceService.getRateLastSeen() }
             .delay(2L, TimeUnit.SECONDS)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { lastSeen ->

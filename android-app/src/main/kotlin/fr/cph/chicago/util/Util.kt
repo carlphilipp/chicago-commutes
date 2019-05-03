@@ -118,6 +118,7 @@ object Util {
         return BusFavoriteDTO(routeId, stopId, bound)
     }
 
+    // FIXME: To delete
     fun isNetworkAvailable(): Boolean {
         val connectivityManager = App.instance.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetworkInfo = connectivityManager.activeNetworkInfo

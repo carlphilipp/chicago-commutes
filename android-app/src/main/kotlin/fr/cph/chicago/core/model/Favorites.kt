@@ -46,14 +46,14 @@ object Favorites {
     private val preferenceService = PreferenceService
     private val util = Util
 
-    private var trainArrivals: SparseArray<TrainArrival> = SparseArray()
-    private var busArrivals: List<BusArrival> = listOf()
-    private var bikeStations: List<BikeStation> = listOf()
+    private var trainArrivals = SparseArray<TrainArrival>()
+    private var busArrivals = listOf<BusArrival>()
+    private var bikeStations = listOf<BikeStation>()
 
-    private var trainFavorites: List<Int> = listOf()
-    private var busFavorites: List<String> = listOf()
-    private var fakeBusFavorites: List<String> = listOf()
-    private var bikeFavorites: List<String> = listOf()
+    private var trainFavorites = listOf<Int>()
+    private var busFavorites = listOf<String>()
+    private var fakeBusFavorites = listOf<String>()
+    private var bikeFavorites = listOf<Int>()
 
     /**
      * Get the size of the current model
@@ -81,7 +81,7 @@ object Favorites {
         } else {
             val index = position - (trainFavorites.size + fakeBusFavorites.size)
             bikeStations
-                .filter { bikeStation -> bikeStation.id.toString() == bikeFavorites[index] }
+                .filter { bikeStation -> bikeStation.id == bikeFavorites[index] }
                 .getOrElse(0) { bikeService.createEmptyBikeStation(bikeFavorites[index]) }
         }
     }
@@ -106,7 +106,7 @@ object Favorites {
         val busArrivalDTO = BusArrivalStopMappedDTO()
         busArrivals
             .filter { (_, _, _, _, _, rId) -> rId == routeId }
-            .filter { (_, _, _, stopId, _, _, routeDirection) -> isInFavorites(routeId, stopId, routeDirection) }
+            .filter { (_, _, _, stopId, _, _, routeDirection) -> isBusInFavorites(routeId, stopId, routeDirection) }
             .forEach { busArrivalDTO.addBusArrival(it) }
 
         // Put empty buses if one of the stop is missing from the response
@@ -120,9 +120,9 @@ object Favorites {
         fakeBusFavorites = calculateActualRouteNumberBusFavorites(busFavorites)
         bikeFavorites = if (bikeStations.isNotEmpty()) {
             preferenceService.getBikeFavorites()
-                .flatMap { bikeStationId -> bikeStations.filter { st -> st.id.toString() == bikeStationId } }
+                .flatMap { bikeStationId -> bikeStations.filter { station -> station.id == bikeStationId } }
                 .sortedWith(util.bikeStationComparator)
-                .map { st -> st.id.toString() }
+                .map { station -> station.id }
         } else {
             preferenceService.getBikeFavorites()
         }
@@ -149,7 +149,7 @@ object Favorites {
      * @param bound   the bound
      * @return a boolean
      */
-    private fun isInFavorites(routeId: String, stopId: Int, bound: String): Boolean {
+    private fun isBusInFavorites(routeId: String, stopId: Int, bound: String): Boolean {
         return busFavorites
             .map { util.decodeBusFavorite(it) }
             .any { (routeId1, stopId1, bound1) -> routeId == routeId1 && stopId.toString() == stopId1 && bound == bound1 }
@@ -161,8 +161,7 @@ object Favorites {
             if (routeIdFav == routeId) {
                 val stopId = stopId1.toInt()
 
-                var stopName = preferenceService.getBusStopNameMapping(stopId.toString())
-                stopName = stopName ?: stopId.toString()
+                val stopName = preferenceService.getBusStopNameMapping(stopId.toString()) ?: stopId.toString()
 
                 // FIXME check if that logic works. I think it does not. In what case do we show that bus arrival?
                 if (!busArrivalDTO.containsStopNameAndBound(stopName, bound)) {

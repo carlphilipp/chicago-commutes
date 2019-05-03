@@ -204,7 +204,7 @@ object BusService {
 
     private fun getBusRouteFromFavorites(routeId: String): BusRoute {
         val routeName = preferenceService.getBusRouteNameMapping(routeId)
-        return BusRoute(routeId, routeName ?: "?")
+        return BusRoute(routeId, routeName)
     }
 
     // TODO: not sure it's the right pattern to pass busRoutes here.

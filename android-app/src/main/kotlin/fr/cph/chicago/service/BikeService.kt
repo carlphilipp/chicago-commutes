@@ -25,7 +25,6 @@ import fr.cph.chicago.entity.DivvyResponse
 import fr.cph.chicago.parser.JsonParser
 import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.util.Util
-import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 
 object BikeService {
@@ -65,8 +64,8 @@ object BikeService {
             .sortedWith(util.bikeStationComparator)
     }
 
-    fun createEmptyBikeStation(bikeId: String): BikeStation {
-        val stationName = preferenceService.getBikeRouteNameMapping(bikeId)
-        return BikeStation.buildDefaultBikeStationWithName(stationName ?: StringUtils.EMPTY)
+    fun createEmptyBikeStation(bikeStationId: Int): BikeStation {
+        val stationName = preferenceService.getBikeRouteNameMapping(bikeStationId)
+        return BikeStation.buildDefaultBikeStationWithName(stationName)
     }
 }

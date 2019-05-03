@@ -67,7 +67,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
     private val util = Util
     private val favorites = Favorites
     private val layoutUtil = LayoutUtil
-    private lateinit var lastUpdate: String
+    private var lastUpdate: String = ""
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoritesViewHolder {
         // create a new view
