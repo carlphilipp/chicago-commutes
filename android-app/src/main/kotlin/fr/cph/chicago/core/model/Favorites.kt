@@ -114,14 +114,7 @@ object Favorites {
         trainFavorites = preferenceService.getTrainFavorites()
         busFavorites = preferenceService.getBusFavorites()
         fakeBusFavorites = calculateActualRouteNumberBusFavorites(busFavorites)
-        bikeFavorites = if (store.state.bikeStations.isNotEmpty()) {
-            preferenceService.getBikeFavorites()
-                .flatMap { bikeStationId -> store.state.bikeStations.filter { station -> station.id == bikeStationId } }
-                .sortedWith(util.bikeStationComparator)
-                .map { station -> station.id }
-        } else {
-            preferenceService.getBikeFavorites()
-        }
+        bikeFavorites = preferenceService.getBikeFavorites()
     }
 
     private fun calculateActualRouteNumberBusFavorites(busFavorites: List<String>): List<String> {

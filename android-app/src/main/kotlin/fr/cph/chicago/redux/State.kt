@@ -15,13 +15,18 @@ import java.util.Date
 
 data class State(
     // Api keys
-    val ctaTrainKey: String = StringUtils.EMPTY ,
+    val ctaTrainKey: String = StringUtils.EMPTY,
     val ctaBusKey: String = StringUtils.EMPTY,
     val googleStreetKey: String = StringUtils.EMPTY,
 
     val lastStateChange: Date = Date(), // Field to ensure the update of the state
     val status: Status = Status.UNKNOWN,
     val lastFavoritesUpdate: Date = Date(), // Field displayed in favorites
+
+    // Favorites
+    val trainFavorites: List<Int> = listOf(),
+    val busFavorites: List<String> = listOf(),
+    val bikeFavorites: List<Int> = listOf(),
 
     // Trains and Buses arrivals
     val trainArrivalsDTO: TrainArrivalDTO = TrainArrivalDTO(SparseArray(), false),

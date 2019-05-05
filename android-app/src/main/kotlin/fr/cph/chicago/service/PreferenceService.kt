@@ -22,8 +22,10 @@ package fr.cph.chicago.service
 import android.view.View
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
+import fr.cph.chicago.core.model.Favorites
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.PreferenceRepository
 import fr.cph.chicago.util.Util
 import org.apache.commons.collections4.MultiValuedMap
@@ -173,6 +175,9 @@ object PreferenceService {
 
     fun getBikeFavorites(): List<Int> {
         return repo.getBikeFavorites()
+            .flatMap { bikeStationId -> store.state.bikeStations.filter { station -> station.id == bikeStationId } }
+            .sortedWith(util.bikeStationComparator)
+            .map { station -> station.id }
     }
 
     fun getTrainFavorites(): List<Int> {
