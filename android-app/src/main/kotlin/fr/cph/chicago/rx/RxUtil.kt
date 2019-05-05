@@ -45,6 +45,7 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.service.AlertService
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
+import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.MapUtil
 import io.reactivex.Single
@@ -53,7 +54,7 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function3
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
-import java.util.concurrent.Callable
+import java.util.concurrent.*
 
 object RxUtil {
 
@@ -61,6 +62,7 @@ object RxUtil {
     private val busService = BusService
     private val bikeService = BikeService
     private val alertService = AlertService
+    private val preferenceService = PreferenceService
     private val positionUtil = MapUtil
 
     // Local
@@ -193,7 +195,7 @@ object RxUtil {
     }
 
     // Combined
-    fun baseFavorites(): Single<FavoritesDTO> {
+    fun baseArrivals(): Single<FavoritesDTO> {
         // Train online favorites
         val favoritesTrainArrivals = favoritesTrainArrivalDTO().observeOn(Schedulers.computation())
 
@@ -240,6 +242,19 @@ object RxUtil {
                 FirstLoadDTO(busRoutes.isEmpty(), bikeStations.isEmpty(), busRoutes, bikeStations)
             }
         )
+    }
+
+    // Favorites
+    fun getTrainFavorites(): Single<List<Int>> {
+        return preferenceService.getTrainFavorites().subscribeOn(Schedulers.io())
+    }
+
+    fun addToTrainFavorites(stationId: Int): Single<Unit> {
+        return Single.fromCallable { preferenceService.addToTrainFavorites(stationId) }.subscribeOn(Schedulers.io())
+    }
+
+    fun removeFromTrainFavorites(stationId: Int): Single<Unit> {
+        return Single.fromCallable { preferenceService.removeFromTrainFavorites(stationId) }.subscribeOn(Schedulers.io())
     }
 
     private fun <T> createSingleFromCallable(supplier: Callable<T>): Single<T> {

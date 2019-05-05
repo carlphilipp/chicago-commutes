@@ -29,8 +29,7 @@ import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
-import java.util.Date
-import java.util.TreeMap
+import java.util.*
 
 /**
  * Vehicle Arrival. Hold data for favorites adapter.
@@ -111,10 +110,11 @@ object Favorites {
     }
 
     fun refreshFavorites() {
-        trainFavorites = preferenceService.getTrainFavorites()
-        busFavorites = preferenceService.getBusFavorites()
-        fakeBusFavorites = calculateActualRouteNumberBusFavorites(busFavorites)
-        bikeFavorites = preferenceService.getBikeFavorites()
+        trainFavorites = store.state.trainFavorites
+        busFavorites = store.state.busFavorites
+        // TODO: Put that into state and do the operation into middleware
+        fakeBusFavorites = calculateActualRouteNumberBusFavorites(store.state.busFavorites)
+        bikeFavorites = store.state.bikeFavorites
     }
 
     private fun calculateActualRouteNumberBusFavorites(busFavorites: List<String>): List<String> {
@@ -147,7 +147,6 @@ object Favorites {
                 val stopName = preferenceService.getBusStopNameMapping(stopId.toString())
                     ?: stopId.toString()
 
-                // FIXME check if that logic works. I think it does not. In what case do we show that bus arrival?
                 if (!busArrivalDTO.containsStopNameAndBound(stopName, bound)) {
                     val busArrival = BusArrival(Date(), "added bus", stopName, stopId, 0, routeIdFav, bound, StringUtils.EMPTY, Date(), false)
                     busArrivalDTO.addBusArrival(busArrival)

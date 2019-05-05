@@ -33,8 +33,8 @@ import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.adapter.BikeAdapter
 import fr.cph.chicago.core.model.BikeStation
-import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.BikeStationAction
+import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.util.Util
@@ -89,7 +89,7 @@ class BikeFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<St
     override fun newState(state: State) {
         Timber.d("Bike stations new state")
         when (state.bikeStationsStatus) {
-            Status.SUCCESS -> showSuccessLayout()
+            Status.SUCCESS, Status.ADD_FAVORITES, Status.REMOVE_FAVORITES -> showSuccessLayout()
             Status.FAILURE -> {
                 Util.showSnackBar(swipeRefreshLayout, state.bikeStationsErrorMessage)
                 showSuccessLayout()

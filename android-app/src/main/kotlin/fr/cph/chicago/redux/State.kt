@@ -48,7 +48,7 @@ data class State(
     val trainStationArrival: TrainArrival = TrainArrival.buildEmptyTrainArrival(),
 
     // Bus stop activity state
-    val busStopError: Boolean = false,
+    val busStopStatus: Status = Status.UNKNOWN,
     val busStopErrorMessage: Int = R.string.message_something_went_wrong,
     val busArrivalStopDTO: BusArrivalStopDTO = BusArrivalStopDTO(),
 
@@ -62,5 +62,7 @@ enum class Status {
     UNKNOWN,
     SUCCESS,
     FAILURE,
-    FULL_FAILURE
+    FULL_FAILURE,
+    ADD_FAVORITES,
+    REMOVE_FAVORITES
 }

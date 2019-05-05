@@ -3,7 +3,7 @@ package fr.cph.chicago.redux
 import org.rekotlin.Action
 import org.rekotlin.Store
 import timber.log.Timber
-import java.util.Date
+import java.util.*
 
 val store = Store(
     reducer = ::reducer,
@@ -16,7 +16,13 @@ val store = Store(
         busStopArrivalsMiddleware,
         bikeStationMiddleware,
         busRoutesMiddleware,
-        alertMiddleware
+        alertMiddleware,
+        addTrainFavorites,
+        removeTrainFavorites,
+        addBusFavorites,
+        removeBusFavorites,
+        addBikeFavorites,
+        removeBikeFavorites
     )
 )
 
@@ -43,7 +49,10 @@ fun reducer(action: Action, oldState: State?): State {
                 status = status,
                 lastFavoritesUpdate = Date(),
                 trainArrivalsDTO = action.trainArrivalsDTO,
-                busArrivalsDTO = action.busArrivalsDTO
+                busArrivalsDTO = action.busArrivalsDTO,
+                trainFavorites = action.trainFavorites,
+                busFavorites = action.busFavorites,
+                bikeFavorites = action.bikeFavorites
             )
         }
         is BusRoutesAndBikeStationAction -> {
@@ -117,9 +126,13 @@ fun reducer(action: Action, oldState: State?): State {
             )
         }
         is BusStopArrivalsAction -> {
+            val busStopStatus = when {
+                action.error -> Status.FAILURE
+                else -> Status.SUCCESS
+            }
             state = state.copy(
                 lastStateChange = Date(),
-                busStopError = action.error,
+                busStopStatus = busStopStatus,
                 busStopErrorMessage = action.errorMessage,
                 busArrivalStopDTO = action.busArrivalStopDTO
             )
@@ -164,6 +177,48 @@ fun reducer(action: Action, oldState: State?): State {
                 alertStatus = status,
                 alertErrorMessage = action.errorMessage,
                 alertsDTO = alertsDTO
+            )
+        }
+        is AddTrainFavoriteAction -> {
+            state = state.copy(
+                lastStateChange = Date(),
+                trainFavorites = action.trainFavorites,
+                trainStationStatus = Status.ADD_FAVORITES
+            )
+        }
+        is RemoveTrainFavoriteAction -> {
+            state = state.copy(
+                lastStateChange = Date(),
+                trainFavorites = action.trainFavorites,
+                trainStationStatus = Status.REMOVE_FAVORITES
+            )
+        }
+        is AddBusFavoriteAction -> {
+            state = state.copy(
+                lastStateChange = Date(),
+                busFavorites = action.busFavorites,
+                busStopStatus = Status.ADD_FAVORITES
+            )
+        }
+        is RemoveBusFavoriteAction -> {
+            state = state.copy(
+                lastStateChange = Date(),
+                busFavorites = action.busFavorites,
+                busStopStatus = Status.REMOVE_FAVORITES
+            )
+        }
+        is AddBikeFavoriteAction -> {
+            state = state.copy(
+                lastStateChange = Date(),
+                bikeFavorites = action.bikeFavorites,
+                bikeStationsStatus = Status.ADD_FAVORITES
+            )
+        }
+        is RemoveBikeFavoriteAction -> {
+            state = state.copy(
+                lastStateChange = Date(),
+                bikeFavorites = action.bikeFavorites,
+                bikeStationsStatus = Status.REMOVE_FAVORITES
             )
         }
         else -> Timber.w("Action %s unknown", action)

@@ -40,8 +40,11 @@ import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
-import fr.cph.chicago.redux.State
+import fr.cph.chicago.redux.AddBusFavoriteAction
 import fr.cph.chicago.redux.BusStopArrivalsAction
+import fr.cph.chicago.redux.RemoveBusFavoriteAction
+import fr.cph.chicago.redux.State
+import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.service.PreferenceService
@@ -125,7 +128,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
     private lateinit var busRouteName: String
     private var latitude: Double = 0.0
     private var longitude: Double = 0.0
-    private var isFavorite: Boolean = false
+    private var showMessage: Boolean = false
     private lateinit var busStopArrivalsAction: BusStopArrivalsAction
 
     override fun create(savedInstanceState: Bundle?) {
@@ -143,13 +146,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
             bound = bound,
             boundTitle = boundTitle)
 
-        isFavorite = isFavorite()
-
         favoritesImageContainer.setOnClickListener { switchFavorite() }
-
-        if (isFavorite) {
-            favoritesImage.setColorFilter(Color.yellowLineDark)
-        }
 
         swipeRefreshLayout.setOnRefreshListener {
             if (latitude == 0.0 && longitude == 0.0) {
@@ -162,6 +159,8 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
                 }
             }
         }
+
+        handleFavorite()
 
         val busRouteNameDisplay = "$busRouteName ($boundTitle)"
         busRouteNameView.text = busRouteNameDisplay
@@ -183,10 +182,27 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
     }
 
     override fun newState(state: State) {
-        if (state.busStopError) {
-            util.showSnackBar(swipeRefreshLayout, state.busStopErrorMessage)
-        } else {
-            refreshActivity(state.busArrivalStopDTO)
+        Timber.d("New state")
+        when (state.busStopStatus) {
+            Status.SUCCESS -> {
+                refreshActivity(state.busArrivalStopDTO)
+            }
+            Status.FAILURE -> util.showSnackBar(swipeRefreshLayout, state.busStopErrorMessage)
+            Status.ADD_FAVORITES -> {
+                if (showMessage) {
+                    util.showSnackBar(swipeRefreshLayout, R.string.message_add_fav)
+                    showMessage = false
+                }
+                favoritesImage.setColorFilter(Color.yellowLineDark)
+            }
+            Status.REMOVE_FAVORITES -> {
+                if (showMessage) {
+                    util.showSnackBar(swipeRefreshLayout, R.string.message_remove_fav)
+                    showMessage = false
+                }
+                favoritesImage.colorFilter = mapImage.colorFilter
+            }
+            else -> Timber.d("Status not handled")
         }
         if (swipeRefreshLayout.isRefreshing) {
             swipeRefreshLayout.isRefreshing = false
@@ -346,21 +362,22 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
         return preferenceService.isStopFavorite(busRouteId, busStopId, boundTitle)
     }
 
+    private fun handleFavorite() {
+        if (isFavorite()) {
+            favoritesImage.setColorFilter(Color.yellowLineDark)
+        }
+    }
+
     /**
      * Add or remove from favorites
      */
     private fun switchFavorite() {
-        isFavorite = if (isFavorite) {
-            preferenceService.removeFromBusFavorites(busRouteId, busStopId.toString(), boundTitle, swipeRefreshLayout)
-            favoritesImage.colorFilter = mapImage.colorFilter
-            false
+        App.instance.refresh = true
+        showMessage = true
+        if (isFavorite()) {
+            store.dispatch(RemoveBusFavoriteAction(busRouteId, busStopId.toString(), boundTitle))
         } else {
-            preferenceService.addToBusFavorites(busRouteId, busStopId.toString(), boundTitle, swipeRefreshLayout)
-            preferenceService.addBusRouteNameMapping(busStopId.toString(), busRouteName)
-            preferenceService.addBusStopNameMapping(busStopId.toString(), busStopName)
-            favoritesImage.setColorFilter(Color.yellowLineDark)
-            App.instance.refresh = true
-            true
+            store.dispatch(AddBusFavoriteAction(busRouteId, busStopId.toString(), boundTitle, busRouteName, busStopName))
         }
     }
 }

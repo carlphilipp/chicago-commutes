@@ -35,8 +35,10 @@ import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.redux.State
+import fr.cph.chicago.redux.AddBikeFavoriteAction
 import fr.cph.chicago.redux.BikeStationAction
+import fr.cph.chicago.redux.RemoveBikeFavoriteAction
+import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.PreferenceService
@@ -81,10 +83,9 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
     @BindString(R.string.bundle_bike_station)
     lateinit var bundleBikeStation: String
 
+    private var showMessage: Boolean = false
     private val preferenceService: PreferenceService = PreferenceService
-
     private lateinit var bikeStation: BikeStation
-    private var isFavorite: Boolean = false
 
     override fun create(savedInstanceState: Bundle?) {
         bikeStation = intent.extras?.getParcelable(bundleBikeStation)
@@ -99,15 +100,10 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
                 loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewProgressBar)
             }
         }
-
-        isFavorite = isFavorite()
-
         // Call google street api to load image
         loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewProgressBar)
 
-        if (isFavorite) {
-            favoritesImage.setColorFilter(Color.yellowLineDark)
-        }
+        handleFavorite()
 
         favoritesImageContainer.setOnClickListener { switchFavorite() }
         bikeStationValue.text = bikeStation.address
@@ -130,25 +126,40 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
     }
 
     override fun newState(state: State) {
-        if (state.bikeStationsStatus == Status.FAILURE || state.bikeStationsStatus == Status.FULL_FAILURE) {
-            util.showSnackBar(swipeRefreshLayout, state.bikeStationsErrorMessage)
-        } else {
-            state.bikeStations
-                .filter { station -> bikeStation.id == station.id }
-                .elementAtOrElse(0) { BikeStation.buildDefaultBikeStationWithName("error") }
-                .also { station ->
-                    if (station.name != "error") {
-                        // FIXME: Check if the updade is good and remove that line
-                        Timber.d("Station found: [%s - %s/%s]", station.name, station.availableBikes, station.availableDocks)
-                        refreshStation(station)
-                        intent.extras?.putParcelable(getString(R.string.bundle_bike_station), station)
-                    } else {
-                        Timber.w("Train station id [%s] not found", bikeStation.id)
-                        util.showOopsSomethingWentWrong(swipeRefreshLayout)
-                    }
+        when (state.bikeStationsStatus) {
+            Status.FAILURE, Status.FULL_FAILURE -> util.showSnackBar(swipeRefreshLayout, state.bikeStationsErrorMessage)
+            Status.ADD_FAVORITES -> {
+                if (showMessage) {
+                    util.showSnackBar(swipeRefreshLayout, R.string.message_add_fav)
+                    showMessage = false
                 }
+                favoritesImage.setColorFilter(Color.yellowLineDark)
+            }
+            Status.REMOVE_FAVORITES -> {
+                if (showMessage) {
+                    util.showSnackBar(swipeRefreshLayout, R.string.message_remove_fav)
+                    showMessage = false
+                }
+                favoritesImage.colorFilter = mapImage.colorFilter
+            }
+            else -> {
+                state.bikeStations
+                    .filter { station -> bikeStation.id == station.id }
+                    .elementAtOrElse(0) { BikeStation.buildDefaultBikeStationWithName("error") }
+                    .also { station ->
+                        if (station.name != "error") {
+                            refreshStation(station)
+                            intent.extras?.putParcelable(getString(R.string.bundle_bike_station), station)
+                        } else {
+                            Timber.w("Train station id [%s] not found", bikeStation.id)
+                            util.showOopsSomethingWentWrong(swipeRefreshLayout)
+                        }
+                    }
+            }
         }
-        swipeRefreshLayout.isRefreshing = false
+        if (swipeRefreshLayout.isRefreshing) {
+            swipeRefreshLayout.isRefreshing = false
+        }
     }
 
     private fun setToolBar() {
@@ -205,6 +216,12 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
         return preferenceService.isBikeStationFavorite(bikeStation.id)
     }
 
+    private fun handleFavorite() {
+        if (isFavorite()) {
+            favoritesImage.setColorFilter(Color.yellowLineDark)
+        }
+    }
+
     private fun refreshStation(station: BikeStation) {
         this.bikeStation = station
         drawData()
@@ -214,15 +231,11 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
      * Add/remove favorites
      */
     private fun switchFavorite() {
-        isFavorite = if (isFavorite) {
-            preferenceService.removeFromBikeFavorites(bikeStation.id, swipeRefreshLayout)
-            favoritesImage.colorFilter = mapImage.colorFilter
-            false
+        showMessage = true
+        if (isFavorite()) {
+            store.dispatch(RemoveBikeFavoriteAction(bikeStation.id))
         } else {
-            preferenceService.addToBikeFavorites(bikeStation.id, swipeRefreshLayout)
-            preferenceService.addBikeRouteNameMapping(bikeStation.id, bikeStation.name)
-            favoritesImage.setColorFilter(Color.yellowLineDark)
-            true
+            store.dispatch(AddBikeFavoriteAction(bikeStation.id, bikeStation.name))
         }
     }
 

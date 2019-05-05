@@ -7,7 +7,11 @@ import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import fr.cph.chicago.exception.BaseException
 import fr.cph.chicago.exception.ConnectException
 import fr.cph.chicago.rx.RxUtil
+import fr.cph.chicago.service.PreferenceService
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.Function4
+import io.reactivex.schedulers.Schedulers
 import org.rekotlin.Middleware
 import org.rekotlin.StateType
 import timber.log.Timber
@@ -21,21 +25,34 @@ internal val baseMiddleware: Middleware<StateType> = { _, _ ->
                         if (localDTO.busLocalError || localDTO.trainLocalError) {
                             throw BaseException()
                         }
-                        RxUtil.baseFavorites()
+                        val trainFavorites = PreferenceService.getTrainFavorites().subscribeOn(Schedulers.io())
+                        val busFavorites = PreferenceService.getBusFavorites().subscribeOn(Schedulers.io())
+                        val bikeFavorites = PreferenceService.getBikeFavorites().subscribeOn(Schedulers.io())
+                        Single.zip(
+                            RxUtil.baseArrivals().observeOn(Schedulers.computation()),
+                            trainFavorites.observeOn(Schedulers.computation()),
+                            busFavorites.observeOn(Schedulers.computation()),
+                            bikeFavorites.observeOn(Schedulers.computation()),
+                            Function4 { favoritesDTO: FavoritesDTO, favoritesTrains: List<Int>, favoritesBuses: List<String>, favoritesBikes: List<Int> ->
+                                val trainArrivals = if (favoritesDTO.trainArrivalDTO.error)
+                                    TrainArrivalDTO(store.state.trainArrivalsDTO.trainsArrivals, true)
+                                else
+                                    favoritesDTO.trainArrivalDTO
+                                val busArrivals = if (favoritesDTO.busArrivalDTO.error)
+                                    BusArrivalDTO(store.state.busArrivalsDTO.busArrivals, true)
+                                else
+                                    favoritesDTO.busArrivalDTO
+                                BaseAction(
+                                    trainArrivalsDTO = trainArrivals,
+                                    busArrivalsDTO = busArrivals,
+                                    trainFavorites = favoritesTrains,
+                                    busFavorites = favoritesBuses,
+                                    bikeFavorites = favoritesBikes)
+                            })
                     }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                        { favoritesDTO ->
-                            val trainArrivals = if (favoritesDTO.trainArrivalDTO.error)
-                                TrainArrivalDTO(store.state.trainArrivalsDTO.trainsArrivals, true)
-                            else
-                                favoritesDTO.trainArrivalDTO
-                            val busArrivals = if (favoritesDTO.busArrivalDTO.error)
-                                BusArrivalDTO(store.state.busArrivalsDTO.busArrivals, true)
-                            else
-                                favoritesDTO.busArrivalDTO
-                            next(BaseAction(trainArrivalsDTO = trainArrivals, busArrivalsDTO = busArrivals))
-                        },
+                        { newAction -> next(newAction) },
                         { throwable ->
                             Timber.e(throwable)
                             next(BaseAction(localError = true))
@@ -192,6 +209,111 @@ internal val alertMiddleware: Middleware<StateType> = { _, _ ->
                                 errorMessage = buildErrorMessage(throwable)))
                         }
                     )
+            } ?: next(action)
+        }
+    }
+}
+
+internal val addTrainFavorites: Middleware<StateType> = { _, _ ->
+    { next ->
+        { action ->
+            (action as? AddTrainFavoriteAction)?.let {
+                RxUtil.addToTrainFavorites(action.id)
+                    .flatMap { RxUtil.getTrainFavorites() }
+                    .map { favorites -> AddTrainFavoriteAction(id = action.id, trainFavorites = favorites) }
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { newAction -> next(newAction) }
+            } ?: next(action)
+        }
+    }
+}
+
+internal val removeTrainFavorites: Middleware<StateType> = { _, _ ->
+    { next ->
+        { action ->
+            (action as? RemoveTrainFavoriteAction)?.let {
+                RxUtil.removeFromTrainFavorites(action.id)
+                    .flatMap { RxUtil.getTrainFavorites() }
+                    .observeOn(Schedulers.computation())
+                    .map { favorites -> RemoveTrainFavoriteAction(id = action.id, trainFavorites = favorites) }
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { newAction -> next(newAction) }
+            } ?: next(action)
+        }
+    }
+}
+
+internal val addBusFavorites: Middleware<StateType> = { _, _ ->
+    { next ->
+        { action ->
+            (action as? AddBusFavoriteAction)?.let {
+                PreferenceService.addToBusFavorites(
+                    busRouteId = action.busRouteId,
+                    busStopId = action.busStopId,
+                    bound = action.boundTitle,
+                    busRouteName = action.busRouteName,
+                    busStopName = action.busStopName)
+                    .observeOn(Schedulers.computation())
+                    .map { favorites ->
+                        AddBusFavoriteAction(
+                            busRouteId = action.busRouteId,
+                            busStopId = action.busStopId,
+                            boundTitle = action.boundTitle,
+                            busFavorites = favorites)
+                    }
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { newAction -> next(newAction) }
+            } ?: next(action)
+        }
+    }
+}
+
+internal val removeBusFavorites: Middleware<StateType> = { _, _ ->
+    { next ->
+        { action ->
+            (action as? RemoveBusFavoriteAction)?.let {
+                PreferenceService.removeFromBusFavorites(
+                    busRouteId = action.busRouteId,
+                    busStopId = action.busStopId,
+                    bound = action.boundTitle)
+                    .observeOn(Schedulers.computation())
+                    .map { favorites ->
+                        RemoveBusFavoriteAction(
+                            busRouteId = action.busRouteId,
+                            busStopId = action.busStopId,
+                            boundTitle = action.boundTitle,
+                            busFavorites = favorites)
+                    }
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { newAction -> next(newAction) }
+            } ?: next(action)
+        }
+    }
+}
+
+internal val addBikeFavorites: Middleware<StateType> = { _, _ ->
+    { next ->
+        { action ->
+            (action as? AddBikeFavoriteAction)?.let {
+                PreferenceService.addToBikeFavorites(action.id, action.stationName)
+                    .observeOn(Schedulers.computation())
+                    .map { favorites -> AddBikeFavoriteAction(id = action.id, bikeFavorites = favorites) }
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { newAction -> next(newAction) }
+            } ?: next(action)
+        }
+    }
+}
+
+internal val removeBikeFavorites: Middleware<StateType> = { _, _ ->
+    { next ->
+        { action ->
+            (action as? RemoveBikeFavoriteAction)?.let {
+                PreferenceService.removeFromBikeFavorites(action.id)
+                    .observeOn(Schedulers.computation())
+                    .map { favorites -> RemoveBikeFavoriteAction(id = action.id, bikeFavorites = favorites) }
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { newAction -> next(newAction) }
             } ?: next(action)
         }
     }

@@ -22,7 +22,10 @@ data class ApiKeysAction(
 data class BaseAction(
     val localError: Boolean = false,
     val trainArrivalsDTO: TrainArrivalDTO = TrainArrivalDTO(SparseArray(), false),
-    val busArrivalsDTO: BusArrivalDTO = BusArrivalDTO(listOf(), false)
+    val busArrivalsDTO: BusArrivalDTO = BusArrivalDTO(listOf(), false),
+    val trainFavorites: List<Int> = listOf(),
+    val busFavorites: List<String> = listOf(),
+    val bikeFavorites: List<Int> = listOf()
 ) : Action
 
 data class FavoritesAction(
@@ -82,4 +85,41 @@ data class AlertAction(
     val routesAlertsDTO: List<RoutesAlertsDTO> = listOf(),
     val error: Boolean = false,
     val errorMessage: Int = R.string.message_something_went_wrong
+) : Action
+
+data class AddTrainFavoriteAction(
+    val id: Int = 0,
+    val trainFavorites: List<Int> = listOf()
+) : Action
+
+data class RemoveTrainFavoriteAction(
+    val id: Int = 0,
+    val trainFavorites: List<Int> = listOf()
+) : Action
+
+data class AddBusFavoriteAction(
+    val busRouteId: String = StringUtils.EMPTY,
+    val busStopId: String = StringUtils.EMPTY,
+    val boundTitle: String = StringUtils.EMPTY,
+    val busRouteName: String = StringUtils.EMPTY,
+    val busStopName: String = StringUtils.EMPTY,
+    val busFavorites: List<String> = listOf()
+) : Action
+
+data class RemoveBusFavoriteAction(
+    val busRouteId: String = StringUtils.EMPTY,
+    val busStopId: String = StringUtils.EMPTY,
+    val boundTitle: String = StringUtils.EMPTY,
+    val busFavorites: List<String> = listOf()
+) : Action
+
+data class AddBikeFavoriteAction(
+    val id: Int = 0,
+    val stationName: String = "",
+    val bikeFavorites: List<Int> = listOf()
+) : Action
+
+data class RemoveBikeFavoriteAction(
+    val id: Int = 0,
+    val bikeFavorites: List<Int> = listOf()
 ) : Action

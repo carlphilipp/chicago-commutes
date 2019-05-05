@@ -36,10 +36,10 @@ import fr.cph.chicago.R.string
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.adapter.FavoritesAdapter
-import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.BusRoutesAction
 import fr.cph.chicago.redux.BusRoutesAndBikeStationAction
 import fr.cph.chicago.redux.FavoritesAction
+import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status.FAILURE
 import fr.cph.chicago.redux.Status.FULL_FAILURE
 import fr.cph.chicago.redux.Status.SUCCESS
@@ -155,6 +155,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<Stat
                 stopRefreshing()
             }
             UNKNOWN -> Timber.d("Unknown status on new state")
+            else -> Timber.d("Unknown status on new state")
         }
         adapter.update()
     }

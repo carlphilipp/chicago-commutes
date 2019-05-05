@@ -19,18 +19,18 @@
 
 package fr.cph.chicago.service
 
-import android.view.View
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.model.Favorites
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.PreferenceRepository
 import fr.cph.chicago.util.Util
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
-import java.util.Date
+import java.util.*
 
 object PreferenceService {
 
@@ -54,7 +54,7 @@ object PreferenceService {
     }
 
     fun isTrainStationFavorite(trainStationId: Int): Boolean {
-        return repo.getTrainFavorites().any { it == trainStationId }
+        return store.state.trainFavorites.any { it == trainStationId }
     }
 
     fun getTrainFilter(stationId: Int, line: TrainLine, direction: TrainDirection): Boolean {
@@ -104,31 +104,35 @@ object PreferenceService {
         return repo.getBikeFavorites().any { id -> id == bikeStationId }
     }
 
-    fun addToBikeFavorites(stationId: Int, view: View) {
+    fun addToBikeFavorites(stationId: Int, stationName: String): Single<List<Int>> {
+        // FIXME: make it reactive
         val favorites = repo.getBikeFavorites().toMutableList()
         if (!favorites.contains(stationId)) {
             favorites.add(stationId)
             repo.saveBikeFavorites(favorites)
-            util.showSnackBar(view, R.string.message_add_fav)
         }
+        addBikeRouteNameMapping(stationId, stationName)
+        return getBikeMatchingFavorites()
     }
 
-    fun addToBusFavorites(busRouteId: String, busStopId: String, bound: String, view: View) {
+    fun addToBusFavorites(busRouteId: String, busStopId: String, bound: String, busRouteName: String, busStopName: String): Single<List<String>> {
+        // FIXME: Make it reactive
         val id = busRouteId + "_" + busStopId + "_" + bound
         val favorites = repo.getBusFavorites().toMutableList()
         if (!favorites.contains(id)) {
             favorites.add(id)
             repo.saveBusFavorites(favorites)
-            util.showSnackBar(view, R.string.message_add_fav)
         }
+        addBusRouteNameMapping(busStopId, busRouteName)
+        addBusStopNameMapping(busStopId, busStopName)
+        return getBusFavorites().subscribeOn(Schedulers.io())
     }
 
-    fun addToTrainFavorites(stationId: Int, view: View) {
+    fun addToTrainFavorites(stationId: Int) {
         val favorites = repo.getTrainFavorites().toMutableList()
         if (!favorites.contains(stationId)) {
             favorites.add(stationId)
             repo.saveTrainFavorites(favorites)
-            util.showSnackBar(view, R.string.message_add_fav)
         }
     }
 
@@ -151,41 +155,47 @@ object PreferenceService {
         return paramsTrain
     }
 
-    fun removeFromBusFavorites(busRouteId: String, busStopId: String, bound: String, view: View) {
+    fun removeFromBusFavorites(busRouteId: String, busStopId: String, bound: String): Single<List<String>> {
+        // FIXME: Make it reactive
         val id = busRouteId + "_" + busStopId + "_" + bound
         val favorites = repo.getBusFavorites().toMutableList()
         favorites.remove(id)
         repo.saveBusFavorites(favorites)
-        util.showSnackBar(view, R.string.message_remove_fav)
+        return getBusFavorites().subscribeOn(Schedulers.io())
     }
 
-    fun removeFromBikeFavorites(stationId: Int, view: View) {
+    fun removeFromBikeFavorites(stationId: Int): Single<List<Int>> {
         val favorites = repo.getBikeFavorites().toMutableList()
         favorites.remove(stationId)
         repo.saveBikeFavorites(favorites)
-        util.showSnackBar(view, R.string.message_remove_fav)
+        return getBikeMatchingFavorites()
     }
 
-    fun removeFromTrainFavorites(stationId: Int, view: View) {
+    fun removeFromTrainFavorites(stationId: Int) {
         val favorites = repo.getTrainFavorites().toMutableList()
         favorites.remove(stationId)
         repo.saveTrainFavorites(favorites)
-        util.showSnackBar(view, R.string.message_remove_fav)
     }
 
-    fun getBikeFavorites(): List<Int> {
-        return repo.getBikeFavorites()
-            .flatMap { bikeStationId -> store.state.bikeStations.filter { station -> station.id == bikeStationId } }
-            .sortedWith(util.bikeStationComparator)
-            .map { station -> station.id }
+    fun getBikeFavorites(): Single<List<Int>> {
+        return Single.fromCallable { repo.getBikeFavorites() }.subscribeOn(Schedulers.io())
     }
 
-    fun getTrainFavorites(): List<Int> {
-        return repo.getTrainFavorites()
+    private fun getBikeMatchingFavorites(): Single<List<Int>> {
+        return Single.fromCallable {
+            repo.getBikeFavorites()
+                .flatMap { bikeStationId -> store.state.bikeStations.filter { station -> station.id == bikeStationId } }
+                .sortedWith(util.bikeStationComparator)
+                .map { station -> station.id }
+        }.subscribeOn(Schedulers.io())
     }
 
-    fun getBusFavorites(): List<String> {
-        return repo.getBusFavorites()
+    fun getTrainFavorites(): Single<List<Int>> {
+        return Single.fromCallable { repo.getTrainFavorites() }
+    }
+
+    fun getBusFavorites(): Single<List<String>> {
+        return Single.fromCallable { repo.getBusFavorites() }
     }
 
     fun getBusRouteNameMapping(busStopId: String): String {
