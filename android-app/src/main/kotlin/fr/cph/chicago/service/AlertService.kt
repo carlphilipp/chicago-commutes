@@ -26,6 +26,8 @@ import fr.cph.chicago.core.model.dto.RouteAlertsDTO
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.entity.AlertsRouteResponse
 import fr.cph.chicago.entity.AlertsRoutesResponse
+import fr.cph.chicago.rx.RxUtil.createSingleFromCallable
+import io.reactivex.Single
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.lang3.StringUtils
@@ -33,6 +35,7 @@ import timber.log.Timber
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.concurrent.Callable
 
 object AlertService {
 
@@ -41,46 +44,50 @@ object AlertService {
     private val format = SimpleDateFormat("yyyy-MM-dd", Locale.US)
     private val displayFormat = SimpleDateFormat("MM/dd/yyyy h:mm a", Locale.US)
 
-    fun getAlerts(): List<RoutesAlertsDTO> {
-        val alertRoutes = ctaClient.get(CtaRequestType.ALERTS_ROUTES, buildAlertsParam(), AlertsRoutesResponse::class.java)
-        if (alertRoutes.ctaRoutes.routeInfo.isEmpty()) {
-            val errors = alertRoutes.ctaRoutes.errorMessage.joinToString()
-            Timber.e(errors)
-            return listOf()
-        }
-        return alertRoutes.ctaRoutes.routeInfo
-            .filter { routeInfo -> routeInfo.serviceId!! != "Pexp" }
-            .map { routeInfo ->
-                RoutesAlertsDTO(
-                    id = routeInfo.serviceId!!,
-                    routeName = routeInfo.route!!,
-                    routeBackgroundColor = if (routeInfo.routeColorCode!!.length == 6) "#" + routeInfo.routeColorCode!! else "#000000",
-                    routeTextColor = "#" + routeInfo.routeTextColor!!,
-                    routeStatus = routeInfo.routeStatus!!,
-                    routeStatusColor = "#" + routeInfo.routeStatusColor!!,
-                    alertType = if (routeInfo.route!!.contains("Line")) AlertType.TRAIN else AlertType.BUS)
+    fun alerts(): Single<List<RoutesAlertsDTO>> {
+        return createSingleFromCallable(Callable {
+            val alertRoutes = ctaClient.get(CtaRequestType.ALERTS_ROUTES, buildAlertsParam(), AlertsRoutesResponse::class.java)
+            if (alertRoutes.ctaRoutes.routeInfo.isEmpty()) {
+                val errors = alertRoutes.ctaRoutes.errorMessage.joinToString()
+                Timber.e(errors)
+                listOf()
+            } else {
+                alertRoutes.ctaRoutes.routeInfo
+                    .filter { routeInfo -> routeInfo.serviceId!! != "Pexp" }
+                    .map { routeInfo ->
+                        RoutesAlertsDTO(
+                            id = routeInfo.serviceId!!,
+                            routeName = routeInfo.route!!,
+                            routeBackgroundColor = if (routeInfo.routeColorCode!!.length == 6) "#" + routeInfo.routeColorCode!! else "#000000",
+                            routeTextColor = "#" + routeInfo.routeTextColor!!,
+                            routeStatus = routeInfo.routeStatus!!,
+                            routeStatusColor = "#" + routeInfo.routeStatusColor!!,
+                            alertType = if (routeInfo.route!!.contains("Line")) AlertType.TRAIN else AlertType.BUS)
+                    }
             }
+        })
     }
 
-    fun getRouteAlert(id: String): List<RouteAlertsDTO> {
-        val alertRoutes = ctaClient.get(CtaRequestType.ALERTS_ROUTE, buildAlertParam(id), AlertsRouteResponse::class.java)
-
-        return if (alertRoutes.ctaAlerts.errorMessage != null) {
-            Timber.e(alertRoutes.ctaAlerts.errorMessage.toString())
-            listOf()
-        } else
-            alertRoutes.ctaAlerts.alert
-                .map { alert ->
-                    RouteAlertsDTO(
-                        id = alert.alertId,
-                        headLine = alert.headline,
-                        description = alert.shortDescription.replace("\r\n", StringUtils.EMPTY),
-                        impact = alert.impact,
-                        severityScore = alert.severityScore.toInt(),
-                        start = formatDate(alert.eventStart),
-                        end = formatDate(alert.eventEnd))
-                }
-                .sortedByDescending { it.severityScore }
+    fun routeAlertForId(id: String): Single<List<RouteAlertsDTO>> {
+        return createSingleFromCallable(Callable {
+            val alertRoutes = ctaClient.get(CtaRequestType.ALERTS_ROUTE, buildAlertParam(id), AlertsRouteResponse::class.java)
+            if (alertRoutes.ctaAlerts.errorMessage != null) {
+                Timber.e(alertRoutes.ctaAlerts.errorMessage.toString())
+                listOf()
+            } else
+                alertRoutes.ctaAlerts.alert
+                    .map { alert ->
+                        RouteAlertsDTO(
+                            id = alert.alertId,
+                            headLine = alert.headline,
+                            description = alert.shortDescription.replace("\r\n", StringUtils.EMPTY),
+                            impact = alert.impact,
+                            severityScore = alert.severityScore.toInt(),
+                            start = formatDate(alert.eventStart),
+                            end = formatDate(alert.eventEnd))
+                    }
+                    .sortedByDescending { it.severityScore }
+        })
     }
 
     private fun buildAlertsParam(): MultiValuedMap<String, String> {

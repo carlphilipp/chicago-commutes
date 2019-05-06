@@ -29,7 +29,9 @@ import fr.cph.chicago.core.model.Station
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusArrivalRouteDTO
 import fr.cph.chicago.core.model.marker.MarkerDataHolder
-import fr.cph.chicago.rx.RxUtil
+import fr.cph.chicago.service.BikeService
+import fr.cph.chicago.service.BusService
+import fr.cph.chicago.service.TrainService
 import timber.log.Timber
 
 class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, private val nearbyFragment: NearbyFragment) : GoogleMap.OnMarkerClickListener {
@@ -58,7 +60,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
     @SuppressLint("CheckResult")
     private fun loadTrainArrivals(trainTrainStation: TrainStation) {
         nearbyFragment.slidingUpAdapter.updateTitleTrain(trainTrainStation.name)
-        observableUtil.trainArrivals(trainTrainStation.id)
+        trainService.loadStationTrainArrival(trainTrainStation.id)
             .subscribe(
                 { nearbyFragment.slidingUpAdapter.addTrainStation(it) },
                 { onError -> Timber.e(onError, "Error while loading train arrivals") })
@@ -67,7 +69,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
     @SuppressLint("CheckResult")
     private fun loadBusArrivals(busStop: BusStop) {
         nearbyFragment.slidingUpAdapter.updateTitleBus(busStop.name)
-        observableUtil.busArrivals(busStop)
+        busService.loadBusArrivals(busStop)
             .subscribe(
                 { result ->
                     val busArrivalRouteDTO = BusArrivalRouteDTO(BusArrivalRouteDTO.busComparator)
@@ -80,7 +82,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
     @SuppressLint("CheckResult")
     private fun loadBikes(bikeStation: BikeStation) {
         nearbyFragment.slidingUpAdapter.updateTitleBike(bikeStation.name)
-        observableUtil.bikeOneStation(bikeStation)
+        bikeService.findBikeStation(bikeStation.id)
             .subscribe(
                 { nearbyFragment.slidingUpAdapter.addBike(it) },
                 { onError -> Timber.e(onError, "Error while loading bike stations") }
@@ -88,6 +90,8 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
     }
 
     companion object {
-        private val observableUtil = RxUtil
+        private val trainService = TrainService
+        private val busService = BusService
+        private val bikeService = BikeService
     }
 }

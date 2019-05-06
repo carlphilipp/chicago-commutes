@@ -33,10 +33,15 @@ import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.TrainStationPattern
+import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.entity.TrainArrivalResponse
 import fr.cph.chicago.entity.TrainLocationResponse
 import fr.cph.chicago.repository.TrainRepository
+import fr.cph.chicago.rx.RxUtil.createSingleFromCallable
+import fr.cph.chicago.rx.RxUtil.handleError
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.lang3.StringUtils
@@ -44,6 +49,7 @@ import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.concurrent.Callable
 
 object TrainService {
 
@@ -54,50 +60,55 @@ object TrainService {
     private val ctaClient = CtaClient
     private val simpleDateFormatTrain: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US)
 
-    fun loadFavoritesTrain(): SparseArray<TrainArrival> {
-        val trainParams = preferencesService.getFavoritesTrainParams()
-        var trainArrivals = SparseArray<TrainArrival>()
-        for ((key, value) in trainParams.asMap()) {
-            if ("mapid" == key) {
-                val list = value as MutableList<String>
-                if (list.size < 5) {
-                    trainArrivals = getTrainArrivals(trainParams)
-                } else {
-                    val size = list.size
-                    var start = 0
-                    var end = 4
-                    while (end < size + 1) {
-                        val subList = list.subList(start, end)
-                        val paramsTemp = ArrayListValuedHashMap<String, String>()
-                        for (sub in subList) {
-                            paramsTemp.put(key, sub)
-                        }
-                        val temp = getTrainArrivals(paramsTemp)
-                        for (j in 0..temp.size() - 1) {
-                            trainArrivals.put(temp.keyAt(j), temp.valueAt(j))
-                        }
-                        start = end
-                        if (end + 3 >= size - 1 && end != size) {
-                            end = size
+    fun loadFavoritesTrain(): Single<TrainArrivalDTO> {
+        return createSingleFromCallable(
+            Callable {
+                val trainParams = preferencesService.getFavoritesTrainParams()
+                var trainArrivals = SparseArray<TrainArrival>()
+                for ((key, value) in trainParams.asMap()) {
+                    if ("mapid" == key) {
+                        val list = value as MutableList<String>
+                        if (list.size < 5) {
+                            trainArrivals = getTrainArrivals(trainParams)
                         } else {
-                            end += 3
+                            val size = list.size
+                            var start = 0
+                            var end = 4
+                            while (end < size + 1) {
+                                val subList = list.subList(start, end)
+                                val paramsTemp = ArrayListValuedHashMap<String, String>()
+                                for (sub in subList) {
+                                    paramsTemp.put(key, sub)
+                                }
+                                val temp = getTrainArrivals(paramsTemp)
+                                for (j in 0..temp.size() - 1) {
+                                    trainArrivals.put(temp.keyAt(j), temp.valueAt(j))
+                                }
+                                start = end
+                                if (end + 3 >= size - 1 && end != size) {
+                                    end = size
+                                } else {
+                                    end += 3
+                                }
+                            }
                         }
                     }
                 }
-            }
-        }
 
-        // Apply filters
-        var index = 0
-        while (index < trainArrivals.size()) {
-            val trainArrival = trainArrivals.valueAt(index++)
-            val etas = trainArrival.trainEtas
-            trainArrival.trainEtas = etas
-                .filter { (station, stop, line) -> preferencesService.getTrainFilter(station.id, line, stop.direction) }
-                .sorted()
-                .toMutableList()
-        }
-        return trainArrivals
+                // Apply filters
+                var index = 0
+                while (index < trainArrivals.size()) {
+                    val trainArrival = trainArrivals.valueAt(index++)
+                    val etas = trainArrival.trainEtas
+                    trainArrival.trainEtas = etas
+                        .filter { (station, stop, line) -> preferencesService.getTrainFilter(station.id, line, stop.direction) }
+                        .sorted()
+                        .toMutableList()
+                }
+                trainArrivals
+            })
+            .observeOn(Schedulers.computation())
+            .map { favoriteTrains -> TrainArrivalDTO(favoriteTrains, false) }
     }
 
     fun loadLocalTrainData(): SparseArray<TrainStation> {
@@ -105,88 +116,103 @@ object TrainService {
         return trainRepository.stations
     }
 
-    fun loadStationTrainArrival(stationId: Int): TrainArrival {
-        val params = ArrayListValuedHashMap<String, String>(1, 1)
-        params.put(App.instance.applicationContext.getString(R.string.request_map_id), stationId.toString())
-        val map = getTrainArrivals(params)
-        return map.get(stationId, TrainArrival.buildEmptyTrainArrival())
+    fun loadStationTrainArrival(stationId: Int): Single<TrainArrival> {
+        return createSingleFromCallable(Callable {
+            val params = ArrayListValuedHashMap<String, String>(1, 1)
+            params.put(App.instance.applicationContext.getString(R.string.request_map_id), stationId.toString())
+            val map = getTrainArrivals(params)
+            map.get(stationId, TrainArrival.buildEmptyTrainArrival())
+        })
     }
 
-    fun loadTrainEta(runNumber: String, loadAll: Boolean): List<TrainEta> {
-        val params = ArrayListValuedHashMap<String, String>(1, 1)
-        params.put(App.instance.applicationContext.getString(R.string.request_runnumber), runNumber)
+    fun trainEtas(runNumber: String, loadAll: Boolean): Single<List<TrainEta>> {
+        return createSingleFromCallable(
+            Callable {
+                val params = ArrayListValuedHashMap<String, String>(1, 1)
+                params.put(App.instance.applicationContext.getString(R.string.request_runnumber), runNumber)
 
-        val content = ctaClient.get(TRAIN_FOLLOW, params, TrainArrivalResponse::class.java)
-        val arrivals = getTrainArrivalsInternal(content)
+                val content = ctaClient.get(TRAIN_FOLLOW, params, TrainArrivalResponse::class.java)
+                val arrivals = getTrainArrivalsInternal(content)
 
-        var trainEta = mutableListOf<TrainEta>()
-        var index = 0
-        while (index < arrivals.size()) {
-            val (etas) = arrivals.valueAt(index++)
-            if (etas.size != 0) {
-                trainEta.add(etas[0])
+                var trainEta = mutableListOf<TrainEta>()
+                var index = 0
+                while (index < arrivals.size()) {
+                    val (etas) = arrivals.valueAt(index++)
+                    if (etas.size != 0) {
+                        trainEta.add(etas[0])
+                    }
+                }
+                trainEta.sort()
+
+                if (!loadAll && trainEta.size > 7) {
+                    trainEta = trainEta.subList(0, 6)
+                    val currentDate = Calendar.getInstance().time
+                    val fakeStation = TrainStation(0, App.instance.getString(R.string.bus_all_results), ArrayList())
+                    // Add a fake TrainEta cell to alert the user about the fact that only a part of the result is displayed
+                    val eta = TrainEta.buildFakeEtaWith(fakeStation, currentDate, currentDate, false, false)
+                    trainEta.add(eta)
+                }
+                trainEta.toList()
+            })
+            .onErrorReturn(handleError())
+    }
+
+    fun trainLocations(line: String): Single<List<Train>> {
+        return createSingleFromCallable(Callable {
+            val connectParam = ArrayListValuedHashMap<String, String>(1, 1)
+            connectParam.put(App.instance.applicationContext.getString(R.string.request_rt), line)
+            val result = ctaClient.get(TRAIN_LOCATION, connectParam, TrainLocationResponse::class.java)
+            if (result.ctatt.route == null) {
+                val error = result.ctatt.errNm
+                Timber.e(error)
+                listOf()
+            } else {
+                result.ctatt.route!!
+                    .flatMap { route -> route.train }
+                    .map { route -> Train(route.rn.toInt(), route.destNm, route.approaching.toBoolean(), Position(route.lat.toDouble(), route.lon.toDouble()), route.heading.toInt()) }
             }
-        }
-        trainEta.sort()
-
-        if (!loadAll && trainEta.size > 7) {
-            trainEta = trainEta.subList(0, 6)
-            val currentDate = Calendar.getInstance().time
-            val fakeStation = TrainStation(0, App.instance.getString(R.string.bus_all_results), ArrayList())
-            // Add a fake TrainEta cell to alert the user about the fact that only a part of the result is displayed
-            val eta = TrainEta.buildFakeEtaWith(fakeStation, currentDate, currentDate, false, false)
-            trainEta.add(eta)
-        }
-        return trainEta
-    }
-
-    fun getTrainLocation(line: String): List<Train> {
-        val connectParam = ArrayListValuedHashMap<String, String>(1, 1)
-        connectParam.put(App.instance.applicationContext.getString(R.string.request_rt), line)
-        val result = ctaClient.get(TRAIN_LOCATION, connectParam, TrainLocationResponse::class.java)
-        if (result.ctatt.route == null) {
-            val error = result.ctatt.errNm
-            Timber.e(error)
-            return listOf()
-        }
-        return result.ctatt.route!!
-            .flatMap { route -> route.train }
-            .map { route -> Train(route.rn.toInt(), route.destNm, route.approaching.toBoolean(), Position(route.lat.toDouble(), route.lon.toDouble()), route.heading.toInt()) }
+        })
     }
 
     fun getStation(id: Int): TrainStation {
         return trainRepository.getStation(id)
     }
 
-    fun readPatterns(line: TrainLine): List<TrainStationPattern> {
-        return when (line) {
-            TrainLine.BLUE -> trainRepository.blueLinePatterns
-            TrainLine.BROWN -> trainRepository.brownLinePatterns
-            TrainLine.GREEN -> trainRepository.greenLinePatterns
-            TrainLine.ORANGE -> trainRepository.orangeLinePatterns
-            TrainLine.PINK -> trainRepository.pinkLinePatterns
-            TrainLine.PURPLE -> trainRepository.purpleLinePatterns
-            TrainLine.RED -> trainRepository.redLinePatterns
-            TrainLine.YELLOW -> trainRepository.yellowLinePatterns
-            TrainLine.NA -> throw RuntimeException("NA not available")
-        }
+    fun readPatterns(line: TrainLine): Single<List<TrainStationPattern>> {
+        return createSingleFromCallable(
+            Callable {
+                when (line) {
+                    TrainLine.BLUE -> trainRepository.blueLinePatterns
+                    TrainLine.BROWN -> trainRepository.brownLinePatterns
+                    TrainLine.GREEN -> trainRepository.greenLinePatterns
+                    TrainLine.ORANGE -> trainRepository.orangeLinePatterns
+                    TrainLine.PINK -> trainRepository.pinkLinePatterns
+                    TrainLine.PURPLE -> trainRepository.purpleLinePatterns
+                    TrainLine.RED -> trainRepository.redLinePatterns
+                    TrainLine.YELLOW -> trainRepository.yellowLinePatterns
+                    TrainLine.NA -> throw RuntimeException("NA not available")
+                }
+            })
+            .onErrorReturn(handleError())
     }
 
-    fun readNearbyStation(position: Position): List<TrainStation> {
-        val latMax = position.latitude + DEFAULT_RANGE
-        val latMin = position.latitude - DEFAULT_RANGE
-        val lonMax = position.longitude + DEFAULT_RANGE
-        val lonMin = position.longitude - DEFAULT_RANGE
+    fun readNearbyStation(position: Position): Single<List<TrainStation>> {
+        return createSingleFromCallable(Callable {
+            val latMax = position.latitude + DEFAULT_RANGE
+            val latMin = position.latitude - DEFAULT_RANGE
+            val lonMax = position.longitude + DEFAULT_RANGE
+            val lonMin = position.longitude - DEFAULT_RANGE
 
-        return (0 until trainRepository.stations.size())
-            .map { trainRepository.stations.valueAt(it) }
-            .filter {
-                it.stopsPosition.any { stopPosition ->
-                    val trainLatitude = stopPosition.latitude
-                    val trainLongitude = stopPosition.longitude
-                    trainLatitude in latMin..latMax && trainLongitude <= lonMax && trainLongitude >= lonMin
+            (0 until trainRepository.stations.size())
+                .map { trainRepository.stations.valueAt(it) }
+                .filter {
+                    it.stopsPosition.any { stopPosition ->
+                        val trainLatitude = stopPosition.latitude
+                        val trainLongitude = stopPosition.longitude
+                        trainLatitude in latMin..latMax && trainLongitude <= lonMax && trainLongitude >= lonMin
+                    }
                 }
-            }
+        })
     }
 
     fun getStationsForLine(line: TrainLine): List<TrainStation> {

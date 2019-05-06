@@ -54,8 +54,10 @@ import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.marker.MarkerDataHolder
 import fr.cph.chicago.redux.store
-import fr.cph.chicago.rx.RxUtil
+import fr.cph.chicago.service.BusService
+import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.GoogleMapUtil
+import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.Util
 import io.reactivex.Single
@@ -80,10 +82,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
     lateinit var layoutContainer: LinearLayout
     @BindView(R.id.search_area)
     lateinit var searchAreaButton: Button
-
-    private val util: Util = Util
-    private val googleMapUtil = GoogleMapUtil
-    private val observableUtil: RxUtil = RxUtil
 
     private lateinit var mapFragment: SupportMapFragment
     private lateinit var googleApiClient: GoogleApiClient
@@ -260,9 +258,9 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
             finalPosition = chicagoPosition
         }
 
-        val trainStationAround = observableUtil.trainStationAround(finalPosition)
-        val busStopsAround = observableUtil.busStopsAround(finalPosition)
-        val bikeStationsAround = observableUtil.bikeStationAround(finalPosition, store.state.bikeStations)
+        val trainStationAround = trainService.readNearbyStation(finalPosition)
+        val busStopsAround = busService.busStopsAround(finalPosition)
+        val bikeStationsAround = mapUtil.readNearbyStation(finalPosition, store.state.bikeStations)
         Single.zip(trainStationAround, busStopsAround, bikeStationsAround, Function3 { trains: List<TrainStation>, buses: List<BusStop>, bikeStations: List<BikeStation> ->
             googleMapUtil.centerMap(mapFragment, finalPosition)
             updateMarkersAndModel(buses, trains, bikeStations)
@@ -271,6 +269,12 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
     }
 
     companion object {
+
+        private val util: Util = Util
+        private val googleMapUtil = GoogleMapUtil
+        private val mapUtil = MapUtil
+        private val trainService = TrainService
+        private val busService = BusService
 
         fun newInstance(sectionNumber: Int): NearbyFragment {
             return fragmentWithBundle(NearbyFragment(), sectionNumber) as NearbyFragment

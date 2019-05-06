@@ -29,7 +29,7 @@ import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.adapter.AlertRouteAdapter
-import fr.cph.chicago.rx.RxUtil
+import fr.cph.chicago.service.AlertService
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
@@ -83,7 +83,7 @@ class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
 
     @SuppressLint("CheckResult")
     private fun refreshData() {
-        RxUtil.routeAlertForId(routeId).subscribe(
+        alertService.routeAlertForId(routeId).subscribe(
             { routeAlertsDTOS ->
                 val ada = AlertRouteAdapter(routeAlertsDTOS)
                 listView.adapter = ada
@@ -103,5 +103,9 @@ class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
         if (scrollView.isRefreshing) {
             scrollView.isRefreshing = false
         }
+    }
+
+    companion object {
+        private val alertService = AlertService
     }
 }

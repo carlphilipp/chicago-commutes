@@ -37,7 +37,7 @@ import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.rx.BusDirectionObserver
-import fr.cph.chicago.rx.RxUtil
+import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.Util
 import timber.log.Timber
@@ -104,7 +104,7 @@ class SearchAdapter(private val context: Context) : BaseAdapter() {
                 val loadingTextView: TextView = view.findViewById(R.id.loading_text_view)
                 view.setOnClickListener {
                     loadingTextView.visibility = LinearLayout.VISIBLE
-                    observableUtil.busDirections(busRoute.id)
+                    busService.loadBusDirectionsSingle(busRoute.id)
                         .doOnError { error ->
                             util.handleConnectOrParserException(error, loadingTextView)
                             Timber.e(error, "Error while getting bus directions")
@@ -133,7 +133,7 @@ class SearchAdapter(private val context: Context) : BaseAdapter() {
 
     companion object {
         private val util = Util
-        private val observableUtil = RxUtil
         private val layoutUtil = LayoutUtil
+        private val busService = BusService
     }
 }

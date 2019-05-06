@@ -24,8 +24,12 @@ import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.entity.DivvyResponse
 import fr.cph.chicago.parser.JsonParser
 import fr.cph.chicago.redux.store
+import fr.cph.chicago.rx.RxUtil.createSingleFromCallable
 import fr.cph.chicago.util.Util
+import io.reactivex.Single
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
+import timber.log.Timber
+import java.util.concurrent.Callable
 
 object BikeService {
 
@@ -34,7 +38,32 @@ object BikeService {
     private val util = Util
     private val preferenceService = PreferenceService
 
-    fun loadAllBikeStations(): List<BikeStation> {
+    fun allBikeStations(): Single<List<BikeStation>> {
+        return createSingleFromCallable(Callable { loadAllBikeStations() })
+    }
+
+    fun findBikeStation(id: Int): Single<BikeStation> {
+        return createSingleFromCallable(
+            Callable { loadAllBikeStations().first { station -> station.id == id } })
+            .onErrorReturn { throwable ->
+                Timber.e(throwable, "Could not load bike stations")
+                BikeStation.buildDefaultBikeStationWithName("error")
+            }
+    }
+
+    fun searchBikeStations(query: String): List<BikeStation> {
+        return store.state.bikeStations
+            .filter { station -> containsIgnoreCase(station.name, query) || containsIgnoreCase(station.address, query) }
+            .distinct()
+            .sortedWith(util.bikeStationComparator)
+    }
+
+    fun createEmptyBikeStation(bikeStationId: Int): BikeStation {
+        val stationName = preferenceService.getBikeRouteNameMapping(bikeStationId)
+        return BikeStation.buildDefaultBikeStationWithName(stationName)
+    }
+
+    private fun loadAllBikeStations(): List<BikeStation> {
         val bikeStationsInputStream = client.getBikeStations()
         return jsonParser
             .parse(bikeStationsInputStream, DivvyResponse::class.java)
@@ -51,21 +80,5 @@ object BikeService {
             }
             .sortedWith(compareBy(BikeStation::name))
             .toMutableList()
-    }
-
-    fun findBikeStation(id: Int): BikeStation {
-        return loadAllBikeStations().first { station -> station.id == id }
-    }
-
-    fun searchBikeStations(query: String): List<BikeStation> {
-        return store.state.bikeStations
-            .filter { station -> containsIgnoreCase(station.name, query) || containsIgnoreCase(station.address, query) }
-            .distinct()
-            .sortedWith(util.bikeStationComparator)
-    }
-
-    fun createEmptyBikeStation(bikeStationId: Int): BikeStation {
-        val stationName = preferenceService.getBikeRouteNameMapping(bikeStationId)
-        return BikeStation.buildDefaultBikeStationWithName(stationName)
     }
 }

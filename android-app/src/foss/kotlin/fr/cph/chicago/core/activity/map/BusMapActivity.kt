@@ -200,7 +200,7 @@ class BusMapActivity : FragmentMapActivity() {
     override fun selectVehicle(feature: Feature) {
         super.selectVehicle(feature)
         val id = feature.getStringProperty(PROPERTY_TITLE)
-        rxUtil.followBus(id)
+        busService.loadFollowBus(id)
             .observeOn(Schedulers.computation())
             .map(BusesFunction(this@BusMapActivity, feature, false))
             .observeOn(AndroidSchedulers.mainThread())
@@ -217,7 +217,7 @@ class BusMapActivity : FragmentMapActivity() {
     private fun clickOnVehicleInfo(feature: Feature) {
         showProgress(true)
         val id = feature.getStringProperty(PROPERTY_TITLE)
-        rxUtil.followBus(id)
+        busService.loadFollowBus(id)
             .observeOn(Schedulers.computation())
             .map(BusesFunction(this@BusMapActivity, feature, true))
             .observeOn(AndroidSchedulers.mainThread())
@@ -239,7 +239,7 @@ class BusMapActivity : FragmentMapActivity() {
                 val patterns: MutableList<BusPattern> = mutableListOf()
                 if (busId == 0) {
                     // Search for directions
-                    val busDirections = busService.loadBusDirections(busRouteId)
+                    val busDirections = busService.loadBusDirectionsSingle(busRouteId).blockingGet()
                     bounds = busDirections.busDirections.map { busDirection -> busDirection.text }.toTypedArray()
                 }
                 busService.loadBusPattern(busRouteId, bounds).forEach { patterns.add(it) }
@@ -301,7 +301,7 @@ class BusMapActivity : FragmentMapActivity() {
 
     @SuppressLint("CheckResult")
     private fun loadBuses() {
-        rxUtil.busForRouteId(busRouteId)
+        busService.busForRouteId(busRouteId)
             .observeOn(Schedulers.computation())
             .map { buses ->
                 val features = buses.map { bus ->

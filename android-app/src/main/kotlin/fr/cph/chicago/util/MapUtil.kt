@@ -2,6 +2,10 @@ package fr.cph.chicago.util
 
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.rx.RxUtil.createSingleFromCallable
+import fr.cph.chicago.rx.RxUtil.handleError
+import io.reactivex.Single
+import java.util.concurrent.Callable
 
 object MapUtil {
 
@@ -78,19 +82,23 @@ object MapUtil {
         )
     }
 
-    fun readNearbyStation(bikeStations: List<BikeStation>, position: Position): List<BikeStation> {
-        val latitude = position.latitude
-        val longitude = position.longitude
+    fun readNearbyStation(position: Position, bikeStations: List<BikeStation>): Single<List<BikeStation>> {
+        return createSingleFromCallable(
+            Callable {
+                val latitude = position.latitude
+                val longitude = position.longitude
 
-        val latMax = latitude + DEFAULT_RANGE
-        val latMin = latitude - DEFAULT_RANGE
-        val lonMax = longitude + DEFAULT_RANGE
-        val lonMin = longitude - DEFAULT_RANGE
+                val latMax = latitude + DEFAULT_RANGE
+                val latMin = latitude - DEFAULT_RANGE
+                val lonMax = longitude + DEFAULT_RANGE
+                val lonMin = longitude - DEFAULT_RANGE
 
-        return bikeStations
-            .filter { station -> station.latitude <= latMax }
-            .filter { station -> station.latitude >= latMin }
-            .filter { station -> station.longitude <= lonMax }
-            .filter { station -> station.longitude >= lonMin }
+                bikeStations
+                    .filter { station -> station.latitude <= latMax }
+                    .filter { station -> station.latitude >= latMin }
+                    .filter { station -> station.longitude <= lonMax }
+                    .filter { station -> station.longitude >= lonMin }
+            })
+            .onErrorReturn(handleError())
     }
 }

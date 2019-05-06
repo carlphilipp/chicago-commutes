@@ -60,7 +60,9 @@ import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.marker.MarkerDataHolder
 import fr.cph.chicago.redux.store
-import fr.cph.chicago.rx.RxUtil
+import fr.cph.chicago.service.BusService
+import fr.cph.chicago.service.TrainService
+import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.Util
 import io.reactivex.Single
@@ -96,9 +98,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
     private var locationEngine: LocationEngine? = null
     private var locationLayerPlugin: LocationLayerPlugin? = null
     private var locationOrigin: Location? = null
-
-    private val util: Util = Util
-    private val rxUtil: RxUtil = RxUtil
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Mapbox.getInstance(this.context!!, getString(R.string.mapbox_token))
@@ -150,10 +149,10 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         }
 
         val finalPosition = chicago ?: position
-        val trainStationAroundObservable = rxUtil.trainStationAround(finalPosition)
-        val busStopsAroundObservable = rxUtil.busStopsAround(finalPosition)
-        val bikeStationsObservable = rxUtil.bikeStationAround(finalPosition, store.state.bikeStations)
-        Single.zip(trainStationAroundObservable, busStopsAroundObservable, bikeStationsObservable, Function3 { trains: List<TrainStation>, buses: List<BusStop>, bikeStations: List<BikeStation> ->
+        val trainStationAroundSingle = trainService.readNearbyStation(finalPosition)
+        val busStopsAroundObservable = busService.busStopsAround(finalPosition)
+        val bikeStationsObservable = mapUtil.readNearbyStation(finalPosition, store.state.bikeStations)
+        Single.zip(trainStationAroundSingle, busStopsAroundObservable, bikeStationsObservable, Function3 { trains: List<TrainStation>, buses: List<BusStop>, bikeStations: List<BikeStation> ->
             map.cameraPosition = CameraPosition.Builder()
                 .target(LatLng(finalPosition.latitude, finalPosition.longitude))
                 .zoom(15.0)
@@ -325,6 +324,12 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
     }
 
     companion object {
+
+        private val util = Util
+        private val mapUtil = MapUtil
+        private val trainService = TrainService
+        private val busService = BusService
+
         fun newInstance(sectionNumber: Int): NearbyFragment {
             return fragmentWithBundle(NearbyFragment(), sectionNumber) as NearbyFragment
         }

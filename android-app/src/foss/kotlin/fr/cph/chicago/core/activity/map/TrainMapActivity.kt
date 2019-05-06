@@ -55,8 +55,8 @@ import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.TrainStationPattern
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.utils.BitmapGenerator
-import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.rx.TrainsFunction
+import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -74,8 +74,6 @@ class TrainMapActivity : FragmentMapActivity() {
 
     @BindString(R.string.bundle_train_line)
     lateinit var bundleTrainLine: String
-
-    private val rxUtil: RxUtil = RxUtil
 
     private lateinit var line: String
     val trainLine: TrainLine by lazy {
@@ -240,7 +238,7 @@ class TrainMapActivity : FragmentMapActivity() {
 
     private fun loadAndUpdateTrainArrivalFeature(feature: Feature, loadAll: Boolean) {
         val runNumber = feature.getStringProperty(PROPERTY_TITLE)
-        rxUtil.trainEtas(runNumber, loadAll)
+        trainService.trainEtas(runNumber, loadAll)
             .observeOn(Schedulers.computation())
             .map(TrainsFunction(this@TrainMapActivity, feature))
             .observeOn(AndroidSchedulers.mainThread())
@@ -255,7 +253,7 @@ class TrainMapActivity : FragmentMapActivity() {
 
     private fun loadActivityData() {
         // Load train location
-        val featuresTrains = rxUtil.trainLocations(line)
+        val featuresTrains = trainService.trainLocations(line)
             .observeOn(Schedulers.computation())
             .map { trains: List<Train> ->
                 val features = trains.map { train ->
@@ -271,7 +269,7 @@ class TrainMapActivity : FragmentMapActivity() {
 
         if (drawLine) {
             // Load pattern from local file
-            val polylineObs: Single<Pair<PolylineOptions, FeatureCollection>> = rxUtil.trainPatterns(line)
+            val polylineObs: Single<Pair<PolylineOptions, FeatureCollection>> = trainService.readPatterns(TrainLine.fromXmlString(line))
                 .observeOn(Schedulers.computation())
                 .map { trainStationPatterns ->
                     val poly = PolylineOptions()
@@ -359,5 +357,9 @@ class TrainMapActivity : FragmentMapActivity() {
             TrainLine.YELLOW -> R.drawable.yellow_marker
             TrainLine.NA -> R.drawable.red_marker
         }
+    }
+
+    companion object {
+        private val trainService = TrainService
     }
 }

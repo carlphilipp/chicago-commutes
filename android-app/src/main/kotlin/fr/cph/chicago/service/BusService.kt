@@ -36,6 +36,7 @@ import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.BusStopPattern
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.model.dto.BusArrivalDTO
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.entity.BusArrivalResponse
@@ -48,7 +49,11 @@ import fr.cph.chicago.exception.CtaException
 import fr.cph.chicago.parser.BusStopCsvParser
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.BusRepository
+import fr.cph.chicago.rx.RxUtil.createSingleFromCallable
+import fr.cph.chicago.rx.RxUtil.handleError
 import fr.cph.chicago.util.Util
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.lang3.StringUtils
@@ -56,6 +61,7 @@ import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.concurrent.Callable
 
 object BusService {
 
@@ -66,33 +72,42 @@ object BusService {
     private val util = Util
     private val simpleDateFormatBus: SimpleDateFormat = SimpleDateFormat("yyyyMMdd HH:mm", Locale.US)
 
-    fun loadFavoritesBuses(): List<BusArrival> {
-        val favoritesBusParams = preferenceService.getFavoritesBusParams()
-        if (favoritesBusParams.isEmpty) return mutableListOf()
-        val params = ArrayListValuedHashMap<String, String>(2, 1)
-        val routeIdParam = App.instance.getString(R.string.request_rt)
-        val stopIdParam = App.instance.getString(R.string.request_stop_id)
-        params.put(routeIdParam, favoritesBusParams.get(routeIdParam).joinToString(separator = ","))
-        params.put(stopIdParam, favoritesBusParams.get(stopIdParam).joinToString(separator = ","))
-        return getBusArrivals(params)
+    fun loadFavoritesBuses(): Single<BusArrivalDTO> {
+        return createSingleFromCallable(
+            Callable {
+                val favoritesBusParams = preferenceService.getFavoritesBusParams()
+                if (favoritesBusParams.isEmpty) {
+                    mutableListOf()
+                } else {
+                    val params = ArrayListValuedHashMap<String, String>(2, 1)
+                    val routeIdParam = App.instance.getString(R.string.request_rt)
+                    val stopIdParam = App.instance.getString(R.string.request_stop_id)
+                    params.put(routeIdParam, favoritesBusParams.get(routeIdParam).joinToString(separator = ","))
+                    params.put(stopIdParam, favoritesBusParams.get(stopIdParam).joinToString(separator = ","))
+                    getBusArrivals(params)
+                }
+            })
+            .observeOn(Schedulers.computation())
+            .map { favoriteBuses -> BusArrivalDTO(favoriteBuses, false) }
     }
 
-    fun loadAllBusStopsForRouteBound(route: String, bound: String): List<BusStop> {
-        val params = ArrayListValuedHashMap<String, String>(2, 1)
-        params.put(App.instance.getString(R.string.request_rt), route)
-        params.put(App.instance.getString(R.string.request_dir), bound)
-        val result = ctaClient.get(BUS_STOP_LIST, params, BusStopsResponse::class.java)
-        if (result.bustimeResponse.stops == null) {
-            throw CtaException(result)
-        }
-        return result.bustimeResponse.stops!!.map { stop ->
-            BusStop(
-                id = stop.stpid.toInt(),
-                name = stop.stpnm,
-                description = stop.stpnm,
-                position = Position(stop.lat, stop.lon)
-            )
-        }
+    fun loadAllBusStopsForRouteBound(route: String, bound: String): Single<List<BusStop>> {
+        return createSingleFromCallable(Callable {
+            val params = ArrayListValuedHashMap<String, String>(2, 1)
+            params.put(App.instance.getString(R.string.request_rt), route)
+            params.put(App.instance.getString(R.string.request_dir), bound)
+            val result = ctaClient.get(BUS_STOP_LIST, params, BusStopsResponse::class.java)
+            if (result.bustimeResponse.stops == null) {
+                throw CtaException(result)
+            }
+            result.bustimeResponse.stops!!.map { stop ->
+                BusStop(
+                    id = stop.stpid.toInt(),
+                    name = stop.stpnm,
+                    description = stop.stpnm,
+                    position = Position(stop.lat, stop.lon))
+            }
+        })
     }
 
     fun loadLocalBusData(): Any {
@@ -103,37 +118,31 @@ object BusService {
         return Any()
     }
 
-    fun loadBusDirections(busRouteId: String): BusDirections {
-        val params = ArrayListValuedHashMap<String, String>(1, 1)
-        params.put(App.instance.getString(R.string.request_rt), busRouteId)
-        val result = ctaClient.get(BUS_DIRECTION, params, BusDirectionResponse::class.java)
-        if (result.bustimeResponse.directions == null) {
-            throw CtaException(result)
-        }
-        val busDirections = BusDirections(busRouteId)
-        result
-            .bustimeResponse
-            .directions
-            .map { direction -> BusDirection.fromString(direction.dir) }
-            .forEach { busDirections.addBusDirection(it) }
-        return busDirections
+    fun loadBusDirectionsSingle(busRouteId: String): Single<BusDirections> {
+        return createSingleFromCallable(Callable { loadBusDirections(busRouteId) })
     }
 
-    fun loadBusRoutes(): List<BusRoute> {
-        return ctaClient.get(BUS_ROUTES, ArrayListValuedHashMap<String, String>(), BusRoutesResponse::class.java)
-            .bustimeResponse
-            .routes
-            .map { route -> BusRoute(route.routeId, route.routeName) }
+    fun busRoutes(): Single<List<BusRoute>> {
+        return createSingleFromCallable(Callable {
+            ctaClient.get(BUS_ROUTES, ArrayListValuedHashMap<String, String>(), BusRoutesResponse::class.java)
+                .bustimeResponse
+                .routes
+                .map { route -> BusRoute(route.routeId, route.routeName) }
+        })
     }
 
-    fun loadFollowBus(busId: String): List<BusArrival> {
-        val params = ArrayListValuedHashMap<String, String>(1, 1)
-        params.put(App.instance.getString(R.string.request_vid), busId)
-        return getBusArrivals(params)
+    fun loadFollowBus(busId: String): Single<List<BusArrival>> {
+        return createSingleFromCallable(
+            Callable {
+                val params = ArrayListValuedHashMap<String, String>(1, 1)
+                params.put(App.instance.getString(R.string.request_vid), busId)
+                getBusArrivals(params)
+            })
+            .onErrorReturn(handleError())
     }
 
-    fun loadBusPattern(busRouteId: String, bound: String): BusPattern {
-        return loadBusPattern(busRouteId, arrayOf(bound))[0]
+    fun loadBusPattern(busRouteId: String, bound: String): Single<BusPattern> {
+        return createSingleFromCallable(Callable { loadBusPattern(busRouteId, arrayOf(bound))[0] })
     }
 
     fun loadBusPattern(busRouteId: String, bounds: Array<String>): List<BusPattern> {
@@ -150,7 +159,8 @@ object BusService {
                     direction = ptr.rtdir,
                     busStopsPatterns = ptr.pt
                         .map { pt ->
-                            BusStopPattern(Position(pt.lat, pt.lon), pt.typ, pt.stpnm ?: StringUtils.EMPTY)
+                            BusStopPattern(Position(pt.lat, pt.lon), pt.typ, pt.stpnm
+                                ?: StringUtils.EMPTY)
                         }
                         .toMutableList()
                 )
@@ -161,27 +171,35 @@ object BusService {
             }
     }
 
-    fun loadBus(busRouteId: String): List<Bus> {
-        val connectParam = ArrayListValuedHashMap<String, String>(1, 1)
-        connectParam.put(App.instance.getString(R.string.request_rt), busRouteId)
-        val result = ctaClient.get(BUS_VEHICLES, connectParam, BusPositionResponse::class.java)
-        if (result.bustimeResponse.vehicle == null) throw CtaException(result)
-        return result.bustimeResponse.vehicle!!
-            .map { vehicle ->
-                val position = Position(vehicle.lat.toDouble(), vehicle.lon.toDouble())
-                Bus(vehicle.vid.toInt(), position, vehicle.hdg.toInt(), vehicle.des)
-            }
+    fun busForRouteId(busRouteId: String): Single<List<Bus>> {
+        return createSingleFromCallable(Callable {
+            val connectParam = ArrayListValuedHashMap<String, String>(1, 1)
+            connectParam.put(App.instance.getString(R.string.request_rt), busRouteId)
+            val result = ctaClient.get(BUS_VEHICLES, connectParam, BusPositionResponse::class.java)
+            if (result.bustimeResponse.vehicle == null) throw CtaException(result)
+            result.bustimeResponse.vehicle!!
+                .map { vehicle ->
+                    val position = Position(vehicle.lat.toDouble(), vehicle.lon.toDouble())
+                    Bus(vehicle.vid.toInt(), position, vehicle.hdg.toInt(), vehicle.des)
+                }
+        })
     }
 
-    fun loadAroundBusArrivals(busStop: BusStop): List<BusArrival> {
-        val busStopId = busStop.id
-        val params = ArrayListValuedHashMap<String, String>(1, 1)
-        params.put(App.instance.getString(R.string.request_stop_id), busStopId.toString())
-        return getBusArrivals(params)
+    fun loadBusArrivals(busStop: BusStop): Single<List<BusArrival>> {
+        return createSingleFromCallable(
+            Callable {
+                val busStopId = busStop.id
+                val params = ArrayListValuedHashMap<String, String>(1, 1)
+                params.put(App.instance.getString(R.string.request_stop_id), busStopId.toString())
+                getBusArrivals(params)
+            })
+            .onErrorReturn(handleError())
     }
 
-    fun getBusStopsAround(position: Position): List<BusStop> {
-        return busRepository.getBusStopsAround(position)
+    fun busStopsAround(position: Position): Single<List<BusStop>> {
+        return createSingleFromCallable(
+            Callable { busRepository.getBusStopsAround(position) })
+            .onErrorReturn(handleError())
     }
 
     fun saveBusStops(busStops: List<BusStop>) {
@@ -206,7 +224,6 @@ object BusService {
         return BusRoute(routeId, routeName)
     }
 
-    // TODO: not sure it's the right pattern to pass busRoutes here.
     fun searchBusRoutes(query: String): List<BusRoute> {
         return store.state.busRoutes
             .filter { (id, name) -> containsIgnoreCase(id, query) || containsIgnoreCase(name, query) }
@@ -214,21 +231,22 @@ object BusService {
             .sortedWith(util.busStopComparatorByName)
     }
 
-    fun loadBusArrivals(requestRt: String, busRouteId: String, requestStopId: String, busStopId: Int, bound: String, boundTitle: String): BusArrivalStopDTO {
-        val params = ArrayListValuedHashMap<String, String>(2, 1)
-        params.put(requestRt, busRouteId)
-        params.put(requestStopId, busStopId.toString())
-        return getBusArrivals(params)
-            .filter { (_, _, _, _, _, _, routeDirection) -> routeDirection == bound || routeDirection == boundTitle }
-            .fold(BusArrivalStopDTO()) { accumulator, busArrival ->
-                if (accumulator.containsKey(busArrival.busDestination)) {
-                    (accumulator[busArrival.busDestination] as MutableList).add(busArrival)
-                } else {
-                    accumulator.put(busArrival.busDestination, mutableListOf(busArrival))
+    fun loadBusArrivals(requestRt: String, busRouteId: String, requestStopId: String, busStopId: Int, bound: String, boundTitle: String): Single<BusArrivalStopDTO> {
+        return createSingleFromCallable(Callable {
+            val params = ArrayListValuedHashMap<String, String>(2, 1)
+            params.put(requestRt, busRouteId)
+            params.put(requestStopId, busStopId.toString())
+            getBusArrivals(params)
+                .filter { (_, _, _, _, _, _, routeDirection) -> routeDirection == bound || routeDirection == boundTitle }
+                .fold(BusArrivalStopDTO()) { accumulator, busArrival ->
+                    if (accumulator.containsKey(busArrival.busDestination)) {
+                        (accumulator[busArrival.busDestination] as MutableList).add(busArrival)
+                    } else {
+                        accumulator.put(busArrival.busDestination, mutableListOf(busArrival))
+                    }
+                    accumulator
                 }
-                accumulator
-            }
-
+        })
     }
 
     private fun getBusArrivals(params: MultiValuedMap<String, String>): List<BusArrival> {
@@ -258,5 +276,21 @@ object BusService {
             }
         // limiting the number of bus arrival returned so it's not too ugly on the map
         return if (buses.size >= 20) buses.subList(0, 19) else buses
+    }
+
+    private fun loadBusDirections(busRouteId: String): BusDirections {
+        val params = ArrayListValuedHashMap<String, String>(1, 1)
+        params.put(App.instance.getString(R.string.request_rt), busRouteId)
+        val result = ctaClient.get(BUS_DIRECTION, params, BusDirectionResponse::class.java)
+        if (result.bustimeResponse.directions == null) {
+            throw CtaException(result)
+        }
+        val busDirections = BusDirections(busRouteId)
+        result
+            .bustimeResponse
+            .directions
+            .map { direction -> BusDirection.fromString(direction.dir) }
+            .forEach { busDirections.addBusDirection(it) }
+        return busDirections
     }
 }

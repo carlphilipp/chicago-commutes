@@ -111,7 +111,7 @@ class BusMapActivity : FragmentMapActivity() {
     override fun setToolbar() {
         super.setToolbar()
         toolbar.setOnMenuItemClickListener { _ ->
-            rxUtil.busForRouteId(busRouteId).subscribe(BusObserver(this@BusMapActivity, false, layout))
+            busService.busForRouteId(busRouteId).subscribe(BusObserver(this@BusMapActivity, false, layout))
             false
         }
 
@@ -223,7 +223,7 @@ class BusMapActivity : FragmentMapActivity() {
                     if (!refreshingInfoWindow) {
                         selectedMarker = marker
                         val busId = marker.snippet
-                        rxUtil.followBus(busId)
+                        busService.loadFollowBus(busId)
                             .subscribe(BusFollowObserver(this@BusMapActivity, layout, view!!, false))
                         status[marker] = false
                     }
@@ -241,7 +241,7 @@ class BusMapActivity : FragmentMapActivity() {
                     selectedMarker = marker
                     val runNumber = marker.snippet
                     val current = status[marker]
-                    rxUtil.followBus(runNumber)
+                    busService.loadFollowBus(runNumber)
                         .subscribe(BusFollowObserver(this@BusMapActivity, layout, view!!, !current!!))
                     status[marker] = !current
                 }
@@ -252,13 +252,13 @@ class BusMapActivity : FragmentMapActivity() {
 
     @SuppressLint("CheckResult")
     private fun loadActivityData() {
-        rxUtil.busForRouteId(busRouteId).subscribe(BusObserver(this@BusMapActivity, true, layout))
+        busService.busForRouteId(busRouteId).subscribe(BusObserver(this@BusMapActivity, true, layout))
         if (loadPattern) {
             Observable.fromCallable {
                 val patterns: MutableList<BusPattern> = mutableListOf()
                 if (busId == 0) {
                     // Search for directions
-                    val busDirections = busService.loadBusDirections(busRouteId)
+                    val busDirections = busService.loadBusDirectionsSingle(busRouteId).blockingGet()
                     bounds = busDirections.busDirections.map { busDirection -> busDirection.text }.toTypedArray()
                 }
                 busService.loadBusPattern(busRouteId, bounds).forEach { patterns.add(it) }

@@ -29,7 +29,9 @@ import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusArrivalRouteDTO
 import fr.cph.chicago.core.model.marker.MarkerDataHolder
-import fr.cph.chicago.rx.RxUtil
+import fr.cph.chicago.service.BikeService
+import fr.cph.chicago.service.BusService
+import fr.cph.chicago.service.TrainService
 
 @SuppressLint("CheckResult")
 class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, private val nearbyFragment: NearbyFragment) : com.mapbox.mapboxsdk.maps.MapboxMap.OnMarkerClickListener {
@@ -57,14 +59,14 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
 
     private fun loadTrainArrivals(trainTrainStation: TrainStation) {
         nearbyFragment.slidingUpAdapter.updateTitleTrain(trainTrainStation.name)
-        rxUtil.trainArrivals(trainTrainStation.id)
+        TrainService.loadStationTrainArrival(trainTrainStation.id)
             .onErrorReturn { TrainArrival.buildEmptyTrainArrival() }
             .subscribe { result -> nearbyFragment.slidingUpAdapter.addTrainStation(result) }
     }
 
     private fun loadBusArrivals(busStop: BusStop) {
         nearbyFragment.slidingUpAdapter.updateTitleBus(busStop.name)
-        rxUtil.busArrivals(busStop)
+        busService.loadBusArrivals(busStop)
             .subscribe { result ->
                 val busArrivalRouteDTO = BusArrivalRouteDTO(BusArrivalRouteDTO.busComparator)
                 result.forEach { busArrivalRouteDTO.addBusArrival(it) }
@@ -74,12 +76,11 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
 
     private fun loadBikes(bikeStation: BikeStation) {
         nearbyFragment.slidingUpAdapter.updateTitleBike(bikeStation.name)
-        rxUtil.bikeOneStation(bikeStation)
-            .subscribe { result -> nearbyFragment.slidingUpAdapter.addBike(result) }
+        BikeService.findBikeStation(bikeStation.id).subscribe { result -> nearbyFragment.slidingUpAdapter.addBike(result) }
 
     }
 
     companion object {
-        private val rxUtil = RxUtil
+        private val busService = BusService
     }
 }

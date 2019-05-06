@@ -208,7 +208,7 @@ class TrainMapActivity : FragmentMapActivity() {
                         if (!refreshingInfoWindow) {
                             selectedMarker = marker
                             val runNumber = marker.snippet
-                            observableUtil.trainEtas(runNumber, false)
+                            trainService.trainEtas(runNumber, false)
                                 .subscribe(TrainEtaObserver(view!!, this@TrainMapActivity))
                             status[marker] = false
                         }
@@ -225,7 +225,7 @@ class TrainMapActivity : FragmentMapActivity() {
                     selectedMarker = marker
                     val runNumber = marker.snippet
                     val current = status[marker] ?: false
-                    observableUtil.trainEtas(runNumber, !current)
+                    trainService.trainEtas(runNumber, !current)
                         .subscribe(TrainEtaObserver(view!!, this@TrainMapActivity))
                     status[marker] = !current
                 }
@@ -237,12 +237,12 @@ class TrainMapActivity : FragmentMapActivity() {
     @SuppressLint("CheckResult")
     private fun loadActivityData() {
         // Load train location
-        val trainsObservable = observableUtil.trainLocations(line)
+        val trainsSingle = trainService.trainLocations(line)
         // Load pattern from local file
-        val positionsObservable = observableUtil.trainPatterns(line)
+        val positionsSingle = trainService.readPatterns(TrainLine.fromXmlString(line))
 
         if (drawLine) {
-            Single.zip(trainsObservable, positionsObservable, BiFunction { trains: List<Train>, positions: List<TrainStationPattern> ->
+            Single.zip(trainsSingle, positionsSingle, BiFunction { trains: List<Train>, positions: List<TrainStationPattern> ->
                 drawTrains(trains)
                 drawLine(positions.map { it.position })
                 if (trains.isNotEmpty()) {
@@ -261,7 +261,7 @@ class TrainMapActivity : FragmentMapActivity() {
                 }
             )
         } else {
-            trainsObservable.subscribe { trains ->
+            trainsSingle.subscribe { trains ->
                 if (trains != null) {
                     drawTrains(trains)
                     if (trains.isEmpty()) {

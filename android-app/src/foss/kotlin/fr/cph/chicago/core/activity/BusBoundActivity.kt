@@ -50,7 +50,7 @@ import fr.cph.chicago.core.adapter.BusBoundAdapter
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.rx.RxUtil
+import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.Util
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -98,7 +98,6 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
     @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
     lateinit var arrowBackWhite: Drawable
 
-    private val rxUtil: RxUtil = RxUtil
     private val util: Util = Util
 
     private lateinit var busRouteId: String
@@ -171,7 +170,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
         toolbar.navigationIcon = arrowBackWhite
         toolbar.setOnClickListener { finish() }
 
-        rxUtil.busStopsForRouteBound(busRouteId, bound)
+        busService.loadAllBusStopsForRouteBound(busRouteId, bound)
             .subscribe(
                 { onNext ->
                     busStops = onNext
@@ -194,7 +193,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
             uiSettings.isRotateGesturesEnabled = false
             uiSettings.isTiltGesturesEnabled = false
         }
-        rxUtil.busPatterns(busRouteId, bound)
+        busService.loadBusPattern(busRouteId, bound)
             .observeOn(Schedulers.computation())
             .map { busPattern: BusPattern ->
                 val pair = MapUtil.getBounds(busPattern.busStopsPatterns.map { it.position })
@@ -260,5 +259,9 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
     override fun onDestroy() {
         super.onDestroy()
         mapView?.onDestroy()
+    }
+
+    companion object {
+        private val busService = BusService
     }
 }

@@ -46,7 +46,7 @@ import fr.cph.chicago.redux.RemoveBusFavoriteAction
 import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
-import fr.cph.chicago.rx.RxUtil
+import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.Color
 import fr.cph.chicago.util.LayoutUtil
@@ -212,7 +212,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
     @SuppressLint("CheckResult")
     private fun loadStopDetailsAndStreetImage() {
         // Load bus stop details and google street image
-        RxUtil.busStopsForRouteBound(busRouteId, boundTitle)
+        busService.loadAllBusStopsForRouteBound(busRouteId, boundTitle)
             .observeOn(Schedulers.computation())
             .flatMap { stops ->
                 val busStop: BusStop? = stops.firstOrNull { busStop -> busStop.id == busStopId }
@@ -379,5 +379,9 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
         } else {
             store.dispatch(AddBusFavoriteAction(busRouteId, busStopId.toString(), boundTitle, busRouteName, busStopName))
         }
+    }
+
+    companion object {
+        private val busService = BusService
     }
 }

@@ -30,7 +30,7 @@ import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
-import java.util.*
+import java.util.Date
 
 object PreferenceService {
 
@@ -128,12 +128,17 @@ object PreferenceService {
         return getBusFavorites().subscribeOn(Schedulers.io())
     }
 
-    fun addToTrainFavorites(stationId: Int) {
-        val favorites = repo.getTrainFavorites().toMutableList()
-        if (!favorites.contains(stationId)) {
-            favorites.add(stationId)
-            repo.saveTrainFavorites(favorites)
-        }
+    fun addToTrainFavorites(stationId: Int): Single<List<Int>> {
+        return Single
+            .fromCallable {
+                val favorites = repo.getTrainFavorites().toMutableList()
+                if (!favorites.contains(stationId)) {
+                    favorites.add(stationId)
+                    repo.saveTrainFavorites(favorites)
+                }
+            }
+            .subscribeOn(Schedulers.io())
+            .flatMap { getTrainFavorites() }
     }
 
     fun getFavoritesBusParams(): MultiValuedMap<String, String> {
@@ -171,10 +176,15 @@ object PreferenceService {
         return getBikeMatchingFavorites()
     }
 
-    fun removeFromTrainFavorites(stationId: Int) {
-        val favorites = repo.getTrainFavorites().toMutableList()
-        favorites.remove(stationId)
-        repo.saveTrainFavorites(favorites)
+    fun removeFromTrainFavorites(stationId: Int): Single<List<Int>> {
+        return Single
+            .fromCallable {
+                val favorites = repo.getTrainFavorites().toMutableList()
+                favorites.remove(stationId)
+                repo.saveTrainFavorites(favorites)
+            }
+            .subscribeOn(Schedulers.io())
+            .flatMap { getTrainFavorites() }
     }
 
     fun getBikeFavorites(): Single<List<Int>> {
@@ -191,7 +201,7 @@ object PreferenceService {
     }
 
     fun getTrainFavorites(): Single<List<Int>> {
-        return Single.fromCallable { repo.getTrainFavorites() }
+        return Single.fromCallable { repo.getTrainFavorites() }.subscribeOn(Schedulers.io())
     }
 
     fun getBusFavorites(): Single<List<String>> {
