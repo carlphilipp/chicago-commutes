@@ -53,11 +53,13 @@ internal val baseMiddleware: Middleware<StateType> = { _, _ ->
                                     BusArrivalDTO(store.state.busArrivalsDTO.busArrivals, true)
                                 else
                                     favoritesDTO.busArrivalDTO
+                                val favoritesBusRoute = busService.extractBusRouteFavorites(favoritesBuses)
                                 BaseAction(
                                     trainArrivalsDTO = trainArrivals,
                                     busArrivalsDTO = busArrivals,
                                     trainFavorites = favoritesTrains,
                                     busFavorites = favoritesBuses,
+                                    busRouteFavorites = favoritesBusRoute,
                                     bikeFavorites = favoritesBikes)
                             })
                     }
@@ -265,11 +267,13 @@ internal val addBusFavorites: Middleware<StateType> = { _, _ ->
                     busStopName = action.busStopName)
                     .observeOn(Schedulers.computation())
                     .map { favorites ->
+                        val favoritesBusRoute = busService.extractBusRouteFavorites(favorites)
                         AddBusFavoriteAction(
                             busRouteId = action.busRouteId,
                             busStopId = action.busStopId,
                             boundTitle = action.boundTitle,
-                            busFavorites = favorites)
+                            busFavorites = favorites,
+                            busRouteFavorites = favoritesBusRoute)
                     }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { newAction -> next(newAction) }
@@ -288,11 +292,13 @@ internal val removeBusFavorites: Middleware<StateType> = { _, _ ->
                     bound = action.boundTitle)
                     .observeOn(Schedulers.computation())
                     .map { favorites ->
+                        val favoritesBusRoute = busService.extractBusRouteFavorites(favorites)
                         RemoveBusFavoriteAction(
                             busRouteId = action.busRouteId,
                             busStopId = action.busStopId,
                             boundTitle = action.boundTitle,
-                            busFavorites = favorites)
+                            busFavorites = favorites,
+                            busRouteFavorites = favoritesBusRoute)
                     }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { newAction -> next(newAction) }

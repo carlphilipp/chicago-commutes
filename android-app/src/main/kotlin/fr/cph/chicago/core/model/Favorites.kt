@@ -47,7 +47,7 @@ object Favorites {
 
     private var trainFavorites = listOf<Int>()
     private var busFavorites = listOf<String>()
-    private var fakeBusFavorites = listOf<String>()
+    private var busRouteFavorites = listOf<String>()
     private var bikeFavorites = listOf<Int>()
 
     /**
@@ -56,7 +56,7 @@ object Favorites {
      * @return a size
      */
     fun size(): Int {
-        return trainFavorites.size + fakeBusFavorites.size + bikeFavorites.size
+        return trainFavorites.size + busRouteFavorites.size + bikeFavorites.size
     }
 
     /**
@@ -69,12 +69,12 @@ object Favorites {
         return if (position < trainFavorites.size) {
             val stationId = trainFavorites[position]
             trainService.getStation(stationId)
-        } else if (position < trainFavorites.size + fakeBusFavorites.size && position - trainFavorites.size < fakeBusFavorites.size) {
+        } else if (position < trainFavorites.size + busRouteFavorites.size && position - trainFavorites.size < busRouteFavorites.size) {
             val index = position - trainFavorites.size
-            val routeId = fakeBusFavorites[index]
+            val routeId = busRouteFavorites[index]
             busService.getBusRoute(routeId)
         } else {
-            val index = position - (trainFavorites.size + fakeBusFavorites.size)
+            val index = position - (trainFavorites.size + busRouteFavorites.size)
             store.state.bikeStations
                 .filter { bikeStation -> bikeStation.id == bikeFavorites[index] }
                 .getOrElse(0) { bikeService.createEmptyBikeStation(bikeFavorites[index]) }
@@ -112,16 +112,8 @@ object Favorites {
     fun refreshFavorites() {
         trainFavorites = store.state.trainFavorites
         busFavorites = store.state.busFavorites
-        // TODO: Put that into state and do the operation into middleware
-        fakeBusFavorites = calculateActualRouteNumberBusFavorites(store.state.busFavorites)
+        busRouteFavorites = store.state.busRouteFavorites
         bikeFavorites = store.state.bikeFavorites
-    }
-
-    private fun calculateActualRouteNumberBusFavorites(busFavorites: List<String>): List<String> {
-        return busFavorites
-            .map { util.decodeBusFavorite(it) }
-            .map { it.routeId }
-            .distinct()
     }
 
     /**

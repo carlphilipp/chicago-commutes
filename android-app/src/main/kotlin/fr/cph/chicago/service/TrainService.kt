@@ -49,7 +49,10 @@ import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import java.util.concurrent.Callable
+import java.util.concurrent.*
+import kotlin.collections.ArrayList
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 object TrainService {
 
@@ -111,9 +114,16 @@ object TrainService {
             .map { favoriteTrains -> TrainArrivalDTO(favoriteTrains, false) }
     }
 
-    fun loadLocalTrainData(): SparseArray<TrainStation> {
+    fun loadLocalTrainData(): Single<Boolean> {
         // Force loading train from CSV toi avoid doing it later
-        return trainRepository.stations
+        return Single
+            .fromCallable { trainRepository.stations }
+            .map { it.size() == 0 }
+            .subscribeOn(Schedulers.computation())
+            .onErrorReturn { throwable ->
+                Timber.e(throwable, "Could not create local train data")
+                true
+            }
     }
 
     fun loadStationTrainArrival(stationId: Int): Single<TrainArrival> {

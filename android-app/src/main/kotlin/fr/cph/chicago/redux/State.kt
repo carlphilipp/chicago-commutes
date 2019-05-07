@@ -11,7 +11,7 @@ import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StateType
-import java.util.Date
+import java.util.*
 
 data class State(
     // Api keys
@@ -26,6 +26,7 @@ data class State(
     // Favorites
     val trainFavorites: List<Int> = listOf(),
     val busFavorites: List<String> = listOf(),
+    val busRouteFavorites: List<String> = listOf(),
     val bikeFavorites: List<Int> = listOf(),
 
     // Trains and Buses arrivals

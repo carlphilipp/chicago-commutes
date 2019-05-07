@@ -22,22 +22,11 @@ object MixedService {
 
     fun local(): Single<LocalDTO> {
         // Train local data
-        val trainLocalData: Single<Boolean> = Single.fromCallable { trainService.loadLocalTrainData() }
-            .map { it.size() == 0 }
-            .subscribeOn(Schedulers.computation())
-            .onErrorReturn { throwable ->
-                Timber.e(throwable, "Could not create local train data")
-                true
-            }
+        val trainLocalData: Single<Boolean> = trainService.loadLocalTrainData()
 
         // Bus local data
-        val busLocalData: Single<Boolean> = Single.fromCallable { busService.loadLocalBusData() }
-            .map { false }
-            .subscribeOn(Schedulers.computation())
-            .onErrorReturn { throwable ->
-                Timber.e(throwable, "Could not create local bus data")
-                true
-            }
+        val busLocalData: Single<Boolean> = busService.loadLocalBusData()
+
         return Single.zip(
             trainLocalData,
             busLocalData,

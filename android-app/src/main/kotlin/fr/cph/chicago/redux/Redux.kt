@@ -52,6 +52,7 @@ fun reducer(action: Action, oldState: State?): State {
                 busArrivalsDTO = action.busArrivalsDTO,
                 trainFavorites = action.trainFavorites,
                 busFavorites = action.busFavorites,
+                busRouteFavorites = action.busRouteFavorites,
                 bikeFavorites = action.bikeFavorites
             )
         }
@@ -197,6 +198,7 @@ fun reducer(action: Action, oldState: State?): State {
             state = state.copy(
                 lastStateChange = Date(),
                 busFavorites = action.busFavorites,
+                busRouteFavorites = action.busRouteFavorites,
                 busStopStatus = Status.ADD_FAVORITES
             )
         }
@@ -204,6 +206,7 @@ fun reducer(action: Action, oldState: State?): State {
             state = state.copy(
                 lastStateChange = Date(),
                 busFavorites = action.busFavorites,
+                busRouteFavorites = action.busRouteFavorites,
                 busStopStatus = Status.REMOVE_FAVORITES
             )
         }

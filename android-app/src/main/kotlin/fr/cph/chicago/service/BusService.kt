@@ -60,8 +60,8 @@ import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 import timber.log.Timber
 import java.text.SimpleDateFormat
-import java.util.Locale
-import java.util.concurrent.Callable
+import java.util.*
+import java.util.concurrent.*
 
 object BusService {
 
@@ -110,12 +110,20 @@ object BusService {
         })
     }
 
-    fun loadLocalBusData(): Any {
-        if (busRepository.hasBusStopsEmpty()) {
-            Timber.d("Load bus stop from CSV")
-            busStopCsvParser.parse()
-        }
-        return Any()
+    fun loadLocalBusData(): Single<Boolean> {
+        return Single
+            .fromCallable {
+                if (busRepository.hasBusStopsEmpty()) {
+                    Timber.d("Load bus stop from CSV")
+                    busStopCsvParser.parse()
+                }
+            }
+            .map { false }
+            .subscribeOn(Schedulers.computation())
+            .onErrorReturn { throwable ->
+                Timber.e(throwable, "Could not create local bus data")
+                true
+            }
     }
 
     fun loadBusDirectionsSingle(busRouteId: String): Single<BusDirections> {
@@ -247,6 +255,13 @@ object BusService {
                     accumulator
                 }
         })
+    }
+
+    fun extractBusRouteFavorites(busFavorites: List<String>): List<String> {
+        return busFavorites
+            .map { Util.decodeBusFavorite(it) }
+            .map { it.routeId }
+            .distinct()
     }
 
     private fun getBusArrivals(params: MultiValuedMap<String, String>): List<BusArrival> {

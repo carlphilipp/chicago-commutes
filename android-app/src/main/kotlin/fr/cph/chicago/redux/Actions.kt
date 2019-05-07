@@ -25,6 +25,7 @@ data class BaseAction(
     val busArrivalsDTO: BusArrivalDTO = BusArrivalDTO(listOf(), false),
     val trainFavorites: List<Int> = listOf(),
     val busFavorites: List<String> = listOf(),
+    val busRouteFavorites: List<String> = listOf(),
     val bikeFavorites: List<Int> = listOf()
 ) : Action
 
@@ -103,14 +104,16 @@ data class AddBusFavoriteAction(
     val boundTitle: String = StringUtils.EMPTY,
     val busRouteName: String = StringUtils.EMPTY,
     val busStopName: String = StringUtils.EMPTY,
-    val busFavorites: List<String> = listOf()
+    val busFavorites: List<String> = listOf(),
+    val busRouteFavorites: List<String> = listOf()
 ) : Action
 
 data class RemoveBusFavoriteAction(
     val busRouteId: String = StringUtils.EMPTY,
     val busStopId: String = StringUtils.EMPTY,
     val boundTitle: String = StringUtils.EMPTY,
-    val busFavorites: List<String> = listOf()
+    val busFavorites: List<String> = listOf(),
+    val busRouteFavorites: List<String> = listOf()
 ) : Action
 
 data class AddBikeFavoriteAction(
