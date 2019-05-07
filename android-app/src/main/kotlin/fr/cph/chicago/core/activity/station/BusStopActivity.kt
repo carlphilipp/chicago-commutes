@@ -128,7 +128,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
     private lateinit var busRouteName: String
     private var latitude: Double = 0.0
     private var longitude: Double = 0.0
-    private var showMessage: Boolean = false
+    private var applyFavorite: Boolean = false
     private lateinit var busStopArrivalsAction: BusStopArrivalsAction
 
     override fun create(savedInstanceState: Bundle?) {
@@ -189,18 +189,18 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
             }
             Status.FAILURE -> util.showSnackBar(swipeRefreshLayout, state.busStopErrorMessage)
             Status.ADD_FAVORITES -> {
-                if (showMessage) {
+                if (applyFavorite) {
                     util.showSnackBar(swipeRefreshLayout, R.string.message_add_fav)
-                    showMessage = false
+                    applyFavorite = false
+                    favoritesImage.setColorFilter(Color.yellowLineDark)
                 }
-                favoritesImage.setColorFilter(Color.yellowLineDark)
             }
             Status.REMOVE_FAVORITES -> {
-                if (showMessage) {
+                if (applyFavorite) {
                     util.showSnackBar(swipeRefreshLayout, R.string.message_remove_fav)
-                    showMessage = false
+                    applyFavorite = false
+                    favoritesImage.colorFilter = mapImage.colorFilter
                 }
-                favoritesImage.colorFilter = mapImage.colorFilter
             }
             else -> Timber.d("Status not handled")
         }
@@ -373,7 +373,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
      */
     private fun switchFavorite() {
         App.instance.refresh = true
-        showMessage = true
+        applyFavorite = true
         if (isFavorite()) {
             store.dispatch(RemoveBusFavoriteAction(busRouteId, busStopId.toString(), boundTitle))
         } else {

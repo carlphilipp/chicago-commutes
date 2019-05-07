@@ -83,7 +83,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
     @BindString(R.string.bundle_bike_station)
     lateinit var bundleBikeStation: String
 
-    private var showMessage: Boolean = false
+    private var applyFavorite: Boolean = false
     private val preferenceService: PreferenceService = PreferenceService
     private lateinit var bikeStation: BikeStation
 
@@ -129,18 +129,18 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
         when (state.bikeStationsStatus) {
             Status.FAILURE, Status.FULL_FAILURE -> util.showSnackBar(swipeRefreshLayout, state.bikeStationsErrorMessage)
             Status.ADD_FAVORITES -> {
-                if (showMessage) {
+                if (applyFavorite) {
                     util.showSnackBar(swipeRefreshLayout, R.string.message_add_fav)
-                    showMessage = false
+                    applyFavorite = false
+                    favoritesImage.setColorFilter(Color.yellowLineDark)
                 }
-                favoritesImage.setColorFilter(Color.yellowLineDark)
             }
             Status.REMOVE_FAVORITES -> {
-                if (showMessage) {
+                if (applyFavorite) {
                     util.showSnackBar(swipeRefreshLayout, R.string.message_remove_fav)
-                    showMessage = false
+                    applyFavorite = false
+                    favoritesImage.colorFilter = mapImage.colorFilter
                 }
-                favoritesImage.colorFilter = mapImage.colorFilter
             }
             else -> {
                 state.bikeStations
@@ -231,7 +231,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
      * Add/remove favorites
      */
     private fun switchFavorite() {
-        showMessage = true
+        applyFavorite = true
         if (isFavorite()) {
             store.dispatch(RemoveBikeFavoriteAction(bikeStation.id))
         } else {

@@ -118,7 +118,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
 
     private var stationId: Int = 0
     private var ids: MutableMap<String, Int> = mutableMapOf()
-    private var showMessage: Boolean = false
+    private var applyFavorite: Boolean = false
 
     private val preferenceService: PreferenceService = PreferenceService
     private val util: Util = Util
@@ -173,18 +173,18 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
             }
             Status.FAILURE -> util.showSnackBar(swipeRefreshLayout, state.trainStationErrorMessage)
             Status.ADD_FAVORITES -> {
-                if (showMessage) {
+                if (applyFavorite) {
                     util.showSnackBar(scrollView, R.string.message_add_fav)
-                    showMessage = false
+                    applyFavorite = false
+                    favoritesImage.setColorFilter(Color.yellowLineDark)
                 }
-                favoritesImage.setColorFilter(Color.yellowLineDark)
             }
             Status.REMOVE_FAVORITES -> {
-                if (showMessage) {
+                if (applyFavorite) {
                     util.showSnackBar(scrollView, R.string.message_remove_fav)
-                    showMessage = false
+                    applyFavorite = false
+                    favoritesImage.colorFilter = mapImage.colorFilter
                 }
-                favoritesImage.colorFilter = mapImage.colorFilter
             }
             else -> Timber.d("Status not handled")
         }
@@ -374,7 +374,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
      */
     private fun switchFavorite() {
         App.instance.refresh = true
-        showMessage = true
+        applyFavorite = true
         if (isFavorite()) {
             store.dispatch(RemoveTrainFavoriteAction(stationId))
         } else {
