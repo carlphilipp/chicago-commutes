@@ -33,8 +33,6 @@ import android.widget.RelativeLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatCheckBox
-import androidx.appcompat.widget.Toolbar
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.BindDimen
 import butterknife.BindDrawable
 import butterknife.BindString
@@ -44,6 +42,7 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
+import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Stop
 import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
@@ -80,8 +79,6 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
     lateinit var streetViewProgressBar: ProgressBar
     @BindView(R.id.scrollViewStation)
     lateinit var scrollView: ScrollView
-    @BindView(R.id.activity_station_swipe_refresh_layout)
-    lateinit var swipeRefreshLayout: SwipeRefreshLayout
     @BindView(R.id.activity_favorite_star)
     lateinit var favoritesImage: ImageView
     @BindView(R.id.activity_map_image)
@@ -94,8 +91,6 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
     lateinit var favoritesImageContainer: LinearLayout
     @BindView(R.id.activity_train_station_details)
     lateinit var stopsView: LinearLayout
-    @BindView(R.id.toolbar)
-    lateinit var toolbar: Toolbar
 
     @BindString(R.string.bundle_train_stationId)
     lateinit var bundleTrainStationId: String
@@ -113,12 +108,12 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
     @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
     lateinit var arrowBackWhite: Drawable
 
-    private lateinit var paramsStop: LinearLayout.LayoutParams
     private lateinit var trainStation: TrainStation
 
     private var stationId: Int = 0
     private var ids: MutableMap<String, Int> = mutableMapOf()
     private var applyFavorite: Boolean = false
+    private var randomTrainLine = TrainLine.NA
 
     private val preferenceService: PreferenceService = PreferenceService
     private val util: Util = Util
@@ -129,39 +124,36 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
         if (stationId != 0) {
             // Get trainStation
             trainStation = TrainService.getStation(stationId)
-
-            paramsStop = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-
-            val layoutParams = streetViewImage.layoutParams as RelativeLayout.LayoutParams
-            val position = trainStation.stops[0].position
-            val params = streetViewImage.layoutParams
+            position = trainStation.stops[0].position
 
             loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
 
             streetViewImage.setOnClickListener(GoogleStreetOnClickListener(position.latitude, position.longitude))
-            streetViewImage.layoutParams = params
-            swipeRefreshLayout.setOnRefreshListener {
-                store.dispatch(TrainStationAction(trainStation.id))
-                // FIXME: Identify if it's the place holder or not. This is not great
-                if (streetViewImage.scaleType == ImageView.ScaleType.CENTER) {
-                    loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
-                }
-            }
 
             handleFavorite()
 
-            params.height = height
-            params.width = layoutParams.width
             favoritesImageContainer.setOnClickListener { switchFavorite() }
             mapContainer.setOnClickListener(GoogleMapOnClickListener(position.latitude, position.longitude))
             walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(position.latitude, position.longitude))
 
             val stopByLines = trainStation.stopByLines
-            val randomTrainLine = getRandomLine(stopByLines)
+            randomTrainLine = getRandomLine(stopByLines)
             setUpStopLayouts(stopByLines)
             swipeRefreshLayout.setColorSchemeColors(randomTrainLine.color)
-            setToolBar(randomTrainLine)
+            setToolbar()
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        store.unsubscribe(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        store.subscribe(this)
+        store.dispatch(TrainStationAction(trainStation.id))
+        swipeRefreshLayout.isRefreshing = true
     }
 
     override fun newState(state: State) {
@@ -189,6 +181,14 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
             else -> Timber.d("Status not handled")
         }
         stopRefreshing()
+    }
+
+    override fun refresh() {
+        super.refresh()
+        store.dispatch(TrainStationAction(trainStation.id))
+        if (streetViewImage.tag == "default" || streetViewImage.tag == "error") {
+            loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
+        }
     }
 
     private fun setUpStopLayouts(stopByLines: Map<TrainLine, List<Stop>>) {
@@ -241,45 +241,21 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
         }
     }
 
-    private fun setToolBar(randomTrainLine: TrainLine) {
-        toolbar.inflateMenu(R.menu.main)
-        toolbar.setOnMenuItemClickListener {
-            swipeRefreshLayout.isRefreshing = true
-            store.dispatch(TrainStationAction(trainStation.id))
-            false
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            toolbar.elevation = 4f
-        }
-
-        util.setWindowsColor(this, toolbar, randomTrainLine)
-
+    override fun setToolbar() {
+        super.setToolbar()
         toolbar.title = trainStation.name
-        toolbar.navigationIcon = arrowBackWhite
-
-        toolbar.setOnClickListener { finish() }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        store.unsubscribe(this)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        store.subscribe(this)
-        store.dispatch(TrainStationAction(trainStation.id))
-        swipeRefreshLayout.isRefreshing = true
+        util.setWindowsColor(this, toolbar, randomTrainLine)
     }
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         stationId = savedInstanceState.getInt(getString(R.string.bundle_train_stationId))
+        position = savedInstanceState.getParcelable(getString(R.string.bundle_position)) as Position
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
         savedInstanceState.putInt(getString(R.string.bundle_train_stationId), stationId)
+        savedInstanceState.putParcelable(getString(R.string.bundle_position), position)
         super.onSaveInstanceState(savedInstanceState)
     }
 
@@ -342,7 +318,6 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
             if (id == null) {
                 val insideLayout = LinearLayout(this)
                 insideLayout.orientation = LinearLayout.HORIZONTAL
-                insideLayout.layoutParams = paramsStop
                 val newId = util.generateViewId()
                 insideLayout.id = newId
                 ids[line.toString() + "_" + stop.direction.toString() + "_" + trainEta.destName] = newId

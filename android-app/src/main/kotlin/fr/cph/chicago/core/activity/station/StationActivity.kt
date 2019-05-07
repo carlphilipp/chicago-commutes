@@ -20,9 +20,15 @@
 package fr.cph.chicago.core.activity.station
 
 import android.annotation.SuppressLint
+import android.os.Build
+import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
+import androidx.appcompat.widget.Toolbar
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import butterknife.BindView
+import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
@@ -34,6 +40,18 @@ import timber.log.Timber
 
 abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentView) {
 
+    @BindView(R.id.toolbar)
+    lateinit var toolbar: Toolbar
+    @BindView(R.id.activity_station_swipe_refresh_layout)
+    lateinit var swipeRefreshLayout: SwipeRefreshLayout
+
+    protected var position: Position = Position()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        swipeRefreshLayout.setOnRefreshListener { refresh() }
+    }
+
     @SuppressLint("CheckResult")
     fun loadGoogleStreetImage(position: Position, streetViewImage: ImageView, streetViewProgressBar: ProgressBar) {
         Observable.fromCallable { GoogleStreetClient.connect(position.latitude, position.longitude) }
@@ -43,6 +61,7 @@ abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentVi
             .subscribe(
                 { drawable ->
                     streetViewImage.setImageDrawable(drawable)
+                    streetViewImage.tag = "streetview"
                     streetViewImage.scaleType = ImageView.ScaleType.CENTER_CROP
                 },
                 { error ->
@@ -56,7 +75,25 @@ abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentVi
         val placeHolder = App.instance.streetViewPlaceHolder
         streetViewImage.setImageDrawable(placeHolder)
         streetViewImage.scaleType = ImageView.ScaleType.CENTER
+        streetViewImage.tag = "error"
     }
 
     protected abstract fun isFavorite(): Boolean
+
+    protected open fun refresh() {
+        swipeRefreshLayout.isRefreshing = true
+    }
+
+    protected open fun setToolbar() {
+        toolbar.inflateMenu(R.menu.main)
+        toolbar.setOnMenuItemClickListener {
+            refresh()
+            false
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            toolbar.elevation = 4f
+        }
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
+        toolbar.setOnClickListener { finish() }
+    }
 }

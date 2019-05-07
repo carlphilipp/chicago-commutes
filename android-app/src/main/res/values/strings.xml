@@ -50,6 +50,7 @@
     <string name="bundle_title">title</string>
     <string name="bundle_train_error">trainError</string>
     <string name="bundle_bus_error">busError</string>
+    <string name="bundle_position">position</string>
 
     <string name="empty_string">&#160;</string>
     <string name="app_name">Chicago Commutes</string>

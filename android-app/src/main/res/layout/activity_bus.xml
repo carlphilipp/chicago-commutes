@@ -27,7 +27,7 @@
         android:layout_height="wrap_content" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/activity_bus_stop_swipe_refresh_layout"
+        android:id="@+id/activity_station_swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="3dp"

@@ -19,14 +19,11 @@
 
 package fr.cph.chicago.core.activity.station
 
-import android.os.Build
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.appcompat.widget.Toolbar
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.BindString
 import butterknife.BindView
 import fr.cph.chicago.R
@@ -55,8 +52,6 @@ import timber.log.Timber
  */
 class BikeStationActivity : StationActivity(R.layout.activity_bike_station), StoreSubscriber<State> {
 
-    @BindView(R.id.activity_station_swipe_refresh_layout)
-    lateinit var swipeRefreshLayout: SwipeRefreshLayout
     @BindView(R.id.activity_favorite_star)
     lateinit var favoritesImage: ImageView
     @BindView(R.id.activity_station_streetview_image)
@@ -73,8 +68,6 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
     lateinit var favoritesImageContainer: LinearLayout
     @BindView(R.id.activity_bike_station_value)
     lateinit var bikeStationValue: TextView
-    @BindView(R.id.toolbar)
-    lateinit var toolbar: Toolbar
     @BindView(R.id.activity_bike_available_bike_value)
     lateinit var availableBikes: TextView
     @BindView(R.id.activity_bike_available_docks_value)
@@ -90,29 +83,21 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
     override fun create(savedInstanceState: Bundle?) {
         bikeStation = intent.extras?.getParcelable(bundleBikeStation)
             ?: BikeStation.buildUnknownStation()
-        val latitude = bikeStation.latitude
-        val longitude = bikeStation.longitude
+        position = Position(bikeStation.latitude, bikeStation.longitude)
 
-        swipeRefreshLayout.setOnRefreshListener {
-            store.dispatch(BikeStationAction())
-            // FIXME: Identify if it's the place holder or not. This is not great
-            if (streetViewImage.scaleType == ImageView.ScaleType.CENTER) {
-                loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewProgressBar)
-            }
-        }
         // Call google street api to load image
-        loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewProgressBar)
+        loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
 
         handleFavorite()
 
         favoritesImageContainer.setOnClickListener { switchFavorite() }
         bikeStationValue.text = bikeStation.address
-        streetViewImage.setOnClickListener(GoogleStreetOnClickListener(latitude, longitude))
-        mapContainer.setOnClickListener(GoogleMapOnClickListener(latitude, longitude))
-        walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(latitude, longitude))
+        streetViewImage.setOnClickListener(GoogleStreetOnClickListener(position.latitude, position.longitude))
+        mapContainer.setOnClickListener(GoogleMapOnClickListener(position.latitude, position.longitude))
+        walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(position.latitude, position.longitude))
 
         drawData()
-        setToolBar()
+        setToolbar()
     }
 
     override fun onPause() {
@@ -162,19 +147,17 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
         }
     }
 
-    private fun setToolBar() {
-        toolbar.inflateMenu(R.menu.main)
-        toolbar.setOnMenuItemClickListener {
-            swipeRefreshLayout.isRefreshing = true
-            store.dispatch(BikeStationAction())
-            false
+    override fun refresh() {
+        super.refresh()
+        store.dispatch(BikeStationAction())
+        if (streetViewImage.tag == "default" || streetViewImage.tag == "error") {
+            loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            toolbar.elevation = 4f
-        }
+    }
+
+    override fun setToolbar() {
+        super.setToolbar()
         toolbar.title = bikeStation.name
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
-        toolbar.setOnClickListener { finish() }
     }
 
     private fun drawData() {
@@ -200,6 +183,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
         super.onRestoreInstanceState(savedInstanceState)
         bikeStation = savedInstanceState.getParcelable(bundleBikeStation)
             ?: BikeStation.buildUnknownStation()
+        position = Position(bikeStation.latitude, bikeStation.longitude)
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {

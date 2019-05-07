@@ -17,7 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/activity_station_street_map_height"
             android:contentDescription="@string/station_activity_google_map_link_desc"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            android:tag="default"/>
 
         <TextView
             android:layout_width="wrap_content"

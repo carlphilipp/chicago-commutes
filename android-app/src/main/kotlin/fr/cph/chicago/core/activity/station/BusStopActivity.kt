@@ -20,7 +20,6 @@
 package fr.cph.chicago.core.activity.station
 
 import android.annotation.SuppressLint
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
@@ -28,8 +27,6 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.appcompat.widget.Toolbar
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.BindString
 import butterknife.BindView
 import fr.cph.chicago.R
@@ -66,8 +63,6 @@ import timber.log.Timber
  */
 class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<State> {
 
-    @BindView(R.id.activity_bus_stop_swipe_refresh_layout)
-    lateinit var swipeRefreshLayout: SwipeRefreshLayout
     @BindView(R.id.activity_favorite_star)
     lateinit var favoritesImage: ImageView
     @BindView(R.id.left_layout)
@@ -88,8 +83,6 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
     lateinit var mapContainer: LinearLayout
     @BindView(R.id.activity_bus_station_value)
     lateinit var busRouteNameView: TextView
-    @BindView(R.id.toolbar)
-    lateinit var toolbar: Toolbar
     @BindView(R.id.destination)
     lateinit var destinationTextView: TextView
     @BindView(R.id.arrivals)
@@ -107,10 +100,8 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
     lateinit var bundleBusStopName: String
     @BindString(R.string.bundle_bus_route_name)
     lateinit var bundleBusRouteName: String
-    @BindString(R.string.bundle_bus_latitude)
-    lateinit var bundleBusLatitude: String
-    @BindString(R.string.bundle_bus_longitude)
-    lateinit var bundleBusLongitude: String
+    @BindString(R.string.bundle_position)
+    lateinit var bundlePosition: String
     @BindString(R.string.request_rt)
     lateinit var requestRt: String
     @BindString(R.string.request_stop_id)
@@ -126,8 +117,6 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
     private var busStopId: Int = 0
     private lateinit var busStopName: String
     private lateinit var busRouteName: String
-    private var latitude: Double = 0.0
-    private var longitude: Double = 0.0
     private var applyFavorite: Boolean = false
     private lateinit var busStopArrivalsAction: BusStopArrivalsAction
 
@@ -148,24 +137,12 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
 
         favoritesImageContainer.setOnClickListener { switchFavorite() }
 
-        swipeRefreshLayout.setOnRefreshListener {
-            if (latitude == 0.0 && longitude == 0.0) {
-                loadStopDetailsAndStreetImage()
-            } else {
-                store.dispatch(busStopArrivalsAction)
-                // FIXME: Identify if it's the place holder or not. This is not great
-                if (streetViewImage.scaleType == ImageView.ScaleType.CENTER) {
-                    loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewProgressBar)
-                }
-            }
-        }
-
         handleFavorite()
 
         val busRouteNameDisplay = "$busRouteName ($boundTitle)"
         busRouteNameView.text = busRouteNameDisplay
 
-        setToolBar()
+        setToolbar()
 
         loadStopDetailsAndStreetImage()
     }
@@ -179,14 +156,13 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
         super.onResume()
         store.subscribe(this)
         store.dispatch(busStopArrivalsAction)
+        swipeRefreshLayout.isRefreshing = true
     }
 
     override fun newState(state: State) {
         Timber.d("New state")
         when (state.busStopStatus) {
-            Status.SUCCESS -> {
-                refreshActivity(state.busArrivalStopDTO)
-            }
+            Status.SUCCESS -> refreshActivity(state.busArrivalStopDTO)
             Status.FAILURE -> util.showSnackBar(swipeRefreshLayout, state.busStopErrorMessage)
             Status.ADD_FAVORITES -> {
                 if (applyFavorite) {
@@ -209,6 +185,18 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
         }
     }
 
+    override fun refresh() {
+        super.refresh()
+        if (position.latitude == 0.0 && position.longitude == 0.0) {
+            loadStopDetailsAndStreetImage()
+        } else {
+            store.dispatch(busStopArrivalsAction)
+            if (streetViewImage.tag == "default" || streetViewImage.tag == "error") {
+                loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
+            }
+        }
+    }
+
     @SuppressLint("CheckResult")
     private fun loadStopDetailsAndStreetImage() {
         // Load bus stop details and google street image
@@ -224,7 +212,9 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
                 busStop
             }
             .map { busStop ->
-                loadGoogleStreetImage(busStop.position, streetViewImage, streetViewProgressBar)
+                if (streetViewImage.tag == "default" || streetViewImage.tag == "error") {
+                    loadGoogleStreetImage(busStop.position, streetViewImage, streetViewProgressBar)
+                }
                 busStop
             }
             .doOnError { throwable ->
@@ -233,12 +223,11 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
             }
             .subscribe(
                 { busStop ->
-                    latitude = busStop.position.latitude
-                    longitude = busStop.position.longitude
+                    position = Position(busStop.position.latitude, busStop.position.longitude)
                     busStopName = busStop.name
-                    streetViewImage.setOnClickListener(GoogleStreetOnClickListener(latitude, longitude))
-                    mapContainer.setOnClickListener(GoogleMapOnClickListener(latitude, longitude))
-                    walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(latitude, longitude))
+                    streetViewImage.setOnClickListener(GoogleStreetOnClickListener(position.latitude, position.longitude))
+                    mapContainer.setOnClickListener(GoogleMapOnClickListener(position.latitude, position.longitude))
+                    walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(position.latitude, position.longitude))
                 },
                 { throwable ->
                     Timber.e(throwable, "Error while loading street image and stop details")
@@ -252,19 +241,9 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
         streetViewProgressBar.visibility = View.GONE
     }
 
-    private fun setToolBar() {
-        toolbar.inflateMenu(R.menu.main)
-        toolbar.setOnMenuItemClickListener {
-            swipeRefreshLayout.isRefreshing = true
-            store.dispatch(busStopArrivalsAction)
-            false
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            toolbar.elevation = 4f
-        }
+    override fun setToolbar() {
+        super.setToolbar()
         toolbar.title = busRouteId
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
-        toolbar.setOnClickListener { finish() }
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -275,8 +254,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
         boundTitle = savedInstanceState.getString(bundleBusBoundTitle) ?: StringUtils.EMPTY
         busStopName = savedInstanceState.getString(bundleBusStopName) ?: StringUtils.EMPTY
         busRouteName = savedInstanceState.getString(bundleBusRouteName) ?: StringUtils.EMPTY
-        latitude = savedInstanceState.getDouble(bundleBusLatitude)
-        longitude = savedInstanceState.getDouble(bundleBusLongitude)
+        position = savedInstanceState.getParcelable(bundlePosition) as Position
         busStopArrivalsAction = BusStopArrivalsAction(
             requestRt = requestRt,
             busRouteId = busRouteId,
@@ -298,8 +276,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
             savedInstanceState.putString(bundleBusStopName, busStopName)
         if (::busRouteName.isInitialized)
             savedInstanceState.putString(bundleBusRouteName, busRouteName)
-        savedInstanceState.putDouble(bundleBusLatitude, latitude)
-        savedInstanceState.putDouble(bundleBusLongitude, longitude)
+        savedInstanceState.putParcelable(bundlePosition, position)
         super.onSaveInstanceState(savedInstanceState)
     }
 
