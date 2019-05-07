@@ -62,7 +62,7 @@ data class BusArrival(
                 val time = predictionTime.time - timeStamp.time
                 String.format(Locale.ENGLISH, "%d min", TimeUnit.MILLISECONDS.toMinutes(time))
             } else {
-                NO_DATA
+                NO_SERVICE
             }
         }
 
@@ -98,7 +98,7 @@ data class BusArrival(
 
     companion object {
 
-        private const val NO_DATA = "No data"
+        private const val NO_SERVICE = "No service"
 
         @JvmField
         val CREATOR: Parcelable.Creator<BusArrival> = object : Parcelable.Creator<BusArrival> {

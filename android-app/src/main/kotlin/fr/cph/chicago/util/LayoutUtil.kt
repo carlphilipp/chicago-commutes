@@ -74,7 +74,7 @@ object LayoutUtil {
     fun getInsideParams(newLine: Boolean, lastLine: Boolean): LinearLayout.LayoutParams {
         val pixels = util.dpToPixel16
         val pixelsQuarter = pixels / 4
-        val paramsLeft = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        val paramsLeft = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, WRAP_CONTENT)
         if (newLine && lastLine) {
             paramsLeft.setMargins(pixels, pixelsQuarter, pixels, pixelsQuarter)
         } else if (newLine) {
@@ -107,7 +107,7 @@ object LayoutUtil {
         val lineId = util.generateViewId()
         lineIndication.id = lineId
 
-        val destinationParams = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        val destinationParams = RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
         destinationParams.addRule(RelativeLayout.RIGHT_OF, lineId)
         destinationParams.setMargins(pixelsHalf, 0, 0, 0)
 
@@ -125,7 +125,7 @@ object LayoutUtil {
         left.addView(boundCustomTextView)
 
         // Right
-        val rightParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        val rightParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, WRAP_CONTENT)
         rightParams.setMargins(marginLeftPixel, 0, 0, 0)
         val right = LinearLayout(App.instance)
         right.orientation = LinearLayout.VERTICAL
@@ -164,7 +164,7 @@ object LayoutUtil {
         val lineId = util.generateViewId()
         lineIndication.id = lineId
 
-        val destinationParams = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        val destinationParams = RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
         destinationParams.addRule(RelativeLayout.RIGHT_OF, lineId)
         destinationParams.setMargins(pixelsHalf, 0, 0, 0)
 
@@ -179,7 +179,7 @@ object LayoutUtil {
         left.addView(destinationTextView)
 
         // Right
-        val rightParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        val rightParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, WRAP_CONTENT)
         rightParams.setMargins(marginLeftPixel, 0, 0, 0)
         val right = LinearLayout(App.instance)
         right.orientation = LinearLayout.VERTICAL
@@ -210,7 +210,7 @@ object LayoutUtil {
     }
 
     fun createLineBelowLayoutParams(id: Int): RelativeLayout.LayoutParams {
-        val arrivalLayoutParams = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        val arrivalLayoutParams = RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
         arrivalLayoutParams.addRule(RelativeLayout.BELOW, id)
         return arrivalLayoutParams
     }
@@ -265,7 +265,7 @@ object LayoutUtil {
     }
 
     private fun createLineLayout(): LinearLayout {
-        val lineParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        val lineParams = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
         val line = LinearLayout(App.instance)
         line.orientation = LinearLayout.HORIZONTAL
         line.layoutParams = lineParams
@@ -273,14 +273,14 @@ object LayoutUtil {
     }
 
     private fun createLeftLayout(): RelativeLayout {
-        val leftParam = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        val leftParam = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
         val left = RelativeLayout(App.instance)
         left.layoutParams = leftParam
         return left
     }
 
     private fun createTitleParams(dp: Int): RelativeLayout.LayoutParams {
-        val destinationParams = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        val destinationParams = RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
         destinationParams.setMargins(util.dpToPixel16d, 0, 0, 0)
         destinationParams.width = util.convertDpToPixel(dp)
         return destinationParams
@@ -293,7 +293,7 @@ object LayoutUtil {
     }
 
     private fun createLineValueLayoutParams(id: Int): RelativeLayout.LayoutParams {
-        val arrivalLayoutParams = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        val arrivalLayoutParams = RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
         arrivalLayoutParams.setMargins(util.dpToPixel16d, 0, 0, 0)
         arrivalLayoutParams.addRule(RelativeLayout.RIGHT_OF, id)
         return arrivalLayoutParams

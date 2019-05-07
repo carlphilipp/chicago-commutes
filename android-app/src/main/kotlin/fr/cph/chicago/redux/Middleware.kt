@@ -124,7 +124,8 @@ internal val favoritesMiddleware: Middleware<StateType> = { _, _ ->
         { action ->
             (action as? FavoritesAction)?.let {
                 mixedService.favorites()
-                    .subscribe { favoritesDTO ->
+                    .observeOn(Schedulers.computation())
+                    .map { favoritesDTO ->
                         val trainArrivals = if (favoritesDTO.trainArrivalDTO.error)
                             TrainArrivalDTO(store.state.trainArrivalsDTO.trainsArrivals, true)
                         else
@@ -138,8 +139,10 @@ internal val favoritesMiddleware: Middleware<StateType> = { _, _ ->
                             busArrivalDTO = busArrivals,
                             bikeStations = if (favoritesDTO.bikeError) store.state.bikeStations else favoritesDTO.bikeStations,
                             bikeError = favoritesDTO.bikeError)
-                        next(FavoritesAction(favoritesDTO = newFavorites))
+                        FavoritesAction(favoritesDTO = newFavorites)
                     }
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { newAction -> next(newAction) }
             } ?: next(action)
         }
     }
