@@ -20,9 +20,7 @@
 package fr.cph.chicago.core.activity.station
 
 import android.os.Bundle
-import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ProgressBar
 import android.widget.TextView
 import butterknife.BindString
 import butterknife.BindView
@@ -52,20 +50,10 @@ import timber.log.Timber
  */
 class BikeStationActivity : StationActivity(R.layout.activity_bike_station), StoreSubscriber<State> {
 
-    @BindView(R.id.activity_favorite_star)
-    lateinit var favoritesImage: ImageView
-    @BindView(R.id.activity_station_streetview_image)
-    lateinit var streetViewImage: ImageView
-    @BindView(R.id.street_view_progress_bar)
-    lateinit var streetViewProgressBar: ProgressBar
-    @BindView(R.id.activity_map_image)
-    lateinit var mapImage: ImageView
     @BindView(R.id.map_container)
     lateinit var mapContainer: LinearLayout
     @BindView(R.id.walk_container)
     lateinit var walkContainer: LinearLayout
-    @BindView(R.id.favorites_container)
-    lateinit var favoritesImageContainer: LinearLayout
     @BindView(R.id.activity_bike_station_value)
     lateinit var bikeStationValue: TextView
     @BindView(R.id.activity_bike_available_bike_value)
@@ -76,8 +64,6 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
     @BindString(R.string.bundle_bike_station)
     lateinit var bundleBikeStation: String
 
-    private var applyFavorite: Boolean = false
-    private val preferenceService: PreferenceService = PreferenceService
     private lateinit var bikeStation: BikeStation
 
     override fun create(savedInstanceState: Bundle?) {
@@ -85,12 +71,10 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
             ?: BikeStation.buildUnknownStation()
         position = Position(bikeStation.latitude, bikeStation.longitude)
 
-        // Call google street api to load image
-        loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
+        loadGoogleStreetImage(position)
 
         handleFavorite()
 
-        favoritesImageContainer.setOnClickListener { switchFavorite() }
         bikeStationValue.text = bikeStation.address
         streetViewImage.setOnClickListener(GoogleStreetOnClickListener(position.latitude, position.longitude))
         mapContainer.setOnClickListener(GoogleMapOnClickListener(position.latitude, position.longitude))
@@ -142,17 +126,13 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
                     }
             }
         }
-        if (swipeRefreshLayout.isRefreshing) {
-            swipeRefreshLayout.isRefreshing = false
-        }
+        stopRefreshing()
     }
 
     override fun refresh() {
         super.refresh()
         store.dispatch(BikeStationAction())
-        if (streetViewImage.tag == "default" || streetViewImage.tag == "error") {
-            loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
-        }
+        loadGoogleStreetImage(position)
     }
 
     override fun setToolbar() {
@@ -214,8 +194,8 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
     /**
      * Add/remove favorites
      */
-    private fun switchFavorite() {
-        applyFavorite = true
+    override fun switchFavorite() {
+        super.switchFavorite()
         if (isFavorite()) {
             store.dispatch(RemoveBikeFavoriteAction(bikeStation.id))
         } else {
@@ -225,5 +205,6 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
 
     companion object {
         private val util = Util
+        private val preferenceService = PreferenceService
     }
 }

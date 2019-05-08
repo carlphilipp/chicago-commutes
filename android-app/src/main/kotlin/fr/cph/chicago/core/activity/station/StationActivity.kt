@@ -24,6 +24,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import androidx.appcompat.widget.Toolbar
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -44,31 +45,46 @@ abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentVi
     lateinit var toolbar: Toolbar
     @BindView(R.id.activity_station_swipe_refresh_layout)
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    @BindView(R.id.favorites_container)
+    lateinit var favoritesImageContainer: LinearLayout
+    @BindView(R.id.activity_station_streetview_image)
+    lateinit var streetViewImage: ImageView
+    @BindView(R.id.street_view_progress_bar)
+    lateinit var streetViewProgressBar: ProgressBar
+    @BindView(R.id.activity_favorite_star)
+    lateinit var favoritesImage: ImageView
+    @BindView(R.id.activity_map_image)
+    lateinit var mapImage: ImageView
 
     protected var position: Position = Position()
+    protected var applyFavorite: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         swipeRefreshLayout.setOnRefreshListener { refresh() }
+        favoritesImageContainer.setOnClickListener { switchFavorite() }
+        favoritesImageContainer.setOnClickListener { switchFavorite() }
     }
 
     @SuppressLint("CheckResult")
-    fun loadGoogleStreetImage(position: Position, streetViewImage: ImageView, streetViewProgressBar: ProgressBar) {
-        Observable.fromCallable { GoogleStreetClient.connect(position.latitude, position.longitude) }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doFinally { streetViewProgressBar.visibility = View.GONE }
-            .subscribe(
-                { drawable ->
-                    streetViewImage.setImageDrawable(drawable)
-                    streetViewImage.tag = "streetview"
-                    streetViewImage.scaleType = ImageView.ScaleType.CENTER_CROP
-                },
-                { error ->
-                    Timber.e(error, "Error while loading street view image")
-                    failStreetViewImage(streetViewImage)
-                }
-            )
+    fun loadGoogleStreetImage(position: Position) {
+        if (streetViewImage.tag == "default" || streetViewImage.tag == "error") {
+            Observable.fromCallable { GoogleStreetClient.connect(position.latitude, position.longitude) }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doFinally { streetViewProgressBar.visibility = View.GONE }
+                .subscribe(
+                    { drawable ->
+                        streetViewImage.setImageDrawable(drawable)
+                        streetViewImage.tag = "streetview"
+                        streetViewImage.scaleType = ImageView.ScaleType.CENTER_CROP
+                    },
+                    { error ->
+                        Timber.e(error, "Error while loading street view image")
+                        failStreetViewImage(streetViewImage)
+                    }
+                )
+        }
     }
 
     protected fun failStreetViewImage(streetViewImage: ImageView) {
@@ -84,12 +100,19 @@ abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentVi
         swipeRefreshLayout.isRefreshing = true
     }
 
+    protected fun stopRefreshing() {
+        if (swipeRefreshLayout.isRefreshing) {
+            swipeRefreshLayout.isRefreshing = false
+        }
+    }
+
+    protected open fun switchFavorite() {
+        applyFavorite = true
+    }
+
     protected open fun setToolbar() {
         toolbar.inflateMenu(R.menu.main)
-        toolbar.setOnMenuItemClickListener {
-            refresh()
-            false
-        }
+        toolbar.setOnMenuItemClickListener { refresh(); false }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.elevation = 4f
         }

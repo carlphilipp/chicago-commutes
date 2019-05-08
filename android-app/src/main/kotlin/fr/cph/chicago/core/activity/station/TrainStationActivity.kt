@@ -26,19 +26,13 @@ import android.os.Bundle
 import android.text.TextUtils.TruncateAt
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.RelativeLayout
-import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatCheckBox
 import butterknife.BindDimen
 import butterknife.BindDrawable
-import butterknife.BindString
 import butterknife.BindView
 import fr.cph.chicago.R
-import fr.cph.chicago.core.App
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
@@ -73,27 +67,12 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
 
     @BindView(android.R.id.content)
     lateinit var viewGroup: ViewGroup
-    @BindView(R.id.activity_station_streetview_image)
-    lateinit var streetViewImage: ImageView
-    @BindView(R.id.street_view_progress_bar)
-    lateinit var streetViewProgressBar: ProgressBar
-    @BindView(R.id.scrollViewStation)
-    lateinit var scrollView: ScrollView
-    @BindView(R.id.activity_favorite_star)
-    lateinit var favoritesImage: ImageView
-    @BindView(R.id.activity_map_image)
-    lateinit var mapImage: ImageView
     @BindView(R.id.map_container)
     lateinit var mapContainer: LinearLayout
     @BindView(R.id.walk_container)
     lateinit var walkContainer: LinearLayout
-    @BindView(R.id.favorites_container)
-    lateinit var favoritesImageContainer: LinearLayout
     @BindView(R.id.activity_train_station_details)
     lateinit var stopsView: LinearLayout
-
-    @BindString(R.string.bundle_train_stationId)
-    lateinit var bundleTrainStationId: String
 
     @JvmField
     @BindDimen(R.dimen.activity_station_street_map_height)
@@ -112,27 +91,22 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
 
     private var stationId: Int = 0
     private var ids: MutableMap<String, Int> = mutableMapOf()
-    private var applyFavorite: Boolean = false
     private var randomTrainLine = TrainLine.NA
-
-    private val preferenceService: PreferenceService = PreferenceService
-    private val util: Util = Util
 
     override fun create(savedInstanceState: Bundle?) {
         // Get train station id from bundle
-        stationId = intent.extras?.getInt(bundleTrainStationId, 0) ?: 0
+        stationId = intent.extras?.getInt(getString(R.string.bundle_train_stationId), 0) ?: 0
         if (stationId != 0) {
             // Get trainStation
             trainStation = TrainService.getStation(stationId)
             position = trainStation.stops[0].position
 
-            loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
+            loadGoogleStreetImage(position)
 
             streetViewImage.setOnClickListener(GoogleStreetOnClickListener(position.latitude, position.longitude))
 
             handleFavorite()
 
-            favoritesImageContainer.setOnClickListener { switchFavorite() }
             mapContainer.setOnClickListener(GoogleMapOnClickListener(position.latitude, position.longitude))
             walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(position.latitude, position.longitude))
 
@@ -166,14 +140,14 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
             Status.FAILURE -> util.showSnackBar(swipeRefreshLayout, state.trainStationErrorMessage)
             Status.ADD_FAVORITES -> {
                 if (applyFavorite) {
-                    util.showSnackBar(scrollView, R.string.message_add_fav)
+                    util.showSnackBar(swipeRefreshLayout, R.string.message_add_fav)
                     applyFavorite = false
                     favoritesImage.setColorFilter(Color.yellowLineDark)
                 }
             }
             Status.REMOVE_FAVORITES -> {
                 if (applyFavorite) {
-                    util.showSnackBar(scrollView, R.string.message_remove_fav)
+                    util.showSnackBar(swipeRefreshLayout, R.string.message_remove_fav)
                     applyFavorite = false
                     favoritesImage.colorFilter = mapImage.colorFilter
                 }
@@ -186,9 +160,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
     override fun refresh() {
         super.refresh()
         store.dispatch(TrainStationAction(trainStation.id))
-        if (streetViewImage.tag == "default" || streetViewImage.tag == "error") {
-            loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
-        }
+        loadGoogleStreetImage(position)
     }
 
     private fun setUpStopLayouts(stopByLines: Map<TrainLine, List<Stop>>) {
@@ -274,10 +246,6 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
         }
     }
 
-    private fun stopRefreshing() {
-        swipeRefreshLayout.isRefreshing = false
-    }
-
     private fun hideAllArrivalViews() {
         trainStation.lines
             .flatMap { trainLine -> TrainDirection.values().map { trainDirection -> trainLine.toString() + "_" + trainDirection.toString() } }
@@ -347,9 +315,8 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
     /**
      * Add/remove favorites
      */
-    private fun switchFavorite() {
-        App.instance.refresh = true
-        applyFavorite = true
+    override fun switchFavorite() {
+        super.switchFavorite()
         if (isFavorite()) {
             store.dispatch(RemoveTrainFavoriteAction(stationId))
         } else {
@@ -361,5 +328,10 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
         val random = Random()
         val keys = stops.keys
         return keys.elementAt(random.nextInt(keys.size))
+    }
+
+    companion object {
+        private val preferenceService = PreferenceService
+        private val util = Util
     }
 }

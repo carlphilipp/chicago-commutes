@@ -22,12 +22,9 @@ package fr.cph.chicago.core.activity.station
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
-import butterknife.BindString
 import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
@@ -63,20 +60,10 @@ import timber.log.Timber
  */
 class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<State> {
 
-    @BindView(R.id.activity_favorite_star)
-    lateinit var favoritesImage: ImageView
     @BindView(R.id.left_layout)
     lateinit var leftLayout: RelativeLayout
     @BindView(R.id.right_layout)
     lateinit var rightLayout: RelativeLayout
-    @BindView(R.id.activity_station_streetview_image)
-    lateinit var streetViewImage: ImageView
-    @BindView(R.id.street_view_progress_bar)
-    lateinit var streetViewProgressBar: ProgressBar
-    @BindView(R.id.activity_map_image)
-    lateinit var mapImage: ImageView
-    @BindView(R.id.favorites_container)
-    lateinit var favoritesImageContainer: LinearLayout
     @BindView(R.id.walk_container)
     lateinit var walkContainer: LinearLayout
     @BindView(R.id.map_container)
@@ -88,28 +75,6 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
     @BindView(R.id.arrivals)
     lateinit var arrivalsTextView: TextView
 
-    @BindString(R.string.bundle_bus_stop_id)
-    lateinit var bundleBusStopId: String
-    @BindString(R.string.bundle_bus_route_id)
-    lateinit var bundleBusRouteId: String
-    @BindString(R.string.bundle_bus_bound)
-    lateinit var bundleBusBound: String
-    @BindString(R.string.bundle_bus_bound_title)
-    lateinit var bundleBusBoundTitle: String
-    @BindString(R.string.bundle_bus_stop_name)
-    lateinit var bundleBusStopName: String
-    @BindString(R.string.bundle_bus_route_name)
-    lateinit var bundleBusRouteName: String
-    @BindString(R.string.bundle_position)
-    lateinit var bundlePosition: String
-    @BindString(R.string.request_rt)
-    lateinit var requestRt: String
-    @BindString(R.string.request_stop_id)
-    lateinit var requestStopId: String
-
-    private val util = Util
-    private val preferenceService = PreferenceService
-
     private var busArrivals: BusArrivalStopDTO = BusArrivalStopDTO()
     private lateinit var busRouteId: String
     private lateinit var bound: String
@@ -117,25 +82,22 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
     private var busStopId: Int = 0
     private lateinit var busStopName: String
     private lateinit var busRouteName: String
-    private var applyFavorite: Boolean = false
     private lateinit var busStopArrivalsAction: BusStopArrivalsAction
 
     override fun create(savedInstanceState: Bundle?) {
-        busStopId = intent.getIntExtra(bundleBusStopId, 0)
-        busRouteId = intent.getStringExtra(bundleBusRouteId)
-        bound = intent.getStringExtra(bundleBusBound)
-        boundTitle = intent.getStringExtra(bundleBusBoundTitle)
-        busRouteName = intent.getStringExtra(bundleBusRouteName)
+        busStopId = intent.getIntExtra(getString(R.string.bundle_bus_stop_id), 0)
+        busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id))
+        bound = intent.getStringExtra(getString(R.string.bundle_bus_bound))
+        boundTitle = intent.getStringExtra(getString(R.string.bundle_bus_bound_title))
+        busRouteName = intent.getStringExtra(getString(R.string.bundle_bus_route_name))
 
         busStopArrivalsAction = BusStopArrivalsAction(
-            requestRt = requestRt,
+            requestRt = getString(R.string.request_rt),
             busRouteId = busRouteId,
-            requestStopId = requestStopId,
+            requestStopId = getString(R.string.request_stop_id),
             busStopId = busStopId,
             bound = bound,
             boundTitle = boundTitle)
-
-        favoritesImageContainer.setOnClickListener { switchFavorite() }
 
         handleFavorite()
 
@@ -180,9 +142,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
             }
             else -> Timber.d("Status not handled")
         }
-        if (swipeRefreshLayout.isRefreshing) {
-            swipeRefreshLayout.isRefreshing = false
-        }
+        stopRefreshing()
     }
 
     override fun refresh() {
@@ -191,9 +151,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
             loadStopDetailsAndStreetImage()
         } else {
             store.dispatch(busStopArrivalsAction)
-            if (streetViewImage.tag == "default" || streetViewImage.tag == "error") {
-                loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
-            }
+            loadGoogleStreetImage(position)
         }
     }
 
@@ -206,25 +164,20 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
                 val busStop: BusStop? = stops.firstOrNull { busStop -> busStop.id == busStopId }
                 Single.just(busStop!!)
             }
+            .map { busStop ->
+                loadGoogleStreetImage(busStop.position)
+                position = Position(busStop.position.latitude, busStop.position.longitude)
+                busStopName = busStop.name
+                busStop
+            }
             .observeOn(AndroidSchedulers.mainThread())
-            .map { busStop ->
-                toolbar.title = "$busRouteId - ${busStop.name}"
-                busStop
-            }
-            .map { busStop ->
-                if (streetViewImage.tag == "default" || streetViewImage.tag == "error") {
-                    loadGoogleStreetImage(busStop.position, streetViewImage, streetViewProgressBar)
-                }
-                busStop
-            }
             .doOnError { throwable ->
                 Timber.e(throwable, "Error while loading street image and stop details")
                 onError()
             }
             .subscribe(
                 { busStop ->
-                    position = Position(busStop.position.latitude, busStop.position.longitude)
-                    busStopName = busStop.name
+                    toolbar.title = "$busRouteId - ${busStop.name}"
                     streetViewImage.setOnClickListener(GoogleStreetOnClickListener(position.latitude, position.longitude))
                     mapContainer.setOnClickListener(GoogleMapOnClickListener(position.latitude, position.longitude))
                     walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(position.latitude, position.longitude))
@@ -248,35 +201,40 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        busStopId = savedInstanceState.getInt(bundleBusStopId)
-        busRouteId = savedInstanceState.getString(bundleBusRouteId) ?: StringUtils.EMPTY
-        bound = savedInstanceState.getString(bundleBusBound) ?: StringUtils.EMPTY
-        boundTitle = savedInstanceState.getString(bundleBusBoundTitle) ?: StringUtils.EMPTY
-        busStopName = savedInstanceState.getString(bundleBusStopName) ?: StringUtils.EMPTY
-        busRouteName = savedInstanceState.getString(bundleBusRouteName) ?: StringUtils.EMPTY
-        position = savedInstanceState.getParcelable(bundlePosition) as Position
+        busStopId = savedInstanceState.getInt(getString(R.string.bundle_bus_stop_id))
+        busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id))
+            ?: StringUtils.EMPTY
+        bound = savedInstanceState.getString(getString(R.string.bundle_bus_bound))
+            ?: StringUtils.EMPTY
+        boundTitle = savedInstanceState.getString(getString(R.string.bundle_bus_bound_title))
+            ?: StringUtils.EMPTY
+        busStopName = savedInstanceState.getString(getString(R.string.bundle_bus_stop_name))
+            ?: StringUtils.EMPTY
+        busRouteName = savedInstanceState.getString(getString(R.string.bundle_bus_route_name))
+            ?: StringUtils.EMPTY
+        position = savedInstanceState.getParcelable(getString(R.string.bundle_position)) as Position
         busStopArrivalsAction = BusStopArrivalsAction(
-            requestRt = requestRt,
+            requestRt = getString(R.string.request_rt),
             busRouteId = busRouteId,
-            requestStopId = requestStopId,
+            requestStopId = getString(R.string.request_stop_id),
             busStopId = busStopId,
             bound = bound,
             boundTitle = boundTitle)
     }
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.putInt(bundleBusStopId, busStopId)
+        savedInstanceState.putInt(getString(R.string.bundle_bus_stop_id), busStopId)
         if (::busRouteId.isInitialized)
-            savedInstanceState.putString(bundleBusRouteId, busRouteId)
+            savedInstanceState.putString(getString(R.string.bundle_bus_route_id), busRouteId)
         if (::bound.isInitialized)
-            savedInstanceState.putString(bundleBusBound, bound)
+            savedInstanceState.putString(getString(R.string.bundle_bus_bound), bound)
         if (::boundTitle.isInitialized)
-            savedInstanceState.putString(bundleBusBoundTitle, boundTitle)
+            savedInstanceState.putString(getString(R.string.bundle_bus_bound_title), boundTitle)
         if (::busStopName.isInitialized)
-            savedInstanceState.putString(bundleBusStopName, busStopName)
+            savedInstanceState.putString(getString(R.string.bundle_bus_stop_name), busStopName)
         if (::busRouteName.isInitialized)
-            savedInstanceState.putString(bundleBusRouteName, busRouteName)
-        savedInstanceState.putParcelable(bundlePosition, position)
+            savedInstanceState.putString(getString(R.string.bundle_bus_route_name), busRouteName)
+        savedInstanceState.putParcelable(getString(R.string.bundle_position), position)
         super.onSaveInstanceState(savedInstanceState)
     }
 
@@ -348,9 +306,9 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
     /**
      * Add or remove from favorites
      */
-    private fun switchFavorite() {
-        App.instance.refresh = true
-        applyFavorite = true
+    override fun switchFavorite() {
+        super.switchFavorite()
+        App.instance.refresh = true // because the state is not updated
         if (isFavorite()) {
             store.dispatch(RemoveBusFavoriteAction(busRouteId, busStopId.toString(), boundTitle))
         } else {
@@ -360,5 +318,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
 
     companion object {
         private val busService = BusService
+        private val util = Util
+        private val preferenceService = PreferenceService
     }
 }
