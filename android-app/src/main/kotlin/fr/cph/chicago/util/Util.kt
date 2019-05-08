@@ -26,6 +26,7 @@ import android.util.TypedValue
 import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import com.google.android.material.snackbar.Snackbar
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.BikeStation
@@ -192,12 +193,16 @@ object Util {
         showSnackBar(view, App.instance.getString(R.string.message_something_went_wrong))
     }
 
-    fun showSnackBar(view: View, message: Int) {
-        showSnackBar(view, App.instance.getString(message))
+    fun showSnackBar(view: View, message: Int, forceShow: Boolean = false) {
+        showSnackBar(view, App.instance.getString(message), forceShow)
     }
 
-    fun showSnackBar(view: View, text: CharSequence) {
-        SnackBarUtil.smartShow(view, text)
+    fun showSnackBar(view: View, text: CharSequence, forceShow: Boolean = false) {
+        if (forceShow) {
+            Snackbar.make(view, text, Snackbar.LENGTH_LONG).show()
+        } else {
+            SnackBarUtil.smartShow(view, text)
+        }
     }
 
     fun handleConnectOrParserException(throwable: Throwable, view: View) {

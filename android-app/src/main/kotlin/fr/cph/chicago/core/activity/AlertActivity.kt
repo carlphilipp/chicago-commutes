@@ -91,7 +91,7 @@ class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
                     val ada = AlertRouteAdapter(routeAlertsDTOS)
                     listView.adapter = ada
                     if (routeAlertsDTOS.isEmpty()) {
-                        Util.showSnackBar(listView, this@AlertActivity.getString(R.string.message_no_alerts))
+                        util.showSnackBar(view = listView, text = this@AlertActivity.getString(R.string.message_no_alerts))
                     }
                     hideAnimation()
                 },
@@ -110,5 +110,6 @@ class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
 
     companion object {
         private val alertService = AlertService
+        private val util = Util
     }
 }

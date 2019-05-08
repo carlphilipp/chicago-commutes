@@ -140,14 +140,14 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
             Status.FAILURE -> util.showSnackBar(swipeRefreshLayout, state.trainStationErrorMessage)
             Status.ADD_FAVORITES -> {
                 if (applyFavorite) {
-                    util.showSnackBar(swipeRefreshLayout, R.string.message_add_fav)
+                    util.showSnackBar(swipeRefreshLayout, R.string.message_add_fav, true)
                     applyFavorite = false
                     favoritesImage.setColorFilter(Color.yellowLineDark)
                 }
             }
             Status.REMOVE_FAVORITES -> {
                 if (applyFavorite) {
-                    util.showSnackBar(swipeRefreshLayout, R.string.message_remove_fav)
+                    util.showSnackBar(swipeRefreshLayout, R.string.message_remove_fav, true)
                     applyFavorite = false
                     favoritesImage.colorFilter = mapImage.colorFilter
                 }

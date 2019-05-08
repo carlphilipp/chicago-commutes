@@ -99,14 +99,14 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
             Status.FAILURE, Status.FULL_FAILURE -> util.showSnackBar(swipeRefreshLayout, state.bikeStationsErrorMessage)
             Status.ADD_FAVORITES -> {
                 if (applyFavorite) {
-                    util.showSnackBar(swipeRefreshLayout, R.string.message_add_fav)
+                    util.showSnackBar(swipeRefreshLayout, R.string.message_add_fav, true)
                     applyFavorite = false
                     favoritesImage.setColorFilter(Color.yellowLineDark)
                 }
             }
             Status.REMOVE_FAVORITES -> {
                 if (applyFavorite) {
-                    util.showSnackBar(swipeRefreshLayout, R.string.message_remove_fav)
+                    util.showSnackBar(swipeRefreshLayout, R.string.message_remove_fav, true)
                     applyFavorite = false
                     favoritesImage.colorFilter = mapImage.colorFilter
                 }
