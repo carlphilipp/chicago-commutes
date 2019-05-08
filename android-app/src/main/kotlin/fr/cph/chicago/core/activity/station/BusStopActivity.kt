@@ -297,12 +297,6 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
         return preferenceService.isStopFavorite(busRouteId, busStopId, boundTitle)
     }
 
-    private fun handleFavorite() {
-        if (isFavorite()) {
-            favoritesImage.setColorFilter(Color.yellowLineDark)
-        }
-    }
-
     /**
      * Add or remove from favorites
      */

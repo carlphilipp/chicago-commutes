@@ -20,7 +20,6 @@
 package fr.cph.chicago.service
 
 import fr.cph.chicago.R
-import fr.cph.chicago.R.string
 import fr.cph.chicago.client.CtaClient
 import fr.cph.chicago.client.CtaRequestType.BUS_ARRIVALS
 import fr.cph.chicago.client.CtaRequestType.BUS_DIRECTION
@@ -95,8 +94,8 @@ object BusService {
     fun loadAllBusStopsForRouteBound(route: String, bound: String): Single<List<BusStop>> {
         return createSingleFromCallable(Callable {
             val params = ArrayListValuedHashMap<String, String>(2, 1)
-            params.put(App.instance.getString(string.request_rt), route)
-            params.put(App.instance.getString(string.request_dir), bound)
+            params.put(App.instance.getString(R.string.request_rt), route)
+            params.put(App.instance.getString(R.string.request_dir), bound)
             val result = ctaClient.get(BUS_STOP_LIST, params, BusStopsResponse::class.java)
             if (result.bustimeResponse.stops == null) {
                 throw CtaException(result)
@@ -132,12 +131,12 @@ object BusService {
     }
 
     fun busRoutes(): Single<List<BusRoute>> {
-        return createSingleFromCallable(Callable {
-            ctaClient.get(BUS_ROUTES, ArrayListValuedHashMap<String, String>(), BusRoutesResponse::class.java)
-                .bustimeResponse
-                .routes
-                .map { route -> BusRoute(route.routeId, route.routeName) }
-        })
+        return ctaClient.getRx(BUS_ROUTES, ArrayListValuedHashMap<String, String>(), BusRoutesResponse::class.java)
+            .map { bustimeResponse: BusRoutesResponse ->
+                bustimeResponse.bustimeResponse
+                    .routes
+                    .map { route -> BusRoute(route.routeId, route.routeName) }
+            }
     }
 
     fun loadFollowBus(busId: String): Single<List<BusArrival>> {
@@ -181,17 +180,23 @@ object BusService {
     }
 
     fun busForRouteId(busRouteId: String): Single<List<Bus>> {
-        return createSingleFromCallable(Callable {
-            val connectParam = ArrayListValuedHashMap<String, String>(1, 1)
-            connectParam.put(App.instance.getString(R.string.request_rt), busRouteId)
-            val result = ctaClient.get(BUS_VEHICLES, connectParam, BusPositionResponse::class.java)
-            if (result.bustimeResponse.vehicle == null) throw CtaException(result)
-            result.bustimeResponse.vehicle!!
-                .map { vehicle ->
-                    val position = Position(vehicle.lat.toDouble(), vehicle.lon.toDouble())
-                    Bus(vehicle.vid.toInt(), position, vehicle.hdg.toInt(), vehicle.des)
-                }
-        })
+        return Single
+            .fromCallable {
+                val connectParam = ArrayListValuedHashMap<String, String>(1, 1)
+                connectParam.put(App.instance.getString(R.string.request_rt), busRouteId)
+                connectParam
+            }
+            .flatMap { connectParam -> ctaClient.getRx(BUS_VEHICLES, connectParam, BusPositionResponse::class.java) }
+            .observeOn(Schedulers.computation())
+            .map { result ->
+                if (result.bustimeResponse.vehicle == null) throw CtaException(result)
+                result.bustimeResponse.vehicle!!
+                    .map { vehicle ->
+                        val position = Position(vehicle.lat.toDouble(), vehicle.lon.toDouble())
+                        Bus(vehicle.vid.toInt(), position, vehicle.hdg.toInt(), vehicle.des)
+                    }
+            }
+            .subscribeOn(Schedulers.computation())
     }
 
     fun loadBusArrivals(busStop: BusStop): Single<List<BusArrival>> {

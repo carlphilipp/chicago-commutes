@@ -20,6 +20,8 @@
 package fr.cph.chicago.client
 
 import fr.cph.chicago.exception.ConnectException
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import java.io.IOException
 import java.io.InputStream
@@ -42,5 +44,9 @@ object HttpClient {
             Timber.e(exception)
             throw ConnectException.defaultException(exception)
         }
+    }
+
+    fun connectRx(address: String): Single<InputStream> {
+        return Single.fromCallable { connect(address) }.subscribeOn(Schedulers.io())
     }
 }

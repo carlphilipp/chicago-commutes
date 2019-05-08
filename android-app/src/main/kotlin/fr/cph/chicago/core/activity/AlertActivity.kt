@@ -31,6 +31,7 @@ import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.adapter.AlertRouteAdapter
 import fr.cph.chicago.service.AlertService
 import fr.cph.chicago.util.Util
+import io.reactivex.android.schedulers.AndroidSchedulers
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
@@ -83,20 +84,22 @@ class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
 
     @SuppressLint("CheckResult")
     private fun refreshData() {
-        alertService.routeAlertForId(routeId).subscribe(
-            { routeAlertsDTOS ->
-                val ada = AlertRouteAdapter(routeAlertsDTOS)
-                listView.adapter = ada
-                if (routeAlertsDTOS.isEmpty()) {
-                    Util.showSnackBar(listView, this@AlertActivity.getString(R.string.message_no_alerts))
-                }
-                hideAnimation()
-            },
-            { error ->
-                Timber.e(error, "Error while refreshing data")
-                Util.showOopsSomethingWentWrong(listView)
-                hideAnimation()
-            })
+        alertService.routeAlertForId(routeId)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { routeAlertsDTOS ->
+                    val ada = AlertRouteAdapter(routeAlertsDTOS)
+                    listView.adapter = ada
+                    if (routeAlertsDTOS.isEmpty()) {
+                        Util.showSnackBar(listView, this@AlertActivity.getString(R.string.message_no_alerts))
+                    }
+                    hideAnimation()
+                },
+                { error ->
+                    Timber.e(error, "Error while refreshing data")
+                    Util.showOopsSomethingWentWrong(listView)
+                    hideAnimation()
+                })
     }
 
     private fun hideAnimation() {

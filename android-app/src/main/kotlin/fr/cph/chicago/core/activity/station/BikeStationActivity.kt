@@ -180,12 +180,6 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
         return preferenceService.isBikeStationFavorite(bikeStation.id)
     }
 
-    private fun handleFavorite() {
-        if (isFavorite()) {
-            favoritesImage.setColorFilter(Color.yellowLineDark)
-        }
-    }
-
     private fun refreshStation(station: BikeStation) {
         this.bikeStation = station
         drawData()

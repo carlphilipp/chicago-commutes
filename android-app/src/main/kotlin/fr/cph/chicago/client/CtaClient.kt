@@ -43,6 +43,8 @@ import fr.cph.chicago.client.CtaRequestType.TRAIN_FOLLOW
 import fr.cph.chicago.client.CtaRequestType.TRAIN_LOCATION
 import fr.cph.chicago.parser.JsonParser
 import fr.cph.chicago.redux.store
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.lang3.StringUtils
 
@@ -61,6 +63,21 @@ object CtaClient {
     private val jsonParser = JsonParser
 
     fun <T> get(requestType: CtaRequestType, params: MultiValuedMap<String, String>, clazz: Class<T>): T {
+        val address = address(requestType, params)
+        val inputStream = HttpClient.connect(address)
+        return jsonParser.parse(inputStream, clazz)
+    }
+
+    fun <T> getRx(requestType: CtaRequestType, params: MultiValuedMap<String, String>, clazz: Class<T>): Single<T> {
+        return Single.fromCallable { address(requestType, params) }
+            .observeOn(Schedulers.io())
+            .flatMap { res -> HttpClient.connectRx(res) }
+            .observeOn(Schedulers.computation())
+            .map { inputStream -> jsonParser.parse(inputStream, clazz) }
+            .subscribeOn(Schedulers.computation())
+    }
+
+    private fun address(requestType: CtaRequestType, params: MultiValuedMap<String, String>): String {
         val address = when (requestType) {
             TRAIN_ARRIVALS -> TRAINS_ARRIVALS_URL + QUERY_PARAM_KEY + store.state.ctaTrainKey + "&outputType=JSON"
             TRAIN_FOLLOW -> TRAINS_FOLLOW_URL + QUERY_PARAM_KEY + store.state.ctaTrainKey + "&outputType=JSON"
@@ -75,11 +92,8 @@ object CtaClient {
             ALERTS_ROUTE -> ALERT_ROUTES_URL + QUERY_PARAM_JSON_ALERT
             else -> throw RuntimeException("Unknown request type")
         }
-        val res = address + params.asMap()
-            .flatMap { entry -> entry.value.map { value -> "&${entry.key}=$value" } }
+        return address + params.asMap()
+            .flatMap { entry -> entry.value.map<String?, String> { value -> "&${entry.key}=$value" } }
             .joinToString(separator = StringUtils.EMPTY)
-
-        val inputStream = HttpClient.connect(res)
-        return jsonParser.parse(inputStream, clazz)
     }
 }

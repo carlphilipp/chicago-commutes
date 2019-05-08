@@ -240,12 +240,6 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
         return preferenceService.isTrainStationFavorite(stationId)
     }
 
-    private fun handleFavorite() {
-        if (isFavorite()) {
-            favoritesImage.setColorFilter(Color.yellowLineDark)
-        }
-    }
-
     private fun hideAllArrivalViews() {
         trainStation.lines
             .flatMap { trainLine -> TrainDirection.values().map { trainDirection -> trainLine.toString() + "_" + trainDirection.toString() } }

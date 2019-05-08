@@ -34,7 +34,7 @@ import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.model.Position
-import io.reactivex.Observable
+import fr.cph.chicago.util.Color
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
@@ -68,15 +68,14 @@ abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentVi
 
     @SuppressLint("CheckResult")
     fun loadGoogleStreetImage(position: Position) {
-        if (streetViewImage.tag == "default" || streetViewImage.tag == "error") {
-            Observable.fromCallable { GoogleStreetClient.connect(position.latitude, position.longitude) }
-                .subscribeOn(Schedulers.io())
+        if (streetViewImage.tag == TAG_DEFAULT || streetViewImage.tag == TAG_ERROR) {
+            GoogleStreetClient.connect(position.latitude, position.longitude)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doFinally { streetViewProgressBar.visibility = View.GONE }
                 .subscribe(
                     { drawable ->
                         streetViewImage.setImageDrawable(drawable)
-                        streetViewImage.tag = "streetview"
+                        streetViewImage.tag = TAG_STREET_VIEW
                         streetViewImage.scaleType = ImageView.ScaleType.CENTER_CROP
                     },
                     { error ->
@@ -91,10 +90,16 @@ abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentVi
         val placeHolder = App.instance.streetViewPlaceHolder
         streetViewImage.setImageDrawable(placeHolder)
         streetViewImage.scaleType = ImageView.ScaleType.CENTER
-        streetViewImage.tag = "error"
+        streetViewImage.tag = TAG_ERROR
     }
 
     protected abstract fun isFavorite(): Boolean
+
+    protected fun handleFavorite() {
+        if (isFavorite()) {
+            favoritesImage.setColorFilter(Color.yellowLineDark)
+        }
+    }
 
     protected open fun refresh() {
         swipeRefreshLayout.isRefreshing = true
@@ -118,5 +123,11 @@ abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentVi
         }
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
         toolbar.setOnClickListener { finish() }
+    }
+
+    companion object {
+        private const val TAG_ERROR = "error"
+        private const val TAG_DEFAULT = "default"
+        private const val TAG_STREET_VIEW = "streetview"
     }
 }

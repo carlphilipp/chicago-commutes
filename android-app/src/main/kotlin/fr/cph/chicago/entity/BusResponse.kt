@@ -110,7 +110,6 @@ data class BusRoutesResponse(
         val routeId: String,
         @JsonProperty("rtnm")
         val routeName: String)
-
 }
 
 data class BusStopsResponse(

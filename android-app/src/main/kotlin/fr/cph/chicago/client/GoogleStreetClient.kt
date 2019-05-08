@@ -23,7 +23,8 @@ import android.graphics.drawable.Drawable
 import fr.cph.chicago.Constants.Companion.GOOGLE_STREET_VIEW_URL
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.util.Util
-import java.io.InputStream
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 
 /**
  * Class that access google street api. Singleton
@@ -37,7 +38,7 @@ object GoogleStreetClient {
     private const val HEIGHT = 300
     private const val FOV = 120
 
-    fun connect(latitude: Double, longitude: Double): Drawable {
+    fun connect(latitude: Double, longitude: Double): Single<Drawable> {
         val address = "$GOOGLE_STREET_VIEW_URL?key=${store.state.googleStreetKey}&sensor=false&size=${WIDTH}x$HEIGHT&fov=$FOV&location=$latitude,$longitude&source=outdoor"
         return connectUrl(address)
     }
@@ -48,13 +49,15 @@ object GoogleStreetClient {
      * @param address the address to connect to
      * @return a drawable map
      */
-    private fun connectUrl(address: String): Drawable {
-        var inputStream: InputStream? = null
-        return try {
-            inputStream = HttpClient.connect(address)
-            Drawable.createFromStream(inputStream, "src name")
-        } finally {
-            Util.closeQuietly(inputStream)
-        }
+    private fun connectUrl(address: String): Single<Drawable> {
+        return HttpClient.connectRx(address)
+            .observeOn(Schedulers.computation())
+            .map { inputStream ->
+                try {
+                    Drawable.createFromStream(inputStream, "src name")
+                } finally {
+                    Util.closeQuietly(inputStream)
+                }
+            }
     }
 }

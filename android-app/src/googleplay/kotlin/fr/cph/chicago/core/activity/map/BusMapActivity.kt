@@ -110,8 +110,10 @@ class BusMapActivity : FragmentMapActivity() {
 
     override fun setToolbar() {
         super.setToolbar()
-        toolbar.setOnMenuItemClickListener { _ ->
-            busService.busForRouteId(busRouteId).subscribe(BusObserver(this@BusMapActivity, false, layout))
+        toolbar.setOnMenuItemClickListener {
+            busService.busForRouteId(busRouteId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(BusObserver(this@BusMapActivity, false, layout))
             false
         }
 
@@ -252,7 +254,9 @@ class BusMapActivity : FragmentMapActivity() {
 
     @SuppressLint("CheckResult")
     private fun loadActivityData() {
-        busService.busForRouteId(busRouteId).subscribe(BusObserver(this@BusMapActivity, true, layout))
+        busService.busForRouteId(busRouteId)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(BusObserver(this@BusMapActivity, true, layout))
         if (loadPattern) {
             Observable.fromCallable {
                 val patterns: MutableList<BusPattern> = mutableListOf()
