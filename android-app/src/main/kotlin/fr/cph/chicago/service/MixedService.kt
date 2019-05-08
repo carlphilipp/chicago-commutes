@@ -66,8 +66,8 @@ object MixedService {
     }
 
     fun busRoutesAndBikeStation(): Single<FirstLoadDTO> {
-        val busRoutesSingle = busService.busRoutes().onErrorReturn(handleError())
-        val bikeStationsSingle = bikeService.allBikeStations().onErrorReturn(handleError())
+        val busRoutesSingle = busService.busRoutes().onErrorReturn(handleError()).observeOn(Schedulers.computation())
+        val bikeStationsSingle = bikeService.allBikeStations().onErrorReturn(handleError()).observeOn(Schedulers.computation())
 
         return Single.zip(
             busRoutesSingle,

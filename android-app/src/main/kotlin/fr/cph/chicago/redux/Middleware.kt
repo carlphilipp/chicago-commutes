@@ -81,14 +81,16 @@ internal val busRoutesAndBikeStationMiddleware: Middleware<StateType> = { _, _ -
         { action ->
             (action as? BusRoutesAndBikeStationAction)?.let {
                 mixedService.busRoutesAndBikeStation()
+                    .map { (busRoutesError, bikeStationsError, busRoutes, bikeStations) ->
+                        BusRoutesAndBikeStationAction(
+                            busRoutesError = busRoutesError,
+                            bikeStationsError = bikeStationsError,
+                            busRoutes = busRoutes,
+                            bikeStations = bikeStations)
+                    }
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                        { (busRoutesError, bikeStationsError, busRoutes, bikeStations) ->
-                            next(BusRoutesAndBikeStationAction(
-                                busRoutesError = busRoutesError,
-                                bikeStationsError = bikeStationsError,
-                                busRoutes = busRoutes,
-                                bikeStations = bikeStations))
-                        },
+                        { newAction -> next(newAction) },
                         { throwable ->
                             Timber.e(throwable)
                             next(action)
@@ -104,14 +106,14 @@ internal val busRoutesMiddleware: Middleware<StateType> = { _, _ ->
         { action ->
             (action as? BusRoutesAction)?.let {
                 busService.busRoutes()
+                    .observeOn(Schedulers.computation())
+                    .map { busRoutes -> BusRoutesAction(error = false, busRoutes = busRoutes) }
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                        { busRoutes -> next(BusRoutesAction(error = false, busRoutes = busRoutes)) },
+                        { newAction -> next(newAction) },
                         { throwable ->
                             Timber.e(throwable)
-                            next(
-                                BusRoutesAction(
-                                    error = true,
-                                    errorMessage = buildErrorMessage(throwable)))
+                            next(BusRoutesAction(error = true, errorMessage = buildErrorMessage(throwable)))
                         }
                     )
             } ?: next(action)
@@ -153,12 +155,14 @@ internal val trainStationMiddleware: Middleware<StateType> = { _, _ ->
         { action ->
             (action as? TrainStationAction)?.let {
                 trainService.loadStationTrainArrival(action.trainStationId)
+                    .observeOn(Schedulers.computation())
                     .map { trainArrival ->
                         TrainStationAction(
                             trainStationId = action.trainStationId,
                             error = false,
                             trainArrival = trainArrival)
                     }
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                         { newAction -> next(newAction) },
                         { throwable ->
@@ -179,8 +183,11 @@ internal val busStopArrivalsMiddleware: Middleware<StateType> = { _, _ ->
         { action ->
             (action as? BusStopArrivalsAction)?.let {
                 busService.loadBusArrivals(action.requestRt, action.busRouteId, action.requestStopId, action.busStopId, action.bound, action.boundTitle)
+                    .observeOn(Schedulers.computation())
+                    .map { busArrivalStopDTO -> BusStopArrivalsAction(busArrivalStopDTO = busArrivalStopDTO) }
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                        { busArrivalStopDTO -> next(BusStopArrivalsAction(busArrivalStopDTO = busArrivalStopDTO)) },
+                        { newAction -> next(newAction) },
                         { throwable ->
                             Timber.e(throwable)
                             next(BusStopArrivalsAction(
@@ -198,8 +205,11 @@ internal val bikeStationMiddleware: Middleware<StateType> = { _, _ ->
         { action ->
             (action as? BikeStationAction)?.let {
                 bikeService.allBikeStations()
+                    .observeOn(Schedulers.computation())
+                    .map { bikeStations -> BikeStationAction(bikeStations = bikeStations) }
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                        { bikeStations -> next(BikeStationAction(bikeStations = bikeStations)) },
+                        { newAction -> next(newAction) },
                         { throwable ->
                             Timber.e(throwable)
                             next(BikeStationAction(
@@ -217,8 +227,11 @@ internal val alertMiddleware: Middleware<StateType> = { _, _ ->
         { action ->
             (action as? AlertAction)?.let {
                 alertService.alerts()
+                    .observeOn(Schedulers.computation())
+                    .map { routesAlertsDTO -> AlertAction(routesAlertsDTO = routesAlertsDTO) }
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                        { routesAlertsDTO -> next(AlertAction(routesAlertsDTO = routesAlertsDTO)) },
+                        { newAction -> next(newAction) },
                         { throwable ->
                             Timber.e(throwable)
                             next(AlertAction(
