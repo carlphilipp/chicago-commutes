@@ -50,10 +50,6 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
     @BindView(R.id.toolbar)
     lateinit var toolbar: Toolbar
 
-    private val trainService: TrainService = TrainService
-    private val busService: BusService = BusService
-    private val bikeService: BikeService = BikeService
-
     private lateinit var searchView: SearchView
     private lateinit var searchAdapter: SearchAdapter
     private var query: String = StringUtils.EMPTY
@@ -159,5 +155,11 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
             searchAdapter.updateData(foundStations, foundBusRoutes, foundBikeStations)
             searchAdapter.notifyDataSetChanged()
         }
+    }
+
+    companion object {
+        private val trainService = TrainService
+        private val busService = BusService
+        private val bikeService = BikeService
     }
 }

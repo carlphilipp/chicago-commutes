@@ -150,7 +150,7 @@ class BikeFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<St
     companion object {
 
         /**
-         * Returns a new trainService of this fragment for the given section number.
+         * Returns a new instance of this fragment for the given section number.
          *
          * @param sectionNumber the section number
          * @return the fragment

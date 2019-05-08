@@ -68,7 +68,7 @@ object PreferenceRepository {
         editor.apply()
     }
 
-    fun saveTrainFavorites(favorites: List<Int>) {
+    fun saveTrainFavorites(favorites: Set<Int>) {
         val sharedPref = getPrivatePreferences()
         val editor = sharedPref.edit()
         val set = favorites.map { it.toString() }.toSet()
@@ -85,7 +85,7 @@ object PreferenceRepository {
         return !((setPref1 == null || setPref1.size == 0) && (setPref2 == null || setPref2.size == 0) && (setPref3 == null || setPref3.size == 0))
     }
 
-    fun saveBikeFavorites(favorites: List<Int>) {
+    fun saveBikeFavorites(favorites: Set<Int>) {
         val sharedPref = getPrivatePreferences()
         val editor = sharedPref.edit()
         val set = favorites.map { it.toString() }.toSet()
@@ -94,11 +94,11 @@ object PreferenceRepository {
         editor.apply()
     }
 
-    fun getBikeFavorites(): List<Int> {
+    fun getBikeFavorites(): Set<Int> {
         val sharedPref = getPrivatePreferences()
         val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_BIKE, LinkedHashSet()) ?: setOf()
         Timber.v("Read bike favorites : %s", setPref)
-        return setPref.map { it.toInt() }.sorted()
+        return setPref.map { it.toInt() }.sorted().toSet()
     }
 
     fun addBikeRouteNameMapping(bikeId: Int, bikeName: String) {
@@ -121,7 +121,7 @@ object PreferenceRepository {
      *
      * @param favorites the list of favorites to save
      */
-    fun saveBusFavorites(favorites: List<String>) {
+    fun saveBusFavorites(favorites: Set<String>) {
         val sharedPref = getPrivatePreferences()
         val editor = sharedPref.edit()
         val set = LinkedHashSet<String>()
@@ -131,7 +131,7 @@ object PreferenceRepository {
         editor.apply()
     }
 
-    fun getBusFavorites(): List<String> {
+    fun getBusFavorites(): Set<String> {
         val sharedPref = getPrivatePreferences()
         val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_BUS, LinkedHashSet()) ?: setOf()
         Timber.v("Read bus favorites : %s", setPref)
@@ -147,7 +147,7 @@ object PreferenceRepository {
             } else {
                 str1Decoded.compareTo(str2Decoded)
             }
-        })
+        }).toSet()
     }
 
     fun addBusRouteNameMapping(busStopId: String, routeName: String) {
@@ -180,16 +180,18 @@ object PreferenceRepository {
         return stopName
     }
 
-    fun getTrainFavorites(): List<Int> {
+    fun getTrainFavorites(): Set<Int> {
         val sharedPref = getPrivatePreferences()
         val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_TRAIN, LinkedHashSet())
             ?: setOf()
         Timber.v("Read train favorites : %s", setPref)
         return setPref
+            .asSequence()
             .map { it.toInt() }
             .map { trainService.getStation(it) }
             .sorted()
             .map { it.id }
+            .toSet()
     }
 
     fun saveTrainFilter(stationId: Int, line: TrainLine, direction: TrainDirection, value: Boolean) {

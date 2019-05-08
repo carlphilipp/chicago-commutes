@@ -248,7 +248,7 @@ internal val addTrainFavorites: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->
             (action as? AddTrainFavoriteAction)?.let {
-                preferenceService.addToTrainFavorites(action.id)
+                preferenceService.addTrainToFavorites(action.id)
                     .map { favorites -> AddTrainFavoriteAction(id = action.id, trainFavorites = favorites) }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { newAction -> next(newAction) }
@@ -261,7 +261,7 @@ internal val removeTrainFavorites: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->
             (action as? RemoveTrainFavoriteAction)?.let {
-                preferenceService.removeFromTrainFavorites(action.id)
+                preferenceService.removeTrainFromFavorites(action.id)
                     .observeOn(Schedulers.computation())
                     .map { favorites -> RemoveTrainFavoriteAction(id = action.id, trainFavorites = favorites) }
                     .observeOn(AndroidSchedulers.mainThread())
@@ -275,7 +275,7 @@ internal val addBusFavorites: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->
             (action as? AddBusFavoriteAction)?.let {
-                PreferenceService.addToBusFavorites(
+                preferenceService.addBusToFavorites(
                     busRouteId = action.busRouteId,
                     busStopId = action.busStopId,
                     bound = action.boundTitle,
@@ -302,7 +302,7 @@ internal val removeBusFavorites: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->
             (action as? RemoveBusFavoriteAction)?.let {
-                PreferenceService.removeFromBusFavorites(
+                preferenceService.removeBusFromFavorites(
                     busRouteId = action.busRouteId,
                     busStopId = action.busStopId,
                     bound = action.boundTitle)
@@ -327,7 +327,7 @@ internal val addBikeFavorites: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->
             (action as? AddBikeFavoriteAction)?.let {
-                PreferenceService.addToBikeFavorites(action.id, action.stationName)
+                preferenceService.addBikeToFavorites(action.id, action.stationName)
                     .observeOn(Schedulers.computation())
                     .map { favorites -> AddBikeFavoriteAction(id = action.id, bikeFavorites = favorites) }
                     .observeOn(AndroidSchedulers.mainThread())
@@ -341,7 +341,7 @@ internal val removeBikeFavorites: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->
             (action as? RemoveBikeFavoriteAction)?.let {
-                PreferenceService.removeFromBikeFavorites(action.id)
+                preferenceService.removeBikeFromFavorites(action.id)
                     .observeOn(Schedulers.computation())
                     .map { favorites -> RemoveBikeFavoriteAction(id = action.id, bikeFavorites = favorites) }
                     .observeOn(AndroidSchedulers.mainThread())

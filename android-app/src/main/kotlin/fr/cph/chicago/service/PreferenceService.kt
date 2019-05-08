@@ -65,18 +65,6 @@ object PreferenceService {
         repo.saveTrainFilter(stationId, line, direction, value)
     }
 
-    fun addBikeRouteNameMapping(bikeId: Int, bikeName: String) {
-        repo.addBikeRouteNameMapping(bikeId, bikeName)
-    }
-
-    fun addBusRouteNameMapping(busStopId: String, routeName: String) {
-        repo.addBusRouteNameMapping(busStopId, routeName)
-    }
-
-    fun addBusStopNameMapping(busStopId: String, stopName: String) {
-        repo.addBusStopNameMapping(busStopId, stopName)
-    }
-
     fun hasFavorites(): Boolean {
         return repo.hasFavorites()
     }
@@ -104,41 +92,52 @@ object PreferenceService {
         return repo.getBikeFavorites().any { id -> id == bikeStationId }
     }
 
-    fun addToBikeFavorites(stationId: Int, stationName: String): Single<List<Int>> {
-        // FIXME: make it reactive
-        val favorites = repo.getBikeFavorites().toMutableList()
-        if (!favorites.contains(stationId)) {
-            favorites.add(stationId)
-            repo.saveBikeFavorites(favorites)
-        }
-        addBikeRouteNameMapping(stationId, stationName)
-        return getBikeMatchingFavorites()
+    fun addBikeToFavorites(stationId: Int, stationName: String): Single<List<Int>> {
+        return Single.fromCallable { repo.getBikeFavorites().toMutableSet() }
+            .map { favorites ->
+                favorites.add(stationId)
+                repo.saveBikeFavorites(favorites)
+            }
+            .flatMap { addBikeRouteNameMapping(stationId, stationName) }
+            .flatMap { getBikeMatchingFavorites() }
+            .subscribeOn(Schedulers.io())
     }
 
-    fun addToBusFavorites(busRouteId: String, busStopId: String, bound: String, busRouteName: String, busStopName: String): Single<List<String>> {
-        // FIXME: Make it reactive
-        val id = busRouteId + "_" + busStopId + "_" + bound
-        val favorites = repo.getBusFavorites().toMutableList()
-        if (!favorites.contains(id)) {
-            favorites.add(id)
-            repo.saveBusFavorites(favorites)
-        }
-        addBusRouteNameMapping(busStopId, busRouteName)
-        addBusStopNameMapping(busStopId, busStopName)
-        return getBusFavorites().subscribeOn(Schedulers.io())
+    private fun addBikeRouteNameMapping(bikeId: Int, bikeName: String): Single<Unit> {
+        return Single.fromCallable { repo.addBikeRouteNameMapping(bikeId, bikeName) }.subscribeOn(Schedulers.io())
     }
 
-    fun addToTrainFavorites(stationId: Int): Single<List<Int>> {
-        return Single
-            .fromCallable {
-                val favorites = repo.getTrainFavorites().toMutableList()
+    fun addBusToFavorites(busRouteId: String, busStopId: String, bound: String, busRouteName: String, busStopName: String): Single<List<String>> {
+        return Single.fromCallable { repo.getBusFavorites().toMutableSet() }
+            .map { favorites ->
+                val id = busRouteId + "_" + busStopId + "_" + bound
+                favorites.add(id)
+                repo.saveBusFavorites(favorites)
+            }
+            .flatMap { addBusRouteNameMapping(busStopId, busRouteName) }
+            .flatMap { addBusStopNameMapping(busStopId, busStopName) }
+            .flatMap { getBusFavorites() }
+            .subscribeOn(Schedulers.io())
+    }
+
+    private fun addBusRouteNameMapping(busStopId: String, routeName: String): Single<Unit> {
+        return Single.fromCallable { repo.addBusRouteNameMapping(busStopId, routeName) }.subscribeOn(Schedulers.io())
+    }
+
+    private fun addBusStopNameMapping(busStopId: String, stopName: String): Single<Unit> {
+        return Single.fromCallable { repo.addBusStopNameMapping(busStopId, stopName) }.subscribeOn(Schedulers.io())
+    }
+
+    fun addTrainToFavorites(stationId: Int): Single<List<Int>> {
+        return Single.fromCallable { repo.getTrainFavorites().toMutableSet() }
+            .map { favorites ->
                 if (!favorites.contains(stationId)) {
                     favorites.add(stationId)
                     repo.saveTrainFavorites(favorites)
                 }
             }
-            .subscribeOn(Schedulers.io())
             .flatMap { getTrainFavorites() }
+            .subscribeOn(Schedulers.io())
     }
 
     fun getFavoritesBusParams(): MultiValuedMap<String, String> {
@@ -160,52 +159,58 @@ object PreferenceService {
         return paramsTrain
     }
 
-    fun removeFromBusFavorites(busRouteId: String, busStopId: String, bound: String): Single<List<String>> {
-        // FIXME: Make it reactive
-        val id = busRouteId + "_" + busStopId + "_" + bound
-        val favorites = repo.getBusFavorites().toMutableList()
-        favorites.remove(id)
-        repo.saveBusFavorites(favorites)
-        return getBusFavorites().subscribeOn(Schedulers.io())
+    fun removeBusFromFavorites(busRouteId: String, busStopId: String, bound: String): Single<List<String>> {
+        return Single.fromCallable { repo.getBusFavorites().toMutableSet() }
+            .map { favorites ->
+                val id = busRouteId + "_" + busStopId + "_" + bound
+                favorites.remove(id)
+                repo.saveBusFavorites(favorites)
+            }
+            .flatMap { getBusFavorites() }
+            .subscribeOn(Schedulers.io())
     }
 
-    fun removeFromBikeFavorites(stationId: Int): Single<List<Int>> {
-        val favorites = repo.getBikeFavorites().toMutableList()
-        favorites.remove(stationId)
-        repo.saveBikeFavorites(favorites)
-        return getBikeMatchingFavorites()
+    fun removeBikeFromFavorites(stationId: Int): Single<List<Int>> {
+        return Single.fromCallable { repo.getBikeFavorites().toMutableSet() }
+            .map { favorites ->
+                favorites.remove(stationId)
+                repo.saveBikeFavorites(favorites)
+            }
+            .flatMap { getBikeMatchingFavorites() }
+            .subscribeOn(Schedulers.io())
     }
 
-    fun removeFromTrainFavorites(stationId: Int): Single<List<Int>> {
-        return Single
-            .fromCallable {
-                val favorites = repo.getTrainFavorites().toMutableList()
+    fun removeTrainFromFavorites(stationId: Int): Single<List<Int>> {
+        return Single.fromCallable { repo.getTrainFavorites().toMutableSet() }
+            .map { favorites ->
                 favorites.remove(stationId)
                 repo.saveTrainFavorites(favorites)
             }
-            .subscribeOn(Schedulers.io())
             .flatMap { getTrainFavorites() }
+            .subscribeOn(Schedulers.io())
     }
 
     fun getBikeFavorites(): Single<List<Int>> {
-        return Single.fromCallable { repo.getBikeFavorites() }.subscribeOn(Schedulers.io())
+        return Single.fromCallable { repo.getBikeFavorites().toList() }.subscribeOn(Schedulers.io())
     }
 
     private fun getBikeMatchingFavorites(): Single<List<Int>> {
-        return Single.fromCallable {
-            repo.getBikeFavorites()
-                .flatMap { bikeStationId -> store.state.bikeStations.filter { station -> station.id == bikeStationId } }
-                .sortedWith(util.bikeStationComparator)
-                .map { station -> station.id }
-        }.subscribeOn(Schedulers.io())
+        return Single.fromCallable { repo.getBikeFavorites() }
+            .observeOn(Schedulers.computation())
+            .map { favorites ->
+                favorites
+                    .flatMap { bikeStationId -> store.state.bikeStations.filter { station -> station.id == bikeStationId } }
+                    .sortedWith(util.bikeStationComparator)
+                    .map { station -> station.id }
+            }.subscribeOn(Schedulers.io())
     }
 
     fun getTrainFavorites(): Single<List<Int>> {
-        return Single.fromCallable { repo.getTrainFavorites() }.subscribeOn(Schedulers.io())
+        return Single.fromCallable { repo.getTrainFavorites().toList() }.subscribeOn(Schedulers.io())
     }
 
     fun getBusFavorites(): Single<List<String>> {
-        return Single.fromCallable { repo.getBusFavorites() }
+        return Single.fromCallable { repo.getBusFavorites().toList() }.subscribeOn(Schedulers.io())
     }
 
     fun getBusRouteNameMapping(busStopId: String): String {

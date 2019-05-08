@@ -43,8 +43,6 @@ class ErrorActivity : Activity() {
     @BindView(R.id.failure)
     lateinit var failure: RelativeLayout
 
-    private val preferenceService: PreferenceService = PreferenceService
-
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(preferenceService.getCurrentTheme())
         super.onCreate(savedInstanceState)
@@ -57,5 +55,9 @@ class ErrorActivity : Activity() {
             finish()
             startActivity(intent)
         }
+    }
+
+    companion object {
+        private val preferenceService = PreferenceService
     }
 }

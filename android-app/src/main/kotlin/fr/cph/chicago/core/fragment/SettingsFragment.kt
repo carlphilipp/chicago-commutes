@@ -51,10 +51,6 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     @BindView(R.id.theme_name)
     lateinit var themeName: TextView
 
-    private val util: Util = Util
-    private val preferenceService: PreferenceService = PreferenceService
-    private val realmConfig: RealmConfig = RealmConfig
-
     override fun onCreateView(savedInstanceState: Bundle?) {
         val version = "Version " + util.getCurrentVersion()
         versionNumber.text = version
@@ -139,6 +135,9 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     }
 
     companion object {
+        private val util = Util
+        private val preferenceService = PreferenceService
+        private val realmConfig = RealmConfig
 
         fun newInstance(sectionNumber: Int): SettingsFragment {
             return fragmentWithBundle(SettingsFragment(), sectionNumber) as SettingsFragment

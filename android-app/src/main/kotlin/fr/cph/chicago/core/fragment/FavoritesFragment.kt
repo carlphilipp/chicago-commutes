@@ -73,10 +73,6 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<Stat
     @BindView(R.id.retry_button)
     lateinit var retryButton: Button
 
-    private val rateUtil: RateUtil = RateUtil
-    private val util: Util = Util
-    private val preferenceService: PreferenceService = PreferenceService
-
     private lateinit var adapter: FavoritesAdapter
     private lateinit var refreshTimingTask: RefreshTimingTask
 
@@ -204,8 +200,12 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<Stat
 
     companion object {
 
+        private val rateUtil: RateUtil = RateUtil
+        private val util: Util = Util
+        private val preferenceService: PreferenceService = PreferenceService
+
         /**
-         * Returns a new trainService of this fragment for the given section number.
+         * Returns a new service of this fragment for the given section number.
          *
          * @param sectionNumber the section number
          * @return a favorite fragment

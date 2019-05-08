@@ -26,8 +26,6 @@ import fr.cph.chicago.service.PreferenceService
 
 abstract class ButterKnifeActivity(private val contentView: Int) : AppCompatActivity() {
 
-    private val preferenceService: PreferenceService = PreferenceService
-
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(preferenceService.getCurrentTheme())
         super.onCreate(savedInstanceState)
@@ -39,4 +37,8 @@ abstract class ButterKnifeActivity(private val contentView: Int) : AppCompatActi
     }
 
     abstract fun create(savedInstanceState: Bundle?)
+
+    companion object {
+        private val preferenceService = PreferenceService
+    }
 }
