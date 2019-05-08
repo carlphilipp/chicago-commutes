@@ -226,6 +226,7 @@ class BusMapActivity : FragmentMapActivity() {
                         selectedMarker = marker
                         val busId = marker.snippet
                         busService.loadFollowBus(busId)
+                            .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(BusFollowObserver(this@BusMapActivity, layout, view!!, false))
                         status[marker] = false
                     }
@@ -244,6 +245,7 @@ class BusMapActivity : FragmentMapActivity() {
                     val runNumber = marker.snippet
                     val current = status[marker]
                     busService.loadFollowBus(runNumber)
+                        .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(BusFollowObserver(this@BusMapActivity, layout, view!!, !current!!))
                     status[marker] = !current
                 }

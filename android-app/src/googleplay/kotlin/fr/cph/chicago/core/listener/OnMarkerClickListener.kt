@@ -32,6 +32,7 @@ import fr.cph.chicago.core.model.marker.MarkerDataHolder
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
+import io.reactivex.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 
 class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, private val nearbyFragment: NearbyFragment) : GoogleMap.OnMarkerClickListener {
@@ -70,6 +71,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
     private fun loadBusArrivals(busStop: BusStop) {
         nearbyFragment.slidingUpAdapter.updateTitleBus(busStop.name)
         busService.loadBusArrivals(busStop)
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { result ->
                     val busArrivalRouteDTO = BusArrivalRouteDTO(BusArrivalRouteDTO.busComparator)
