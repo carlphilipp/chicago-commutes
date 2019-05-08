@@ -3,7 +3,7 @@ package fr.cph.chicago.redux
 import org.rekotlin.Action
 import org.rekotlin.Store
 import timber.log.Timber
-import java.util.*
+import java.util.Date
 
 val store = Store(
     reducer = ::reducer,

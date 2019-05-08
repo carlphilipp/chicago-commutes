@@ -55,7 +55,7 @@ import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import java.util.*
+import java.util.Random
 
 /**
  * Activity that represents the train station

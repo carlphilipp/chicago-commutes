@@ -11,7 +11,7 @@ import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StateType
-import java.util.*
+import java.util.Date
 
 data class State(
     // Api keys

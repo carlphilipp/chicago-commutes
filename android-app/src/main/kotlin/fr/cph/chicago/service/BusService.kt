@@ -20,6 +20,7 @@
 package fr.cph.chicago.service
 
 import fr.cph.chicago.R
+import fr.cph.chicago.R.string
 import fr.cph.chicago.client.CtaClient
 import fr.cph.chicago.client.CtaRequestType.BUS_ARRIVALS
 import fr.cph.chicago.client.CtaRequestType.BUS_DIRECTION
@@ -60,8 +61,8 @@ import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 import timber.log.Timber
 import java.text.SimpleDateFormat
-import java.util.*
-import java.util.concurrent.*
+import java.util.Locale
+import java.util.concurrent.Callable
 
 object BusService {
 
@@ -94,8 +95,8 @@ object BusService {
     fun loadAllBusStopsForRouteBound(route: String, bound: String): Single<List<BusStop>> {
         return createSingleFromCallable(Callable {
             val params = ArrayListValuedHashMap<String, String>(2, 1)
-            params.put(App.instance.getString(R.string.request_rt), route)
-            params.put(App.instance.getString(R.string.request_dir), bound)
+            params.put(App.instance.getString(string.request_rt), route)
+            params.put(App.instance.getString(string.request_dir), bound)
             val result = ctaClient.get(BUS_STOP_LIST, params, BusStopsResponse::class.java)
             if (result.bustimeResponse.stops == null) {
                 throw CtaException(result)
