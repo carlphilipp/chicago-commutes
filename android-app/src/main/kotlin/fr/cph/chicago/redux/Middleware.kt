@@ -182,7 +182,7 @@ internal val busStopArrivalsMiddleware: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->
             (action as? BusStopArrivalsAction)?.let {
-                busService.loadBusArrivals(action.requestRt, action.busRouteId, action.requestStopId, action.busStopId, action.bound, action.boundTitle)
+                busService.loadBusArrivals(action.busRouteId, action.busStopId, action.bound, action.boundTitle)
                     .observeOn(Schedulers.computation())
                     .map { busArrivalStopDTO -> BusStopArrivalsAction(busArrivalStopDTO = busArrivalStopDTO) }
                     .observeOn(AndroidSchedulers.mainThread())

@@ -92,9 +92,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
         busRouteName = intent.getStringExtra(getString(R.string.bundle_bus_route_name))
 
         busStopArrivalsAction = BusStopArrivalsAction(
-            requestRt = getString(R.string.request_rt),
             busRouteId = busRouteId,
-            requestStopId = getString(R.string.request_stop_id),
             busStopId = busStopId,
             bound = bound,
             boundTitle = boundTitle)
@@ -214,9 +212,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
             ?: StringUtils.EMPTY
         position = savedInstanceState.getParcelable(getString(R.string.bundle_position)) as Position
         busStopArrivalsAction = BusStopArrivalsAction(
-            requestRt = getString(R.string.request_rt),
             busRouteId = busRouteId,
-            requestStopId = getString(R.string.request_stop_id),
             busStopId = busStopId,
             bound = bound,
             boundTitle = boundTitle)

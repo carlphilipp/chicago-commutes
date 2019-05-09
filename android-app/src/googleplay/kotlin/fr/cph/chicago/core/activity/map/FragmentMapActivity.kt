@@ -35,7 +35,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
-import fr.cph.chicago.Constants.Companion.GPS_ACCESS
+import fr.cph.chicago.Constants.GPS_ACCESS
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeFragmentMapActivity
 import fr.cph.chicago.util.GoogleMapUtil

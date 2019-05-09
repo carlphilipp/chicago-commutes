@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.service
 
-import fr.cph.chicago.R
 import fr.cph.chicago.client.CtaClient
 import fr.cph.chicago.client.CtaRequestType.BUS_ARRIVALS
 import fr.cph.chicago.client.CtaRequestType.BUS_DIRECTION
@@ -27,7 +26,16 @@ import fr.cph.chicago.client.CtaRequestType.BUS_PATTERN
 import fr.cph.chicago.client.CtaRequestType.BUS_ROUTES
 import fr.cph.chicago.client.CtaRequestType.BUS_STOP_LIST
 import fr.cph.chicago.client.CtaRequestType.BUS_VEHICLES
-import fr.cph.chicago.core.App
+import fr.cph.chicago.client.REQUEST_ROUTE
+import fr.cph.chicago.client.REQUEST_STOP_ID
+import fr.cph.chicago.client.allStopsParams
+import fr.cph.chicago.client.busArrivalsParams
+import fr.cph.chicago.client.busArrivalsStopIdParams
+import fr.cph.chicago.client.busDirectionParams
+import fr.cph.chicago.client.busFollowParams
+import fr.cph.chicago.client.busPatternParams
+import fr.cph.chicago.client.busVehiclesParams
+import fr.cph.chicago.client.emptyParams
 import fr.cph.chicago.core.model.Bus
 import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusDirections
@@ -73,17 +81,14 @@ object BusService {
     private val simpleDateFormatBus: SimpleDateFormat = SimpleDateFormat("yyyyMMdd HH:mm", Locale.US)
 
     fun loadFavoritesBuses(): Single<BusArrivalDTO> {
-        return Single
-            .fromCallable { preferenceService.getFavoritesBusParams() }
+        return Single.fromCallable { preferenceService.getFavoritesBusParams() }
             .flatMap { favoritesBusParams ->
                 if (favoritesBusParams.isEmpty) {
                     Single.just(listOf())
                 } else {
                     val params = ArrayListValuedHashMap<String, String>(2, 1)
-                    val routeIdParam = App.instance.getString(R.string.request_rt)
-                    val stopIdParam = App.instance.getString(R.string.request_stop_id)
-                    params.put(routeIdParam, favoritesBusParams.get(routeIdParam).joinToString(separator = ","))
-                    params.put(stopIdParam, favoritesBusParams.get(stopIdParam).joinToString(separator = ","))
+                    params.put(REQUEST_ROUTE, favoritesBusParams.get(REQUEST_ROUTE).joinToString(separator = ","))
+                    params.put(REQUEST_STOP_ID, favoritesBusParams.get(REQUEST_STOP_ID).joinToString(separator = ","))
                     getBusArrivals(params)
                 }
             }
@@ -95,10 +100,7 @@ object BusService {
 
     fun loadAllBusStopsForRouteBound(route: String, bound: String): Single<List<BusStop>> {
         return createSingleFromCallable(Callable {
-            val params = ArrayListValuedHashMap<String, String>(2, 1)
-            params.put(App.instance.getString(R.string.request_rt), route)
-            params.put(App.instance.getString(R.string.request_dir), bound)
-            val result = ctaClient.get(BUS_STOP_LIST, params, BusStopsResponse::class.java)
+            val result = ctaClient.get(BUS_STOP_LIST, allStopsParams(route, bound), BusStopsResponse::class.java)
             if (result.bustimeResponse.stops == null) {
                 throw CtaException(result)
             }
@@ -133,7 +135,7 @@ object BusService {
     }
 
     fun busRoutes(): Single<List<BusRoute>> {
-        return ctaClient.getRx(BUS_ROUTES, ArrayListValuedHashMap<String, String>(), BusRoutesResponse::class.java)
+        return ctaClient.getRx(BUS_ROUTES, emptyParams(), BusRoutesResponse::class.java)
             .map { bustimeResponse: BusRoutesResponse ->
                 bustimeResponse.bustimeResponse
                     .routes
@@ -142,13 +144,7 @@ object BusService {
     }
 
     fun loadFollowBus(busId: String): Single<List<BusArrival>> {
-        return Single
-            .fromCallable {
-                val params = ArrayListValuedHashMap<String, String>(1, 1)
-                params.put(App.instance.getString(R.string.request_vid), busId)
-                params
-            }
-            .flatMap { params -> getBusArrivals(params) }
+        return getBusArrivals(busFollowParams(busId))
             .onErrorReturn(handleError())
             .subscribeOn(Schedulers.computation())
     }
@@ -158,10 +154,8 @@ object BusService {
     }
 
     fun loadBusPattern(busRouteId: String, bounds: Array<String>): List<BusPattern> {
-        val connectParam = ArrayListValuedHashMap<String, String>(1, 1)
-        connectParam.put(App.instance.getString(R.string.request_rt), busRouteId)
         val boundIgnoreCase = bounds.map { bound -> bound.toLowerCase(Locale.US) }
-        val result = ctaClient.get(BUS_PATTERN, connectParam, BusPatternResponse::class.java)
+        val result = ctaClient.get(BUS_PATTERN, busPatternParams(busRouteId), BusPatternResponse::class.java)
         if (result.bustimeResponse.ptr == null) throw CtaException(result)
         return result
             .bustimeResponse
@@ -184,13 +178,7 @@ object BusService {
     }
 
     fun busForRouteId(busRouteId: String): Single<List<Bus>> {
-        return Single
-            .fromCallable {
-                val connectParam = ArrayListValuedHashMap<String, String>(1, 1)
-                connectParam.put(App.instance.getString(R.string.request_rt), busRouteId)
-                connectParam
-            }
-            .flatMap { connectParam -> ctaClient.getRx(BUS_VEHICLES, connectParam, BusPositionResponse::class.java) }
+        return ctaClient.getRx(BUS_VEHICLES, busVehiclesParams(busRouteId), BusPositionResponse::class.java)
             .observeOn(Schedulers.computation())
             .map { result ->
                 if (result.bustimeResponse.vehicle == null) throw CtaException(result)
@@ -204,14 +192,7 @@ object BusService {
     }
 
     fun loadBusArrivals(busStop: BusStop): Single<List<BusArrival>> {
-        return Single
-            .fromCallable {
-                val busStopId = busStop.id
-                val params = ArrayListValuedHashMap<String, String>(1, 1)
-                params.put(App.instance.getString(R.string.request_stop_id), busStopId.toString())
-                params
-            }
-            .flatMap { params -> getBusArrivals(params) }
+        return getBusArrivals(busArrivalsStopIdParams(busStop.id))
             .onErrorReturn(handleError())
             .subscribeOn(Schedulers.computation())
     }
@@ -251,15 +232,8 @@ object BusService {
             .sortedWith(util.busStopComparatorByName)
     }
 
-    fun loadBusArrivals(requestRt: String, busRouteId: String, requestStopId: String, busStopId: Int, bound: String, boundTitle: String): Single<BusArrivalStopDTO> {
-        return Single
-            .fromCallable {
-                val params = ArrayListValuedHashMap<String, String>(2, 1)
-                params.put(requestRt, busRouteId)
-                params.put(requestStopId, busStopId.toString())
-                params
-            }
-            .flatMap { params -> getBusArrivals(params) }
+    fun loadBusArrivals(busRouteId: String, busStopId: Int, bound: String, boundTitle: String): Single<BusArrivalStopDTO> {
+        return getBusArrivals(busArrivalsParams(busRouteId, busStopId))
             .map { busArrivals ->
                 busArrivals
                     .filter { (_, _, _, _, _, _, routeDirection) -> routeDirection == bound || routeDirection == boundTitle }
@@ -319,9 +293,7 @@ object BusService {
     }
 
     private fun loadBusDirections(busRouteId: String): BusDirections {
-        val params = ArrayListValuedHashMap<String, String>(1, 1)
-        params.put(App.instance.getString(R.string.request_rt), busRouteId)
-        val result = ctaClient.get(BUS_DIRECTION, params, BusDirectionResponse::class.java)
+        val result = ctaClient.get(BUS_DIRECTION, busDirectionParams(busRouteId), BusDirectionResponse::class.java)
         if (result.bustimeResponse.directions == null) {
             throw CtaException(result)
         }

@@ -44,7 +44,7 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
-import fr.cph.chicago.Constants.Companion.GPS_ACCESS
+import fr.cph.chicago.Constants.GPS_ACCESS
 import fr.cph.chicago.R
 import fr.cph.chicago.core.adapter.SlidingUpAdapter
 import fr.cph.chicago.core.listener.OnMarkerClickListener

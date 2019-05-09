@@ -19,17 +19,17 @@
 
 package fr.cph.chicago.client
 
-import fr.cph.chicago.Constants.Companion.ALERTS_ROUTES_URL
-import fr.cph.chicago.Constants.Companion.ALERT_ROUTES_URL
-import fr.cph.chicago.Constants.Companion.BUSES_ARRIVAL_URL
-import fr.cph.chicago.Constants.Companion.BUSES_DIRECTION_URL
-import fr.cph.chicago.Constants.Companion.BUSES_PATTERN_URL
-import fr.cph.chicago.Constants.Companion.BUSES_ROUTES_URL
-import fr.cph.chicago.Constants.Companion.BUSES_STOP_URL
-import fr.cph.chicago.Constants.Companion.BUSES_VEHICLES_URL
-import fr.cph.chicago.Constants.Companion.TRAINS_ARRIVALS_URL
-import fr.cph.chicago.Constants.Companion.TRAINS_FOLLOW_URL
-import fr.cph.chicago.Constants.Companion.TRAINS_LOCATION_URL
+import fr.cph.chicago.Constants.ALERTS_ROUTES_URL
+import fr.cph.chicago.Constants.ALERT_ROUTES_URL
+import fr.cph.chicago.Constants.BUSES_ARRIVAL_URL
+import fr.cph.chicago.Constants.BUSES_DIRECTION_URL
+import fr.cph.chicago.Constants.BUSES_PATTERN_URL
+import fr.cph.chicago.Constants.BUSES_ROUTES_URL
+import fr.cph.chicago.Constants.BUSES_STOP_URL
+import fr.cph.chicago.Constants.BUSES_VEHICLES_URL
+import fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL
+import fr.cph.chicago.Constants.TRAINS_FOLLOW_URL
+import fr.cph.chicago.Constants.TRAINS_LOCATION_URL
 import fr.cph.chicago.client.CtaRequestType.ALERTS_ROUTE
 import fr.cph.chicago.client.CtaRequestType.ALERTS_ROUTES
 import fr.cph.chicago.client.CtaRequestType.BUS_ARRIVALS

@@ -20,7 +20,7 @@
 package fr.cph.chicago.client
 
 import android.graphics.drawable.Drawable
-import fr.cph.chicago.Constants.Companion.GOOGLE_STREET_VIEW_URL
+import fr.cph.chicago.Constants.GOOGLE_STREET_VIEW_URL
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.util.Util
 import io.reactivex.Single

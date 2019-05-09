@@ -63,9 +63,7 @@ data class TrainStationAction(
 // Bus stop activity
 data class BusStopArrivalsAction(
     // input
-    val requestRt: String = StringUtils.EMPTY,
     val busRouteId: String = StringUtils.EMPTY,
-    val requestStopId: String = StringUtils.EMPTY,
     val busStopId: Int = 0,
     val bound: String = StringUtils.EMPTY,
     val boundTitle: String = StringUtils.EMPTY,

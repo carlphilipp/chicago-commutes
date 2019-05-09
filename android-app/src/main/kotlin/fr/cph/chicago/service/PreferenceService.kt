@@ -20,6 +20,9 @@
 package fr.cph.chicago.service
 
 import fr.cph.chicago.R
+import fr.cph.chicago.client.REQUEST_MAP_ID
+import fr.cph.chicago.client.REQUEST_ROUTE
+import fr.cph.chicago.client.REQUEST_STOP_ID
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
@@ -146,8 +149,8 @@ object PreferenceService {
         busFavorites
             .map { util.decodeBusFavorite(it) }
             .forEach { (routeId, stopId) ->
-                paramsBus.put(App.instance.getString(R.string.request_rt), routeId)
-                paramsBus.put(App.instance.getString(R.string.request_stop_id), stopId)
+                paramsBus.put(REQUEST_ROUTE, routeId)
+                paramsBus.put(REQUEST_STOP_ID, stopId)
             }
         return paramsBus
     }
@@ -155,7 +158,7 @@ object PreferenceService {
     fun getFavoritesTrainParams(): MultiValuedMap<String, String> {
         val favorites = repo.getTrainFavorites()
         val paramsTrain = ArrayListValuedHashMap<String, String>(1, favorites.size)
-        favorites.forEach { favorite -> paramsTrain.put(App.instance.getString(R.string.request_map_id), favorite.toString()) }
+        favorites.forEach { favorite -> paramsTrain.put(REQUEST_MAP_ID, favorite.toString()) }
         return paramsTrain
     }
 

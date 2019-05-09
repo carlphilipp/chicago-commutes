@@ -125,14 +125,6 @@
     <string name="map_activity">Map</string>
     <string name="map_train_follow_error">Unable to determine upcoming stops</string>
 
-    <!-- Requests -->
-    <string name="request_map_id">mapid</string>
-    <string name="request_vid">vid</string>
-    <string name="request_rt">rt</string>
-    <string name="request_dir">dir</string>
-    <string name="request_stop_id">stpid</string>
-    <string name="request_runnumber">runnumber</string>
-
     <!-- Time -->
     <string name="time_now">now</string>
     <string name="time_min">&#160;min</string>

@@ -25,6 +25,9 @@ import fr.cph.chicago.client.CtaClient
 import fr.cph.chicago.client.CtaRequestType.TRAIN_ARRIVALS
 import fr.cph.chicago.client.CtaRequestType.TRAIN_FOLLOW
 import fr.cph.chicago.client.CtaRequestType.TRAIN_LOCATION
+import fr.cph.chicago.client.stationTrainParams
+import fr.cph.chicago.client.trainEtasParams
+import fr.cph.chicago.client.trainLocationParams
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Stop
@@ -127,9 +130,7 @@ object TrainService {
 
     fun loadStationTrainArrival(stationId: Int): Single<TrainArrival> {
         return createSingleFromCallable(Callable {
-            val params = ArrayListValuedHashMap<String, String>(1, 1)
-            params.put(App.instance.applicationContext.getString(R.string.request_map_id), stationId.toString())
-            val map = getTrainArrivals(params)
+            val map = getTrainArrivals(stationTrainParams(stationId))
             map.get(stationId, TrainArrival.buildEmptyTrainArrival())
         })
     }
@@ -137,10 +138,7 @@ object TrainService {
     fun trainEtas(runNumber: String, loadAll: Boolean): Single<List<TrainEta>> {
         return createSingleFromCallable(
             Callable {
-                val params = ArrayListValuedHashMap<String, String>(1, 1)
-                params.put(App.instance.applicationContext.getString(R.string.request_runnumber), runNumber)
-
-                val content = ctaClient.get(TRAIN_FOLLOW, params, TrainArrivalResponse::class.java)
+                val content = ctaClient.get(TRAIN_FOLLOW, trainEtasParams(runNumber), TrainArrivalResponse::class.java)
                 val arrivals = getTrainArrivalsInternal(content)
 
                 var trainEta = mutableListOf<TrainEta>()
@@ -168,9 +166,7 @@ object TrainService {
 
     fun trainLocations(line: String): Single<List<Train>> {
         return createSingleFromCallable(Callable {
-            val connectParam = ArrayListValuedHashMap<String, String>(1, 1)
-            connectParam.put(App.instance.applicationContext.getString(R.string.request_rt), line)
-            val result = ctaClient.get(TRAIN_LOCATION, connectParam, TrainLocationResponse::class.java)
+            val result = ctaClient.get(TRAIN_LOCATION, trainLocationParams(line), TrainLocationResponse::class.java)
             if (result.ctatt.route == null) {
                 val error = result.ctatt.errNm
                 Timber.e(error)

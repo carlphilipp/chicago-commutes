@@ -21,14 +21,14 @@ package fr.cph.chicago.service
 
 import fr.cph.chicago.client.CtaClient
 import fr.cph.chicago.client.CtaRequestType
+import fr.cph.chicago.client.alertParams
+import fr.cph.chicago.client.alertsParams
 import fr.cph.chicago.core.model.dto.AlertType
 import fr.cph.chicago.core.model.dto.RouteAlertsDTO
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.entity.AlertsRouteResponse
 import fr.cph.chicago.entity.AlertsRoutesResponse
 import io.reactivex.Single
-import org.apache.commons.collections4.MultiValuedMap
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 import java.text.ParseException
@@ -43,7 +43,7 @@ object AlertService {
     private val displayFormat = SimpleDateFormat("MM/dd/yyyy h:mm a", Locale.US)
 
     fun alerts(): Single<List<RoutesAlertsDTO>> {
-        return ctaClient.getRx(CtaRequestType.ALERTS_ROUTES, buildAlertsParam(), AlertsRoutesResponse::class.java)
+        return ctaClient.getRx(CtaRequestType.ALERTS_ROUTES, alertsParams(), AlertsRoutesResponse::class.java)
             .map { alertRoutes ->
                 if (alertRoutes.ctaRoutes.routeInfo.isEmpty()) {
                     val errors = alertRoutes.ctaRoutes.errorMessage.joinToString()
@@ -67,7 +67,7 @@ object AlertService {
     }
 
     fun routeAlertForId(id: String): Single<List<RouteAlertsDTO>> {
-        return ctaClient.getRx(CtaRequestType.ALERTS_ROUTE, buildAlertParam(id), AlertsRouteResponse::class.java)
+        return ctaClient.getRx(CtaRequestType.ALERTS_ROUTE, alertParams(id), AlertsRouteResponse::class.java)
             .map { alertRoutes ->
                 if (alertRoutes.ctaAlerts.errorMessage != null) {
                     Timber.e(alertRoutes.ctaAlerts.errorMessage.toString())
@@ -86,20 +86,6 @@ object AlertService {
                         }
                         .sortedByDescending { it.severityScore }
             }
-    }
-
-    private fun buildAlertsParam(): MultiValuedMap<String, String> {
-        val params = ArrayListValuedHashMap<String, String>(1, 2)
-        params.put("type", "rail")
-        params.put("type", "bus")
-        return params
-    }
-
-
-    private fun buildAlertParam(id: String): MultiValuedMap<String, String> {
-        val params = ArrayListValuedHashMap<String, String>(1, 1)
-        params.put("routeid", id)
-        return params
     }
 
     private fun formatDate(str: String?): String {
