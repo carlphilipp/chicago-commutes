@@ -118,7 +118,7 @@ data class RemoveBusFavoriteAction(
 
 data class AddBikeFavoriteAction(
     val id: Int = 0,
-    val stationName: String = "",
+    val stationName: String = StringUtils.EMPTY,
     val bikeFavorites: List<Int> = listOf()
 ) : Action
 
