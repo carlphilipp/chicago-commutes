@@ -6,10 +6,6 @@ import fr.cph.chicago.core.App
 
 object Color {
 
-    val grey: Int by lazy {
-        ContextCompat.getColor(App.instance, R.color.grey)
-    }
-
     val red: Int by lazy {
         ContextCompat.getColor(App.instance, R.color.red)
     }

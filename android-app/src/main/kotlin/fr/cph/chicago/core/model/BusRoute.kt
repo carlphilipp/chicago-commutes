@@ -31,6 +31,19 @@ import org.apache.commons.lang3.StringUtils
  */
 data class BusRoute(val id: String, val name: String) : Parcelable {
 
+    companion object {
+        @JvmField
+        val CREATOR: Parcelable.Creator<BusRoute> = object : Parcelable.Creator<BusRoute> {
+            override fun createFromParcel(source: Parcel): BusRoute {
+                return BusRoute(source)
+            }
+
+            override fun newArray(size: Int): Array<BusRoute?> {
+                return arrayOfNulls(size)
+            }
+        }
+    }
+
     private constructor(source: Parcel) : this(
         id = source.readString() ?: StringUtils.EMPTY,
         name = source.readString() ?: StringUtils.EMPTY
@@ -43,19 +56,5 @@ data class BusRoute(val id: String, val name: String) : Parcelable {
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeString(id)
         dest.writeString(name)
-    }
-
-    companion object {
-
-        @JvmField
-        val CREATOR: Parcelable.Creator<BusRoute> = object : Parcelable.Creator<BusRoute> {
-            override fun createFromParcel(source: Parcel): BusRoute {
-                return BusRoute(source)
-            }
-
-            override fun newArray(size: Int): Array<BusRoute?> {
-                return arrayOfNulls(size)
-            }
-        }
     }
 }

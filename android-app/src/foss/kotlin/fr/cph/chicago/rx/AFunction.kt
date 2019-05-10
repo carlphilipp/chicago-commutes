@@ -32,6 +32,10 @@ import java.lang.ref.WeakReference
 
 abstract class AFunction {
 
+    companion object {
+        private val util = Util
+    }
+
     protected fun addParams(container: RelativeLayout, size: Int) {
         val params = container.layoutParams
         params.width = util.convertDpToPixel(200)
@@ -46,9 +50,5 @@ abstract class AFunction {
         val title = view.findViewById(R.id.title) as TextView
         title.text = destination
         return view
-    }
-
-    companion object {
-        private val util = Util
     }
 }

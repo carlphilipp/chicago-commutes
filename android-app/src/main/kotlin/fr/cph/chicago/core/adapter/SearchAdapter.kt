@@ -50,6 +50,12 @@ import timber.log.Timber
  */
 class SearchAdapter(private val context: Context) : BaseAdapter() {
 
+    companion object {
+        private val util = Util
+        private val layoutUtil = LayoutUtil
+        private val busService = BusService
+    }
+
     private var trains: List<TrainStation> = listOf()
     private var busRoutes: List<BusRoute> = listOf()
     private var bikeStations: List<BikeStation> = listOf()
@@ -129,11 +135,5 @@ class SearchAdapter(private val context: Context) : BaseAdapter() {
         this.trains = trains
         this.busRoutes = buses
         this.bikeStations = divvies
-    }
-
-    companion object {
-        private val util = Util
-        private val layoutUtil = LayoutUtil
-        private val busService = BusService
     }
 }

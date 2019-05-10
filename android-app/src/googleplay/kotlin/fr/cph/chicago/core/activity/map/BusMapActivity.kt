@@ -57,6 +57,11 @@ import org.apache.commons.lang3.StringUtils
  */
 class BusMapActivity : FragmentMapActivity() {
 
+    companion object {
+        private val busService: BusService = BusService
+        private val util = Util
+    }
+
     @BindString(R.string.bundle_bus_id)
     lateinit var bundleBusId: String
     @BindString(R.string.bundle_bus_route_id)
@@ -276,10 +281,5 @@ class BusMapActivity : FragmentMapActivity() {
                     }
                 }
         }
-    }
-
-    companion object {
-        private val busService: BusService = BusService
-        private val util = Util
     }
 }

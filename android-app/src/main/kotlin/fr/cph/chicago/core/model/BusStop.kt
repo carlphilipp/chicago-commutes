@@ -35,10 +35,23 @@ class BusStop(
     val description: String,
     val position: Position) : Comparable<BusStop>, Parcelable, Station(id, name) {
 
+    companion object {
+        @JvmField
+        val CREATOR: Parcelable.Creator<BusStop> = object : Parcelable.Creator<BusStop> {
+            override fun createFromParcel(source: Parcel): BusStop {
+                return BusStop(source)
+            }
+
+            override fun newArray(size: Int): Array<BusStop?> {
+                return arrayOfNulls(size)
+            }
+        }
+    }
+
     private constructor(source: Parcel) : this(
         id = source.readInt(),
-        name = source.readString()?: StringUtils.EMPTY,
-        description = source.readString()?:StringUtils.EMPTY,
+        name = source.readString() ?: StringUtils.EMPTY,
+        description = source.readString() ?: StringUtils.EMPTY,
         position = source.readParcelable<Position>(Position::class.java.classLoader) ?: Position())
 
     override fun toString(): String {
@@ -60,19 +73,5 @@ class BusStop(
         dest.writeString(name)
         dest.writeString(description)
         dest.writeParcelable(position, flags)
-    }
-
-    companion object {
-
-        @JvmField
-        val CREATOR: Parcelable.Creator<BusStop> = object : Parcelable.Creator<BusStop> {
-            override fun createFromParcel(source: Parcel): BusStop {
-                return BusStop(source)
-            }
-
-            override fun newArray(size: Int): Array<BusStop?> {
-                return arrayOfNulls(size)
-            }
-        }
     }
 }

@@ -30,6 +30,10 @@ import fr.cph.chicago.util.Util
 
 class BikeDetailsButtonOnClickListener(private val bikeStation: BikeStation) : View.OnClickListener {
 
+    companion object {
+        private val util = Util
+    }
+
     override fun onClick(view: View?) {
         if (bikeStation.latitude != 0.0 && bikeStation.longitude != 0.0) {
             val intent = Intent(App.instance.baseContext, BikeStationActivity::class.java)
@@ -41,9 +45,5 @@ class BikeDetailsButtonOnClickListener(private val bikeStation: BikeStation) : V
         } else {
             util.showNetworkErrorMessage(view!!)
         }
-    }
-
-    companion object {
-        private val util = Util
     }
 }

@@ -38,6 +38,10 @@ import fr.cph.chicago.service.PreferenceService
  */
 class ErrorActivity : Activity() {
 
+    companion object {
+        private val preferenceService = PreferenceService
+    }
+
     @BindView(R.id.retry_button)
     lateinit var button: Button
     @BindView(R.id.failure)
@@ -55,9 +59,5 @@ class ErrorActivity : Activity() {
             finish()
             startActivity(intent)
         }
-    }
-
-    companion object {
-        private val preferenceService = PreferenceService
     }
 }

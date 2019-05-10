@@ -66,6 +66,12 @@ import timber.log.Timber
  */
 class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox), OnMapReadyCallback {
 
+    companion object {
+        private val busService = BusService
+        private val util = Util
+        private val mapUtil = MapUtil
+    }
+
     @BindView(R.id.bellow)
     lateinit var layout: LinearLayout
     @BindView(R.id.toolbar)
@@ -257,11 +263,5 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
     override fun onDestroy() {
         super.onDestroy()
         mapView?.onDestroy()
-    }
-
-    companion object {
-        private val busService = BusService
-        private val util = Util
-        private val mapUtil = MapUtil
     }
 }

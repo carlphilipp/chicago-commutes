@@ -61,6 +61,11 @@ import timber.log.Timber
  */
 class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
 
+    companion object {
+        private val busService = BusService
+        private val util: Util = Util
+    }
+
     @BindView(R.id.bellow)
     lateinit var layout: LinearLayout
     @BindView(R.id.toolbar)
@@ -227,10 +232,5 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
         if (::bound.isInitialized) savedInstanceState.putString(bundleBusBound, bound)
         if (::boundTitle.isInitialized) savedInstanceState.putString(bundleBusBoundTitle, boundTitle)
         super.onSaveInstanceState(savedInstanceState)
-    }
-
-    companion object {
-        private val busService = BusService
-        private val util: Util = Util
     }
 }

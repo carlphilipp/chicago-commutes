@@ -37,6 +37,11 @@ import timber.log.Timber
 
 class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
 
+    companion object {
+        private val alertService = AlertService
+        private val util = Util
+    }
+
     @BindView(R.id.activity_alerts_swipe_refresh_layout)
     lateinit var scrollView: SwipeRefreshLayout
     @BindView(R.id.toolbar)
@@ -106,10 +111,5 @@ class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
         if (scrollView.isRefreshing) {
             scrollView.isRefreshing = false
         }
-    }
-
-    companion object {
-        private val alertService = AlertService
-        private val util = Util
     }
 }

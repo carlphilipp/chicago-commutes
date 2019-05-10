@@ -52,6 +52,11 @@ import io.reactivex.schedulers.Schedulers
 @SuppressLint("Registered")
 abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapReadyCallback, OnMapClickListener {
 
+    companion object {
+        protected const val DEFAULT_EXTRAPOLATION = 100
+        private val mapUtil = MapUtil
+    }
+
     @BindView(R.id.activity_bar)
     lateinit var progressBar: ProgressBar
     @BindView(R.id.map_container)
@@ -205,11 +210,5 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
     override fun onDestroy() {
         super.onDestroy()
         mapView?.onDestroy()
-    }
-
-    companion object {
-        protected const val DEFAULT_EXTRAPOLATION = 100
-
-        private val mapUtil = MapUtil
     }
 }

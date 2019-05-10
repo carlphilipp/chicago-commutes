@@ -42,6 +42,14 @@ import fr.cph.chicago.util.Util
 
 class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
 
+    companion object {
+        private const val LINE_HEIGHT = 27
+        private const val HEADER_HEIGHT = 40
+
+        private val util = Util
+        private val layoutUtil = LayoutUtil
+    }
+
     val textAppearance: Int = util.getAttribute(nearbyFragment.activity!!, R.attr.textAppearance)
 
     private var nbOfLine = intArrayOf(0)
@@ -184,13 +192,5 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
             nearbyFragment.slidingUpPanelLayout.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
         }
         nearbyFragment.showProgress(false)
-    }
-
-    companion object {
-        private const val LINE_HEIGHT = 27
-        private const val HEADER_HEIGHT = 40
-
-        private val util = Util
-        private val layoutUtil = LayoutUtil
     }
 }

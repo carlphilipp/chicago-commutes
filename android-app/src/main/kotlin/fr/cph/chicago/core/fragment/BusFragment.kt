@@ -33,8 +33,8 @@ import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.adapter.BusAdapter
 import fr.cph.chicago.core.model.BusRoute
-import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.BusRoutesAction
+import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.util.Util
@@ -49,6 +49,20 @@ import timber.log.Timber
  * @version 1
  */
 class BusFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<State> {
+
+    companion object {
+        private val util = Util
+
+        /**
+         * Returns a new instance of this fragment for the given section number.
+         *
+         * @param sectionNumber the section number
+         * @return the fragment
+         */
+        fun newInstance(sectionNumber: Int): BusFragment {
+            return fragmentWithBundle(BusFragment(), sectionNumber) as BusFragment
+        }
+    }
 
     @BindView(R.id.fragment_bike_swipe_refresh_layout)
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
@@ -142,20 +156,5 @@ class BusFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<Sta
             }
         })
         filter.text = filter.text
-    }
-
-    companion object {
-
-        private val util = Util
-
-        /**
-         * Returns a new instance of this fragment for the given section number.
-         *
-         * @param sectionNumber the section number
-         * @return the fragment
-         */
-        fun newInstance(sectionNumber: Int): BusFragment {
-            return fragmentWithBundle(BusFragment(), sectionNumber) as BusFragment
-        }
     }
 }

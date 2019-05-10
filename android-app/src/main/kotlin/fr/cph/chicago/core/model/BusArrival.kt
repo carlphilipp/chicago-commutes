@@ -44,6 +44,21 @@ data class BusArrival(
     val predictionTime: Date,
     val isDelay: Boolean) : Parcelable {
 
+    companion object {
+        private const val NO_SERVICE = "No service"
+
+        @JvmField
+        val CREATOR: Parcelable.Creator<BusArrival> = object : Parcelable.Creator<BusArrival> {
+            override fun createFromParcel(source: Parcel): BusArrival {
+                return BusArrival(source)
+            }
+
+            override fun newArray(size: Int): Array<BusArrival?> {
+                return arrayOfNulls(size)
+            }
+        }
+    }
+
     private constructor(source: Parcel) : this(
         timeStamp = Date(source.readLong()),
         errorMessage = source.readString() ?: StringUtils.EMPTY,
@@ -94,21 +109,5 @@ data class BusArrival(
         dest.writeString(busDestination)
         dest.writeLong(predictionTime.time)
         dest.writeString(isDelay.toString())
-    }
-
-    companion object {
-
-        private const val NO_SERVICE = "No service"
-
-        @JvmField
-        val CREATOR: Parcelable.Creator<BusArrival> = object : Parcelable.Creator<BusArrival> {
-            override fun createFromParcel(source: Parcel): BusArrival {
-                return BusArrival(source)
-            }
-
-            override fun newArray(size: Int): Array<BusArrival?> {
-                return arrayOfNulls(size)
-            }
-        }
     }
 }

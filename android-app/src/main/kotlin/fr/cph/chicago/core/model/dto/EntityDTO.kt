@@ -121,6 +121,18 @@ class BusArrivalStopMappedDTO : TreeMap<String, MutableMap<String, MutableList<B
 class BusArrivalRouteDTO(comparator: Comparator<String>) : TreeMap<String, MutableMap<String, MutableList<BusArrival>>>(comparator) {
     // route => { bound => BusArrival }
 
+    companion object {
+        private val busRouteIdRegex = Regex("[^0-9]+")
+
+        val busComparator: Comparator<String> = Comparator { key1: String, key2: String ->
+            if (key1.matches(busRouteIdRegex) && key2.matches(busRouteIdRegex)) {
+                key1.toInt().compareTo(key2.toInt())
+            } else {
+                key1.replace(busRouteIdRegex, StringUtils.EMPTY).toInt().compareTo(key2.replace(busRouteIdRegex, StringUtils.EMPTY).toInt())
+            }
+        }
+    }
+
     fun addBusArrival(busArrival: BusArrival) {
         if (containsKey(busArrival.routeId)) {
             val tempMap = get(busArrival.routeId)!!
@@ -133,19 +145,6 @@ class BusArrivalRouteDTO(comparator: Comparator<String>) : TreeMap<String, Mutab
             val tempMap = TreeMap<String, MutableList<BusArrival>>()
             tempMap[busArrival.routeDirection] = mutableListOf(busArrival)
             put(busArrival.routeId, tempMap)
-        }
-    }
-
-    companion object {
-
-        private val busRouteIdRegex = Regex("[^0-9]+")
-
-        val busComparator: Comparator<String> = Comparator { key1: String, key2: String ->
-            if (key1.matches(busRouteIdRegex) && key2.matches(busRouteIdRegex)) {
-                key1.toInt().compareTo(key2.toInt())
-            } else {
-                key1.replace(busRouteIdRegex, StringUtils.EMPTY).toInt().compareTo(key2.replace(busRouteIdRegex, StringUtils.EMPTY).toInt())
-            }
         }
     }
 }

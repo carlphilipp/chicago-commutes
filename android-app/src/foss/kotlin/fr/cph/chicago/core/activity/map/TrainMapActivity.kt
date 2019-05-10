@@ -72,6 +72,11 @@ import timber.log.Timber
 @SuppressLint("CheckResult")
 class TrainMapActivity : FragmentMapActivity() {
 
+    companion object {
+        private val trainService = TrainService
+        private val util = Util
+    }
+
     @BindString(R.string.bundle_train_line)
     lateinit var bundleTrainLine: String
 
@@ -357,10 +362,5 @@ class TrainMapActivity : FragmentMapActivity() {
             TrainLine.YELLOW -> R.drawable.yellow_marker
             TrainLine.NA -> R.drawable.red_marker
         }
-    }
-
-    companion object {
-        private val trainService = TrainService
-        private val util = Util
     }
 }

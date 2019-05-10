@@ -37,6 +37,12 @@ import timber.log.Timber
 
 class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, private val nearbyFragment: NearbyFragment) : GoogleMap.OnMarkerClickListener {
 
+    companion object {
+        private val trainService = TrainService
+        private val busService = BusService
+        private val bikeService = BikeService
+    }
+
     override fun onMarkerClick(marker: Marker): Boolean {
         nearbyFragment.showProgress(true)
         val station = markerDataHolder.getStation(marker)
@@ -89,11 +95,5 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
                 { nearbyFragment.slidingUpAdapter.addBike(it) },
                 { onError -> Timber.e(onError, "Error while loading bike stations") }
             )
-    }
-
-    companion object {
-        private val trainService = TrainService
-        private val busService = BusService
-        private val bikeService = BikeService
     }
 }

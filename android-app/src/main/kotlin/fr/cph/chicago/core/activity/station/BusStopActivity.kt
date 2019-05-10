@@ -60,6 +60,12 @@ import timber.log.Timber
  */
 class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<State> {
 
+    companion object {
+        private val layoutUtil = LayoutUtil
+        private val busService = BusService
+        private val preferenceService = PreferenceService
+    }
+
     @BindView(R.id.left_layout)
     lateinit var leftLayout: RelativeLayout
     @BindView(R.id.right_layout)
@@ -302,12 +308,5 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
         } else {
             store.dispatch(AddBusFavoriteAction(busRouteId, busStopId.toString(), boundTitle, busRouteName, busStopName))
         }
-    }
-
-    companion object {
-        private val layoutUtil = LayoutUtil
-        private val busService = BusService
-        private val util = Util
-        private val preferenceService = PreferenceService
     }
 }

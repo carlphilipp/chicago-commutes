@@ -31,6 +31,12 @@ import io.reactivex.schedulers.Schedulers
 
 class CtaMapFragment : Fragment(R.layout.fragment_cta_map) {
 
+    companion object {
+        fun newInstance(sectionNumber: Int): CtaMapFragment {
+            return fragmentWithBundle(CtaMapFragment(), sectionNumber) as CtaMapFragment
+        }
+    }
+
     @BindView(R.id.cta_map)
     lateinit var ctaMap: PhotoView
     private var bitmapCache: Bitmap? = null
@@ -50,11 +56,5 @@ class CtaMapFragment : Fragment(R.layout.fragment_cta_map) {
                 this@CtaMapFragment.bitmapCache = bitmap
                 ctaMap.setImageBitmap(bitmap)
             }
-    }
-
-    companion object {
-        fun newInstance(sectionNumber: Int): CtaMapFragment {
-            return fragmentWithBundle(CtaMapFragment(), sectionNumber) as CtaMapFragment
-        }
     }
 }

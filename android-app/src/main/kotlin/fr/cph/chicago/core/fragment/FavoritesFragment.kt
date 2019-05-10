@@ -60,6 +60,23 @@ import timber.log.Timber
  */
 class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<State> {
 
+    companion object {
+
+        private val rateUtil = RateUtil
+        private val util = Util
+        private val preferenceService = PreferenceService
+
+        /**
+         * Returns a new service of this fragment for the given section number.
+         *
+         * @param sectionNumber the section number
+         * @return a favorite fragment
+         */
+        fun newInstance(sectionNumber: Int): FavoritesFragment {
+            return fragmentWithBundle(FavoritesFragment(), sectionNumber) as FavoritesFragment
+        }
+    }
+
     @BindView(R.id.welcome)
     lateinit var welcomeLayout: RelativeLayout
     @BindView(R.id.activity_main_swipe_refresh_layout)
@@ -196,22 +213,5 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<Stat
     private fun startRefreshTask() {
         refreshTimingTask = RefreshTimingTask(adapter).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR) as RefreshTimingTask
         adapter.update()
-    }
-
-    companion object {
-
-        private val rateUtil = RateUtil
-        private val util = Util
-        private val preferenceService = PreferenceService
-
-        /**
-         * Returns a new service of this fragment for the given section number.
-         *
-         * @param sectionNumber the section number
-         * @return a favorite fragment
-         */
-        fun newInstance(sectionNumber: Int): FavoritesFragment {
-            return fragmentWithBundle(FavoritesFragment(), sectionNumber) as FavoritesFragment
-        }
     }
 }

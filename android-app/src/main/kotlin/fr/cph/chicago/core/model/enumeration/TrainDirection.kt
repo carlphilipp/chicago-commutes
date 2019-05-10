@@ -43,9 +43,9 @@ enum class TrainDirection(private val text: String, private val formattedText: S
 
     companion object {
         fun fromString(text: String): TrainDirection {
-            return TrainDirection.values()
+            return values()
                 .filter { trainDirection -> text.equals(trainDirection.text, ignoreCase = true) }
-                .getOrElse(0) { TrainDirection.UNKNOWN }
+                .getOrElse(0) { UNKNOWN }
         }
     }
 }

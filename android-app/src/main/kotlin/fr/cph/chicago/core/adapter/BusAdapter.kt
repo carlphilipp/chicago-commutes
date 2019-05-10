@@ -40,6 +40,10 @@ import fr.cph.chicago.service.BusService
  */
 class BusAdapter(private var busRoutes: List<BusRoute> = listOf()) : BaseAdapter() {
 
+    companion object {
+        private val busService = BusService
+    }
+
     override fun getCount(): Int {
         return busRoutes.size
     }
@@ -88,8 +92,4 @@ class BusAdapter(private var busRoutes: List<BusRoute> = listOf()) : BaseAdapter
         val routeNumberView: TextView,
         val detailsLayout: LinearLayout
     )
-
-    companion object {
-        private val busService = BusService
-    }
 }

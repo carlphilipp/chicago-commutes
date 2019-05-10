@@ -37,6 +37,12 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 @SuppressLint("CheckResult")
 class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, private val nearbyFragment: NearbyFragment) : com.mapbox.mapboxsdk.maps.MapboxMap.OnMarkerClickListener {
 
+    companion object {
+        private val trainService = TrainService
+        private val busService = BusService
+        private val bikeService = BikeService
+    }
+
     override fun onMarkerClick(marker: Marker): Boolean {
         nearbyFragment.showProgress(true)
         val station = markerDataHolder.getStation(marker)
@@ -82,11 +88,5 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
         bikeService.findBikeStation(bikeStation.id)
             .subscribe { result -> nearbyFragment.slidingUpAdapter.addBike(result) }
 
-    }
-
-    companion object {
-        private val trainService = TrainService
-        private val busService = BusService
-        private val bikeService = BikeService
     }
 }

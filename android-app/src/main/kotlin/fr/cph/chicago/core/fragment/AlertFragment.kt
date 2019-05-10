@@ -53,6 +53,20 @@ import timber.log.Timber
  */
 class AlertFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<State> {
 
+    companion object {
+        private val util = Util
+
+        /**
+         * Returns a new instance of this fragment for the given section number.
+         *
+         * @param sectionNumber the section number
+         * @return a train fragment
+         */
+        fun newInstance(sectionNumber: Int): AlertFragment {
+            return fragmentWithBundle(AlertFragment(), sectionNumber) as AlertFragment
+        }
+    }
+
     @BindView(R.id.fragment_bike_swipe_refresh_layout)
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
     @BindView(R.id.success)
@@ -161,20 +175,5 @@ class AlertFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<S
     private fun startRefreshing() {
         swipeRefreshLayout.isRefreshing = true
         store.dispatch(AlertAction())
-    }
-
-    companion object {
-
-        private val util = Util
-
-        /**
-         * Returns a new instance of this fragment for the given section number.
-         *
-         * @param sectionNumber the section number
-         * @return a train fragment
-         */
-        fun newInstance(sectionNumber: Int): AlertFragment {
-            return fragmentWithBundle(AlertFragment(), sectionNumber) as AlertFragment
-        }
     }
 }

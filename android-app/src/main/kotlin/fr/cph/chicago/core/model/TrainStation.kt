@@ -37,6 +37,23 @@ class TrainStation(
     name: String,
     var stops: List<Stop>) : Comparable<TrainStation>, Parcelable, Station(id, name) {
 
+    companion object {
+        fun buildEmptyStation(): TrainStation {
+            return TrainStation(0, StringUtils.EMPTY, mutableListOf())
+        }
+
+        @JvmField
+        val CREATOR: Parcelable.Creator<TrainStation> = object : Parcelable.Creator<TrainStation> {
+            override fun createFromParcel(source: Parcel): TrainStation {
+                return TrainStation(source)
+            }
+
+            override fun newArray(size: Int): Array<TrainStation?> {
+                return arrayOfNulls(size)
+            }
+        }
+    }
+
     private constructor(source: Parcel) : this(
         id = source.readInt(),
         name = source.readString() ?: StringUtils.EMPTY,
@@ -82,23 +99,5 @@ class TrainStation(
 
     override fun toString(): String {
         return "TrainStation(stops=$stops)"
-    }
-
-    companion object {
-
-        fun buildEmptyStation(): TrainStation {
-            return TrainStation(0, StringUtils.EMPTY, mutableListOf())
-        }
-
-        @JvmField
-        val CREATOR: Parcelable.Creator<TrainStation> = object : Parcelable.Creator<TrainStation> {
-            override fun createFromParcel(source: Parcel): TrainStation {
-                return TrainStation(source)
-            }
-
-            override fun newArray(size: Int): Array<TrainStation?> {
-                return arrayOfNulls(size)
-            }
-        }
     }
 }

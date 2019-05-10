@@ -74,6 +74,18 @@ import timber.log.Timber
  */
 class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.PermissionCallbacks {
 
+    companion object {
+        private val util: Util = Util
+        private val googleMapUtil = GoogleMapUtil
+        private val mapUtil = MapUtil
+        private val trainService = TrainService
+        private val busService = BusService
+
+        fun newInstance(sectionNumber: Int): NearbyFragment {
+            return fragmentWithBundle(NearbyFragment(), sectionNumber) as NearbyFragment
+        }
+    }
+
     @BindView(R.id.activity_bar)
     lateinit var progressBar: ProgressBar
     @BindView(R.id.sliding_layout)
@@ -266,18 +278,5 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
             updateMarkersAndModel(buses, trains, bikeStations)
             Any()
         }).subscribe()
-    }
-
-    companion object {
-
-        private val util: Util = Util
-        private val googleMapUtil = GoogleMapUtil
-        private val mapUtil = MapUtil
-        private val trainService = TrainService
-        private val busService = BusService
-
-        fun newInstance(sectionNumber: Int): NearbyFragment {
-            return fragmentWithBundle(NearbyFragment(), sectionNumber) as NearbyFragment
-        }
     }
 }

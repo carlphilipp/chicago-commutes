@@ -60,6 +60,13 @@ import java.util.Calendar
  */
 class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder>() {
 
+    companion object {
+        private val util = Util
+        private val favorites = Favorites
+        private val layoutUtil = LayoutUtil
+        private val timeUtil = TimeUtil
+    }
+
     private val textAppearance: Int = util.getAttribute(activity, R.attr.textAppearance)
     private var lastUpdate: String = StringUtils.EMPTY
 
@@ -195,12 +202,5 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
     fun update() {
         lastUpdate = timeUtil.formatTimeDifference(store.state.lastFavoritesUpdate, Calendar.getInstance().time)
         notifyDataSetChanged()
-    }
-
-    companion object {
-        private val util = Util
-        private val favorites = Favorites
-        private val layoutUtil = LayoutUtil
-        private val timeUtil = TimeUtil
     }
 }

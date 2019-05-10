@@ -44,6 +44,25 @@ data class TrainEta(
     private val isApp: Boolean,
     private var isDly: Boolean) : Comparable<TrainEta>, Parcelable, Serializable {
 
+    companion object {
+        private const val serialVersionUID = 0L
+
+        fun buildFakeEtaWith(trainStation: TrainStation, arrivalDepartureDate: Date, predictionDate: Date, app: Boolean, delay: Boolean): TrainEta {
+            return TrainEta(trainStation, Stop.buildEmptyStop(), TrainLine.NA, StringUtils.EMPTY, predictionDate, arrivalDepartureDate, app, delay)
+        }
+
+        @JvmField
+        val CREATOR: Parcelable.Creator<TrainEta> = object : Parcelable.Creator<TrainEta> {
+            override fun createFromParcel(source: Parcel): TrainEta {
+                return TrainEta(source)
+            }
+
+            override fun newArray(size: Int): Array<TrainEta?> {
+                return arrayOfNulls(size)
+            }
+        }
+    }
+
     constructor(source: Parcel) : this(
         trainStation = source.readParcelable<TrainStation>(TrainStation::class.java.classLoader)
             ?: TrainStation.buildEmptyStation(),
@@ -91,26 +110,6 @@ data class TrainEta(
             writeLong(arrivalDepartureDate.time)
             writeString(isApp.toString())
             writeString(isDly.toString())
-        }
-    }
-
-    companion object {
-
-        private const val serialVersionUID = 0L
-
-        fun buildFakeEtaWith(trainStation: TrainStation, arrivalDepartureDate: Date, predictionDate: Date, app: Boolean, delay: Boolean): TrainEta {
-            return TrainEta(trainStation, Stop.buildEmptyStop(), TrainLine.NA, StringUtils.EMPTY, predictionDate, arrivalDepartureDate, app, delay)
-        }
-
-        @JvmField
-        val CREATOR: Parcelable.Creator<TrainEta> = object : Parcelable.Creator<TrainEta> {
-            override fun createFromParcel(source: Parcel): TrainEta {
-                return TrainEta(source)
-            }
-
-            override fun newArray(size: Int): Array<TrainEta?> {
-                return arrayOfNulls(size)
-            }
         }
     }
 }

@@ -51,6 +51,11 @@ import java.util.concurrent.TimeUnit
 
 class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView.OnNavigationItemSelectedListener {
 
+    companion object {
+        private const val SELECTED_ID = "SELECTED_ID"
+        private val rateUtil: RateUtil = RateUtil
+    }
+
     @BindView(R.id.toolbar)
     lateinit var toolbar: Toolbar
     @BindView(R.id.main_drawer)
@@ -247,10 +252,5 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
 
     private fun showHideActionBarMenu(bool: Boolean) {
         toolbar.menu.getItem(0).isVisible = bool
-    }
-
-    companion object {
-        private const val SELECTED_ID = "SELECTED_ID"
-        private val rateUtil: RateUtil = RateUtil
     }
 }

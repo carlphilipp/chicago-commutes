@@ -35,6 +35,10 @@ import java.util.Date
 
 class BusFollowObserver(private val activity: BusMapActivity, private val layout: View, private val view: View, private val loadAll: Boolean) : SingleObserver<List<BusArrival>> {
 
+    companion object {
+        private val util = Util
+    }
+
     override fun onSubscribe(d: Disposable) {}
 
     override fun onSuccess(busArrivalsParam: List<BusArrival>) {
@@ -61,9 +65,5 @@ class BusFollowObserver(private val activity: BusMapActivity, private val layout
     override fun onError(throwable: Throwable) {
         util.handleConnectOrParserException(throwable, layout)
         Timber.e(throwable, "Error while loading bus follow")
-    }
-
-    companion object {
-        private val util = Util
     }
 }

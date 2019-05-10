@@ -43,6 +43,12 @@ import org.apache.commons.lang3.StringUtils
 
 class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
 
+    companion object {
+        private val trainService = TrainService
+        private val busService = BusService
+        private val bikeService = BikeService
+    }
+
     @BindView(R.id.container)
     lateinit var container: FrameLayout
     @BindView(R.id.search_list)
@@ -157,9 +163,4 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
         }
     }
 
-    companion object {
-        private val trainService = TrainService
-        private val busService = BusService
-        private val bikeService = BikeService
-    }
 }

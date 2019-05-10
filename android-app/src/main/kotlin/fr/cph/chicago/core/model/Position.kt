@@ -30,6 +30,19 @@ import android.os.Parcelable
  */
 class Position(val latitude: Double = 0.0, val longitude: Double = 0.0) : Parcelable {
 
+    companion object {
+        @JvmField
+        val CREATOR: Parcelable.Creator<Position> = object : Parcelable.Creator<Position> {
+            override fun createFromParcel(source: Parcel): Position {
+                return Position(source)
+            }
+
+            override fun newArray(size: Int): Array<Position?> {
+                return arrayOfNulls(size)
+            }
+        }
+    }
+
     private constructor(source: Parcel) : this(
         latitude = source.readDouble(),
         longitude = source.readDouble())
@@ -45,19 +58,5 @@ class Position(val latitude: Double = 0.0, val longitude: Double = 0.0) : Parcel
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeDouble(latitude)
         dest.writeDouble(longitude)
-    }
-
-    companion object {
-
-        @JvmField
-        val CREATOR: Parcelable.Creator<Position> = object : Parcelable.Creator<Position> {
-            override fun createFromParcel(source: Parcel): Position {
-                return Position(source)
-            }
-
-            override fun newArray(size: Int): Array<Position?> {
-                return arrayOfNulls(size)
-            }
-        }
     }
 }

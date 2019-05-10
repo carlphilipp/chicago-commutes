@@ -31,8 +31,19 @@ import fr.cph.chicago.core.activity.MainActivity
 
 abstract class Fragment(private val layout: Int) : Fragment() {
 
+    companion object {
+        private const val ARG_SECTION_NUMBER = "section_number"
+
+        fun fragmentWithBundle(fragment: Fragment, sectionNumber: Int): Fragment {
+            val args = Bundle()
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
     protected lateinit var mainActivity: MainActivity
-    protected lateinit var rootView: View
+    private lateinit var rootView: View
     private lateinit var unbinder: Unbinder
 
     private fun setBinder(rootView: View) {
@@ -59,16 +70,4 @@ abstract class Fragment(private val layout: Int) : Fragment() {
     }
 
     abstract fun onCreateView(savedInstanceState: Bundle?)
-
-    companion object {
-
-        private const val ARG_SECTION_NUMBER = "section_number"
-
-        fun fragmentWithBundle(fragment: Fragment, sectionNumber: Int): Fragment {
-            val args = Bundle()
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber)
-            fragment.arguments = args
-            return fragment
-        }
-    }
 }

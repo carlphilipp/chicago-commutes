@@ -64,6 +64,10 @@ import java.util.Random
  */
 class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSubscriber<State> {
 
+    companion object {
+        private val preferenceService = PreferenceService
+    }
+
     @BindView(android.R.id.content)
     lateinit var viewGroup: ViewGroup
     @BindView(R.id.map_container)
@@ -309,10 +313,5 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
         val random = Random()
         val keys = stops.keys
         return keys.elementAt(random.nextInt(keys.size))
-    }
-
-    companion object {
-        private val preferenceService = PreferenceService
-        private val util = Util
     }
 }

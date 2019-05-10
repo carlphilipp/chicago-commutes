@@ -44,6 +44,10 @@ class BusDirectionObserver(private val screenWidth: Int,
                            private val convertView: View,
                            private val busRoute: BusRoute) : SingleObserver<BusDirections> {
 
+    companion object {
+        private val util = Util
+    }
+
     override fun onSubscribe(d: Disposable) {}
 
     override fun onSuccess(busDirections: BusDirections) {
@@ -96,9 +100,5 @@ class BusDirectionObserver(private val screenWidth: Int,
         util.handleConnectOrParserException(throwable, convertView)
         convertView.visibility = LinearLayout.GONE
         Timber.e(throwable, "Error while loading bus directions")
-    }
-
-    companion object {
-        private val util = Util
     }
 }

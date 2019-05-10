@@ -39,15 +39,22 @@ import java.util.Random
 
 class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
+    companion object {
+        private val util = Util
+        private val preferenceService = PreferenceService
+        private val realmConfig = RealmConfig
+
+        fun newInstance(sectionNumber: Int): SettingsFragment {
+            return fragmentWithBundle(SettingsFragment(), sectionNumber) as SettingsFragment
+        }
+    }
+
     @BindView(R.id.clear_cache)
     lateinit var clearCache: LinearLayout
-
     @BindView(R.id.version_number)
     lateinit var versionNumber: TextView
-
     @BindView(R.id.theme)
     lateinit var theme: LinearLayout
-
     @BindView(R.id.theme_name)
     lateinit var themeName: TextView
 
@@ -132,15 +139,5 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             return directory.delete()
         } else
             return directory != null && directory.isFile && directory.delete()
-    }
-
-    companion object {
-        private val util = Util
-        private val preferenceService = PreferenceService
-        private val realmConfig = RealmConfig
-
-        fun newInstance(sectionNumber: Int): SettingsFragment {
-            return fragmentWithBundle(SettingsFragment(), sectionNumber) as SettingsFragment
-        }
     }
 }

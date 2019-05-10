@@ -42,6 +42,18 @@ import timber.log.Timber.DebugTree
  */
 class App : Application() {
 
+    companion object {
+        lateinit var instance: App
+
+        private fun startErrorActivity() {
+            val context = instance.applicationContext
+            val intent = Intent(context, ErrorActivity::class.java)
+            intent.putExtra(context.getString(R.string.bundle_error), "Something went wrong")
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
+        }
+    }
+
     var refresh: Boolean = false
 
     val screenWidth: Int by lazy {
@@ -84,17 +96,5 @@ class App : Application() {
         val point = Point()
         display.getSize(point)
         intArrayOf(point.x, point.y)
-    }
-
-    companion object {
-        lateinit var instance: App
-
-        private fun startErrorActivity() {
-            val context = instance.applicationContext
-            val intent = Intent(context, ErrorActivity::class.java)
-            intent.putExtra(context.getString(R.string.bundle_error), "Something went wrong")
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(intent)
-        }
     }
 }

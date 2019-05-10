@@ -39,6 +39,23 @@ data class Stop(
     var ada: Boolean,
     var lines: Set<TrainLine>) : Comparable<Stop>, Parcelable {
 
+    companion object {
+        fun buildEmptyStop(): Stop {
+            return Stop(0, StringUtils.EMPTY, TrainDirection.UNKNOWN, Position(), false, setOf())
+        }
+
+        @JvmField
+        val CREATOR: Parcelable.Creator<Stop> = object : Parcelable.Creator<Stop> {
+            override fun createFromParcel(source: Parcel): Stop {
+                return Stop(source)
+            }
+
+            override fun newArray(size: Int): Array<Stop?> {
+                return arrayOfNulls(size)
+            }
+        }
+    }
+
     private constructor(source: Parcel) : this(
         id = source.readInt(),
         description = source.readString() ?: StringUtils.EMPTY,
@@ -65,23 +82,5 @@ data class Stop(
         dest.writeString(ada.toString())
         val linesString = lines.map { it.toTextString() }
         dest.writeStringList(linesString)
-    }
-
-    companion object {
-
-        fun buildEmptyStop(): Stop {
-            return Stop(0, StringUtils.EMPTY, TrainDirection.UNKNOWN, Position(), false, setOf())
-        }
-
-        @JvmField
-        val CREATOR: Parcelable.Creator<Stop> = object : Parcelable.Creator<Stop> {
-            override fun createFromParcel(source: Parcel): Stop {
-                return Stop(source)
-            }
-
-            override fun newArray(size: Int): Array<Stop?> {
-                return arrayOfNulls(size)
-            }
-        }
     }
 }

@@ -35,10 +35,20 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.util.Color
+import fr.cph.chicago.util.Util
 import io.reactivex.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 
 abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentView) {
+
+    companion object {
+        private const val TAG_ERROR = "error"
+        private const val TAG_DEFAULT = "default"
+        private const val TAG_STREET_VIEW = "streetview"
+        private val googleStreetClient = GoogleStreetClient
+        @JvmStatic
+        protected val util = Util
+    }
 
     @BindView(R.id.toolbar)
     lateinit var toolbar: Toolbar
@@ -122,12 +132,5 @@ abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentVi
         }
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
         toolbar.setOnClickListener { finish() }
-    }
-
-    companion object {
-        private const val TAG_ERROR = "error"
-        private const val TAG_DEFAULT = "default"
-        private const val TAG_STREET_VIEW = "streetview"
-        private val googleStreetClient = GoogleStreetClient
     }
 }

@@ -13,6 +13,27 @@ class BikeStation(
     val longitude: Double,
     val address: String) : Parcelable, Station(id, name) {
 
+    companion object {
+        fun buildUnknownStation(): BikeStation {
+            return buildDefaultBikeStationWithName("Unknown")
+        }
+
+        fun buildDefaultBikeStationWithName(name: String): BikeStation {
+            return BikeStation(0, name, -1, -1, 0.0, 0.0, StringUtils.EMPTY)
+        }
+
+        @JvmField
+        val CREATOR: Parcelable.Creator<BikeStation> = object : Parcelable.Creator<BikeStation> {
+            override fun createFromParcel(source: Parcel): BikeStation {
+                return BikeStation(source)
+            }
+
+            override fun newArray(size: Int): Array<BikeStation?> {
+                return arrayOfNulls(size)
+            }
+        }
+    }
+
     private constructor(source: Parcel) : this(
         id = source.readInt(),
         name = source.readString() ?: StringUtils.EMPTY,
@@ -34,27 +55,5 @@ class BikeStation(
         dest.writeDouble(latitude)
         dest.writeDouble(longitude)
         dest.writeString(address)
-    }
-
-    companion object {
-
-        fun buildUnknownStation(): BikeStation {
-            return buildDefaultBikeStationWithName("Unknown")
-        }
-
-        fun buildDefaultBikeStationWithName(name: String): BikeStation {
-            return BikeStation(0, name, -1, -1, 0.0, 0.0, StringUtils.EMPTY)
-        }
-
-        @JvmField
-        val CREATOR: Parcelable.Creator<BikeStation> = object : Parcelable.Creator<BikeStation> {
-            override fun createFromParcel(source: Parcel): BikeStation {
-                return BikeStation(source)
-            }
-
-            override fun newArray(size: Int): Array<BikeStation?> {
-                return arrayOfNulls(size)
-            }
-        }
     }
 }

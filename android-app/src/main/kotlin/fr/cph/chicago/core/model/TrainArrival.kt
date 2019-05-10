@@ -31,7 +31,25 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
  */
 data class TrainArrival(var trainEtas: MutableList<TrainEta> = mutableListOf()) : Parcelable {
 
-    private constructor(source: Parcel) : this(trainEtas = source.createTypedArray(TrainEta.CREATOR)?.toMutableList()?: mutableListOf<TrainEta>())
+    companion object {
+        fun buildEmptyTrainArrival(): TrainArrival {
+            return TrainArrival(mutableListOf())
+        }
+
+        @JvmField
+        val CREATOR: Parcelable.Creator<TrainArrival> = object : Parcelable.Creator<TrainArrival> {
+            override fun createFromParcel(source: Parcel): TrainArrival {
+                return TrainArrival(source)
+            }
+
+            override fun newArray(size: Int): Array<TrainArrival?> {
+                return arrayOfNulls(size)
+            }
+        }
+    }
+
+    private constructor(source: Parcel) : this(trainEtas = source.createTypedArray(TrainEta.CREATOR)?.toMutableList()
+        ?: mutableListOf<TrainEta>())
 
     fun addEta(eta: TrainEta): TrainArrival {
         trainEtas.add(eta)
@@ -48,23 +66,5 @@ data class TrainArrival(var trainEtas: MutableList<TrainEta> = mutableListOf()) 
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeTypedList(trainEtas)
-    }
-
-    companion object {
-
-        fun buildEmptyTrainArrival(): TrainArrival {
-            return TrainArrival(mutableListOf())
-        }
-
-        @JvmField
-        val CREATOR: Parcelable.Creator<TrainArrival> = object : Parcelable.Creator<TrainArrival> {
-            override fun createFromParcel(source: Parcel): TrainArrival {
-                return TrainArrival(source)
-            }
-
-            override fun newArray(size: Int): Array<TrainArrival?> {
-                return arrayOfNulls(size)
-            }
-        }
     }
 }

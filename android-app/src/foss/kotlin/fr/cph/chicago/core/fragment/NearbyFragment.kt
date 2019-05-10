@@ -79,6 +79,17 @@ import java.util.UUID
  */
 class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCallback, LocationEngineListener, EasyPermissions.PermissionCallbacks {
 
+    companion object {
+        private val util = Util
+        private val mapUtil = MapUtil
+        private val trainService = TrainService
+        private val busService = BusService
+
+        fun newInstance(sectionNumber: Int): NearbyFragment {
+            return fragmentWithBundle(NearbyFragment(), sectionNumber) as NearbyFragment
+        }
+    }
+
     @BindView(R.id.activity_bar)
     lateinit var progressBar: ProgressBar
     @BindView(R.id.sliding_layout)
@@ -320,18 +331,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
             bitMapStation
         } else {
             null
-        }
-    }
-
-    companion object {
-
-        private val util = Util
-        private val mapUtil = MapUtil
-        private val trainService = TrainService
-        private val busService = BusService
-
-        fun newInstance(sectionNumber: Int): NearbyFragment {
-            return fragmentWithBundle(NearbyFragment(), sectionNumber) as NearbyFragment
         }
     }
 }

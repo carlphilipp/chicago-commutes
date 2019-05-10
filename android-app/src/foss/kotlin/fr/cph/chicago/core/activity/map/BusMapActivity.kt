@@ -68,6 +68,11 @@ import timber.log.Timber
  */
 class BusMapActivity : FragmentMapActivity() {
 
+    companion object {
+        private val util = Util
+        private val busService: BusService = BusService
+    }
+
     @BindString(R.string.bundle_bus_id)
     lateinit var bundleBusId: String
     @BindString(R.string.bundle_bus_route_id)
@@ -329,10 +334,5 @@ class BusMapActivity : FragmentMapActivity() {
 
     private val redIcon: Icon by lazy {
         IconFactory.getInstance(this@BusMapActivity).fromResource(R.drawable.red_marker)
-    }
-
-    companion object {
-        private val util = Util
-        private val busService: BusService = BusService
     }
 }

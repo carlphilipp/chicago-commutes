@@ -30,6 +30,10 @@ import timber.log.Timber
 
 class BusObserver(private val activity: BusMapActivity, private val centerMap: Boolean, private val view: View) : SingleObserver<List<Bus>> {
 
+    companion object {
+        private val util = Util
+    }
+
     override fun onSubscribe(d: Disposable) {}
 
     override fun onSuccess(buses: List<Bus>) {
@@ -46,9 +50,5 @@ class BusObserver(private val activity: BusMapActivity, private val centerMap: B
     override fun onError(throwable: Throwable) {
         util.handleConnectOrParserException(throwable, view)
         Timber.e(throwable, "Error while loading buses")
-    }
-
-    companion object {
-        private val util = Util
     }
 }
