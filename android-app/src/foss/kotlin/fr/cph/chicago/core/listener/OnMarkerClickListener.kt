@@ -32,6 +32,7 @@ import fr.cph.chicago.core.model.marker.MarkerDataHolder
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
+import io.reactivex.android.schedulers.AndroidSchedulers
 
 @SuppressLint("CheckResult")
 class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, private val nearbyFragment: NearbyFragment) : com.mapbox.mapboxsdk.maps.MapboxMap.OnMarkerClickListener {
@@ -59,7 +60,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
 
     private fun loadTrainArrivals(trainTrainStation: TrainStation) {
         nearbyFragment.slidingUpAdapter.updateTitleTrain(trainTrainStation.name)
-        TrainService.loadStationTrainArrival(trainTrainStation.id)
+        trainService.loadStationTrainArrival(trainTrainStation.id)
             .onErrorReturn { TrainArrival.buildEmptyTrainArrival() }
             .subscribe { result -> nearbyFragment.slidingUpAdapter.addTrainStation(result) }
     }
@@ -67,20 +68,25 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
     private fun loadBusArrivals(busStop: BusStop) {
         nearbyFragment.slidingUpAdapter.updateTitleBus(busStop.name)
         busService.loadBusArrivals(busStop)
-            .subscribe { result ->
+            .map { busArrivals ->
                 val busArrivalRouteDTO = BusArrivalRouteDTO(BusArrivalRouteDTO.busComparator)
-                result.forEach { busArrivalRouteDTO.addBusArrival(it) }
-                nearbyFragment.slidingUpAdapter.addBusArrival(busArrivalRouteDTO)
+                busArrivals.forEach { busArrivalRouteDTO.addBusArrival(it) }
+                busArrivalRouteDTO
             }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { busArrivalRouteDTO -> nearbyFragment.slidingUpAdapter.addBusArrival(busArrivalRouteDTO) }
     }
 
     private fun loadBikes(bikeStation: BikeStation) {
         nearbyFragment.slidingUpAdapter.updateTitleBike(bikeStation.name)
-        BikeService.findBikeStation(bikeStation.id).subscribe { result -> nearbyFragment.slidingUpAdapter.addBike(result) }
+        bikeService.findBikeStation(bikeStation.id)
+            .subscribe { result -> nearbyFragment.slidingUpAdapter.addBike(result) }
 
     }
 
     companion object {
+        private val trainService = TrainService
         private val busService = BusService
+        private val bikeService = BikeService
     }
 }
