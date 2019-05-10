@@ -251,7 +251,7 @@ object BusService {
 
     fun extractBusRouteFavorites(busFavorites: List<String>): List<String> {
         return busFavorites
-            .map { Util.decodeBusFavorite(it) }
+            .map { util.decodeBusFavorite(it) }
             .map { it.routeId }
             .distinct()
     }

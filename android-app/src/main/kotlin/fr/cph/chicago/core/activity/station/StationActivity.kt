@@ -36,7 +36,6 @@ import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.util.Color
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
 abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentView) {
@@ -69,7 +68,7 @@ abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentVi
     @SuppressLint("CheckResult")
     fun loadGoogleStreetImage(position: Position) {
         if (streetViewImage.tag == TAG_DEFAULT || streetViewImage.tag == TAG_ERROR) {
-            GoogleStreetClient.connect(position.latitude, position.longitude)
+            googleStreetClient.connect(position.latitude, position.longitude)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doFinally { streetViewProgressBar.visibility = View.GONE }
                 .subscribe(
@@ -129,5 +128,6 @@ abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentVi
         private const val TAG_ERROR = "error"
         private const val TAG_DEFAULT = "default"
         private const val TAG_STREET_VIEW = "streetview"
+        private val googleStreetClient = GoogleStreetClient
     }
 }

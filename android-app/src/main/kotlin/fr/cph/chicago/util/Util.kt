@@ -56,6 +56,7 @@ object Util {
 
     private val PATTERN = Pattern.compile("(\\d{1,3})")
     private val nextGeneratedId = AtomicInteger(1)
+    private val snackBarUtil = SnackBarUtil
 
     val dpToPixel16: Int by lazy {
         convertDpToPixel(16)
@@ -201,7 +202,7 @@ object Util {
         if (forceShow) {
             Snackbar.make(view, text, Snackbar.LENGTH_LONG).show()
         } else {
-            SnackBarUtil.smartShow(view, text)
+            snackBarUtil.smartShow(view, text)
         }
     }
 

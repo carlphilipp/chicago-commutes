@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit
 
 object RateUtil {
 
+    private val util = Util
     private val preferenceService = PreferenceService
 
     fun rateThisApp(activity: Activity) {
@@ -54,7 +55,7 @@ object RateUtil {
     }
 
     private fun showRateSnackBar(view: View, activity: Activity) {
-        val background = Util.getAttribute(view.context, R.attr.colorAccent)
+        val background = util.getAttribute(view.context, R.attr.colorAccent)
         val textColor = ContextCompat.getColor(App.instance, R.color.greenLineDark)
         val snackBar1 = Snackbar.make(view, "Do you like this app?", Snackbar.LENGTH_LONG)
             .setAction("YES") { view1 ->

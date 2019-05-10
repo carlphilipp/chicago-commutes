@@ -200,9 +200,9 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<Stat
 
     companion object {
 
-        private val rateUtil: RateUtil = RateUtil
-        private val util: Util = Util
-        private val preferenceService: PreferenceService = PreferenceService
+        private val rateUtil = RateUtil
+        private val util = Util
+        private val preferenceService = PreferenceService
 
         /**
          * Returns a new service of this fragment for the given section number.

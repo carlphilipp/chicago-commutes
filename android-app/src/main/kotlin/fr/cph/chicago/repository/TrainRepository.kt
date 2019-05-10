@@ -46,6 +46,7 @@ object TrainRepository {
     // https://data.cityofchicago.org/Transportation/CTA-System-Information-List-of-L-Stops/8pix-ypme
     private const val TRAIN_FILE_PATH = "train_stops.csv"
 
+    private val util = Util
     private val parser: CsvParser
 
     init {
@@ -189,7 +190,7 @@ object TrainRepository {
         } catch (e: IOException) {
             Timber.e(e, "Error while reading csv file")
         } finally {
-            Util.closeQuietly(inputStreamReader)
+            util.closeQuietly(inputStreamReader)
         }
         return Triple(stations, stops, stationsOrderByLine)
     }
@@ -212,7 +213,7 @@ object TrainRepository {
             Timber.e(e, "Error while reading train pattern csv file")
             listOf()
         } finally {
-            Util.closeQuietly(inputStreamReader)
+            util.closeQuietly(inputStreamReader)
         }
     }
 

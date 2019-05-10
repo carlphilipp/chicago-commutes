@@ -31,8 +31,10 @@ import java.io.InputStream
  */
 object DivvyClient {
 
+    private val httpClient = HttpClient
+
     @Throws(ConnectException::class)
     fun getBikeStations(): InputStream {
-        return HttpClient.connect(DIVYY_URL)
+        return httpClient.connect(DIVYY_URL)
     }
 }

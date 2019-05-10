@@ -88,16 +88,16 @@ class BusFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<Sta
         when (state.busRoutesStatus) {
             Status.SUCCESS -> showSuccessLayout()
             Status.FAILURE -> {
-                Util.showSnackBar(swipeRefreshLayout, state.busRoutesErrorMessage)
+                util.showSnackBar(swipeRefreshLayout, state.busRoutesErrorMessage)
                 showSuccessLayout()
             }
             Status.FULL_FAILURE -> {
-                Util.showSnackBar(swipeRefreshLayout, state.busRoutesErrorMessage)
+                util.showSnackBar(swipeRefreshLayout, state.busRoutesErrorMessage)
                 showFailureLayout()
             }
             else -> {
                 Timber.d("Unknown status on new state")
-                Util.showSnackBar(swipeRefreshLayout, state.busRoutesErrorMessage)
+                util.showSnackBar(swipeRefreshLayout, state.busRoutesErrorMessage)
                 showFailureLayout()
             }
         }
@@ -145,6 +145,8 @@ class BusFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<Sta
     }
 
     companion object {
+
+        private val util = Util
 
         /**
          * Returns a new instance of this fragment for the given section number.

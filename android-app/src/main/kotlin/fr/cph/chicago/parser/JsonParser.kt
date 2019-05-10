@@ -34,6 +34,8 @@ import java.io.InputStream
  * @version 1
  */
 object JsonParser {
+
+    private val util = Util
     private val mapper = jacksonObjectMapper()
 
     init {
@@ -49,7 +51,7 @@ object JsonParser {
         } catch (e: Exception) {
             throw ParserException(e)
         } finally {
-            Util.closeQuietly(stream)
+            util.closeQuietly(stream)
         }
     }
 }

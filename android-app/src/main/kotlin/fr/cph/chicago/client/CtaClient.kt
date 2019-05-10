@@ -61,17 +61,18 @@ object CtaClient {
     private const val QUERY_PARAM_JSON_ALERT = "?outputType=json"
 
     private val jsonParser = JsonParser
+    private val httpClient = HttpClient
 
     fun <T> get(requestType: CtaRequestType, params: MultiValuedMap<String, String>, clazz: Class<T>): T {
         val address = address(requestType, params)
-        val inputStream = HttpClient.connect(address)
+        val inputStream = httpClient.connect(address)
         return jsonParser.parse(inputStream, clazz)
     }
 
     fun <T> getRx(requestType: CtaRequestType, params: MultiValuedMap<String, String>, clazz: Class<T>): Single<T> {
         return Single.fromCallable { address(requestType, params) }
             .observeOn(Schedulers.io())
-            .flatMap { res -> HttpClient.connectRx(res) }
+            .flatMap { res -> httpClient.connectRx(res) }
             .observeOn(Schedulers.computation())
             .map { inputStream -> jsonParser.parse(inputStream, clazz) }
             .subscribeOn(Schedulers.computation())
@@ -96,4 +97,5 @@ object CtaClient {
             .flatMap { entry -> entry.value.map<String?, String> { value -> "&${entry.key}=$value" } }
             .joinToString(separator = StringUtils.EMPTY)
     }
+
 }

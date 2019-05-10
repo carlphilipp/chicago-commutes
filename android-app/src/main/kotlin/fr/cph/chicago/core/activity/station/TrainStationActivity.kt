@@ -29,7 +29,6 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatCheckBox
-import butterknife.BindDimen
 import butterknife.BindDrawable
 import butterknife.BindView
 import fr.cph.chicago.R
@@ -73,17 +72,6 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
     lateinit var walkContainer: LinearLayout
     @BindView(R.id.activity_train_station_details)
     lateinit var stopsView: LinearLayout
-
-    @JvmField
-    @BindDimen(R.dimen.activity_station_street_map_height)
-    internal var height: Int = 0
-    @JvmField
-    @BindDimen(R.dimen.activity_station_stops_line3_padding_left)
-    internal var line3PaddingLeft: Int = 0
-    @JvmField
-    @BindDimen(R.dimen.activity_station_stops_line3_padding_top)
-    internal var line3PaddingTop: Int = 0
-
     @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
     lateinit var arrowBackWhite: Drawable
 
@@ -127,7 +115,6 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
         super.onResume()
         store.subscribe(this)
         store.dispatch(TrainStationAction(trainStation.id))
-        swipeRefreshLayout.isRefreshing = true
     }
 
     override fun newState(state: State) {

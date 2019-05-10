@@ -38,6 +38,9 @@ object GoogleStreetClient {
     private const val HEIGHT = 300
     private const val FOV = 120
 
+    private val util = Util
+    private val httpClient = HttpClient
+
     fun connect(latitude: Double, longitude: Double): Single<Drawable> {
         val address = "$GOOGLE_STREET_VIEW_URL?key=${store.state.googleStreetKey}&sensor=false&size=${WIDTH}x$HEIGHT&fov=$FOV&location=$latitude,$longitude&source=outdoor"
         return connectUrl(address)
@@ -50,13 +53,13 @@ object GoogleStreetClient {
      * @return a drawable map
      */
     private fun connectUrl(address: String): Single<Drawable> {
-        return HttpClient.connectRx(address)
+        return httpClient.connectRx(address)
             .observeOn(Schedulers.computation())
             .map { inputStream ->
                 try {
                     Drawable.createFromStream(inputStream, "src name")
                 } finally {
-                    Util.closeQuietly(inputStream)
+                    util.closeQuietly(inputStream)
                 }
             }
     }

@@ -61,7 +61,7 @@ class TrainListStationActivity : ButterKnifeActivity(R.layout.activity_train_sta
         trainLine = TrainLine.fromString(lineParam)
         title = trainLine.toStringWithLine()
 
-        Util.setWindowsColor(this, toolbar, trainLine)
+        util.setWindowsColor(this, toolbar, trainLine)
         toolbar.title = trainLine.toStringWithLine()
 
         toolbar.navigationIcon = arrowBackWhite
@@ -79,5 +79,9 @@ class TrainListStationActivity : ButterKnifeActivity(R.layout.activity_train_sta
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
         if (::lineParam.isInitialized) savedInstanceState.putString(bundleTrainLine, lineParam)
         super.onSaveInstanceState(savedInstanceState)
+    }
+
+    companion object {
+        private val util = Util
     }
 }

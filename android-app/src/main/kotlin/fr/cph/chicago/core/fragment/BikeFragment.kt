@@ -91,16 +91,16 @@ class BikeFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<St
         when (state.bikeStationsStatus) {
             Status.SUCCESS, Status.ADD_FAVORITES, Status.REMOVE_FAVORITES -> showSuccessLayout()
             Status.FAILURE -> {
-                Util.showSnackBar(swipeRefreshLayout, state.bikeStationsErrorMessage)
+                util.showSnackBar(swipeRefreshLayout, state.bikeStationsErrorMessage)
                 showSuccessLayout()
             }
             Status.FULL_FAILURE -> {
-                Util.showSnackBar(swipeRefreshLayout, state.bikeStationsErrorMessage)
+                util.showSnackBar(swipeRefreshLayout, state.bikeStationsErrorMessage)
                 showFailureLayout()
             }
             else -> {
                 Timber.d("Unknown status on new state")
-                Util.showSnackBar(swipeRefreshLayout, state.bikeStationsErrorMessage)
+                util.showSnackBar(swipeRefreshLayout, state.bikeStationsErrorMessage)
                 showFailureLayout()
             }
         }
@@ -148,6 +148,8 @@ class BikeFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<St
     }
 
     companion object {
+
+        private val util = Util
 
         /**
          * Returns a new instance of this fragment for the given section number.

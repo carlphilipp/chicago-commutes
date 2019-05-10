@@ -39,12 +39,16 @@ class BusObserver(private val activity: BusMapActivity, private val centerMap: B
                 activity.centerMapOnBus(buses)
             }
         } else {
-            Util.showSnackBar(view, R.string.message_no_bus_found)
+            util.showSnackBar(view, R.string.message_no_bus_found)
         }
     }
 
     override fun onError(throwable: Throwable) {
-        Util.handleConnectOrParserException(throwable, view)
+        util.handleConnectOrParserException(throwable, view)
         Timber.e(throwable, "Error while loading buses")
+    }
+
+    companion object {
+        private val util = Util
     }
 }

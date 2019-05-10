@@ -95,7 +95,7 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
 
     protected fun centerMap(points: List<LatLng>) {
         Single.defer { Single.just(points) }
-            .map { latLngs -> MapUtil.getBounds(latLngs.map { latLng -> Position(latLng.latitude, latLng.longitude) }) }
+            .map { latLngs -> mapUtil.getBounds(latLngs.map { latLng -> Position(latLng.latitude, latLng.longitude) }) }
             .map { pair ->
                 val latLngBounds = LatLngBounds.Builder()
                     .include(LatLng(pair.first.latitude, pair.first.longitude))
@@ -164,6 +164,7 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
         }
     }
 
+    @SuppressLint("CheckResult")
     protected fun update(feature: Feature, id: String, view: View) {
         Single.defer { Single.just(BitmapGenerator.generate(view)) }
             .subscribeOn(Schedulers.computation())
@@ -208,5 +209,7 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
 
     companion object {
         protected const val DEFAULT_EXTRAPOLATION = 100
+
+        private val mapUtil = MapUtil
     }
 }

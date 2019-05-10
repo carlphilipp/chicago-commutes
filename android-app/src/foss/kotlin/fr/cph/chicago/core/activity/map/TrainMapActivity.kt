@@ -97,7 +97,7 @@ class TrainMapActivity : FragmentMapActivity() {
             loadActivityData()
             false
         }
-        Util.setWindowsColor(this, toolbar, trainLine)
+        util.setWindowsColor(this, toolbar, trainLine)
         toolbar.title = trainLine.toStringWithLine()
     }
 
@@ -246,7 +246,7 @@ class TrainMapActivity : FragmentMapActivity() {
                 { view -> update(feature, runNumber, view) },
                 { error ->
                     Timber.e(error)
-                    Util.showSnackBar(layout, R.string.message_no_data)
+                    util.showSnackBar(layout, R.string.message_no_data)
                     showProgress(false)
                 })
     }
@@ -298,7 +298,7 @@ class TrainMapActivity : FragmentMapActivity() {
                     addStationOnMap(pair.second)
                     drawPolyline(listOf(pair.first))
                     if (featuresTrain.features() != null && featuresTrain.features()!!.isEmpty()) {
-                        Util.showSnackBar(layout, R.string.message_no_train_found)
+                        util.showSnackBar(layout, R.string.message_no_train_found)
                     }
                     pair.first.points
                 })
@@ -306,7 +306,7 @@ class TrainMapActivity : FragmentMapActivity() {
                     { points -> centerMap(points) },
                     { error ->
                         Timber.e(error)
-                        Util.showSnackBar(layout, R.string.message_error_while_loading_data)
+                        util.showSnackBar(layout, R.string.message_error_while_loading_data)
                     })
         } else {
             featuresTrains
@@ -315,12 +315,12 @@ class TrainMapActivity : FragmentMapActivity() {
                     { featureCollection ->
                         addVehicleFeatureCollection(featureCollection)
                         if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
-                            Util.showSnackBar(layout, R.string.message_no_train_found)
+                            util.showSnackBar(layout, R.string.message_no_train_found)
                         }
                     },
                     { error ->
                         Timber.e(error)
-                        Util.showSnackBar(layout, R.string.message_error_while_loading_data)
+                        util.showSnackBar(layout, R.string.message_error_while_loading_data)
                     })
         }
     }
@@ -361,5 +361,6 @@ class TrainMapActivity : FragmentMapActivity() {
 
     companion object {
         private val trainService = TrainService
+        private val util = Util
     }
 }

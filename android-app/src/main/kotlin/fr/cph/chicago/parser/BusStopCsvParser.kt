@@ -32,6 +32,7 @@ object BusStopCsvParser {
     private const val STOP_FILE_PATH = "bus_stops.txt"
 
     private val parser: CsvParser
+    private val util = Util
 
     init {
         val settings = CsvParserSettings()
@@ -49,7 +50,7 @@ object BusStopCsvParser {
         } catch (e: IOException) {
             Timber.e(e, "Error while parsing CSV")
         } finally {
-            Util.closeQuietly(inputStreamReader)
+            util.closeQuietly(inputStreamReader)
         }
     }
 }

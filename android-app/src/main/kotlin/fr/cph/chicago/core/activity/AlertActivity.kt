@@ -97,7 +97,7 @@ class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
                 },
                 { error ->
                     Timber.e(error, "Error while refreshing data")
-                    Util.showOopsSomethingWentWrong(listView)
+                    util.showOopsSomethingWentWrong(listView)
                     hideAnimation()
                 })
     }

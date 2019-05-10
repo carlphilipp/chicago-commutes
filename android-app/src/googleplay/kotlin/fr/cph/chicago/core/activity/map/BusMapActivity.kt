@@ -113,7 +113,7 @@ class BusMapActivity : FragmentMapActivity() {
             false
         }
 
-        Util.setWindowsColor(this, toolbar, TrainLine.NA)
+        util.setWindowsColor(this, toolbar, TrainLine.NA)
         toolbar.title = busRouteId
     }
 
@@ -272,7 +272,7 @@ class BusMapActivity : FragmentMapActivity() {
                     if (result != null) {
                         drawPattern(result)
                     } else {
-                        Util.showNetworkErrorMessage(layout)
+                        util.showNetworkErrorMessage(layout)
                     }
                 }
         }
@@ -280,5 +280,6 @@ class BusMapActivity : FragmentMapActivity() {
 
     companion object {
         private val busService: BusService = BusService
+        private val util = Util
     }
 }

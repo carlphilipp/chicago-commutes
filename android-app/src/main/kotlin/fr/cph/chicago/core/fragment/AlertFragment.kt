@@ -99,11 +99,11 @@ class AlertFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<S
             }
             Status.FAILURE -> {
                 swipeRefreshLayout.isRefreshing = false
-                Util.showSnackBar(swipeRefreshLayout, state.alertErrorMessage)
+                util.showSnackBar(swipeRefreshLayout, state.alertErrorMessage)
             }
             Status.FULL_FAILURE -> {
                 swipeRefreshLayout.isRefreshing = false
-                Util.showSnackBar(swipeRefreshLayout, state.alertErrorMessage)
+                util.showSnackBar(swipeRefreshLayout, state.alertErrorMessage)
                 showFailureLayout()
             }
             else -> Timber.d("Unknown status on new state")
@@ -164,6 +164,8 @@ class AlertFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<S
     }
 
     companion object {
+
+        private val util = Util
 
         /**
          * Returns a new instance of this fragment for the given section number.

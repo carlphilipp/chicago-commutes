@@ -51,7 +51,7 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading), StoreSubscriber<Stat
     @BindView(R.id.retry_button)
     lateinit var retryButton: Button
 
-    private val realmConfig: RealmConfig = RealmConfig
+    private val realmConfig = RealmConfig
 
     override fun create(savedInstanceState: Bundle?) {
         store.subscribe(this)

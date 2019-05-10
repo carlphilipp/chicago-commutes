@@ -41,9 +41,6 @@ import fr.cph.chicago.util.LayoutUtil
  */
 class TrainAdapter(line: TrainLine) : BaseAdapter() {
 
-    private val trainService = TrainService
-    private val layoutUtil = LayoutUtil
-
     private val trainStations: List<TrainStation> = trainService.getStationsForLine(line)
 
     override fun getCount(): Int {
@@ -87,4 +84,9 @@ class TrainAdapter(line: TrainLine) : BaseAdapter() {
     }
 
     private class ViewHolder(val stationNameView: TextView, val stationColorView: LinearLayout)
+
+    companion object {
+        private val trainService = TrainService
+        private val layoutUtil = LayoutUtil
+    }
 }

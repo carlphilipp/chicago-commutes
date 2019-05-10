@@ -75,14 +75,13 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
     @BindView(R.id.arrivals)
     lateinit var arrivalsTextView: TextView
 
-    private var busArrivals: BusArrivalStopDTO = BusArrivalStopDTO()
     private lateinit var busRouteId: String
     private lateinit var bound: String
     private lateinit var boundTitle: String
     private var busStopId: Int = 0
     private lateinit var busStopName: String
     private lateinit var busRouteName: String
-    private lateinit var busStopArrivalsAction: BusStopArrivalsAction
+    private lateinit var action: BusStopArrivalsAction
 
     override fun create(savedInstanceState: Bundle?) {
         busStopId = intent.getIntExtra(getString(R.string.bundle_bus_stop_id), 0)
@@ -91,7 +90,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
         boundTitle = intent.getStringExtra(getString(R.string.bundle_bus_bound_title))
         busRouteName = intent.getStringExtra(getString(R.string.bundle_bus_route_name))
 
-        busStopArrivalsAction = BusStopArrivalsAction(
+        action = BusStopArrivalsAction(
             busRouteId = busRouteId,
             busStopId = busStopId,
             bound = bound,
@@ -115,8 +114,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
     override fun onResume() {
         super.onResume()
         store.subscribe(this)
-        store.dispatch(busStopArrivalsAction)
-        swipeRefreshLayout.isRefreshing = true
+        store.dispatch(action)
     }
 
     override fun newState(state: State) {
@@ -148,7 +146,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
         if (position.latitude == 0.0 && position.longitude == 0.0) {
             loadStopDetailsAndStreetImage()
         } else {
-            store.dispatch(busStopArrivalsAction)
+            store.dispatch(action)
             loadGoogleStreetImage(position)
         }
     }
@@ -211,7 +209,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
         busRouteName = savedInstanceState.getString(getString(R.string.bundle_bus_route_name))
             ?: StringUtils.EMPTY
         position = savedInstanceState.getParcelable(getString(R.string.bundle_position)) as Position
-        busStopArrivalsAction = BusStopArrivalsAction(
+        action = BusStopArrivalsAction(
             busRouteId = busRouteId,
             busStopId = busStopId,
             bound = bound,
@@ -238,7 +236,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
      * Draw arrivals in current layout
      */
     private fun refreshActivity(busArrivals: BusArrivalStopDTO) {
-        this.busArrivals = busArrivals
+        //this.busArrivals = busArrivals
         cleanLayout()
         if (busArrivals.isEmpty()) {
             destinationTextView.text = App.instance.getString(R.string.bus_activity_no_service)
@@ -255,7 +253,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
                     text = it.key
                     id = util.generateViewId()
                     setSingleLine(true)
-                    layoutParams = LayoutUtil.createLineBelowLayoutParams(idBelowTitle)
+                    layoutParams = layoutUtil.createLineBelowLayoutParams(idBelowTitle)
                     this
                 }
                 idBelowTitle = belowTitle.id
@@ -264,7 +262,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
                     text = it.value.joinToString(separator = " ") { util.formatArrivalTime(it) }
                     id = util.generateViewId()
                     setSingleLine(true)
-                    layoutParams = LayoutUtil.createLineBelowLayoutParams(idBellowArrival)
+                    layoutParams = layoutUtil.createLineBelowLayoutParams(idBellowArrival)
                     this
                 }
                 idBellowArrival = belowArrival.id
@@ -307,6 +305,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
     }
 
     companion object {
+        private val layoutUtil = LayoutUtil
         private val busService = BusService
         private val util = Util
         private val preferenceService = PreferenceService

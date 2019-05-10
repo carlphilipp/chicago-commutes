@@ -54,7 +54,6 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.rx.BusesFunction
-import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
@@ -76,9 +75,6 @@ class BusMapActivity : FragmentMapActivity() {
     @BindString(R.string.bundle_bus_bounds)
     lateinit var bundleBusBounds: String
 
-    private val rxUtil: RxUtil = RxUtil
-    private val busService: BusService = BusService
-
     private var busId: Int = 0
     private lateinit var busRouteId: String
     private lateinit var bounds: Array<String>
@@ -95,9 +91,7 @@ class BusMapActivity : FragmentMapActivity() {
             busRouteId = intent.getStringExtra(bundleBusRouteId)
             bounds = intent.getStringArrayExtra(bundleBusBounds)
         }
-
         initMap()
-
         setToolbar()
     }
 
@@ -107,7 +101,7 @@ class BusMapActivity : FragmentMapActivity() {
             loadBuses()
             false
         }
-        Util.setWindowsColor(this, toolbar, TrainLine.NA)
+        util.setWindowsColor(this, toolbar, TrainLine.NA)
         toolbar.title = busRouteId
     }
 
@@ -175,12 +169,12 @@ class BusMapActivity : FragmentMapActivity() {
     override fun onMapClick(point: LatLng) {
         val finalPoint = map.projection.toScreenLocation(point)
         val infoFeatures = map.queryRenderedFeatures(finalPoint, VEHICLE_INFO_LAYER_ID)
-        if (!infoFeatures.isEmpty()) {
+        if (infoFeatures.isNotEmpty()) {
             val feature = infoFeatures[0]
             clickOnVehicleInfo(feature)
         } else {
             val markerFeatures = map.queryRenderedFeatures(toRect(finalPoint), VEHICLE_LAYER_ID)
-            if (!markerFeatures.isEmpty()) {
+            if (markerFeatures.isNotEmpty()) {
                 val title = markerFeatures[0].getStringProperty(PROPERTY_TITLE)
                 val featureList = vehicleFeatureCollection!!.features()
                 for (i in featureList!!.indices) {
@@ -208,7 +202,7 @@ class BusMapActivity : FragmentMapActivity() {
                 { view -> update(feature, id, view) },
                 { error ->
                     Timber.e(error)
-                    Util.showSnackBar(layout, R.string.message_no_data)
+                    util.showSnackBar(layout, R.string.message_no_data)
                     showProgress(false)
                 })
     }
@@ -225,7 +219,7 @@ class BusMapActivity : FragmentMapActivity() {
                 { view -> update(feature, id, view) },
                 { error ->
                     Timber.e(error)
-                    Util.showSnackBar(layout, R.string.message_no_data)
+                    util.showSnackBar(layout, R.string.message_no_data)
                     showProgress(false)
                 })
     }
@@ -289,12 +283,12 @@ class BusMapActivity : FragmentMapActivity() {
                             drawPolyline(result.map { pair -> pair.first })
                             this.markerOptions = result.flatMap { pair -> pair.second }
                         } else {
-                            Util.showSnackBar(layout, R.string.message_no_pattern_found)
+                            util.showSnackBar(layout, R.string.message_no_pattern_found)
                         }
                     },
                     { error ->
                         Timber.e(error)
-                        Util.handleConnectOrParserException(error, layout)
+                        util.handleConnectOrParserException(error, layout)
                     })
         }
     }
@@ -320,12 +314,12 @@ class BusMapActivity : FragmentMapActivity() {
                 { featureCollection: FeatureCollection ->
                     addVehicleFeatureCollection(featureCollection)
                     if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
-                        Util.showSnackBar(layout, R.string.message_no_bus_found)
+                        util.showSnackBar(layout, R.string.message_no_bus_found)
                     }
                 },
                 { error ->
                     Timber.e(error)
-                    Util.handleConnectOrParserException(error, layout)
+                    util.handleConnectOrParserException(error, layout)
                 })
     }
 
@@ -335,5 +329,10 @@ class BusMapActivity : FragmentMapActivity() {
 
     private val redIcon: Icon by lazy {
         IconFactory.getInstance(this@BusMapActivity).fromResource(R.drawable.red_marker)
+    }
+
+    companion object {
+        private val util = Util
+        private val busService: BusService = BusService
     }
 }

@@ -34,8 +34,8 @@ abstract class AFunction {
 
     protected fun addParams(container: RelativeLayout, size: Int) {
         val params = container.layoutParams
-        params.width = Util.convertDpToPixel(200)
-        params.height = (Util.convertDpToPixel(21) * size) + Util.convertDpToPixel(30)
+        params.width = util.convertDpToPixel(200)
+        params.height = (util.convertDpToPixel(21) * size) + util.convertDpToPixel(30)
         container.layoutParams = params
     }
 
@@ -46,5 +46,9 @@ abstract class AFunction {
         val title = view.findViewById(R.id.title) as TextView
         title.text = destination
         return view
+    }
+
+    companion object {
+        private val util = Util
     }
 }

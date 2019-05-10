@@ -39,7 +39,6 @@ import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.TrainStationPattern
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.model.marker.RefreshTrainMarkers
-import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.rx.TrainEtaObserver
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.MapUtil
@@ -61,8 +60,6 @@ class TrainMapActivity : FragmentMapActivity() {
     @BindString(R.string.bundle_train_line)
     lateinit var bundleTrainLine: String
 
-    private val trainService = TrainService
-    private val observableUtil: RxUtil = RxUtil
     private var views: MutableMap<Marker, View> = hashMapOf()
 
     private lateinit var line: String
@@ -101,7 +98,7 @@ class TrainMapActivity : FragmentMapActivity() {
         }
 
         val trainLine = TrainLine.fromXmlString(line)
-        Util.setWindowsColor(this, toolbar, trainLine)
+        util.setWindowsColor(this, toolbar, trainLine)
         toolbar.title = trainLine.toStringWithLine()
     }
 
@@ -250,13 +247,13 @@ class TrainMapActivity : FragmentMapActivity() {
                         centerMapOnTrain(trains)
                     }
                 } else {
-                    Util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_no_train_found)
+                    util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_no_train_found)
                 }
                 Any()
             }).subscribe(
                 {},
                 { throwable ->
-                    Util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_error_while_loading_data)
+                    util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_error_while_loading_data)
                     Timber.e(throwable, "Error not handled")
                 }
             )
@@ -265,10 +262,10 @@ class TrainMapActivity : FragmentMapActivity() {
                 if (trains != null) {
                     drawTrains(trains)
                     if (trains.isEmpty()) {
-                        Util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_no_train_found)
+                        util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_no_train_found)
                     }
                 } else {
-                    Util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_error_while_loading_data)
+                    util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_error_while_loading_data)
                 }
             }
         }
@@ -286,5 +283,10 @@ class TrainMapActivity : FragmentMapActivity() {
             TrainLine.YELLOW -> R.drawable.yellow_marker
             TrainLine.NA -> R.drawable.red_marker_no_shade
         }
+    }
+
+    companion object {
+        private val util = Util
+        private val trainService = TrainService
     }
 }

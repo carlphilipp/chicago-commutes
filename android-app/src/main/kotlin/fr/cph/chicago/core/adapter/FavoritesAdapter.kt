@@ -60,11 +60,7 @@ import java.util.Calendar
  */
 class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder>() {
 
-    private val textAppearance: Int = Util.getAttribute(activity, R.attr.textAppearance)
-
-    private val util = Util
-    private val favorites = Favorites
-    private val layoutUtil = LayoutUtil
+    private val textAppearance: Int = util.getAttribute(activity, R.attr.textAppearance)
     private var lastUpdate: String = StringUtils.EMPTY
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoritesViewHolder {
@@ -197,7 +193,14 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
     }
 
     fun update() {
-        lastUpdate = TimeUtil.formatTimeDifference(store.state.lastFavoritesUpdate, Calendar.getInstance().time)
+        lastUpdate = timeUtil.formatTimeDifference(store.state.lastFavoritesUpdate, Calendar.getInstance().time)
         notifyDataSetChanged()
+    }
+
+    companion object {
+        private val util = Util
+        private val favorites = Favorites
+        private val layoutUtil = LayoutUtil
+        private val timeUtil = TimeUtil
     }
 }

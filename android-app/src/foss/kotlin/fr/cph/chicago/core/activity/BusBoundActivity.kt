@@ -98,8 +98,6 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
     @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
     lateinit var arrowBackWhite: Drawable
 
-    private val util: Util = Util
-
     private lateinit var busRouteId: String
     private lateinit var busRouteName: String
     private lateinit var bound: String
@@ -196,7 +194,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
         busService.loadBusPattern(busRouteId, bound)
             .observeOn(Schedulers.computation())
             .map { busPattern: BusPattern ->
-                val pair = MapUtil.getBounds(busPattern.busStopsPatterns.map { it.position })
+                val pair = mapUtil.getBounds(busPattern.busStopsPatterns.map { it.position })
                 val latLngBounds = LatLngBounds.Builder()
                     .include(LatLng(pair.first.latitude, pair.first.longitude))
                     .include(LatLng(pair.second.latitude, pair.second.longitude))
@@ -263,5 +261,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
 
     companion object {
         private val busService = BusService
+        private val util = Util
+        private val mapUtil = MapUtil
     }
 }

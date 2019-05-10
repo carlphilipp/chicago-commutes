@@ -77,8 +77,6 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     @BindString(R.string.settings)
     lateinit var settings: String
 
-    private val rateUtil: RateUtil = RateUtil
-
     private var currentPosition: Int = 0
 
     private lateinit var drawerToggle: ActionBarDrawerToggle
@@ -253,5 +251,6 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
 
     companion object {
         private const val SELECTED_ID = "SELECTED_ID"
+        private val rateUtil: RateUtil = RateUtil
     }
 }

@@ -42,7 +42,7 @@ import fr.cph.chicago.util.Util
 
 class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
 
-    val textAppearance: Int = Util.getAttribute(nearbyFragment.activity!!, R.attr.textAppearance)
+    val textAppearance: Int = util.getAttribute(nearbyFragment.activity!!, R.attr.textAppearance)
 
     private var nbOfLine = intArrayOf(0)
 
@@ -98,8 +98,8 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
 
                 var newLine = true
                 for ((i, entry) in etas.entries.withIndex()) {
-                    val containParams = LayoutUtil.getInsideParams(newLine, i == etas.size - 1)
-                    val container = LayoutUtil.createTrainArrivalsLayout(textAppearance, containParams, entry, trainLine)
+                    val containParams = layoutUtil.getInsideParams(newLine, i == etas.size - 1)
+                    val container = layoutUtil.createTrainArrivalsLayout(textAppearance, containParams, entry, trainLine)
 
                     linearLayout.addView(container)
                     newLine = false
@@ -122,14 +122,14 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
             nbOfLine = intArrayOf(0)
 
             busArrivalRouteDTO.entries.forEach { entry ->
-                val stopNameTrimmed = Util.trimBusStopNameIfNeeded(entry.key)
+                val stopNameTrimmed = util.trimBusStopNameIfNeeded(entry.key)
                 val boundMap = entry.value
 
                 var newLine = true
 
                 for ((i, entry2) in boundMap.entries.withIndex()) {
-                    val containParams = LayoutUtil.getInsideParams(newLine, i == boundMap.size - 1)
-                    val container = LayoutUtil.createFavoritesBusArrivalsLayout(textAppearance, containParams, stopNameTrimmed, BusDirection.fromString(entry2.key), entry2.value as MutableList<out BusArrival>)
+                    val containParams = layoutUtil.getInsideParams(newLine, i == boundMap.size - 1)
+                    val container = layoutUtil.createFavoritesBusArrivalsLayout(textAppearance, containParams, stopNameTrimmed, BusDirection.fromString(entry2.key), entry2.value as MutableList<out BusArrival>)
 
                     linearLayout.addView(container)
                     newLine = false
@@ -154,7 +154,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
          * it just mean that the view has been updated already with a faster request.
          */
         if (linearLayout.childCount == 0 || "error" == bikeStation.name) {
-            val bikeResultLayout = LayoutUtil.buildBikeFavoritesLayout(textAppearance, bikeStation)
+            val bikeResultLayout = layoutUtil.buildBikeFavoritesLayout(textAppearance, bikeStation)
             linearLayout.addView(bikeResultLayout)
             nearbyFragment.slidingUpPanelLayout.panelHeight = getSlidingPanelHeight(2)
             updatePanelState()
@@ -168,14 +168,14 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
         }
 
     private fun handleNoResults(linearLayout: LinearLayout) {
-        val containParams = LayoutUtil.getInsideParams(true, true)
-        val container = LayoutUtil.createFavoritesBusArrivalsNoResult(textAppearance, containParams)
+        val containParams = layoutUtil.getInsideParams(true, true)
+        val container = layoutUtil.createFavoritesBusArrivalsNoResult(textAppearance, containParams)
         linearLayout.addView(container)
     }
 
     private fun getSlidingPanelHeight(nbLine: Int): Int {
-        val line = Util.convertDpToPixel(LINE_HEIGHT)
-        val header = Util.convertDpToPixel(HEADER_HEIGHT)
+        val line = util.convertDpToPixel(LINE_HEIGHT)
+        val header = util.convertDpToPixel(HEADER_HEIGHT)
         return line * nbLine + header
     }
 
@@ -189,5 +189,8 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
     companion object {
         private const val LINE_HEIGHT = 27
         private const val HEADER_HEIGHT = 40
+
+        private val util = Util
+        private val layoutUtil = LayoutUtil
     }
 }

@@ -22,7 +22,6 @@ package fr.cph.chicago.core.activity.station
 import android.os.Bundle
 import android.widget.LinearLayout
 import android.widget.TextView
-import butterknife.BindString
 import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
@@ -61,13 +60,10 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
     @BindView(R.id.activity_bike_available_docks_value)
     lateinit var availableDocks: TextView
 
-    @BindString(R.string.bundle_bike_station)
-    lateinit var bundleBikeStation: String
-
     private lateinit var bikeStation: BikeStation
 
     override fun create(savedInstanceState: Bundle?) {
-        bikeStation = intent.extras?.getParcelable(bundleBikeStation)
+        bikeStation = intent.extras?.getParcelable(getString(R.string.bundle_bike_station))
             ?: BikeStation.buildUnknownStation()
         position = Position(bikeStation.latitude, bikeStation.longitude)
 
@@ -95,6 +91,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
     }
 
     override fun newState(state: State) {
+        Timber.d("New state")
         when (state.bikeStationsStatus) {
             Status.FAILURE, Status.FULL_FAILURE -> util.showSnackBar(swipeRefreshLayout, state.bikeStationsErrorMessage)
             Status.ADD_FAVORITES -> {
@@ -145,7 +142,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
             availableBikes.text = "?"
             availableBikes.setTextColor(Color.orange)
         } else {
-            availableBikes.text = Util.formatBikesDocksValues(bikeStation.availableBikes)
+            availableBikes.text = util.formatBikesDocksValues(bikeStation.availableBikes)
             val color = if (bikeStation.availableBikes == 0) Color.red else Color.green
             availableBikes.setTextColor(color)
         }
@@ -153,7 +150,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
             availableDocks.text = "?"
             availableDocks.setTextColor(Color.orange)
         } else {
-            availableDocks.text = Util.formatBikesDocksValues(bikeStation.availableDocks)
+            availableDocks.text = util.formatBikesDocksValues(bikeStation.availableDocks)
             val color = if (bikeStation.availableDocks == 0) Color.red else Color.green
             availableDocks.setTextColor(color)
         }
@@ -161,13 +158,13 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        bikeStation = savedInstanceState.getParcelable(bundleBikeStation)
+        bikeStation = savedInstanceState.getParcelable(getString(R.string.bundle_bike_station))
             ?: BikeStation.buildUnknownStation()
         position = Position(bikeStation.latitude, bikeStation.longitude)
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        if (::bikeStation.isInitialized) savedInstanceState.putParcelable(bundleBikeStation, bikeStation)
+        if (::bikeStation.isInitialized) savedInstanceState.putParcelable(getString(R.string.bundle_bike_station), bikeStation)
         super.onSaveInstanceState(savedInstanceState)
     }
 
