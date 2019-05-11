@@ -47,10 +47,8 @@ import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.TrainStationAction
 import fr.cph.chicago.redux.store
-import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Color
-import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
@@ -63,10 +61,6 @@ import java.util.Random
  * @version 1
  */
 class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSubscriber<State> {
-
-    companion object {
-        private val preferenceService = PreferenceService
-    }
 
     @BindView(android.R.id.content)
     lateinit var viewGroup: ViewGroup

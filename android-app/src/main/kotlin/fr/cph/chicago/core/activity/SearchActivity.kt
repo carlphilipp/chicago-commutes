@@ -36,9 +36,15 @@ import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.adapter.SearchAdapter
+import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.model.BusRoute
+import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.Function3
 import org.apache.commons.lang3.StringUtils
 
 class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
@@ -102,17 +108,6 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
         super.onResume()
     }
 
-    override fun startActivity(intent: Intent) {
-        // check if search intent
-        if (Intent.ACTION_SEARCH == intent.action) {
-            // FIXME: Make that code work like before
-            //val bikeOneStation = getIntent().extras?.getParcelableArrayList(bundleBikeStations)
-            //    ?: listOf<BikeStation>()
-            //intent.putParcelableArrayListExtra(bundleBikeStations, util.asParcelableArrayList(bikeOneStation))
-        }
-        super.startActivity(intent)
-    }
-
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         handleIntent(intent)
@@ -141,7 +136,6 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         query = savedInstanceState.getString(SearchManager.QUERY, StringUtils.EMPTY)
-        // FIXME: For some reason the query does not appear in the search view
         searchView.setQuery(query, true)
     }
 
@@ -158,8 +152,17 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
             val foundStations = trainService.searchStations(query)
             val foundBusRoutes = busService.searchBusRoutes(query)
             val foundBikeStations = bikeService.searchBikeStations(query)
-            searchAdapter.updateData(foundStations, foundBusRoutes, foundBikeStations)
-            searchAdapter.notifyDataSetChanged()
+            Single.zip(foundStations,
+                foundBusRoutes,
+                foundBikeStations,
+                Function3 { trains: List<TrainStation>, buses: List<BusRoute>, bikes: List<BikeStation> ->
+                    Triple(trains, buses, bikes)
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { result ->
+                    searchAdapter.updateData(result.first, result.second, result.third)
+                    searchAdapter.notifyDataSetChanged()
+                }
         }
     }
 

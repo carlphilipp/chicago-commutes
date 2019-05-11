@@ -28,11 +28,15 @@ import androidx.fragment.app.Fragment
 import butterknife.ButterKnife
 import butterknife.Unbinder
 import fr.cph.chicago.core.activity.MainActivity
+import fr.cph.chicago.util.Util
 
 abstract class Fragment(private val layout: Int) : Fragment() {
 
     companion object {
         private const val ARG_SECTION_NUMBER = "section_number"
+
+        @JvmStatic
+        protected val util = Util
 
         fun fragmentWithBundle(fragment: Fragment, sectionNumber: Int): Fragment {
             val args = Bundle()

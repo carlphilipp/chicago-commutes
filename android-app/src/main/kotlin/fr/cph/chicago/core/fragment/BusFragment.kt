@@ -37,7 +37,6 @@ import fr.cph.chicago.redux.BusRoutesAction
 import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
-import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
@@ -51,14 +50,6 @@ import timber.log.Timber
 class BusFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<State> {
 
     companion object {
-        private val util = Util
-
-        /**
-         * Returns a new instance of this fragment for the given section number.
-         *
-         * @param sectionNumber the section number
-         * @return the fragment
-         */
         fun newInstance(sectionNumber: Int): BusFragment {
             return fragmentWithBundle(BusFragment(), sectionNumber) as BusFragment
         }

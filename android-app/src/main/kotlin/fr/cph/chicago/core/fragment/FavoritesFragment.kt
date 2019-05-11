@@ -48,7 +48,6 @@ import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.task.RefreshTimingTask
 import fr.cph.chicago.util.RateUtil
-import fr.cph.chicago.util.Util
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
@@ -61,9 +60,7 @@ import timber.log.Timber
 class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<State> {
 
     companion object {
-
         private val rateUtil = RateUtil
-        private val util = Util
         private val preferenceService = PreferenceService
 
         /**

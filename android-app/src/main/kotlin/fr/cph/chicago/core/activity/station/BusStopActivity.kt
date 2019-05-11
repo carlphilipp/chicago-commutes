@@ -63,7 +63,6 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
     companion object {
         private val layoutUtil = LayoutUtil
         private val busService = BusService
-        private val preferenceService = PreferenceService
     }
 
     @BindView(R.id.left_layout)

@@ -33,14 +33,12 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.BaseActivity
 import fr.cph.chicago.repository.RealmConfig
 import fr.cph.chicago.service.PreferenceService
-import fr.cph.chicago.util.Util
 import java.io.File
 import java.util.Random
 
 class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
     companion object {
-        private val util = Util
         private val preferenceService = PreferenceService
         private val realmConfig = RealmConfig
 

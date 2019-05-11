@@ -230,12 +230,17 @@ object TrainService {
         }
     }
 
-    fun searchStations(query: String): List<TrainStation> {
-        return trainRepository.allStations.entries
-            .flatMap { mutableEntry -> mutableEntry.value }
-            .filter { station -> StringUtils.containsIgnoreCase(station.name, query) }
-            .distinct()
-            .sorted()
+    fun searchStations(query: String): Single<List<TrainStation>> {
+        return Single
+            .fromCallable {
+                trainRepository.allStations.entries
+                    .flatMap { mutableEntry -> mutableEntry.value }
+                    .filter { station -> StringUtils.containsIgnoreCase(station.name, query) }
+                    .distinct()
+                    .sorted()
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.computation())
     }
 
     private fun getTrainArrivals(params: MultiValuedMap<String, String>): SparseArray<TrainArrival> {

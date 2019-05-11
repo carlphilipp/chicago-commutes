@@ -27,6 +27,7 @@ import fr.cph.chicago.redux.store
 import fr.cph.chicago.rx.RxUtil.createSingleFromCallable
 import fr.cph.chicago.util.Util
 import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 import timber.log.Timber
 import java.util.concurrent.Callable
@@ -51,11 +52,15 @@ object BikeService {
             }
     }
 
-    fun searchBikeStations(query: String): List<BikeStation> {
-        return store.state.bikeStations
-            .filter { station -> containsIgnoreCase(station.name, query) || containsIgnoreCase(station.address, query) }
-            .distinct()
-            .sortedWith(util.bikeStationComparator)
+    fun searchBikeStations(query: String): Single<List<BikeStation>> {
+        return Single
+            .fromCallable {
+                store.state.bikeStations
+                    .filter { station -> containsIgnoreCase(station.name, query) || containsIgnoreCase(station.address, query) }
+                    .distinct()
+                    .sortedWith(util.bikeStationComparator)
+            }
+            .subscribeOn(Schedulers.computation())
     }
 
     fun createEmptyBikeStation(bikeStationId: Int): BikeStation {

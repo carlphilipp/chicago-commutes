@@ -49,10 +49,6 @@ import timber.log.Timber
  */
 class BikeStationActivity : StationActivity(R.layout.activity_bike_station), StoreSubscriber<State> {
 
-    companion object {
-        private val preferenceService = PreferenceService
-    }
-
     @BindView(R.id.map_container)
     lateinit var mapContainer: LinearLayout
     @BindView(R.id.walk_container)

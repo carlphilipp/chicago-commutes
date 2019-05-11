@@ -38,12 +38,6 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
 class TrainFragment : Fragment(R.layout.fragment_train) {
 
     companion object {
-        /**
-         * Returns a new instance of this fragment for the given section number.
-         *
-         * @param sectionNumber the section number
-         * @return a train fragment
-         */
         fun newInstance(sectionNumber: Int): TrainFragment {
             return fragmentWithBundle(TrainFragment(), sectionNumber) as TrainFragment
         }

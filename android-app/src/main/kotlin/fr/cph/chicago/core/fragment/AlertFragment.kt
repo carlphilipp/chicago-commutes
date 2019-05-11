@@ -40,7 +40,6 @@ import fr.cph.chicago.redux.AlertAction
 import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
-import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
@@ -54,14 +53,6 @@ import timber.log.Timber
 class AlertFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<State> {
 
     companion object {
-        private val util = Util
-
-        /**
-         * Returns a new instance of this fragment for the given section number.
-         *
-         * @param sectionNumber the section number
-         * @return a train fragment
-         */
         fun newInstance(sectionNumber: Int): AlertFragment {
             return fragmentWithBundle(AlertFragment(), sectionNumber) as AlertFragment
         }

@@ -225,11 +225,15 @@ object BusService {
         return BusRoute(routeId, routeName)
     }
 
-    fun searchBusRoutes(query: String): List<BusRoute> {
-        return store.state.busRoutes
-            .filter { (id, name) -> containsIgnoreCase(id, query) || containsIgnoreCase(name, query) }
-            .distinct()
-            .sortedWith(util.busStopComparatorByName)
+    fun searchBusRoutes(query: String): Single<List<BusRoute>> {
+        return Single
+            .fromCallable {
+                store.state.busRoutes
+                    .filter { (id, name) -> containsIgnoreCase(id, query) || containsIgnoreCase(name, query) }
+                    .distinct()
+                    .sortedWith(util.busStopComparatorByName)
+            }
+            .subscribeOn(Schedulers.computation())
     }
 
     fun loadBusArrivals(busRouteId: String, busStopId: Int, bound: String, boundTitle: String): Single<BusArrivalStopDTO> {
