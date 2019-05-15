@@ -36,7 +36,6 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Train
-import fr.cph.chicago.core.model.TrainStationPattern
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.model.marker.RefreshTrainMarkers
 import fr.cph.chicago.rx.TrainEtaObserver
@@ -44,9 +43,8 @@ import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.BiFunction
+import io.reactivex.rxkotlin.Singles
 import io.reactivex.schedulers.Schedulers
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
@@ -244,7 +242,7 @@ class TrainMapActivity : FragmentMapActivity() {
         val positionsSingle = trainService.readPatterns(TrainLine.fromXmlString(line))
 
         if (drawLine) {
-            Single.zip(trainsSingle, positionsSingle, BiFunction { trains: List<Train>, positions: List<TrainStationPattern> ->
+            Singles.zip(trainsSingle, positionsSingle, zipper = { trains, positions ->
                 drawTrains(trains)
                 drawLine(positions.map { it.position })
                 if (trains.isNotEmpty()) {

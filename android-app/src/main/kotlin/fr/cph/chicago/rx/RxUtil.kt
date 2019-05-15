@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.rx
 
+import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -27,10 +28,10 @@ import java.util.concurrent.Callable
 
 object RxUtil {
 
-    fun <T> createSingleFromCallable(supplier: Callable<T>): Single<T> {
+    fun <T> singleFromCallable(supplier: Callable<T>, subscribeOn: Scheduler = Schedulers.io(), observeOn: Scheduler = AndroidSchedulers.mainThread()): Single<T> {
         return Single.fromCallable(supplier)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(subscribeOn)
+            .observeOn(observeOn)
     }
 
     fun <T> handleError(): (Throwable) -> List<T> = { throwable ->

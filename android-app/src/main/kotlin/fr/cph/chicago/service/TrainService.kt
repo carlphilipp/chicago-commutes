@@ -41,7 +41,7 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.entity.TrainArrivalResponse
 import fr.cph.chicago.entity.TrainLocationResponse
 import fr.cph.chicago.repository.TrainRepository
-import fr.cph.chicago.rx.RxUtil.createSingleFromCallable
+import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import fr.cph.chicago.rx.RxUtil.handleError
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
@@ -66,7 +66,7 @@ object TrainService {
     private val simpleDateFormatTrain: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US)
 
     fun loadFavoritesTrain(): Single<TrainArrivalDTO> {
-        return createSingleFromCallable(
+        return singleFromCallable(
             Callable {
                 val trainParams = preferencesService.getFavoritesTrainParams()
                 var trainArrivals = SparseArray<TrainArrival>()
@@ -129,14 +129,14 @@ object TrainService {
     }
 
     fun loadStationTrainArrival(stationId: Int): Single<TrainArrival> {
-        return createSingleFromCallable(Callable {
+        return singleFromCallable(Callable {
             val map = getTrainArrivals(stationTrainParams(stationId))
             map.get(stationId, TrainArrival.buildEmptyTrainArrival())
         })
     }
 
     fun trainEtas(runNumber: String, loadAll: Boolean): Single<List<TrainEta>> {
-        return createSingleFromCallable(
+        return singleFromCallable(
             Callable {
                 val content = ctaClient.get(TRAIN_FOLLOW, trainEtasParams(runNumber), TrainArrivalResponse::class.java)
                 val arrivals = getTrainArrivalsInternal(content)
@@ -165,7 +165,7 @@ object TrainService {
     }
 
     fun trainLocations(line: String): Single<List<Train>> {
-        return createSingleFromCallable(Callable {
+        return singleFromCallable(Callable {
             val result = ctaClient.get(TRAIN_LOCATION, trainLocationParams(line), TrainLocationResponse::class.java)
             if (result.ctatt.route == null) {
                 val error = result.ctatt.errNm
@@ -184,7 +184,7 @@ object TrainService {
     }
 
     fun readPatterns(line: TrainLine): Single<List<TrainStationPattern>> {
-        return createSingleFromCallable(
+        return singleFromCallable(
             Callable {
                 when (line) {
                     TrainLine.BLUE -> trainRepository.blueLinePatterns
@@ -202,7 +202,7 @@ object TrainService {
     }
 
     fun readNearbyStation(position: Position): Single<List<TrainStation>> {
-        return createSingleFromCallable(Callable {
+        return singleFromCallable(Callable {
             val latMax = position.latitude + DEFAULT_RANGE
             val latMin = position.latitude - DEFAULT_RANGE
             val lonMax = position.longitude + DEFAULT_RANGE

@@ -161,13 +161,13 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
 
         busService.loadAllBusStopsForRouteBound(busRouteId, bound)
             .subscribe(
-                { onNext ->
-                    busStops = onNext
-                    adapter.updateBusStops(onNext)
+                { result ->
+                    busStops = result
+                    adapter.updateBusStops(result)
                     adapter.notifyDataSetChanged()
                 },
-                { onError ->
-                    Timber.e(onError, "Error while getting bus stops for route bound")
+                { throwable ->
+                    Timber.e(throwable, "Error while getting bus stops for route bound")
                     util.showOopsSomethingWentWrong(listView)
                 })
 
@@ -186,10 +186,10 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
             }
             busService.loadBusPattern(busRouteId, bound)
                 .subscribe(
-                    { busPattern ->
-                        if (busPattern.direction != "error") {
-                            val center = busPattern.busStopsPatterns.size / 2
-                            val position = busPattern.busStopsPatterns[center].position
+                    { result ->
+                        if (result.direction != "error") {
+                            val center = result.busStopsPatterns.size / 2
+                            val position = result.busStopsPatterns[center].position
                             if (position.latitude == 0.0 && position.longitude == 0.0) {
                                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(GoogleMapUtil.chicago, 10f))
                             } else {
@@ -197,14 +197,14 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
                                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7f))
                                 googleMap.animateCamera(CameraUpdateFactory.zoomTo(9f), 500, null)
                             }
-                            drawPattern(googleMap, busPattern)
+                            drawPattern(googleMap, result)
                         } else {
                             util.showSnackBar(this.layout, R.string.message_error_could_not_load_path)
                         }
                     },
-                    { onError ->
-                        util.handleConnectOrParserException(onError, layout)
-                        Timber.e(onError, "Error while getting bus patterns")
+                    { throwable ->
+                        util.handleConnectOrParserException(throwable, layout)
+                        Timber.e(throwable, "Error while getting bus patterns")
                     })
         }
     }

@@ -35,9 +35,7 @@ import fr.cph.chicago.redux.RemoveBikeFavoriteAction
 import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
-import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.Color
-import fr.cph.chicago.util.Util
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 

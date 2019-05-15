@@ -36,15 +36,11 @@ import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.adapter.SearchAdapter
-import fr.cph.chicago.core.model.BikeStation
-import fr.cph.chicago.core.model.BusRoute
-import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.Function3
+import io.reactivex.rxkotlin.Singles
 import org.apache.commons.lang3.StringUtils
 
 class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
@@ -152,12 +148,10 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
             val foundStations = trainService.searchStations(query)
             val foundBusRoutes = busService.searchBusRoutes(query)
             val foundBikeStations = bikeService.searchBikeStations(query)
-            Single.zip(foundStations,
+            Singles.zip(foundStations,
                 foundBusRoutes,
                 foundBikeStations,
-                Function3 { trains: List<TrainStation>, buses: List<BusRoute>, bikes: List<BikeStation> ->
-                    Triple(trains, buses, bikes)
-                })
+                zipper = { trains, buses, bikes -> Triple(trains, buses, bikes) })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { result ->
                     searchAdapter.updateData(result.first, result.second, result.third)

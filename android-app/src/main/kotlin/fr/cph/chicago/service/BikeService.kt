@@ -24,7 +24,7 @@ import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.entity.DivvyResponse
 import fr.cph.chicago.parser.JsonParser
 import fr.cph.chicago.redux.store
-import fr.cph.chicago.rx.RxUtil.createSingleFromCallable
+import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import fr.cph.chicago.util.Util
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
@@ -40,11 +40,11 @@ object BikeService {
     private val preferenceService = PreferenceService
 
     fun allBikeStations(): Single<List<BikeStation>> {
-        return createSingleFromCallable(Callable { loadAllBikeStations() })
+        return singleFromCallable(Callable { loadAllBikeStations() })
     }
 
     fun findBikeStation(id: Int): Single<BikeStation> {
-        return createSingleFromCallable(
+        return singleFromCallable(
             Callable { loadAllBikeStations().first { station -> station.id == id } })
             .onErrorReturn { throwable ->
                 Timber.e(throwable, "Could not load bike stations")

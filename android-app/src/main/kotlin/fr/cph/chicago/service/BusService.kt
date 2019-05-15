@@ -57,8 +57,8 @@ import fr.cph.chicago.exception.CtaException
 import fr.cph.chicago.parser.BusStopCsvParser
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.BusRepository
-import fr.cph.chicago.rx.RxUtil.createSingleFromCallable
 import fr.cph.chicago.rx.RxUtil.handleError
+import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import fr.cph.chicago.util.Util
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
@@ -93,13 +93,11 @@ object BusService {
                 }
             }
             .subscribeOn(Schedulers.computation())
-            .map { favoriteBuses ->
-                BusArrivalDTO(favoriteBuses, false)
-            }
+            .map { favoriteBuses -> BusArrivalDTO(favoriteBuses, false) }
     }
 
     fun loadAllBusStopsForRouteBound(route: String, bound: String): Single<List<BusStop>> {
-        return createSingleFromCallable(Callable {
+        return singleFromCallable(Callable {
             val result = ctaClient.get(BUS_STOP_LIST, allStopsParams(route, bound), BusStopsResponse::class.java)
             if (result.bustimeResponse.stops == null) {
                 throw CtaException(result)
@@ -131,7 +129,7 @@ object BusService {
     }
 
     fun loadBusDirectionsSingle(busRouteId: String): Single<BusDirections> {
-        return createSingleFromCallable(Callable { loadBusDirections(busRouteId) })
+        return singleFromCallable(Callable { loadBusDirections(busRouteId) })
     }
 
     fun busRoutes(): Single<List<BusRoute>> {
@@ -150,7 +148,7 @@ object BusService {
     }
 
     fun loadBusPattern(busRouteId: String, bound: String): Single<BusPattern> {
-        return createSingleFromCallable(Callable { loadBusPattern(busRouteId, arrayOf(bound))[0] })
+        return singleFromCallable(Callable { loadBusPattern(busRouteId, arrayOf(bound))[0] })
     }
 
     fun loadBusPattern(busRouteId: String, bounds: Array<String>): List<BusPattern> {
@@ -198,7 +196,7 @@ object BusService {
     }
 
     fun busStopsAround(position: Position): Single<List<BusStop>> {
-        return createSingleFromCallable(
+        return singleFromCallable(
             Callable { busRepository.getBusStopsAround(position) })
             .onErrorReturn(handleError())
     }

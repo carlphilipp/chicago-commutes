@@ -60,8 +60,7 @@ import fr.cph.chicago.util.GoogleMapUtil
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.Util
-import io.reactivex.Single
-import io.reactivex.functions.Function3
+import io.reactivex.rxkotlin.Singles
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import timber.log.Timber
@@ -273,7 +272,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
         val trainStationAround = trainService.readNearbyStation(finalPosition)
         val busStopsAround = busService.busStopsAround(finalPosition)
         val bikeStationsAround = mapUtil.readNearbyStation(finalPosition, store.state.bikeStations)
-        Single.zip(trainStationAround, busStopsAround, bikeStationsAround, Function3 { trains: List<TrainStation>, buses: List<BusStop>, bikeStations: List<BikeStation> ->
+        Singles.zip(trainStationAround, busStopsAround, bikeStationsAround, zipper = { trains, buses, bikeStations ->
             googleMapUtil.centerMap(mapFragment, finalPosition)
             updateMarkersAndModel(buses, trains, bikeStations)
             Any()

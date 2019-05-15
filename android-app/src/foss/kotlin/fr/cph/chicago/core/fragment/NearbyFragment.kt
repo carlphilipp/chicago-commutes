@@ -65,8 +65,7 @@ import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.Util
-import io.reactivex.Single
-import io.reactivex.functions.Function3
+import io.reactivex.rxkotlin.Singles
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import java.util.UUID
@@ -160,17 +159,21 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         }
 
         val finalPosition = chicago ?: position
-        val trainStationAroundSingle = trainService.readNearbyStation(finalPosition)
-        val busStopsAroundObservable = busService.busStopsAround(finalPosition)
-        val bikeStationsObservable = mapUtil.readNearbyStation(finalPosition, store.state.bikeStations)
-        Single.zip(trainStationAroundSingle, busStopsAroundObservable, bikeStationsObservable, Function3 { trains: List<TrainStation>, buses: List<BusStop>, bikeStations: List<BikeStation> ->
-            map.cameraPosition = CameraPosition.Builder()
-                .target(LatLng(finalPosition.latitude, finalPosition.longitude))
-                .zoom(15.0)
-                .build()
-            updateMarkersAndModel(buses, trains, bikeStations)
-            Any()
-        }).subscribe()
+        val trainStationAround = trainService.readNearbyStation(finalPosition)
+        val busStopsAround = busService.busStopsAround(finalPosition)
+        val bikeStations = mapUtil.readNearbyStation(finalPosition, store.state.bikeStations)
+        Singles.zip(
+            trainStationAround,
+            busStopsAround,
+            bikeStations,
+            zipper = { trains, buses, bikeStations ->
+                map.cameraPosition = CameraPosition.Builder()
+                    .target(LatLng(finalPosition.latitude, finalPosition.longitude))
+                    .zoom(15.0)
+                    .build()
+                updateMarkersAndModel(buses, trains, bikeStations)
+                Any()
+            }).subscribe()
     }
 
     override fun onConnected() {

@@ -55,15 +55,17 @@ import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.TrainStationPattern
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.utils.BitmapGenerator
+import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import fr.cph.chicago.rx.TrainsFunction
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.BiFunction
+import io.reactivex.rxkotlin.Singles
 import io.reactivex.schedulers.Schedulers
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
+import java.util.concurrent.Callable
 
 /**
  * @author Carl-Philipp Harmant
@@ -120,8 +122,15 @@ class TrainMapActivity : FragmentMapActivity() {
         super.onMapReady(map)
         this.map.addOnMapClickListener(this)
 
-        this.map.addImage("image-train", BitmapFactory.decodeResource(resources, R.drawable.train))
-        this.map.addImage("station-marker", BitmapFactory.decodeResource(resources, colorDrawable()))
+        val imageTrain = singleFromCallable(Callable { BitmapFactory.decodeResource(resources, R.drawable.train) }, Schedulers.computation())
+        val stationMarker = singleFromCallable(Callable { BitmapFactory.decodeResource(resources, colorDrawable()) }, Schedulers.computation())
+
+        Singles.zip(imageTrain, stationMarker,
+            zipper = { bitmapTrain, bitmapStation ->
+                this.map.addImage("image-train", bitmapTrain)
+                this.map.addImage("station-marker", bitmapStation)
+            }
+        ).subscribe()
 
         this.map.addLayer(
             SymbolLayer(VEHICLE_LAYER_ID, VEHICLE_SOURCE_ID)
@@ -293,11 +302,10 @@ class TrainMapActivity : FragmentMapActivity() {
                     val featureCollection = FeatureCollection.fromFeatures(features)
                     Pair(poly, featureCollection)
                 }
-
-            Single.zip(
+            Singles.zip(
                 featuresTrains.observeOn(AndroidSchedulers.mainThread()),
                 polylineObs.observeOn(AndroidSchedulers.mainThread()),
-                BiFunction { featuresTrain: FeatureCollection, pair: Pair<PolylineOptions, FeatureCollection> ->
+                zipper = { featuresTrain, pair ->
                     addVehicleFeatureCollection(featuresTrain)
                     addStationFeatureCollection(pair.second)
                     addStationOnMap(pair.second)
@@ -313,6 +321,7 @@ class TrainMapActivity : FragmentMapActivity() {
                         Timber.e(error)
                         util.showSnackBar(layout, R.string.message_error_while_loading_data)
                     })
+
         } else {
             featuresTrains
                 .observeOn(AndroidSchedulers.mainThread())

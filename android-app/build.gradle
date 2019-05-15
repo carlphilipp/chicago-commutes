@@ -143,6 +143,7 @@ dependencies {
     // RxJava
     implementation(Lib.rx)
     implementation(Lib.rx_android)
+    implementation(Lib.rx_kotlin)
 
     // Tools
     implementation(Lib.butterknife)

@@ -7,7 +7,7 @@ object Android {
 
 object Version {
     const val kotlin = "1.3.31"
-    const val android_tools_build = "3.3.2"
+    const val android_tools_build = "3.4.0"
     const val realm = "5.10.0"
 
     const val butterknife = "10.1.0"
@@ -21,8 +21,9 @@ object Version {
     const val mapbox = "6.5.0" // TODO: Migrate to last mapbox version https://github.com/mapbox/mapbox-gl-native/wiki/Android-6.x-to-7.x-migration-guide
     const val mapbox_location = "0.10.0"
     const val photoview = "v2.0.0"
-    const val rx = "2.2.7"
+    const val rx = "2.2.8"
     const val rx_android = "2.1.1"
+    const val rx_kotlin = "2.3.0"
     const val re_kotlin = "1.0.0"
     const val sliding_up_panel = "3.4.0"
     const val timber = "4.7.1"
@@ -65,6 +66,7 @@ object Lib {
     const val univocity = "com.univocity:univocity-parsers:${Version.univocity}"
     const val rx = "io.reactivex.rxjava2:rxjava:${Version.rx}"
     const val rx_android = "io.reactivex.rxjava2:rxandroid:${Version.rx_android}"
+    const val rx_kotlin = "io.reactivex.rxjava2:rxkotlin:${Version.rx_kotlin}"
     const val re_kotlin = "org.rekotlin:rekotlin:${Version.re_kotlin}"
     const val sliding_up_panel = "com.sothree.slidinguppanel:library:${Version.sliding_up_panel}"
     const val timber = "com.jakewharton.timber:timber:${Version.timber}"

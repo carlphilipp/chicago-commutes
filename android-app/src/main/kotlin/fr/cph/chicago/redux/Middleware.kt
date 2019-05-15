@@ -12,9 +12,8 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.MixedService
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.Function4
+import io.reactivex.rxkotlin.Singles
 import io.reactivex.schedulers.Schedulers
 import org.rekotlin.Middleware
 import org.rekotlin.StateType
@@ -39,12 +38,12 @@ internal val baseMiddleware: Middleware<StateType> = { _, _ ->
                         val trainFavorites = preferenceService.getTrainFavorites()
                         val busFavorites = preferenceService.getBusFavorites().subscribeOn(Schedulers.io())
                         val bikeFavorites = preferenceService.getBikeFavorites().subscribeOn(Schedulers.io())
-                        Single.zip(
+                        Singles.zip(
                             mixedService.baseArrivals().observeOn(Schedulers.computation()),
                             trainFavorites.observeOn(Schedulers.computation()),
                             busFavorites.observeOn(Schedulers.computation()),
                             bikeFavorites.observeOn(Schedulers.computation()),
-                            Function4 { favoritesDTO: FavoritesDTO, favoritesTrains: List<Int>, favoritesBuses: List<String>, favoritesBikes: List<Int> ->
+                            zipper = { favoritesDTO, favoritesTrains, favoritesBuses, favoritesBikes ->
                                 val trainArrivals = if (favoritesDTO.trainArrivalDTO.error)
                                     TrainArrivalDTO(store.state.trainArrivalsDTO.trainsArrivals, true)
                                 else
