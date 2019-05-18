@@ -22,9 +22,9 @@ android {
 
         def props = properties()
 
-        resValue "string", "google_maps_api_key", new String(Base64.getDecoder().decode(props.getOrDefault('google.streetmap.key', '')))
-        resValue "string", "cta_train_key", new String(Base64.getDecoder().decode(props.getOrDefault('cta.train.key', '')))
-        resValue "string", "cta_bus_key", new String(Base64.getDecoder().decode(props.getOrDefault('cta.bus.key', '')))
+        resValue "string", "google_maps_api_key", new String(Base64.getDecoder().decode(props.get('google.streetmap.key')))
+        resValue "string", "cta_train_key", new String(Base64.getDecoder().decode(props.get('cta.train.key')))
+        resValue "string", "cta_bus_key", new String(Base64.getDecoder().decode(props.get('cta.bus.key')))
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -98,7 +98,7 @@ android {
         foss {
             dimension "env"
             applicationIdSuffix ".foss"
-            resValue "string", "mapbox_token", new String(Base64.getDecoder().decode(properties().getOrDefault('mapbox.token', '')))
+            resValue "string", "mapbox_token", new String(Base64.getDecoder().decode(properties().get('mapbox.token')))
             resValue "string", "app_flavor", "fdroid"
         }
     }
@@ -187,8 +187,12 @@ def properties() {
     def appProperties = this.file('app.properties')
     if (appProperties.exists()) {
         props.load(new FileInputStream(appProperties))
+        if (props.get('google.streetmap.key') == null) throw new RuntimeException("google.streetmap.key not found in app.properties")
+        if (props.get('cta.train.key') == null) throw new RuntimeException("cta.train.key not found in app.properties")
+        if (props.get('cta.bus.key') == null) throw new RuntimeException("cta.bus.key not found in app.properties")
+        if (props.get('mapbox.token') == null) throw new RuntimeException("mapbox.token not found in app.properties")
     } else {
-        println("No app.properties found")
+        throw new RuntimeException("No app.properties found")
     }
     return props
 }
