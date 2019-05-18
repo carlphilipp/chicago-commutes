@@ -21,10 +21,19 @@ android {
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
         def props = properties()
+        def googleMapsApiKey = props.get('google.streetmap.key')
+        def ctaTrainKey = props.get('cta.train.key')
+        def ctaBusKey = props.get('cta.bus.key')
 
-        resValue "string", "google_maps_api_key", new String(Base64.getDecoder().decode(props.get('google.streetmap.key')))
-        resValue "string", "cta_train_key", new String(Base64.getDecoder().decode(props.get('cta.train.key')))
-        resValue "string", "cta_bus_key", new String(Base64.getDecoder().decode(props.get('cta.bus.key')))
+        if (googleMapsApiKey != null && ctaTrainKey != null && ctaBusKey != null) {
+            resValue "string", "google_maps_api_key", new String(Base64.getDecoder().decode(googleMapsApiKey))
+            resValue "string", "cta_train_key", new String(Base64.getDecoder().decode(ctaTrainKey))
+            resValue "string", "cta_bus_key", new String(Base64.getDecoder().decode(ctaBusKey))
+        } else {
+            resValue "string", "google_maps_api_key", ""
+            resValue "string", "cta_train_key", ""
+            resValue "string", "cta_bus_key", ""
+        }
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -98,7 +107,12 @@ android {
         foss {
             dimension "env"
             applicationIdSuffix ".foss"
-            resValue "string", "mapbox_token", new String(Base64.getDecoder().decode(properties().get('mapbox.token')))
+            def mapBoxToken = properties().get('mapbox.token')
+            if (mapBoxToken != null) {
+                resValue "string", "mapbox_token", new String(Base64.getDecoder().decode(properties().get('mapbox.token')))
+            } else {
+                resValue "string", "mapbox_token", ""
+            }
             resValue "string", "app_flavor", "fdroid"
         }
     }
@@ -187,12 +201,12 @@ def properties() {
     def appProperties = this.file('app.properties')
     if (appProperties.exists()) {
         props.load(new FileInputStream(appProperties))
-        if (props.get('google.streetmap.key') == null) throw new RuntimeException("google.streetmap.key not found in app.properties")
-        if (props.get('cta.train.key') == null) throw new RuntimeException("cta.train.key not found in app.properties")
-        if (props.get('cta.bus.key') == null) throw new RuntimeException("cta.bus.key not found in app.properties")
-        if (props.get('mapbox.token') == null) throw new RuntimeException("mapbox.token not found in app.properties")
+        if (props.get('google.streetmap.key') == null) println("google.streetmap.key not found in app.properties")
+        if (props.get('cta.train.key') == null) println("cta.train.key not found in app.properties")
+        if (props.get('cta.bus.key') == null) println("cta.bus.key not found in app.properties")
+        if (props.get('mapbox.token') == null) println("mapbox.token not found in app.properties")
     } else {
-        throw new RuntimeException("No app.properties found")
+        println("No app.properties found")
     }
     return props
 }
