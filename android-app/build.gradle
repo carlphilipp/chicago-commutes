@@ -156,7 +156,6 @@ dependencies {
     implementation(Lib.re_kotlin)
     implementation(Lib.timber)
 
-
     // Google play flavor
     googleplayImplementation(Lib.google_services_map)
     googleplayImplementation(Lib.google_services_location)
