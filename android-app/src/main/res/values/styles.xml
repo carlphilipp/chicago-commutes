@@ -27,6 +27,7 @@
         <item name="android:textColorSecondary">@color/lightColorTextSecondary</item>
         <item name="android:navigationBarColor">@color/lightPrimaryColorDarker</item>
         <item name="favoriteCardBackground">@color/white</item>
+        <item name="streetViewBackground">@color/white</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
         <item name="android:windowBackground">@drawable/bg_selector_light</item>
         <item name="iconTint">@color/grey_5</item>
@@ -60,6 +61,7 @@
         <item name="android:navigationBarColor">@color/darkNavigationBar</item>
         <item name="android:colorBackground">@color/darkBackgroundColorStart</item>
         <item name="favoriteCardBackground">@color/favoriteCardBackground</item>
+        <item name="streetViewBackground">@color/colorPrimary</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
         <item name="android:windowBackground">@drawable/bg_selector_dark</item>
         <item name="iconTint">@color/white</item>

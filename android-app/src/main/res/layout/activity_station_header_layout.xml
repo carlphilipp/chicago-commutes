@@ -9,6 +9,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?attr/streetViewBackground"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -18,16 +19,18 @@
             android:layout_height="@dimen/activity_station_street_map_height"
             android:contentDescription="@string/station_activity_google_map_link_desc"
             android:scaleType="centerCrop"
-            android:tag="default"/>
+            android:tag="default" />
 
         <TextView
+            android:id="@+id/street_view_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_marginStart="4dp"
             android:text="@string/station_activity_street_view"
             android:textColor="@color/white"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="invisible" />
 
         <ProgressBar
             android:id="@+id/street_view_progress_bar"

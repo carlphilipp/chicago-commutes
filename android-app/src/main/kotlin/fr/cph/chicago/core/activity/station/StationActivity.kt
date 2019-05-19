@@ -26,6 +26,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.BindView
@@ -58,6 +59,8 @@ abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentVi
     lateinit var favoritesImageContainer: LinearLayout
     @BindView(R.id.activity_station_streetview_image)
     lateinit var streetViewImage: ImageView
+    @BindView(R.id.street_view_text)
+    lateinit var streetViewText: TextView
     @BindView(R.id.street_view_progress_bar)
     lateinit var streetViewProgressBar: ProgressBar
     @BindView(R.id.activity_favorite_star)
@@ -86,6 +89,7 @@ abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentVi
                         streetViewImage.setImageDrawable(drawable)
                         streetViewImage.tag = TAG_STREET_VIEW
                         streetViewImage.scaleType = ImageView.ScaleType.CENTER_CROP
+                        streetViewText.visibility = View.VISIBLE
                     },
                     { error ->
                         Timber.e(error, "Error while loading street view image")
