@@ -41,10 +41,8 @@ import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.BusService
-import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.Color
 import fr.cph.chicago.util.LayoutUtil
-import fr.cph.chicago.util.Util
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -241,7 +239,6 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
      * Draw arrivals in current layout
      */
     private fun refreshActivity(busArrivals: BusArrivalStopDTO) {
-        //this.busArrivals = busArrivals
         cleanLayout()
         if (busArrivals.isEmpty()) {
             destinationTextView.text = App.instance.getString(R.string.bus_activity_no_service)
@@ -254,16 +251,17 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
             var idBelowTitle = destinationTextView.id
             var idBellowArrival = arrivalsTextView.id
             busArrivals.entries.drop(1).forEach {
-                val belowTitle = with(TextView(App.instance)) {
+                val belowTitle = with(TextView(this)) {
                     text = it.key
                     id = util.generateViewId()
                     setSingleLine(true)
                     layoutParams = layoutUtil.createLineBelowLayoutParams(idBelowTitle)
                     this
                 }
+
                 idBelowTitle = belowTitle.id
 
-                val belowArrival = with(TextView(App.instance)) {
+                val belowArrival = with(TextView(this)) {
                     text = it.value.joinToString(separator = " ") { util.formatArrivalTime(it) }
                     id = util.generateViewId()
                     setSingleLine(true)
