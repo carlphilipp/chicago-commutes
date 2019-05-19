@@ -86,11 +86,14 @@ fun reducer(action: Action, oldState: State?): State {
         is FavoritesAction -> {
             val status = when {
                 action.favoritesDTO.trainArrivalDTO.error && action.favoritesDTO.busArrivalDTO.error && action.favoritesDTO.bikeError -> {
-                    Status.FULL_FAILURE
+                    when {
+                        action.favoritesDTO.trainArrivalDTO.trainsArrivals.size() == 0
+                            && action.favoritesDTO.busArrivalDTO.busArrivals.isEmpty()
+                            && action.favoritesDTO.bikeStations.isEmpty() -> Status.FULL_FAILURE
+                        else -> Status.FAILURE
+                    }
                 }
-                action.favoritesDTO.trainArrivalDTO.error || action.favoritesDTO.busArrivalDTO.error || action.favoritesDTO.bikeError -> {
-                    Status.FAILURE
-                }
+                action.favoritesDTO.trainArrivalDTO.error || action.favoritesDTO.busArrivalDTO.error || action.favoritesDTO.bikeError -> Status.FAILURE
                 else -> Status.SUCCESS
             }
             val bikeStations = if (action.favoritesDTO.bikeError) state.bikeStations else action.favoritesDTO.bikeStations

@@ -63,12 +63,6 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<Stat
         private val rateUtil = RateUtil
         private val preferenceService = PreferenceService
 
-        /**
-         * Returns a new service of this fragment for the given section number.
-         *
-         * @param sectionNumber the section number
-         * @return a favorite fragment
-         */
         fun newInstance(sectionNumber: Int): FavoritesFragment {
             return fragmentWithBundle(FavoritesFragment(), sectionNumber) as FavoritesFragment
         }
