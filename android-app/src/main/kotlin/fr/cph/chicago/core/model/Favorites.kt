@@ -87,13 +87,13 @@ object Favorites {
             .get(stationId, TrainArrival.buildEmptyTrainArrival())
             .getEtas(trainLine)
             .fold(TreeMap()) { accumulator, eta ->
-                val stopNameData = eta.destName
-                val timingData = eta.timeLeftDueDelay
-                val value = if (accumulator.containsKey(stopNameData))
-                    accumulator[stopNameData] + " " + timingData
+                val destinationName = eta.destName
+                val timeLeft = eta.timeLeftDueDelay
+                val value = if (accumulator.containsKey(destinationName))
+                    accumulator[destinationName] + " " + timeLeft
                 else
-                    timingData
-                accumulator[stopNameData] = value
+                    timeLeft
+                accumulator[destinationName] = value
                 accumulator
             }
     }
