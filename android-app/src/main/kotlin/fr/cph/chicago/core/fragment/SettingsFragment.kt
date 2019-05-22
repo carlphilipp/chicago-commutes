@@ -19,8 +19,6 @@
 
 package fr.cph.chicago.core.fragment
 
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -29,12 +27,14 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import butterknife.BindView
+import fr.cph.chicago.Constants.SELECTED_ID
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.BaseActivity
+import fr.cph.chicago.redux.ResetStateAction
+import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.RealmConfig
 import fr.cph.chicago.service.PreferenceService
 import java.io.File
-import java.util.Random
 
 class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
@@ -67,13 +67,13 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             val selected = choices.indexOf(preferenceService.getTheme())
             builder.setTitle("Theme change")
             builder.setSingleChoiceItems(choices, selected, null)
-            builder.setPositiveButton("Save & Restart") { dialog: DialogInterface, _ ->
+            builder.setPositiveButton("Save & Reload") { dialog: DialogInterface, _ ->
                 val list = (dialog as AlertDialog).listView
                 for (i in 0 until list.count) {
                     val checked = list.isItemChecked(i)
                     if (checked) {
                         preferenceService.saveTheme(choices[i])
-                        restartApp()
+                        reloadActivity()
                     }
                 }
             }
@@ -94,20 +94,25 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             }
 
             AlertDialog.Builder(context!!)
-                .setMessage("This is going to:\n\n- Delete all your favorites\n- Clear application cache\n- Restart the application")
+                .setMessage("This is going to:\n\n- Delete all your favorites\n- Clear application cache\n- Reload the application")
                 .setPositiveButton("Yes", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener)
                 .show()
         }
     }
 
-    private fun restartApp() {
-        val intent = Intent(context, BaseActivity::class.java)
-        val intentId = Random().nextInt()
-        val pendingIntent = PendingIntent.getActivity(context, intentId, intent, PendingIntent.FLAG_CANCEL_CURRENT)
-        val alarmManager = context!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.set(AlarmManager.RTC, System.currentTimeMillis(), pendingIntent)
+    private fun reloadActivity() {
+        val intent = mainActivity.intent
+        intent.putExtra(SELECTED_ID, R.id.settings)
         mainActivity.finish()
+        startActivity(mainActivity.intent)
+    }
+
+    private fun restartApp() {
+        store.dispatch(ResetStateAction())
+        val intent = Intent(context, BaseActivity::class.java)
+        mainActivity.finish()
+        startActivity(intent)
     }
 
     private fun cleanLocalData() {

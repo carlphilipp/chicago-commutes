@@ -31,6 +31,9 @@ fun reducer(action: Action, oldState: State?): State {
     var state = oldState ?: State()
 
     when (action) {
+        is ResetStateAction -> {
+            state = state.copy(status = Status.UNKNOWN)
+        }
         is ApiKeysAction -> {
             state = state.copy(
                 lastStateChange = Date(),

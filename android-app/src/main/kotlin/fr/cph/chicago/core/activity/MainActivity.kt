@@ -32,6 +32,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import butterknife.BindString
 import butterknife.BindView
 import com.google.android.material.navigation.NavigationView
+import fr.cph.chicago.Constants.SELECTED_ID
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.fragment.AlertFragment
@@ -52,7 +53,6 @@ import java.util.concurrent.TimeUnit
 class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView.OnNavigationItemSelectedListener {
 
     companion object {
-        private const val SELECTED_ID = "SELECTED_ID"
         private val rateUtil: RateUtil = RateUtil
     }
 
@@ -100,6 +100,11 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     private var title: String? = null
 
     override fun create(savedInstanceState: Bundle?) {
+        currentPosition = when {
+            savedInstanceState != null -> savedInstanceState.getInt(SELECTED_ID, R.id.navigation_favorites)
+            intent.extras != null -> intent.extras!!.getInt(SELECTED_ID, R.id.navigation_favorites)
+            else -> R.id.navigation_favorites
+        }
         initView()
         setToolbar()
 
@@ -107,8 +112,6 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
         drawerToggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawerLayout.addDrawerListener(drawerToggle)
         drawerToggle.syncState()
-
-        currentPosition = savedInstanceState?.getInt(SELECTED_ID) ?: R.id.navigation_favorites
         itemSelection(currentPosition)
     }
 

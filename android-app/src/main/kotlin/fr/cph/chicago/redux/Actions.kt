@@ -13,6 +13,8 @@ import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.Action
 
+data class ResetStateAction(val unit: Unit = Unit) : Action
+
 data class ApiKeysAction(
     val ctaTrainKey: String,
     val ctaBusKey: String,

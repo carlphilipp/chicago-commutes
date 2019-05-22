@@ -55,4 +55,6 @@ object Constants {
 
     // Google
     const val GOOGLE_STREET_VIEW_URL = "http://maps.googleapis.com/maps/api/streetview"
+
+    const val SELECTED_ID = "SELECTED_ID"
 }
