@@ -175,12 +175,13 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
         toolbar.setOnClickListener { finish() }
 
         busService.loadAllBusStopsForRouteBound(busRouteId, bound)
+            .doOnSuccess { busStops ->
+                this.busStops = busStops
+                busBoundAdapter.updateBusStops(busStops)
+            }
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { onNext ->
-                    busStops = onNext
-                    busBoundAdapter.updateBusStops(onNext)
-                    busBoundAdapter.notifyDataSetChanged()
-                },
+                { busBoundAdapter.notifyDataSetChanged() },
                 { error ->
                     Timber.e(error)
                     util.showOopsSomethingWentWrong(listView)

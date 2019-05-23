@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit
  */
 data class BusArrival(
     val timeStamp: Date,
-    val errorMessage: String,
+    val errorMessage: String = StringUtils.EMPTY,
     val stopName: String,
     val stopId: Int,
     val busId: Int,

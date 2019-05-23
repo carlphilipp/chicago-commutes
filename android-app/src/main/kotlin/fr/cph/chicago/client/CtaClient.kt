@@ -91,7 +91,6 @@ object CtaClient {
             BUS_PATTERN -> BUSES_PATTERN_URL + QUERY_PARAM_KEY + store.state.ctaBusKey + "&format=json"
             ALERTS_ROUTES -> ALERTS_ROUTES_URL + QUERY_PARAM_JSON_ALERT
             ALERTS_ROUTE -> ALERT_ROUTES_URL + QUERY_PARAM_JSON_ALERT
-            else -> throw RuntimeException("Unknown request type")
         }
         return address + params.asMap()
             .flatMap { entry -> entry.value.map<String?, String> { value -> "&${entry.key}=$value" } }

@@ -97,19 +97,19 @@ object BusService {
     }
 
     fun loadAllBusStopsForRouteBound(route: String, bound: String): Single<List<BusStop>> {
-        return singleFromCallable(Callable {
-            val result = ctaClient.get(BUS_STOP_LIST, allStopsParams(route, bound), BusStopsResponse::class.java)
-            if (result.bustimeResponse.stops == null) {
-                throw CtaException(result)
+        return ctaClient.getRx(BUS_STOP_LIST, allStopsParams(route, bound), BusStopsResponse::class.java)
+            .map { busStopsResponse ->
+                if (busStopsResponse.bustimeResponse.stops == null) {
+                    throw CtaException(busStopsResponse)
+                }
+                busStopsResponse.bustimeResponse.stops!!.map { stop ->
+                    BusStop(
+                        id = stop.stpid.toInt(),
+                        name = stop.stpnm,
+                        description = stop.stpnm,
+                        position = Position(stop.lat, stop.lon))
+                }
             }
-            result.bustimeResponse.stops!!.map { stop ->
-                BusStop(
-                    id = stop.stpid.toInt(),
-                    name = stop.stpnm,
-                    description = stop.stpnm,
-                    position = Position(stop.lat, stop.lon))
-            }
-        })
     }
 
     fun loadLocalBusData(): Single<Boolean> {
@@ -277,7 +277,6 @@ object BusService {
                             .map { prd ->
                                 BusArrival(
                                     timeStamp = simpleDateFormatBus.parse(prd.tmstmp),
-                                    errorMessage = StringUtils.EMPTY, // TODO evaluate why there is this field
                                     stopName = prd.stpnm,
                                     stopId = prd.stpid.toInt(),
                                     busId = prd.vid.toInt(),
