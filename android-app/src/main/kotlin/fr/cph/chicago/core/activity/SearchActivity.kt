@@ -26,7 +26,6 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
-import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ListView
 import androidx.appcompat.app.ActionBar
@@ -60,7 +59,9 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
 
     private lateinit var searchView: SearchView
     private lateinit var searchAdapter: SearchAdapter
+    private lateinit var searchItem: MenuItem
     private var query: String = StringUtils.EMPTY
+    private var clearFocus: Boolean = false
 
     private val supportActionBarNotNull: ActionBar
         get() = supportActionBar ?: throw RuntimeException()
@@ -83,25 +84,23 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
         searchView.maxWidth = 1000
         searchView.isFocusable = true
         searchView.isFocusableInTouchMode = true
-        // FIXME remove clearfocus if possible
-        searchView.clearFocus()
         searchView.requestFocus()
         searchView.requestFocusFromTouch()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val searchItem = menu.add(android.R.string.search_go)
+        searchItem = menu.add(android.R.string.search_go)
         searchItem.setIcon(R.drawable.ic_search_white_24dp)
         searchItem.actionView = searchView
         searchItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS or MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW)
         searchItem.expandActionView()
-        return super.onCreateOptionsMenu(menu)
-    }
 
-    override fun onResume() {
-        // Hide keyboard
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
-        super.onResume()
+        // Trigger search
+        searchView.setQuery(query, true)
+        if (clearFocus) {
+            searchView.clearFocus()
+        }
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -132,7 +131,7 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         query = savedInstanceState.getString(SearchManager.QUERY, StringUtils.EMPTY)
-        searchView.setQuery(query, true)
+        clearFocus = true
     }
 
     private fun setupToolbar() {
@@ -159,5 +158,4 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
                 }
         }
     }
-
 }

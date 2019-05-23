@@ -49,10 +49,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
         if (nearbyFragment.layoutContainer.childCount != 0) {
             nearbyFragment.layoutContainer.removeViewAt(0)
         }
-        //FIXME handle the case a null is returned
-        if (station != null) {
-            loadArrivals(station)
-        }
+        station?.let { loadArrivals(station) }
         return false
     }
 

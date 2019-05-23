@@ -1,14 +1,14 @@
 object Android {
     const val compile_sdk = 28
-    const val build_tools = "28.0.3"
+    const val build_tools = "29.0.0-rc3"
     const val min_sdk = 21
     const val target_sdk = 28
 }
 
 object Version {
     const val kotlin = "1.3.31"
-    const val android_tools_build = "3.4.0"
-    const val realm = "5.10.0"
+    const val android_tools_build = "3.4.1"
+    const val realm = "5.11.0"
 
     const val butterknife = "10.1.0"
     const val commons_collections4 = "4.1"
@@ -16,7 +16,7 @@ object Version {
     const val easypermissions = "1.3.0"
     const val google_play_maps = "16.1.0"
     const val google_play_location = "16.0.0"
-    const val jackson = "2.9.8"
+    const val jackson = "2.9.9"
     const val material = "1.0.0"
     const val mapbox = "6.5.0" // TODO: Migrate to last mapbox version https://github.com/mapbox/mapbox-gl-native/wiki/Android-6.x-to-7.x-migration-guide
     const val mapbox_location = "0.10.0"
@@ -24,10 +24,10 @@ object Version {
     const val rx = "2.2.8"
     const val rx_android = "2.1.1"
     const val rx_kotlin = "2.3.0"
-    const val re_kotlin = "1.0.0"
+    const val re_kotlin = "1.0.3"
     const val sliding_up_panel = "3.4.0"
     const val timber = "4.7.1"
-    const val univocity = "2.8.1"
+    const val univocity = "2.8.2"
 
     // Update
     const val commons_io = "2.5"

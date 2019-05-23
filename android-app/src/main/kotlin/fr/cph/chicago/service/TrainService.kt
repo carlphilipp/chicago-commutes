@@ -257,8 +257,6 @@ object TrainService {
         }
         trainArrivalResponse.ctatt.eta.map { eta ->
             val station = getStation(eta.staId.toInt())
-            // FIXME: potential issue with name here
-            //station.name = eta.staNm
             val stop = getStop(eta.stpId.toInt())
             stop.description = eta.stpDe
             val routeName = TrainLine.fromXmlString(eta.rt)

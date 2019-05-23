@@ -58,6 +58,8 @@ import org.apache.commons.lang3.StringUtils
 class BusMapActivity : FragmentMapActivity() {
 
     companion object {
+        private const val ZOOM_ONE_RESULT = 15
+        private const val ZOOM_DEFAULT = 11
         private val busService: BusService = BusService
         private val util = Util
     }
@@ -125,7 +127,7 @@ class BusMapActivity : FragmentMapActivity() {
     fun centerMapOnBus(result: List<Bus>) {
         val sizeIsOne = result.size == 1
         val position = if (sizeIsOne) result[0].position else MapUtil.getBestPosition(result.map { it.position })
-        val zoom = if (sizeIsOne) 15 else 11 // FIXME magic numbers
+        val zoom = if (sizeIsOne) ZOOM_ONE_RESULT else ZOOM_DEFAULT
         centerMapOn(position.latitude, position.longitude, zoom)
     }
 
