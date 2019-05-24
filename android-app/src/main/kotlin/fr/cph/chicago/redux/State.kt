@@ -19,6 +19,9 @@ data class State(
     val ctaBusKey: String = StringUtils.EMPTY,
     val googleStreetKey: String = StringUtils.EMPTY,
 
+    // URLs
+    val divvyUrl: String = StringUtils.EMPTY,
+
     val lastStateChange: Date = Date(), // Field to ensure the update of the state
     val status: Status = Status.UNKNOWN,
     val lastFavoritesUpdate: Date = Date(), // Field displayed in favorites

@@ -1,5 +1,7 @@
 package fr.cph.chicago.redux
 
+import fr.cph.chicago.Constants
+import org.apache.commons.lang3.StringUtils
 import org.rekotlin.Action
 import org.rekotlin.Store
 import timber.log.Timber
@@ -34,12 +36,18 @@ fun reducer(action: Action, oldState: State?): State {
         is ResetStateAction -> {
             state = state.copy(status = Status.UNKNOWN)
         }
-        is ApiKeysAction -> {
+        is DefaultSettingsAction -> {
+            val divvyUrl = if(action.divvyUrl == StringUtils.EMPTY) {
+                Constants.DIVYY_URL
+            } else {
+                action.divvyUrl
+            }
             state = state.copy(
                 lastStateChange = Date(),
                 ctaTrainKey = action.ctaTrainKey,
                 ctaBusKey = action.ctaBusKey,
-                googleStreetKey = action.googleStreetKey)
+                googleStreetKey = action.googleStreetKey,
+                divvyUrl = divvyUrl)
         }
         is BaseAction -> {
             val status = when {

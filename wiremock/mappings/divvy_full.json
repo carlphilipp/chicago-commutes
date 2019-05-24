@@ -1,0 +1,10 @@
+{
+    "request": {
+        "method": "GET",
+        "url": "/divvy_full"
+    },
+    "response": {
+        "status": 200,
+        "bodyFileName": "full.json"
+    }
+}

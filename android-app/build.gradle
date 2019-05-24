@@ -34,6 +34,7 @@ android {
             resValue "string", "cta_train_key", ""
             resValue "string", "cta_bus_key", ""
         }
+        resValue "string", "divvy_url", (project.hasProperty("divvyUrl")) ? project.divvyUrl : ""
 
         javaCompileOptions {
             annotationProcessorOptions {

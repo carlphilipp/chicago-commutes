@@ -15,10 +15,11 @@ import org.rekotlin.Action
 
 data class ResetStateAction(val unit: Unit = Unit) : Action
 
-data class ApiKeysAction(
+data class DefaultSettingsAction(
     val ctaTrainKey: String,
     val ctaBusKey: String,
-    val googleStreetKey: String
+    val googleStreetKey: String,
+    val divvyUrl: String
 ) : Action
 
 data class BaseAction(

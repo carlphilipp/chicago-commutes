@@ -19,12 +19,12 @@
 
 package fr.cph.chicago.client
 
-import fr.cph.chicago.Constants.DIVYY_URL
 import fr.cph.chicago.exception.ConnectException
+import fr.cph.chicago.redux.store
 import java.io.InputStream
 
 /**
- * Class that build connect to the DivvyResponse API.
+ * Class that build connect to the Divvy API.
  *
  * @author Carl-Philipp Harmant
  * @version 1
@@ -35,6 +35,6 @@ object DivvyClient {
 
     @Throws(ConnectException::class)
     fun getBikeStations(): InputStream {
-        return httpClient.connect(DIVYY_URL)
+        return httpClient.connect(store.state.divvyUrl)
     }
 }

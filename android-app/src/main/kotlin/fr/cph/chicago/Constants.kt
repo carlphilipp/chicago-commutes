@@ -37,7 +37,6 @@ object Constants {
     const val TRAINS_FOLLOW_URL = TRAINS_BASE + "ttfollow.aspx"
     const val TRAINS_LOCATION_URL = TRAINS_BASE + "ttpositions.aspx"
 
-
     // CTA - Buses
     const val BUSES_ROUTES_URL = BUSES_BASE + "getroutes"
     const val BUSES_DIRECTION_URL = BUSES_BASE + "getdirections"
@@ -50,7 +49,7 @@ object Constants {
     const val ALERTS_ROUTES_URL = ALERTS_BASE + "routes.aspx"
     const val ALERT_ROUTES_URL = ALERTS_BASE + "alerts.aspx"
 
-    // DivvyResponse
+    // Divvy
     const val DIVYY_URL = "https://feeds.divvybikes.com/stations/stations.json"
 
     // Google
