@@ -1,6 +1,6 @@
 object Android {
     const val compile_sdk = 28
-    const val build_tools = "29.0.0-rc3"
+    const val build_tools = "28.0.3"
     const val min_sdk = 21
     const val target_sdk = 28
 }
