@@ -1,18 +1,7 @@
 {
     "request": {
         "method": "GET",
-        "urlPath": "/ttarrivals.aspx",
-        "queryParameters": {
-            "key": {
-                "matches": ".*"
-            },
-            "outputType": {
-                "equalTo": "JSON"
-            },
-            "mapid": {
-                "equalTo": "41320"
-            }
-        }
+        "urlPattern": "/ttarrivals.aspx\\?key=[a-zA-Z0-9]+&outputType=JSON&mapid=41320"
     },
     "response": {
         "status": 200,
