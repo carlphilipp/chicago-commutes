@@ -1,0 +1,21 @@
+{
+    "request": {
+        "method": "GET",
+        "urlPath": "/ttarrivals.aspx",
+        "queryParameters": {
+            "key": {
+                "matches": ".*"
+            },
+            "outputType": {
+                "equalTo": "JSON"
+            },
+            "mapid": {
+                "equalTo": "41320"
+            }
+        }
+    },
+    "response": {
+        "status": 200,
+        "bodyFileName": "trains/41320/41320.json"
+    }
+}

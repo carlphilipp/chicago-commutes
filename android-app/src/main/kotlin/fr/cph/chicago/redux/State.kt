@@ -20,6 +20,9 @@ data class State(
     val googleStreetKey: String = StringUtils.EMPTY,
 
     // URLs
+    val trainArrivalsUrl: String = StringUtils.EMPTY,
+    val trainFollowUrl: String = StringUtils.EMPTY,
+    val trainLocationUrl: String = StringUtils.EMPTY,
     val divvyUrl: String = StringUtils.EMPTY,
 
     val lastStateChange: Date = Date(), // Field to ensure the update of the state

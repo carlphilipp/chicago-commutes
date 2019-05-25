@@ -86,6 +86,7 @@ class App : Application() {
             ctaTrainKey = applicationContext.getString(R.string.cta_train_key),
             ctaBusKey = applicationContext.getString(R.string.cta_bus_key),
             googleStreetKey = applicationContext.getString(R.string.google_maps_api_key),
+            trainUrl = applicationContext.getString(R.string.train_url),
             divvyUrl = applicationContext.getString(R.string.divvy_url)
         )
         store.dispatch(action)

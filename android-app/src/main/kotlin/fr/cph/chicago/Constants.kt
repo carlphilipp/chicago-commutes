@@ -28,14 +28,9 @@ package fr.cph.chicago
 object Constants {
     const val GPS_ACCESS = 1
 
-    private const val TRAINS_BASE = "http://lapi.transitchicago.com/api/1.0/"
+    const val TRAINS_BASE = "http://lapi.transitchicago.com/api/1.0/"
     private const val BUSES_BASE = "http://www.ctabustracker.com/bustime/api/v2/"
     private const val ALERTS_BASE = "http://www.transitchicago.com/api/1.0/"
-
-    // CTA - Trains
-    const val TRAINS_ARRIVALS_URL = TRAINS_BASE + "ttarrivals.aspx"
-    const val TRAINS_FOLLOW_URL = TRAINS_BASE + "ttfollow.aspx"
-    const val TRAINS_LOCATION_URL = TRAINS_BASE + "ttpositions.aspx"
 
     // CTA - Buses
     const val BUSES_ROUTES_URL = BUSES_BASE + "getroutes"

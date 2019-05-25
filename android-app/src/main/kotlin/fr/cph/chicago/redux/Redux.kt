@@ -37,16 +37,17 @@ fun reducer(action: Action, oldState: State?): State {
             state = state.copy(status = Status.UNKNOWN)
         }
         is DefaultSettingsAction -> {
-            val divvyUrl = if(action.divvyUrl == StringUtils.EMPTY) {
-                Constants.DIVYY_URL
-            } else {
-                action.divvyUrl
-            }
+            val trainBaseUrl = if (action.trainUrl == StringUtils.EMPTY) Constants.TRAINS_BASE else action.trainUrl
+            val divvyUrl = if (action.divvyUrl == StringUtils.EMPTY) Constants.DIVYY_URL else action.divvyUrl
+
             state = state.copy(
                 lastStateChange = Date(),
                 ctaTrainKey = action.ctaTrainKey,
                 ctaBusKey = action.ctaBusKey,
                 googleStreetKey = action.googleStreetKey,
+                trainArrivalsUrl = trainBaseUrl + "ttarrivals.aspx",
+                trainFollowUrl = trainBaseUrl + "ttfollow.aspx",
+                trainLocationUrl = trainBaseUrl + "ttpositions.aspx",
                 divvyUrl = divvyUrl)
         }
         is BaseAction -> {

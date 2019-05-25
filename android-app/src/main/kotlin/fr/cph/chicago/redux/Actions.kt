@@ -19,6 +19,7 @@ data class DefaultSettingsAction(
     val ctaTrainKey: String,
     val ctaBusKey: String,
     val googleStreetKey: String,
+    val trainUrl: String,
     val divvyUrl: String
 ) : Action
 

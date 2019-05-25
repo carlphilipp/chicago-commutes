@@ -24,16 +24,13 @@ android {
         def googleMapsApiKey = props.get('google.streetmap.key')
         def ctaTrainKey = props.get('cta.train.key')
         def ctaBusKey = props.get('cta.bus.key')
+        // Api Keys
+        resValue "string", "google_maps_api_key", (googleMapsApiKey != null) ? new String(Base64.getDecoder().decode(googleMapsApiKey)) : ""
+        resValue "string", "cta_train_key", (ctaTrainKey != null) ? new String(Base64.getDecoder().decode(ctaTrainKey)) : ""
+        resValue "string", "cta_bus_key", (ctaBusKey != null) ? new String(Base64.getDecoder().decode(ctaBusKey)) : ""
 
-        if (googleMapsApiKey != null && ctaTrainKey != null && ctaBusKey != null) {
-            resValue "string", "google_maps_api_key", new String(Base64.getDecoder().decode(googleMapsApiKey))
-            resValue "string", "cta_train_key", new String(Base64.getDecoder().decode(ctaTrainKey))
-            resValue "string", "cta_bus_key", new String(Base64.getDecoder().decode(ctaBusKey))
-        } else {
-            resValue "string", "google_maps_api_key", ""
-            resValue "string", "cta_train_key", ""
-            resValue "string", "cta_bus_key", ""
-        }
+        // Urls
+        resValue "string", "train_url", (project.hasProperty("trainUrl")) ? project.trainUrl : ""
         resValue "string", "divvy_url", (project.hasProperty("divvyUrl")) ? project.divvyUrl : ""
 
         javaCompileOptions {

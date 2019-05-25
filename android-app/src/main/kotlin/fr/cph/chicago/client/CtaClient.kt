@@ -27,9 +27,6 @@ import fr.cph.chicago.Constants.BUSES_PATTERN_URL
 import fr.cph.chicago.Constants.BUSES_ROUTES_URL
 import fr.cph.chicago.Constants.BUSES_STOP_URL
 import fr.cph.chicago.Constants.BUSES_VEHICLES_URL
-import fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL
-import fr.cph.chicago.Constants.TRAINS_FOLLOW_URL
-import fr.cph.chicago.Constants.TRAINS_LOCATION_URL
 import fr.cph.chicago.client.CtaRequestType.ALERTS_ROUTE
 import fr.cph.chicago.client.CtaRequestType.ALERTS_ROUTES
 import fr.cph.chicago.client.CtaRequestType.BUS_ARRIVALS
@@ -80,9 +77,9 @@ object CtaClient {
 
     private fun address(requestType: CtaRequestType, params: MultiValuedMap<String, String>): String {
         val address = when (requestType) {
-            TRAIN_ARRIVALS -> TRAINS_ARRIVALS_URL + QUERY_PARAM_KEY + store.state.ctaTrainKey + "&outputType=JSON"
-            TRAIN_FOLLOW -> TRAINS_FOLLOW_URL + QUERY_PARAM_KEY + store.state.ctaTrainKey + "&outputType=JSON"
-            TRAIN_LOCATION -> TRAINS_LOCATION_URL + QUERY_PARAM_KEY + store.state.ctaTrainKey + "&outputType=JSON"
+            TRAIN_ARRIVALS -> store.state.trainArrivalsUrl + QUERY_PARAM_KEY + store.state.ctaTrainKey + "&outputType=JSON"
+            TRAIN_FOLLOW -> store.state.trainFollowUrl + QUERY_PARAM_KEY + store.state.ctaTrainKey + "&outputType=JSON"
+            TRAIN_LOCATION -> store.state.trainLocationUrl + QUERY_PARAM_KEY + store.state.ctaTrainKey + "&outputType=JSON"
             BUS_ROUTES -> BUSES_ROUTES_URL + QUERY_PARAM_KEY + store.state.ctaBusKey + "&format=json"
             BUS_DIRECTION -> BUSES_DIRECTION_URL + QUERY_PARAM_KEY + store.state.ctaBusKey + "&format=json"
             BUS_STOP_LIST -> BUSES_STOP_URL + QUERY_PARAM_KEY + store.state.ctaBusKey + "&format=json"

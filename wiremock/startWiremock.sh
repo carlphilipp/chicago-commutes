@@ -11,4 +11,4 @@ if [[ ! -f ${jar} ]]; then
     wget -P ${current_dir} http://repo1.maven.org/maven2/com/github/tomakehurst/wiremock-standalone/$WIREMOCK_VERSION/$jar_name
 fi
 
-java -jar $jar
+java -jar $jar --root-dir ${current_dir}
