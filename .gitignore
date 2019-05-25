@@ -8,3 +8,4 @@ app.properties
 keystore.properties
 *.iml
 projectFilesBackup
+*.jar
