@@ -114,7 +114,11 @@ object Favorites {
         trainFavorites = store.state.trainFavorites
         busFavorites = store.state.busFavorites
         busRouteFavorites = store.state.busRouteFavorites
+        // FIXME: Temporary fix to order list of favorites bikes
         bikeFavorites = store.state.bikeFavorites
+            .map { id -> bikeService.createEmptyBikeStation(id) }
+            .sortedBy { it.name }
+            .map { it.id }
     }
 
     /**

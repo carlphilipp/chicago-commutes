@@ -18,8 +18,8 @@ class BikeStation(
             return buildDefaultBikeStationWithName("Unknown")
         }
 
-        fun buildDefaultBikeStationWithName(name: String): BikeStation {
-            return BikeStation(0, name, -1, -1, 0.0, 0.0, StringUtils.EMPTY)
+        fun buildDefaultBikeStationWithName(name: String, id : Int = 0): BikeStation {
+            return BikeStation(id, name, -1, -1, 0.0, 0.0, StringUtils.EMPTY)
         }
 
         @JvmField

@@ -65,7 +65,7 @@ object BikeService {
 
     fun createEmptyBikeStation(bikeStationId: Int): BikeStation {
         val stationName = preferenceService.getBikeRouteNameMapping(bikeStationId)
-        return BikeStation.buildDefaultBikeStationWithName(stationName)
+        return BikeStation.buildDefaultBikeStationWithName(stationName, bikeStationId)
     }
 
     private fun loadAllBikeStations(): List<BikeStation> {
