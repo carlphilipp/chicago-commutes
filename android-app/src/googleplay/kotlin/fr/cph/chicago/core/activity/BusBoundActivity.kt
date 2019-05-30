@@ -50,6 +50,7 @@ import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.GoogleMapUtil
 import fr.cph.chicago.util.Util
+import io.reactivex.android.schedulers.AndroidSchedulers
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
@@ -160,6 +161,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
         toolbar.setOnClickListener { finish() }
 
         busService.loadAllBusStopsForRouteBound(busRouteId, bound)
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { result ->
                     busStops = result
