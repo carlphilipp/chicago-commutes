@@ -26,9 +26,11 @@ import android.widget.Button
 import android.widget.RelativeLayout
 import butterknife.BindView
 import fr.cph.chicago.R
+import fr.cph.chicago.R.string
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.BaseAction
+import fr.cph.chicago.redux.DefaultSettingsAction
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.RealmConfig
@@ -56,12 +58,24 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading), StoreSubscriber<Stat
     override fun create(savedInstanceState: Bundle?) {
         store.subscribe(this)
         setUpRealm()
-        store.dispatch(BaseAction())
         retryButton.setOnClickListener {
             if (failureLayout.visibility != View.GONE) failureLayout.visibility = View.GONE
             if (loadingLayout.visibility != View.VISIBLE) loadingLayout.visibility = View.VISIBLE
             store.dispatch(BaseAction())
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val defaultSettingsAction = DefaultSettingsAction(
+            ctaTrainKey = applicationContext.getString(string.cta_train_key),
+            ctaBusKey = applicationContext.getString(string.cta_bus_key),
+            googleStreetKey = applicationContext.getString(string.google_maps_api_key),
+            trainUrl = applicationContext.getString(string.train_url),
+            divvyUrl = applicationContext.getString(string.divvy_url)
+        )
+        store.dispatch(defaultSettingsAction)
+        store.dispatch(BaseAction())
     }
 
     private fun setUpRealm() {

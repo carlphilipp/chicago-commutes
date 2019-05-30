@@ -195,7 +195,7 @@ object TrainService {
                     TrainLine.PURPLE -> trainRepository.purpleLinePatterns
                     TrainLine.RED -> trainRepository.redLinePatterns
                     TrainLine.YELLOW -> trainRepository.yellowLinePatterns
-                    TrainLine.NA -> throw RuntimeException("NA not available")
+                    else -> listOf()
                 }
             })
             .onErrorReturn(handleError())

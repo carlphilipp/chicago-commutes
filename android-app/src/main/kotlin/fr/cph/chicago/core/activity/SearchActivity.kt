@@ -35,6 +35,7 @@ import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.adapter.SearchAdapter
+import fr.cph.chicago.exception.BaseException
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
@@ -64,7 +65,7 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
     private var clearFocus: Boolean = false
 
     private val supportActionBarNotNull: ActionBar
-        get() = supportActionBar ?: throw RuntimeException()
+        get() = supportActionBar ?: throw BaseException()
 
     override fun create(savedInstanceState: Bundle?) {
         setupToolbar()

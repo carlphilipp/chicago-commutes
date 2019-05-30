@@ -23,7 +23,6 @@ import fr.cph.chicago.R
 import fr.cph.chicago.client.REQUEST_MAP_ID
 import fr.cph.chicago.client.REQUEST_ROUTE
 import fr.cph.chicago.client.REQUEST_STOP_ID
-import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.redux.store
@@ -33,6 +32,7 @@ import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
+import timber.log.Timber
 import java.util.Date
 
 object PreferenceService {
@@ -51,7 +51,9 @@ object PreferenceService {
 
     fun saveTheme(theme: String) {
         if (theme != "Light" && theme != "Dark") {
-            throw RuntimeException("The theme can only be Light or Dark")
+            Timber.w("The theme can only be Light or Dark")
+            repo.saveTheme("Light")
+            return
         }
         repo.saveTheme(theme)
     }
