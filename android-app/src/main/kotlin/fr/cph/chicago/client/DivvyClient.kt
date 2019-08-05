@@ -34,7 +34,12 @@ object DivvyClient {
     private val httpClient = HttpClient
 
     @Throws(ConnectException::class)
-    fun getBikeStations(): InputStream {
-        return httpClient.connect(store.state.divvyUrl)
+    fun getStationsInformation(): InputStream {
+        return httpClient.connect(store.state.divvyStationInformationUrl)
+    }
+
+    @Throws(ConnectException::class)
+    fun getStationsStatus(): InputStream {
+        return httpClient.connect(store.state.divvyStationStatusUrl)
     }
 }

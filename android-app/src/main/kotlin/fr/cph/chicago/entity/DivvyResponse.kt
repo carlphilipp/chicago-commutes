@@ -19,33 +19,23 @@
 
 package fr.cph.chicago.entity
 
-import com.fasterxml.jackson.annotation.JsonProperty
+data class StationInformationResponse(val data: DataStationInformationResponse)
 
-data class DivvyResponse(
-    @JsonProperty("stationBeanList")
-    val stations: List<DivvyStation>)
+data class DataStationInformationResponse(val stations: List<DivvyStationInformation>)
 
-// Commenting out fields not used
-data class DivvyStation(
-    val id: Int,
-    @JsonProperty("stationName")
-    val name: String,
-    val availableDocks: Int,
-    //val totalDocks: Int,
-    val latitude: Double,
-    val longitude: Double,
-    //val statusValue: String,
-    //val statusKey: Int,
-    //val status: String,
-    val availableBikes: Int,
-    val stAddress1: String)
-    //val stAddress2: String,
-    //val city: String,
-    //val postalCode: String,
-    //val location: String,
-    //val altitude: String,
-    //val testStation: Boolean,
-    //val lastCommunicationTime: String,
-    //val landMark: String,
-    //@JsonProperty("is_renting")
-    //val isRenting: Boolean)
+data class DivvyStationInformation(
+    val station_id: String,
+    var name: String,
+    val short_name: String,
+    val lat: Double,
+    val lon: Double,
+    val capacity: Int)
+
+data class StationStatusResponse(val data: DataStationStatusResponse)
+
+data class DataStationStatusResponse(val stations: List<DivvyStationStatus>)
+
+data class DivvyStationStatus(
+    val station_id: String,
+    val num_bikes_available: Int,
+    val num_docks_available: Int)

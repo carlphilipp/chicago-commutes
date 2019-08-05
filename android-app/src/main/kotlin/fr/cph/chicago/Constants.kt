@@ -45,7 +45,8 @@ object Constants {
     const val ALERT_ROUTES_URL = ALERTS_BASE + "alerts.aspx"
 
     // Divvy
-    const val DIVYY_URL = "https://feeds.divvybikes.com/stations/stations.json"
+    const val DIVYY_STATUS_URL = "https://gbfs.divvybikes.com/gbfs/en/station_status.json"
+    const val DIVYY_INFORMATION_URL = "https://gbfs.divvybikes.com/gbfs/en/station_information.json"
 
     // Google
     const val GOOGLE_STREET_VIEW_URL = "http://maps.googleapis.com/maps/api/streetview"

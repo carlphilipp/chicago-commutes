@@ -31,7 +31,8 @@ android {
 
         // Urls
         resValue "string", "train_url", (project.hasProperty("trainUrl")) ? project.trainUrl : ""
-        resValue "string", "divvy_url", (project.hasProperty("divvyUrl")) ? project.divvyUrl : ""
+        resValue "string", "divvy_information_url", (project.hasProperty("divvyInformationUrl")) ? project.divvyUrl : ""
+        resValue "string", "divvy_status_url", (project.hasProperty("divvyStatusUrl")) ? project.divvyUrl : ""
 
         javaCompileOptions {
             annotationProcessorOptions {

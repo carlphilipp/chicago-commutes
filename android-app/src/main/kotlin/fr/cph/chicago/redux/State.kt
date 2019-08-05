@@ -23,7 +23,8 @@ data class State(
     val trainArrivalsUrl: String = StringUtils.EMPTY,
     val trainFollowUrl: String = StringUtils.EMPTY,
     val trainLocationUrl: String = StringUtils.EMPTY,
-    val divvyUrl: String = StringUtils.EMPTY,
+    val divvyStationInformationUrl: String = StringUtils.EMPTY,
+    val divvyStationStatusUrl: String = StringUtils.EMPTY,
 
     val lastStateChange: Date = Date(), // Field to ensure the update of the state
     val status: Status = Status.UNKNOWN,

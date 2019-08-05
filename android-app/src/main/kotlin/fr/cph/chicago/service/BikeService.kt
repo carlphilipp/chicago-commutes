@@ -21,12 +21,16 @@ package fr.cph.chicago.service
 
 import fr.cph.chicago.client.DivvyClient
 import fr.cph.chicago.core.model.BikeStation
-import fr.cph.chicago.entity.DivvyResponse
+import fr.cph.chicago.entity.DivvyStationInformation
+import fr.cph.chicago.entity.DivvyStationStatus
+import fr.cph.chicago.entity.StationInformationResponse
+import fr.cph.chicago.entity.StationStatusResponse
 import fr.cph.chicago.parser.JsonParser
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import fr.cph.chicago.util.Util
 import io.reactivex.Single
+import io.reactivex.rxkotlin.Singles
 import io.reactivex.schedulers.Schedulers
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 import timber.log.Timber
@@ -40,12 +44,15 @@ object BikeService {
     private val preferenceService = PreferenceService
 
     fun allBikeStations(): Single<List<BikeStation>> {
-        return singleFromCallable(Callable { loadAllBikeStations() })
+        return loadAllBikeStations()
     }
 
     fun findBikeStation(id: Int): Single<BikeStation> {
-        return singleFromCallable(
-            Callable { loadAllBikeStations().first { station -> station.id == id } })
+        return loadAllBikeStations()
+            .toObservable()
+            .flatMapIterable { station -> station }
+            .filter { station -> station.id == id }
+            .firstOrError()
             .onErrorReturn { throwable ->
                 Timber.e(throwable, "Could not load bike stations")
                 BikeStation.buildDefaultBikeStationWithName("error")
@@ -68,22 +75,37 @@ object BikeService {
         return BikeStation.buildDefaultBikeStationWithName(stationName, bikeStationId)
     }
 
-    private fun loadAllBikeStations(): List<BikeStation> {
-        val bikeStationsInputStream = client.getBikeStations()
-        return jsonParser
-            .parse(bikeStationsInputStream, DivvyResponse::class.java)
-            .stations
-            .map { bikeStation ->
-                BikeStation(
-                    bikeStation.id,
-                    bikeStation.name,
-                    bikeStation.availableDocks,
-                    bikeStation.availableBikes,
-                    bikeStation.latitude,
-                    bikeStation.longitude,
-                    bikeStation.stAddress1)
+    private fun loadAllBikeStations(): Single<List<BikeStation>> {
+        val informationSingle = singleFromCallable(Callable { loadStationsInformation() })
+        val statusSingle = singleFromCallable(Callable { loadStationsStatus() })
+        return Singles.zip(informationSingle, statusSingle, zipper = { info, stat ->
+            val res = mutableListOf<BikeStation>()
+            for ((key, stationInfo) in info) {
+                val stationStatus = stat[key] ?: DivvyStationStatus("", 0, 0)
+                res.add(BikeStation(
+                    id = stationInfo.station_id.toInt(),
+                    name = stationInfo.name,
+                    availableDocks = stationStatus.num_docks_available,
+                    availableBikes = stationStatus.num_bikes_available,
+                    latitude = stationInfo.lat,
+                    longitude = stationInfo.lon,
+                    address = stationInfo.name))
             }
-            .sortedWith(compareBy(BikeStation::name))
-            .toMutableList()
+            res.sortedWith(compareBy(BikeStation::name))
+        })
+    }
+
+    private fun loadStationsInformation(): Map<String, DivvyStationInformation> {
+        val stationsInformationIs = client.getStationsInformation()
+        return jsonParser
+            .parse(stationsInformationIs, StationInformationResponse::class.java)
+            .data.stations.associateBy { it.station_id }
+    }
+
+    private fun loadStationsStatus(): Map<String, DivvyStationStatus> {
+        val stationsStatusIs = client.getStationsStatus()
+        return jsonParser
+            .parse(stationsStatusIs, StationStatusResponse::class.java)
+            .data.stations.associateBy { it.station_id }
     }
 }

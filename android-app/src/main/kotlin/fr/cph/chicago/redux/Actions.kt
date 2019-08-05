@@ -20,7 +20,8 @@ data class DefaultSettingsAction(
     val ctaBusKey: String,
     val googleStreetKey: String,
     val trainUrl: String,
-    val divvyUrl: String
+    val divvyStationInformationUrl: String,
+    val divvyStationStatusUrl: String
 ) : Action
 
 data class BaseAction(

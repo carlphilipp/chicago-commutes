@@ -72,7 +72,8 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading), StoreSubscriber<Stat
             ctaBusKey = applicationContext.getString(string.cta_bus_key),
             googleStreetKey = applicationContext.getString(string.google_maps_api_key),
             trainUrl = applicationContext.getString(string.train_url),
-            divvyUrl = applicationContext.getString(string.divvy_url)
+            divvyStationInformationUrl = applicationContext.getString(string.divvy_information_url),
+            divvyStationStatusUrl = applicationContext.getString(string.divvy_status_url)
         )
         store.dispatch(defaultSettingsAction)
         store.dispatch(BaseAction())
