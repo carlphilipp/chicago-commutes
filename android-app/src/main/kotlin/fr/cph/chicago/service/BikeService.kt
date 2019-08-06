@@ -21,12 +21,10 @@ package fr.cph.chicago.service
 
 import fr.cph.chicago.client.DivvyClient
 import fr.cph.chicago.core.model.BikeStation
-import fr.cph.chicago.entity.DivvyStationInformation
 import fr.cph.chicago.entity.DivvyStationStatus
-import fr.cph.chicago.entity.StationInformationResponse
-import fr.cph.chicago.entity.StationStatusResponse
-import fr.cph.chicago.parser.JsonParser
 import fr.cph.chicago.redux.store
+import fr.cph.chicago.rx.RxUtil.handleListError
+import fr.cph.chicago.rx.RxUtil.handleMapError
 import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import fr.cph.chicago.util.Util
 import io.reactivex.Single
@@ -39,7 +37,6 @@ import java.util.concurrent.Callable
 object BikeService {
 
     private val client = DivvyClient
-    private val jsonParser = JsonParser
     private val util = Util
     private val preferenceService = PreferenceService
 
@@ -76,36 +73,23 @@ object BikeService {
     }
 
     private fun loadAllBikeStations(): Single<List<BikeStation>> {
-        val informationSingle = singleFromCallable(Callable { loadStationsInformation() })
-        val statusSingle = singleFromCallable(Callable { loadStationsStatus() })
+        val informationSingle = singleFromCallable(Callable { client.getStationsInformation() }).onErrorReturn(handleMapError())
+        val statusSingle = singleFromCallable(Callable { client.getStationsStatus() }).onErrorReturn(handleMapError())
         return Singles.zip(informationSingle, statusSingle, zipper = { info, stat ->
             val res = mutableListOf<BikeStation>()
             for ((key, stationInfo) in info) {
                 val stationStatus = stat[key] ?: DivvyStationStatus("", 0, 0)
                 res.add(BikeStation(
-                    id = stationInfo.station_id.toInt(),
+                    id = stationInfo.id.toInt(),
                     name = stationInfo.name,
-                    availableDocks = stationStatus.num_docks_available,
-                    availableBikes = stationStatus.num_bikes_available,
-                    latitude = stationInfo.lat,
-                    longitude = stationInfo.lon,
+                    availableDocks = stationStatus.availableDocks,
+                    availableBikes = stationStatus.availableBikes,
+                    latitude = stationInfo.latitude,
+                    longitude = stationInfo.longitude,
                     address = stationInfo.name))
             }
             res.sortedWith(compareBy(BikeStation::name))
         })
-    }
-
-    private fun loadStationsInformation(): Map<String, DivvyStationInformation> {
-        val stationsInformationIs = client.getStationsInformation()
-        return jsonParser
-            .parse(stationsInformationIs, StationInformationResponse::class.java)
-            .data.stations.associateBy { it.station_id }
-    }
-
-    private fun loadStationsStatus(): Map<String, DivvyStationStatus> {
-        val stationsStatusIs = client.getStationsStatus()
-        return jsonParser
-            .parse(stationsStatusIs, StationStatusResponse::class.java)
-            .data.stations.associateBy { it.station_id }
+            .onErrorReturn(handleListError())
     }
 }

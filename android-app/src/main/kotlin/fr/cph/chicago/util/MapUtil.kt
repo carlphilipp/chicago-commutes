@@ -3,7 +3,7 @@ package fr.cph.chicago.util
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.rx.RxUtil.singleFromCallable
-import fr.cph.chicago.rx.RxUtil.handleError
+import fr.cph.chicago.rx.RxUtil.handleListError
 import io.reactivex.Single
 import java.util.concurrent.Callable
 
@@ -99,6 +99,6 @@ object MapUtil {
                     .filter { station -> station.longitude <= lonMax }
                     .filter { station -> station.longitude >= lonMin }
             })
-            .onErrorReturn(handleError())
+            .onErrorReturn(handleListError())
     }
 }

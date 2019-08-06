@@ -19,9 +19,13 @@
 
 package fr.cph.chicago.client
 
+import fr.cph.chicago.entity.DivvyStationInformation
+import fr.cph.chicago.entity.DivvyStationStatus
+import fr.cph.chicago.entity.StationInformationResponse
+import fr.cph.chicago.entity.StationStatusResponse
 import fr.cph.chicago.exception.ConnectException
+import fr.cph.chicago.parser.JsonParser
 import fr.cph.chicago.redux.store
-import java.io.InputStream
 
 /**
  * Class that build connect to the Divvy API.
@@ -32,14 +36,23 @@ import java.io.InputStream
 object DivvyClient {
 
     private val httpClient = HttpClient
+    private val jsonParser = JsonParser
 
     @Throws(ConnectException::class)
-    fun getStationsInformation(): InputStream {
-        return httpClient.connect(store.state.divvyStationInformationUrl)
+    fun getStationsInformation(): Map<String, DivvyStationInformation> {
+        val inputStream = httpClient.connect(store.state.divvyStationInformationUrl)
+        return jsonParser
+            .parse(inputStream, StationInformationResponse::class.java)
+            .data.stations
+            .associateBy { it.id }
     }
 
     @Throws(ConnectException::class)
-    fun getStationsStatus(): InputStream {
-        return httpClient.connect(store.state.divvyStationStatusUrl)
+    fun getStationsStatus(): Map<String, DivvyStationStatus> {
+        val inputStream =  httpClient.connect(store.state.divvyStationStatusUrl)
+        return jsonParser
+            .parse(inputStream, StationStatusResponse::class.java)
+            .data.stations
+            .associateBy { it.id }
     }
 }

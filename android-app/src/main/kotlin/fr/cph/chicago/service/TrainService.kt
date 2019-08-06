@@ -42,7 +42,7 @@ import fr.cph.chicago.entity.TrainArrivalResponse
 import fr.cph.chicago.entity.TrainLocationResponse
 import fr.cph.chicago.repository.TrainRepository
 import fr.cph.chicago.rx.RxUtil.singleFromCallable
-import fr.cph.chicago.rx.RxUtil.handleError
+import fr.cph.chicago.rx.RxUtil.handleListError
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.apache.commons.collections4.MultiValuedMap
@@ -161,7 +161,7 @@ object TrainService {
                 }
                 trainEta.toList()
             })
-            .onErrorReturn(handleError())
+            .onErrorReturn(handleListError())
     }
 
     fun trainLocations(line: String): Single<List<Train>> {
@@ -198,7 +198,7 @@ object TrainService {
                     else -> listOf()
                 }
             })
-            .onErrorReturn(handleError())
+            .onErrorReturn(handleListError())
     }
 
     fun readNearbyStation(position: Position): Single<List<TrainStation>> {

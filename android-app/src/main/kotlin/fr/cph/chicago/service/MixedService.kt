@@ -6,7 +6,7 @@ import fr.cph.chicago.core.model.dto.FavoritesDTO
 import fr.cph.chicago.core.model.dto.FirstLoadDTO
 import fr.cph.chicago.core.model.dto.LocalDTO
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
-import fr.cph.chicago.rx.RxUtil.handleError
+import fr.cph.chicago.rx.RxUtil.handleListError
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.schedulers.Schedulers
@@ -51,7 +51,7 @@ object MixedService {
         // Bus online favorites
         val busArrivals = favoritesBusArrivalDTO().observeOn(Schedulers.computation())
         // Bikes online all stations
-        val bikeStationsObservable = bikeService.allBikeStations().observeOn(Schedulers.computation()).onErrorReturn(handleError())
+        val bikeStationsObservable = bikeService.allBikeStations().observeOn(Schedulers.computation()).onErrorReturn(handleListError())
         return Singles.zip(busArrivals, trainArrivals, bikeStationsObservable,
             zipper = { busArrivalDTO, trainArrivalsDTO, bikeStations ->
                 FavoritesDTO(trainArrivalsDTO, busArrivalDTO, bikeStations.isEmpty(), bikeStations)
@@ -59,8 +59,8 @@ object MixedService {
     }
 
     fun busRoutesAndBikeStation(): Single<FirstLoadDTO> {
-        val busRoutesSingle = busService.busRoutes().onErrorReturn(handleError()).observeOn(Schedulers.computation())
-        val bikeStationsSingle = bikeService.allBikeStations().onErrorReturn(handleError()).observeOn(Schedulers.computation())
+        val busRoutesSingle = busService.busRoutes().onErrorReturn(handleListError()).observeOn(Schedulers.computation())
+        val bikeStationsSingle = bikeService.allBikeStations().onErrorReturn(handleListError()).observeOn(Schedulers.computation())
         return Singles.zip(
             busRoutesSingle,
             bikeStationsSingle,

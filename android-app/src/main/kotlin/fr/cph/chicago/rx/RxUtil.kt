@@ -34,8 +34,13 @@ object RxUtil {
             .observeOn(observeOn)
     }
 
-    fun <T> handleError(): (Throwable) -> List<T> = { throwable ->
+    fun <T> handleListError(): (Throwable) -> List<T> = { throwable ->
         Timber.e(throwable)
         ArrayList()
+    }
+
+    fun <T, R> handleMapError(): (Throwable) -> Map<T, R> = { throwable ->
+        Timber.e(throwable)
+        HashMap()
     }
 }

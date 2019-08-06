@@ -19,16 +19,20 @@
 
 package fr.cph.chicago.entity
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 data class StationInformationResponse(val data: DataStationInformationResponse)
 
 data class DataStationInformationResponse(val stations: List<DivvyStationInformation>)
 
 data class DivvyStationInformation(
-    val station_id: String,
+    @JsonProperty("station_id")
+    val id: String,
     var name: String,
-    val short_name: String,
-    val lat: Double,
-    val lon: Double,
+    @JsonProperty("lat")
+    val latitude: Double,
+    @JsonProperty("lon")
+    val longitude: Double,
     val capacity: Int)
 
 data class StationStatusResponse(val data: DataStationStatusResponse)
@@ -36,6 +40,9 @@ data class StationStatusResponse(val data: DataStationStatusResponse)
 data class DataStationStatusResponse(val stations: List<DivvyStationStatus>)
 
 data class DivvyStationStatus(
-    val station_id: String,
-    val num_bikes_available: Int,
-    val num_docks_available: Int)
+    @JsonProperty("station_id")
+    val id: String,
+    @JsonProperty("num_bikes_available")
+    val availableBikes: Int,
+    @JsonProperty("num_docks_available")
+    val availableDocks: Int)

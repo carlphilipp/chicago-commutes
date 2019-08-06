@@ -57,7 +57,7 @@ import fr.cph.chicago.exception.CtaException
 import fr.cph.chicago.parser.BusStopCsvParser
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.BusRepository
-import fr.cph.chicago.rx.RxUtil.handleError
+import fr.cph.chicago.rx.RxUtil.handleListError
 import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import fr.cph.chicago.util.Util
 import io.reactivex.Single
@@ -143,7 +143,7 @@ object BusService {
 
     fun loadFollowBus(busId: String): Single<List<BusArrival>> {
         return getBusArrivals(busFollowParams(busId))
-            .onErrorReturn(handleError())
+            .onErrorReturn(handleListError())
             .subscribeOn(Schedulers.computation())
     }
 
@@ -191,14 +191,14 @@ object BusService {
 
     fun loadBusArrivals(busStop: BusStop): Single<List<BusArrival>> {
         return getBusArrivals(busArrivalsStopIdParams(busStop.id))
-            .onErrorReturn(handleError())
+            .onErrorReturn(handleListError())
             .subscribeOn(Schedulers.computation())
     }
 
     fun busStopsAround(position: Position): Single<List<BusStop>> {
         return singleFromCallable(
             Callable { busRepository.getBusStopsAround(position) })
-            .onErrorReturn(handleError())
+            .onErrorReturn(handleListError())
     }
 
     fun saveBusStops(busStops: List<BusStop>) {
