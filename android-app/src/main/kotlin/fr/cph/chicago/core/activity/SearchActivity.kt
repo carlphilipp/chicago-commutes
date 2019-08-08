@@ -144,7 +144,7 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
 
     private fun handleIntent(intent: Intent) {
         if (Intent.ACTION_SEARCH == intent.action) {
-            query = intent.getStringExtra(SearchManager.QUERY).trim { it <= ' ' }
+            query = ((intent.getStringExtra(SearchManager.QUERY)) ?: StringUtils.EMPTY).trim { it <= ' ' }
             val foundStations = trainService.searchStations(query)
             val foundBusRoutes = busService.searchBusRoutes(query)
             val foundBikeStations = bikeService.searchBikeStations(query)

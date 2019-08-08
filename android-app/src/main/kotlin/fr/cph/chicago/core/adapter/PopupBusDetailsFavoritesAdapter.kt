@@ -35,7 +35,7 @@ import org.apache.commons.text.WordUtils
  */
 class PopupBusDetailsFavoritesAdapter(context: Context, private val values: List<BusDetailsDTO>) : ArrayAdapter<BusDetailsDTO>(context, R.layout.popup_bus_cell, values) {
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var view = convertView
         val holder: ViewHolder
         if (view == null) {
@@ -48,7 +48,7 @@ class PopupBusDetailsFavoritesAdapter(context: Context, private val values: List
         }
         val label = values[position].stopName + " (" + WordUtils.capitalize(values[position].bound.toLowerCase()) + ")"
         holder.label.text = label
-        return view
+        return view!!
     }
 
     private class ViewHolder(val label: TextView)

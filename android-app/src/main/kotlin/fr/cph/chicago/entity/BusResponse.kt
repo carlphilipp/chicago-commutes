@@ -125,12 +125,12 @@ data class BusStopsResponse(
         val lon: Double)
 }
 
-class Error : HashMap<String, Any>() {
+class Error(private val underlying: HashMap<String, Any>) : MutableMap<String, Any> by underlying {
     fun noServiceScheduled(): Boolean {
-        if (!this.containsKey("msg")) {
+        if (!this.contains("msg")) {
             return false
         }
-        val msg = get("msg")
+        val msg = this.getValue("msg")
         return "No service scheduled" == msg || "No arrival times" == msg
     }
 }

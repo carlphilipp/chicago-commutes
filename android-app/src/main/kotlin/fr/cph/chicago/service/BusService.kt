@@ -54,6 +54,7 @@ import fr.cph.chicago.entity.BusPositionResponse
 import fr.cph.chicago.entity.BusRoutesResponse
 import fr.cph.chicago.entity.BusStopsResponse
 import fr.cph.chicago.exception.CtaException
+import fr.cph.chicago.parseNotNull
 import fr.cph.chicago.parser.BusStopCsvParser
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.BusRepository
@@ -276,14 +277,14 @@ object BusService {
                             .prd!!
                             .map { prd ->
                                 BusArrival(
-                                    timeStamp = simpleDateFormatBus.parse(prd.tmstmp),
+                                    timeStamp = simpleDateFormatBus.parseNotNull(prd.tmstmp),
                                     stopName = prd.stpnm,
                                     stopId = prd.stpid.toInt(),
                                     busId = prd.vid.toInt(),
                                     routeId = prd.rt,
                                     routeDirection = BusDirection.fromString(prd.rtdir).text,
                                     busDestination = prd.des,
-                                    predictionTime = simpleDateFormatBus.parse(prd.prdtm),
+                                    predictionTime = simpleDateFormatBus.parseNotNull(prd.prdtm),
                                     isDelay = prd.dly)
                             }
                         // limiting the number of bus arrival returned so it's not too ugly on the map

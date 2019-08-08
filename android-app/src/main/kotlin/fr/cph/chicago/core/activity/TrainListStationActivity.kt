@@ -60,7 +60,7 @@ class TrainListStationActivity : ButterKnifeActivity(R.layout.activity_train_sta
     override fun create(savedInstanceState: Bundle?) {
         // Load data
         lineParam = if (savedInstanceState != null) savedInstanceState.getString(bundleTrainLine)
-            ?: StringUtils.EMPTY else intent.getStringExtra(bundleTrainLine)
+            ?: StringUtils.EMPTY else intent.getStringExtra(bundleTrainLine) ?: StringUtils.EMPTY
 
         trainLine = TrainLine.fromString(lineParam)
         title = trainLine.toStringWithLine()

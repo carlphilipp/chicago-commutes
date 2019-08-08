@@ -220,12 +220,12 @@ object TrainRepository {
     private fun sortStation(trainStationNotSorted: SparseArray<TrainStation>): TreeMap<TrainLine, List<TrainStation>> {
         return (0 until trainStationNotSorted.size())
             .map { trainStationNotSorted.valueAt(it) }
-            .fold(TreeMap()) { accumulator, station ->
+            .fold(TreeMap()) { accumulator: TreeMap<TrainLine, List<TrainStation>>, station ->
                 val trainLines = station.lines
                 for (trainLine in trainLines) {
-                    if (accumulator.containsKey(trainLine)) {
-                        (accumulator[trainLine]!! as MutableList).add(station)
-                        (accumulator[trainLine]!! as MutableList).sort()
+                    if (accumulator.contains(trainLine)) {
+                        (accumulator.getValue(trainLine) as MutableList<TrainStation>).add(station)
+                        (accumulator.getValue(trainLine) as MutableList<TrainStation>).sort()
                     } else {
                         accumulator[trainLine] = mutableListOf(station)
                     }

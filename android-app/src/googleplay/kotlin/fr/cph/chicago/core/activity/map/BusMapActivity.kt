@@ -90,8 +90,8 @@ class BusMapActivity : FragmentMapActivity() {
             bounds = savedInstanceState.getStringArray(bundleBusBounds) ?: arrayOf()
         } else {
             busId = intent.getIntExtra(bundleBusId, 0)
-            busRouteId = intent.getStringExtra(bundleBusRouteId)
-            bounds = intent.getStringArrayExtra(bundleBusBounds)
+            busRouteId = intent.getStringExtra(bundleBusRouteId) ?: StringUtils.EMPTY
+            bounds = intent.getStringArrayExtra(bundleBusBounds) ?: arrayOf()
         }
 
         // Init data

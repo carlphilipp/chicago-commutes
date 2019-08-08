@@ -117,7 +117,7 @@ object LayoutUtil {
 
         val boundCustomTextView = TextView(App.instance)
         boundCustomTextView.text = destinationSpannable
-        boundCustomTextView.setSingleLine(true)
+        boundCustomTextView.isSingleLine = true
         boundCustomTextView.layoutParams = destinationParams
         boundCustomTextView.setTextAppearance(textAppearance, App.instance)
 
@@ -137,7 +137,7 @@ object LayoutUtil {
         val arrivalText = TextView(App.instance)
         arrivalText.text = currentEtas
         arrivalText.gravity = Gravity.END
-        arrivalText.setSingleLine(true)
+        arrivalText.isSingleLine = true
         arrivalText.ellipsize = TextUtils.TruncateAt.END
         arrivalText.setTextAppearance(textAppearance, App.instance)
 

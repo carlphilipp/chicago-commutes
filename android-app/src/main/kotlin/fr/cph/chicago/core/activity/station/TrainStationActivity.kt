@@ -207,7 +207,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         stationId = savedInstanceState.getInt(getString(R.string.bundle_train_stationId))
-        position = savedInstanceState.getParcelable(getString(R.string.bundle_position)) as Position
+        position = savedInstanceState.getParcelable(getString(R.string.bundle_position)) as Position? ?:Position()
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {

@@ -71,8 +71,8 @@ class TrainStation(
             val result = TreeMap<TrainLine, MutableList<Stop>>()
             for (stop in stops) {
                 for (trainLine in stop.lines) {
-                    if (result.containsKey(trainLine)) {
-                        result[trainLine]!!.add(stop)
+                    if (result.contains(trainLine)) {
+                        result.getValue(trainLine).add(stop)
                     } else {
                         result[trainLine] = mutableListOf(stop)
                     }

@@ -88,10 +88,10 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
 
     override fun create(savedInstanceState: Bundle?) {
         busStopId = intent.getIntExtra(getString(R.string.bundle_bus_stop_id), 0)
-        busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id))
-        bound = intent.getStringExtra(getString(R.string.bundle_bus_bound))
-        boundTitle = intent.getStringExtra(getString(R.string.bundle_bus_bound_title))
-        busRouteName = intent.getStringExtra(getString(R.string.bundle_bus_route_name))
+        busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
+        bound = intent.getStringExtra(getString(R.string.bundle_bus_bound)) ?: StringUtils.EMPTY
+        boundTitle = intent.getStringExtra(getString(R.string.bundle_bus_bound_title)) ?: StringUtils.EMPTY
+        busRouteName = intent.getStringExtra(getString(R.string.bundle_bus_route_name)) ?: StringUtils.EMPTY
 
         action = BusStopArrivalsAction(
             busRouteId = busRouteId,
@@ -201,17 +201,12 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         busStopId = savedInstanceState.getInt(getString(R.string.bundle_bus_stop_id))
-        busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id))
-            ?: StringUtils.EMPTY
-        bound = savedInstanceState.getString(getString(R.string.bundle_bus_bound))
-            ?: StringUtils.EMPTY
-        boundTitle = savedInstanceState.getString(getString(R.string.bundle_bus_bound_title))
-            ?: StringUtils.EMPTY
-        busStopName = savedInstanceState.getString(getString(R.string.bundle_bus_stop_name))
-            ?: StringUtils.EMPTY
-        busRouteName = savedInstanceState.getString(getString(R.string.bundle_bus_route_name))
-            ?: StringUtils.EMPTY
-        position = savedInstanceState.getParcelable(getString(R.string.bundle_position)) as Position
+        busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
+        bound = savedInstanceState.getString(getString(R.string.bundle_bus_bound)) ?: StringUtils.EMPTY
+        boundTitle = savedInstanceState.getString(getString(R.string.bundle_bus_bound_title)) ?: StringUtils.EMPTY
+        busStopName = savedInstanceState.getString(getString(R.string.bundle_bus_stop_name)) ?: StringUtils.EMPTY
+        busRouteName = savedInstanceState.getString(getString(R.string.bundle_bus_route_name)) ?: StringUtils.EMPTY
+        position = savedInstanceState.getParcelable(getString(R.string.bundle_position)) as Position? ?: Position()
         action = BusStopArrivalsAction(
             busRouteId = busRouteId,
             busStopId = busStopId,
@@ -221,16 +216,11 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
         savedInstanceState.putInt(getString(R.string.bundle_bus_stop_id), busStopId)
-        if (::busRouteId.isInitialized)
-            savedInstanceState.putString(getString(R.string.bundle_bus_route_id), busRouteId)
-        if (::bound.isInitialized)
-            savedInstanceState.putString(getString(R.string.bundle_bus_bound), bound)
-        if (::boundTitle.isInitialized)
-            savedInstanceState.putString(getString(R.string.bundle_bus_bound_title), boundTitle)
-        if (::busStopName.isInitialized)
-            savedInstanceState.putString(getString(R.string.bundle_bus_stop_name), busStopName)
-        if (::busRouteName.isInitialized)
-            savedInstanceState.putString(getString(R.string.bundle_bus_route_name), busRouteName)
+        if (::busRouteId.isInitialized) savedInstanceState.putString(getString(R.string.bundle_bus_route_id), busRouteId)
+        if (::bound.isInitialized) savedInstanceState.putString(getString(R.string.bundle_bus_bound), bound)
+        if (::boundTitle.isInitialized) savedInstanceState.putString(getString(R.string.bundle_bus_bound_title), boundTitle)
+        if (::busStopName.isInitialized) savedInstanceState.putString(getString(R.string.bundle_bus_stop_name), busStopName)
+        if (::busRouteName.isInitialized) savedInstanceState.putString(getString(R.string.bundle_bus_route_name), busRouteName)
         savedInstanceState.putParcelable(getString(R.string.bundle_position), position)
         super.onSaveInstanceState(savedInstanceState)
     }
@@ -254,7 +244,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
                 val belowTitle = with(TextView(this)) {
                     text = it.key
                     id = util.generateViewId()
-                    setSingleLine(true)
+                    isSingleLine = true
                     layoutParams = layoutUtil.createLineBelowLayoutParams(idBelowTitle)
                     this
                 }
@@ -264,7 +254,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
                 val belowArrival = with(TextView(this)) {
                     text = it.value.joinToString(separator = " ") { util.formatArrivalTime(it) }
                     id = util.generateViewId()
-                    setSingleLine(true)
+                    isSingleLine = true
                     layoutParams = layoutUtil.createLineBelowLayoutParams(idBellowArrival)
                     this
                 }

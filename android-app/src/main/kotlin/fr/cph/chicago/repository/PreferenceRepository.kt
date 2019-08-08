@@ -24,6 +24,8 @@ import android.content.SharedPreferences
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.formatNotNull
+import fr.cph.chicago.parseNotNull
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
@@ -141,8 +143,8 @@ object PreferenceRepository {
             val matcher1 = PATTERN.matcher(str1Decoded)
             val matcher2 = PATTERN.matcher(str2Decoded)
             if (matcher1.find() && matcher2.find()) {
-                val one = Integer.parseInt(matcher1.group(1))
-                val two = Integer.parseInt(matcher2.group(1))
+                val one = Integer.parseInt(matcher1.group(1)!!)
+                val two = Integer.parseInt(matcher2.group(1)!!)
                 if (one < two) -1 else if (one == two) 0 else 1
             } else {
                 str1Decoded.compareTo(str2Decoded)
@@ -209,8 +211,8 @@ object PreferenceRepository {
     fun getRateLastSeen(): Date {
         return try {
             val sharedPref = getPrivatePreferences()
-            val defaultDate = FORMAT.format(Date())
-            FORMAT.parse(sharedPref.getString("rateLastSeen", defaultDate))
+            val defaultDate: String = FORMAT.formatNotNull(Date())
+            FORMAT.parseNotNull(sharedPref.getString("rateLastSeen", defaultDate)!!)
         } catch (e: ParseException) {
             Date()
         }

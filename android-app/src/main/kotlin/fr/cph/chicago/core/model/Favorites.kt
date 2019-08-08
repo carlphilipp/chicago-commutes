@@ -89,8 +89,8 @@ object Favorites {
             .fold(TreeMap()) { accumulator, eta ->
                 val destinationName = eta.destName
                 val timeLeft = eta.timeLeftDueDelay
-                val value = if (accumulator.containsKey(destinationName))
-                    accumulator[destinationName] + " " + timeLeft
+                val value = if (accumulator.contains(destinationName))
+                    accumulator.getValue(destinationName) + " " + timeLeft
                 else
                     timeLeft
                 accumulator[destinationName] = value

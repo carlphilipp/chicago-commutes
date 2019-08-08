@@ -119,10 +119,10 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
     @SuppressLint("CheckResult")
     override fun create(savedInstanceState: Bundle?) {
         mapView!!.onCreate(savedInstanceState)
-        busRouteId = intent.getStringExtra(bundleBusRouteId)
-        busRouteName = intent.getStringExtra(bundleBusRouteName)
-        bound = intent.getStringExtra(bundleBusBound)
-        boundTitle = intent.getStringExtra(bundleBusBoundTitle)
+        busRouteId = intent.getStringExtra(bundleBusRouteId) ?: StringUtils.EMPTY
+        busRouteName = intent.getStringExtra(bundleBusRouteName) ?: StringUtils.EMPTY
+        bound = intent.getStringExtra(bundleBusBound) ?: StringUtils.EMPTY
+        boundTitle = intent.getStringExtra(bundleBusBoundTitle) ?: StringUtils.EMPTY
 
         mapView?.getMapAsync(this)
 

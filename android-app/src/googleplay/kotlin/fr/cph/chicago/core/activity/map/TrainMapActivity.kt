@@ -78,7 +78,7 @@ class TrainMapActivity : FragmentMapActivity() {
         line = if (savedInstanceState != null)
             savedInstanceState.getString(bundleTrainLine) ?: StringUtils.EMPTY
         else
-            intent.getStringExtra(bundleTrainLine)
+            intent.getStringExtra(bundleTrainLine) ?: StringUtils.EMPTY
 
         // Init data
         initData()

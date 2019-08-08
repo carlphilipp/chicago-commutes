@@ -91,8 +91,8 @@ object Util {
             val matcher1 = PATTERN.matcher(route1.id)
             val matcher2 = PATTERN.matcher(route2.id)
             return if (matcher1.find() && matcher2.find()) {
-                val one = Integer.parseInt(matcher1.group(1))
-                val two = Integer.parseInt(matcher2.group(1))
+                val one = Integer.parseInt(matcher1.group(1)!!)
+                val two = Integer.parseInt(matcher2.group(1)!!)
                 if (one < two) -1 else if (one == two) 0 else 1
             } else {
                 route1.id.compareTo(route2.id)

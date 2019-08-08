@@ -131,8 +131,8 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     }
 
     private fun deleteRecursiveDirectory(directory: File?): Boolean {
-        if (directory != null && directory.isDirectory) {
-            val children = directory.list()
+        if (directory != null && directory.isDirectory && directory.list() != null) {
+            val children = directory.list()!!
             for (child in children) {
                 val success = deleteRecursiveDirectory(File(directory, child))
                 if (!success) {

@@ -93,12 +93,12 @@ class BusArrivalStopDTO(private val map: ArrayMap<String, List<BusArrival>> = Ar
     }
 }
 
-class BusArrivalStopMappedDTO : TreeMap<String, MutableMap<String, MutableList<BusArrival>>>() {
+class BusArrivalStopMappedDTO(private val underlying: TreeMap<String, MutableMap<String, MutableList<BusArrival>>> = TreeMap()) : MutableMap<String, MutableMap<String, MutableList<BusArrival>>> by underlying {
     // stop name => { bound => BusArrival }
 
     fun addBusArrival(busArrival: BusArrival) {
-        if (containsKey(busArrival.stopName)) {
-            val tempMap = get(busArrival.stopName)!!
+        if (contains(busArrival.stopName)) {
+            val tempMap = getValue(busArrival.stopName)
             if (tempMap.containsKey(busArrival.routeDirection)) {
                 val list = tempMap[busArrival.routeDirection]!!
                 if (!list.contains(busArrival)) list.add(busArrival)
@@ -114,11 +114,14 @@ class BusArrivalStopMappedDTO : TreeMap<String, MutableMap<String, MutableList<B
     }
 
     fun containsStopNameAndBound(stopName: String, bound: String): Boolean {
-        return containsKey(stopName) && get(stopName)!!.containsKey(bound)
+        return contains(stopName) && getValue(stopName).containsKey(bound)
     }
 }
 
-class BusArrivalRouteDTO(comparator: Comparator<String>) : TreeMap<String, MutableMap<String, MutableList<BusArrival>>>(comparator) {
+class BusArrivalRouteDTO(
+    comparator: Comparator<String>,
+    private val underlying: TreeMap<String, MutableMap<String, MutableList<BusArrival>>> = TreeMap(comparator)
+) : MutableMap<String, MutableMap<String, MutableList<BusArrival>>> by underlying {
     // route => { bound => BusArrival }
 
     companion object {
@@ -134,8 +137,8 @@ class BusArrivalRouteDTO(comparator: Comparator<String>) : TreeMap<String, Mutab
     }
 
     fun addBusArrival(busArrival: BusArrival) {
-        if (containsKey(busArrival.routeId)) {
-            val tempMap = get(busArrival.routeId)!!
+        if (contains(busArrival.routeId)) {
+            val tempMap = getValue(busArrival.routeId)
             if (tempMap.containsKey(busArrival.routeDirection)) {
                 tempMap[busArrival.routeDirection]!!.add(busArrival)
             } else {

@@ -53,8 +53,8 @@ class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
     private lateinit var title: String
 
     override fun create(savedInstanceState: Bundle?) {
-        routeId = intent.getStringExtra("routeId")
-        title = intent.getStringExtra("title")
+        routeId = intent.getStringExtra("routeId") ?: StringUtils.EMPTY
+        title = intent.getStringExtra("title") ?: StringUtils.EMPTY
         scrollView.setOnRefreshListener { this.refreshData() }
         setToolBar()
         refreshData()

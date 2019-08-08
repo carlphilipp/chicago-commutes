@@ -40,6 +40,7 @@ import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.entity.TrainArrivalResponse
 import fr.cph.chicago.entity.TrainLocationResponse
+import fr.cph.chicago.parseNotNull
 import fr.cph.chicago.repository.TrainRepository
 import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import fr.cph.chicago.rx.RxUtil.handleListError
@@ -273,8 +274,8 @@ object TrainService {
                 stop = stop,
                 routeName = routeName,
                 destName = destinationName,
-                predictionDate = simpleDateFormatTrain.parse(eta.prdt),
-                arrivalDepartureDate = simpleDateFormatTrain.parse(eta.arrT),
+                predictionDate = simpleDateFormatTrain.parseNotNull(eta.prdt),
+                arrivalDepartureDate = simpleDateFormatTrain.parseNotNull(eta.arrT),
                 isApp = eta.isApp.toBoolean(),
                 isDly = eta.isDly.toBoolean())
             trainEta
