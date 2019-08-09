@@ -241,11 +241,7 @@ object BusService {
                 busArrivals
                     .filter { (_, _, _, _, _, _, routeDirection) -> routeDirection == bound || routeDirection == boundTitle }
                     .fold(BusArrivalStopDTO()) { accumulator, busArrival ->
-                        if (accumulator.containsKey(busArrival.busDestination)) {
-                            (accumulator[busArrival.busDestination] as MutableList).add(busArrival)
-                        } else {
-                            accumulator.put(busArrival.busDestination, mutableListOf(busArrival))
-                        }
+                        accumulator.getOrPut(busArrival.busDestination, {mutableListOf()}).add(busArrival)
                         accumulator
                     }
             }
