@@ -24,7 +24,6 @@ import android.content.SharedPreferences
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.formatNotNull
 import fr.cph.chicago.parseNotNull
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
@@ -211,7 +210,7 @@ object PreferenceRepository {
     fun getRateLastSeen(): Date {
         return try {
             val sharedPref = getPrivatePreferences()
-            val defaultDate: String = FORMAT.formatNotNull(Date())
+            val defaultDate: String = FORMAT.format(Date())
             FORMAT.parseNotNull(sharedPref.getString("rateLastSeen", defaultDate)!!)
         } catch (e: ParseException) {
             Date()

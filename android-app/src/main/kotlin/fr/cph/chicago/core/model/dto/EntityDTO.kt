@@ -93,24 +93,13 @@ class BusArrivalStopDTO(private val map: ArrayMap<String, List<BusArrival>> = Ar
     }
 }
 
-class BusArrivalStopMappedDTO(private val underlying: TreeMap<String, MutableMap<String, MutableList<BusArrival>>> = TreeMap()) : MutableMap<String, MutableMap<String, MutableList<BusArrival>>> by underlying {
+class BusArrivalStopMappedDTO(private val underlying: TreeMap<String, MutableMap<String, MutableSet<BusArrival>>> = TreeMap()) : MutableMap<String, MutableMap<String, MutableSet<BusArrival>>> by underlying {
     // stop name => { bound => BusArrival }
 
     fun addBusArrival(busArrival: BusArrival) {
-        if (contains(busArrival.stopName)) {
-            val tempMap = getValue(busArrival.stopName)
-            if (tempMap.containsKey(busArrival.routeDirection)) {
-                val list = tempMap[busArrival.routeDirection]!!
-                if (!list.contains(busArrival)) list.add(busArrival)
-            } else {
-                tempMap[busArrival.routeDirection] = mutableListOf(busArrival)
-            }
-        } else {
-            val tempMap = TreeMap<String, MutableList<BusArrival>>()
-            val arrivals = mutableListOf(busArrival)
-            tempMap[busArrival.routeDirection] = arrivals
-            put(busArrival.stopName, tempMap)
-        }
+        getOrPut(busArrival.stopName, { TreeMap() })
+            .getOrPut(busArrival.routeDirection, { mutableSetOf() })
+            .add(busArrival)
     }
 
     fun containsStopNameAndBound(stopName: String, bound: String): Boolean {
@@ -120,8 +109,8 @@ class BusArrivalStopMappedDTO(private val underlying: TreeMap<String, MutableMap
 
 class BusArrivalRouteDTO(
     comparator: Comparator<String>,
-    private val underlying: TreeMap<String, MutableMap<String, MutableList<BusArrival>>> = TreeMap(comparator)
-) : MutableMap<String, MutableMap<String, MutableList<BusArrival>>> by underlying {
+    private val underlying: TreeMap<String, MutableMap<String, MutableSet<BusArrival>>> = TreeMap(comparator)
+) : MutableMap<String, MutableMap<String, MutableSet<BusArrival>>> by underlying {
     // route => { bound => BusArrival }
 
     companion object {
@@ -137,18 +126,9 @@ class BusArrivalRouteDTO(
     }
 
     fun addBusArrival(busArrival: BusArrival) {
-        if (contains(busArrival.routeId)) {
-            val tempMap = getValue(busArrival.routeId)
-            if (tempMap.containsKey(busArrival.routeDirection)) {
-                tempMap[busArrival.routeDirection]!!.add(busArrival)
-            } else {
-                tempMap[busArrival.routeDirection] = mutableListOf(busArrival)
-            }
-        } else {
-            val tempMap = TreeMap<String, MutableList<BusArrival>>()
-            tempMap[busArrival.routeDirection] = mutableListOf(busArrival)
-            put(busArrival.routeId, tempMap)
-        }
+        getOrPut(busArrival.routeId, { TreeMap() })
+            .getOrPut(busArrival.routeDirection, { mutableSetOf() })
+            .add(busArrival)
     }
 }
 

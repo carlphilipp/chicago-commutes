@@ -88,11 +88,11 @@ object LayoutUtil {
     }
 
     fun createFavoritesBusArrivalsNoResult(@StyleRes textAppearance: Int, containParams: LinearLayout.LayoutParams): LinearLayout {
-        return createFavoritesBusArrivalsLayout(textAppearance, containParams, "No Results", null, mutableListOf())
+        return createFavoritesBusArrivalsLayout(textAppearance, containParams, "No Results", null, mutableSetOf())
     }
 
     // TODO Create XML files instead of doing all those methods in Java
-    fun createFavoritesBusArrivalsLayout(@StyleRes textAppearance: Int, containParams: LinearLayout.LayoutParams, stopNameTrimmed: String, busDirection: BusDirection?, buses: MutableList<out BusArrival>): LinearLayout {
+    fun createFavoritesBusArrivalsLayout(@StyleRes textAppearance: Int, containParams: LinearLayout.LayoutParams, stopNameTrimmed: String, busDirection: BusDirection?, buses: MutableSet<out BusArrival>): LinearLayout {
         val pixelsHalf = util.dpToPixel16 / 2
         val marginLeftPixel = util.convertDpToPixel(10)
 
@@ -304,7 +304,7 @@ object LayoutUtil {
         lineTitleTextView.text = title
         lineTitleTextView.layoutParams = layoutParams
         lineTitleTextView.id = util.generateViewId()
-        lineTitleTextView.setSingleLine(true)
+        lineTitleTextView.isSingleLine = true
         lineTitleTextView.measure(0, 0)
         lineTitleTextView.setTextAppearance(textAppearance, App.instance)
         return lineTitleTextView

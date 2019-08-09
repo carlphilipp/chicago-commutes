@@ -16,21 +16,7 @@ fun TextView.setTextAppearance(@StyleRes textAppearance: Int, context: Context) 
     }
 }
 
-fun <T> asParcelableArrayList(list: List<T>): ArrayList<T> {
-    // Make sure that we have an ArrayList and not a kotlin.collections.EmptyList
-    return if (list.isEmpty()) {
-        ArrayList()
-    } else {
-        list as ArrayList
-    }
-}
-
 @NonNull
 fun SimpleDateFormat.parseNotNull(@NonNull date: String): Date {
     return parse(date) ?: Date(0L)
-}
-
-@NonNull
-fun SimpleDateFormat.formatNotNull(@NonNull date: Date): String {
-    return format(date)
 }
