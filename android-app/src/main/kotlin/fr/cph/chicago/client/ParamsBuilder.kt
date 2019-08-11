@@ -11,7 +11,7 @@ const val REQUEST_STOP_ID = "stpid"
 private const val REQUEST_VID = "vid"
 
 fun emptyParams(): MultiValuedMap<String, String> {
-    return ArrayListValuedHashMap<String, String>()
+    return ArrayListValuedHashMap()
 }
 
 fun busFollowParams(busId: String): MultiValuedMap<String, String> {

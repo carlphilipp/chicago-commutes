@@ -41,6 +41,6 @@ object RxUtil {
 
     fun <T, R> handleMapError(): (Throwable) -> Map<T, R> = { throwable ->
         Timber.e(throwable)
-        HashMap()
+        emptyMap()
     }
 }

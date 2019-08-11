@@ -1,11 +1,13 @@
 package fr.cph.chicago.service
 
 import android.util.SparseArray
+import fr.cph.chicago.core.model.dto.BaseDTO
 import fr.cph.chicago.core.model.dto.BusArrivalDTO
 import fr.cph.chicago.core.model.dto.FavoritesDTO
 import fr.cph.chicago.core.model.dto.FirstLoadDTO
-import fr.cph.chicago.core.model.dto.LocalDTO
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
+import fr.cph.chicago.exception.BaseException
+import fr.cph.chicago.redux.store
 import fr.cph.chicago.rx.RxUtil.handleListError
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
@@ -17,22 +19,44 @@ object MixedService {
     private val trainService = TrainService
     private val busService = BusService
     private val bikeService = BikeService
+    private val preferenceService = PreferenceService
 
-    fun local(): Single<LocalDTO> {
-        // Train local data
-        val trainLocalData: Single<Boolean> = trainService.loadLocalTrainData()
-
-        // Bus local data
-        val busLocalData: Single<Boolean> = busService.loadLocalBusData()
-
+    fun baseData(): Single<BaseDTO> {
         return Singles.zip(
-            trainLocalData,
-            busLocalData,
-            zipper = { trainError, busError -> LocalDTO(trainError, busError) }
-        )
+            trainService.loadLocalTrainData(),
+            busService.loadLocalBusData(),
+            zipper = { trainError, busError ->
+                if (trainError || busError) throw BaseException()
+                true
+            })
+            .flatMap {
+                Singles.zip(
+                    baseArrivals().observeOn(Schedulers.computation()),
+                    preferenceService.getTrainFavorites().observeOn(Schedulers.computation()),
+                    preferenceService.getBusFavorites().observeOn(Schedulers.computation()),
+                    preferenceService.getBikeFavorites().observeOn(Schedulers.computation()),
+                    zipper = { favoritesDTO, favoritesTrains, favoritesBuses, favoritesBikes ->
+                        val trainArrivals = if (favoritesDTO.trainArrivalDTO.error)
+                            TrainArrivalDTO(store.state.trainArrivalsDTO.trainsArrivals, true)
+                        else
+                            favoritesDTO.trainArrivalDTO
+                        val busArrivals = if (favoritesDTO.busArrivalDTO.error)
+                            BusArrivalDTO(store.state.busArrivalsDTO.busArrivals, true)
+                        else
+                            favoritesDTO.busArrivalDTO
+                        val favoritesBusRoute = busService.extractBusRouteFavorites(favoritesBuses)
+                        BaseDTO(
+                            trainArrivalsDTO = trainArrivals,
+                            busArrivalsDTO = busArrivals,
+                            trainFavorites = favoritesTrains,
+                            busFavorites = favoritesBuses,
+                            busRouteFavorites = favoritesBusRoute,
+                            bikeFavorites = favoritesBikes)
+                    })
+            }
     }
 
-    fun baseArrivals(): Single<FavoritesDTO> {
+    private fun baseArrivals(): Single<FavoritesDTO> {
         // Train online favorites
         val favoritesTrainArrivals = favoritesTrainArrivalDTO().observeOn(Schedulers.computation())
 

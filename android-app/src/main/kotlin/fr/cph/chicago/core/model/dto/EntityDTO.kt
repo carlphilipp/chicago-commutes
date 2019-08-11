@@ -28,7 +28,14 @@ import fr.cph.chicago.core.model.TrainArrival
 import org.apache.commons.lang3.StringUtils
 import java.util.TreeMap
 
-data class LocalDTO(val trainLocalError: Boolean, val busLocalError: Boolean)
+data class BaseDTO(
+    val trainArrivalsDTO: TrainArrivalDTO,
+    val busArrivalsDTO: BusArrivalDTO,
+    val trainFavorites: List<Int>,
+    val busFavorites: List<String>,
+    val busRouteFavorites: List<String>,
+    val bikeFavorites: List<Int>
+)
 
 data class BusArrivalDTO(val busArrivals: List<BusArrival>, val error: Boolean)
 
