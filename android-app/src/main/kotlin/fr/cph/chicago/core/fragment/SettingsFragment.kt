@@ -123,24 +123,9 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
     private fun deleteCache(context: Context?) {
         try {
-            val cacheDirectory = context!!.cacheDir
-            deleteRecursiveDirectory(cacheDirectory)
+            context?.cacheDir?.deleteRecursively()
         } catch (ignored: Exception) {
         }
 
-    }
-
-    private fun deleteRecursiveDirectory(directory: File?): Boolean {
-        if (directory != null && directory.isDirectory && directory.list() != null) {
-            val children = directory.list()!!
-            for (child in children) {
-                val success = deleteRecursiveDirectory(File(directory, child))
-                if (!success) {
-                    return false
-                }
-            }
-            return directory.delete()
-        } else
-            return directory != null && directory.isFile && directory.delete()
     }
 }

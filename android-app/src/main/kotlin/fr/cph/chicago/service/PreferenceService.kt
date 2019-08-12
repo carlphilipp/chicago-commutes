@@ -66,12 +66,22 @@ object PreferenceService {
         return repo.getTrainFilter(stationId, line, direction)
     }
 
-    fun saveTrainFilter(stationId: Int, line: TrainLine, direction: TrainDirection, value: Boolean) {
-        repo.saveTrainFilter(stationId, line, direction, value)
+    fun saveTrainFilter(stationId: Int, line: TrainLine, direction: TrainDirection, isChecked: Boolean) {
+        if (isChecked) {
+            repo.removeTrainFilter(stationId, line, direction)
+        } else {
+            repo.saveTrainFilter(stationId, line, direction)
+        }
     }
 
     fun hasFavorites(): Boolean {
         return repo.hasFavorites()
+    }
+
+    fun getAllFavorites(): Single<Map<String, Any>> {
+        return Single
+            .fromCallable { repo.getAllPreferences() }
+            .subscribeOn(Schedulers.io())
     }
 
     fun clearPreferences() {
@@ -169,6 +179,8 @@ object PreferenceService {
             .map { favorites ->
                 val id = busRouteId + "_" + busStopId + "_" + bound
                 favorites.remove(id)
+                repo.removeBusRouteNameMapping(busStopId)
+                repo.removeBusStopNameMapping(busStopId)
                 repo.saveBusFavorites(favorites)
             }
             .flatMap { getBusFavorites() }
@@ -179,6 +191,7 @@ object PreferenceService {
         return Single.fromCallable { repo.getBikeFavorites().toMutableSet() }
             .map { favorites ->
                 favorites.remove(stationId)
+                repo.removeBikeRouteNameMapping(stationId)
                 repo.saveBikeFavorites(favorites)
             }
             .flatMap { getBikeMatchingFavorites() }

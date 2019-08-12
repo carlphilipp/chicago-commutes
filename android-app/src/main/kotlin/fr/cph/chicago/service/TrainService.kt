@@ -42,8 +42,8 @@ import fr.cph.chicago.entity.TrainArrivalResponse
 import fr.cph.chicago.entity.TrainLocationResponse
 import fr.cph.chicago.parseNotNull
 import fr.cph.chicago.repository.TrainRepository
-import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import fr.cph.chicago.rx.RxUtil.handleListError
+import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.apache.commons.collections4.MultiValuedMap
@@ -256,30 +256,34 @@ object TrainService {
             Timber.e("Error: %s", error)
             return result
         }
-        trainArrivalResponse.ctatt.eta.map { eta ->
-            val station = getStation(eta.staId.toInt())
-            val stop = getStop(eta.stpId.toInt())
-            stop.description = eta.stpDe
-            val routeName = TrainLine.fromXmlString(eta.rt)
-            val destinationName =
-                if ("See train".equals(eta.destNm, ignoreCase = true) && stop.description.contains("Loop") && routeName == TrainLine.GREEN ||
-                    "See train".equals(eta.destNm, ignoreCase = true) && stop.description.contains("Loop") && routeName == TrainLine.BROWN ||
-                    "Loop, Midway".equals(eta.destNm, ignoreCase = true) && routeName == TrainLine.BROWN)
-                    "Loop"
-                else
-                    eta.destNm
+        trainArrivalResponse
+            .ctatt
+            .eta
+            .map { eta ->
+                val station = getStation(eta.staId.toInt())
+                val stop = getStop(eta.stpId.toInt())
+                stop.description = eta.stpDe
+                val routeName = TrainLine.fromXmlString(eta.rt)
+                val destinationName =
+                    if ("See train".equals(eta.destNm, ignoreCase = true) && stop.description.contains("Loop") && routeName == TrainLine.GREEN ||
+                        "See train".equals(eta.destNm, ignoreCase = true) && stop.description.contains("Loop") && routeName == TrainLine.BROWN ||
+                        "Loop, Midway".equals(eta.destNm, ignoreCase = true) && routeName == TrainLine.BROWN)
+                        "Loop"
+                    else
+                        eta.destNm
 
-            val trainEta = TrainEta(
-                trainStation = station,
-                stop = stop,
-                routeName = routeName,
-                destName = destinationName,
-                predictionDate = simpleDateFormatTrain.parseNotNull(eta.prdt),
-                arrivalDepartureDate = simpleDateFormatTrain.parseNotNull(eta.arrT),
-                isApp = eta.isApp.toBoolean(),
-                isDly = eta.isDly.toBoolean())
-            trainEta
-        }
+                val trainEta = TrainEta(
+                    trainStation = station,
+                    stop = stop,
+                    routeName = routeName,
+                    destName = destinationName,
+                    predictionDate = simpleDateFormatTrain.parseNotNull(eta.prdt),
+                    arrivalDepartureDate = simpleDateFormatTrain.parseNotNull(eta.arrT),
+                    isApp = eta.isApp.toBoolean(),
+                    isDly = eta.isDly.toBoolean())
+                trainEta
+            }
+            .filter { (station, stop, line) -> preferencesService.getTrainFilter(station.id, line, stop.direction) }
             .forEach {
                 if (result.indexOfKey(it.trainStation.id) < 0) {
                     result.append(it.trainStation.id, TrainArrival.buildEmptyTrainArrival().addEta(it))

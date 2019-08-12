@@ -21,6 +21,7 @@ package fr.cph.chicago.repository
 
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
+import android.util.ArrayMap
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
@@ -49,6 +50,7 @@ object PreferenceRepository {
     private const val PREFERENCE_FAVORITES = "ChicagoTrackerFavorites"
     private const val PREFERENCE_FAVORITES_THEME = "ChicagoTrackerTheme"
     private const val PREFERENCE_FAVORITES_TRAIN = "ChicagoTrackerFavoritesTrain"
+    private const val PREFERENCE_FAVORITES_TRAIN_FILTER = "ChicagoTrackerFavoritesTrainFilter"
     private const val PREFERENCE_FAVORITES_BUS = "ChicagoTrackerFavoritesBus"
     private const val PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING = "ChicagoTrackerFavoritesBusNameMapping"
     private const val PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING = "ChicagoTrackerFavoritesBusStopNameMapping"
@@ -58,6 +60,41 @@ object PreferenceRepository {
     private val trainService = TrainService
     private val util = Util
 
+    // All
+    fun hasFavorites(): Boolean {
+        val sharedPref = getPrivatePreferences()
+        val prefTrainFav = sharedPref.getStringSet(PREFERENCE_FAVORITES_TRAIN, null)
+        val prefBusFav = sharedPref.getStringSet(PREFERENCE_FAVORITES_BUS, null)
+        val prefBikeFav = sharedPref.getStringSet(PREFERENCE_FAVORITES_BIKE, null)
+        return !(prefTrainFav.isNullOrEmpty() && prefBusFav.isNullOrEmpty() && prefBikeFav.isNullOrEmpty())
+    }
+
+    fun getAllPreferences(): Map<String, Any> {
+        val preferences = ArrayMap<String, Any>()
+        preferences.putAll(getAllPreferences(PREFERENCE_FAVORITES))
+        preferences.putAll(getAllPreferences(PREFERENCE_FAVORITES_TRAIN_FILTER))
+        preferences.putAll(getAllPreferences(PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING))
+        preferences.putAll(getAllPreferences(PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING))
+        preferences.putAll(getAllPreferences(PREFERENCE_FAVORITES_BIKE_NAME_MAPPING))
+        return preferences
+    }
+
+    fun clearPreferences() {
+        getPrivatePreferences().edit().clear().apply()
+        getPrivatePreferencesBusStopMapping().edit().clear().apply()
+        getPrivatePreferencesBusRouteMapping().edit().clear().apply()
+        getPrivatePreferencesBikeMapping().edit().clear().apply()
+        getPrivatePreferencesTrainFilter().edit().clear().apply()
+    }
+
+    private fun getAllPreferences(preferenceName: String): Map<String, *> {
+        val sharedPref = App.instance.getSharedPreferences(preferenceName, MODE_PRIVATE)
+        val preferences = mutableMapOf<String, Map<String, *>>()
+        preferences[preferenceName] = sharedPref.all ?: mapOf<String, Any?>()
+        return preferences
+    }
+
+    // Themes
     fun getTheme(): String {
         val sharedPref = getPrivatePreferences()
         return sharedPref.getString(PREFERENCE_FAVORITES_THEME, "Light")!!
@@ -69,6 +106,7 @@ object PreferenceRepository {
         editor.apply()
     }
 
+    // Trains
     fun saveTrainFavorites(favorites: Set<Int>) {
         val sharedPref = getPrivatePreferences()
         val editor = sharedPref.edit()
@@ -78,50 +116,39 @@ object PreferenceRepository {
         editor.apply()
     }
 
-    fun hasFavorites(): Boolean {
+    fun getTrainFavorites(): Set<Int> {
         val sharedPref = getPrivatePreferences()
-        val setPref1 = sharedPref.getStringSet(PREFERENCE_FAVORITES_TRAIN, null)
-        val setPref2 = sharedPref.getStringSet(PREFERENCE_FAVORITES_BUS, null)
-        val setPref3 = sharedPref.getStringSet(PREFERENCE_FAVORITES_BIKE, null)
-        return !((setPref1 == null || setPref1.size == 0) && (setPref2 == null || setPref2.size == 0) && (setPref3 == null || setPref3.size == 0))
+        val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_TRAIN, LinkedHashSet()) ?: setOf()
+        Timber.v("Read train favorites : %s", setPref)
+        return setPref
+            .asSequence()
+            .map { it.toInt() }
+            .map { trainService.getStation(it) }
+            .sorted()
+            .map { it.id }
+            .toSet()
     }
 
-    fun saveBikeFavorites(favorites: Set<Int>) {
-        val sharedPref = getPrivatePreferences()
+    fun saveTrainFilter(stationId: Int, line: TrainLine, direction: TrainDirection) {
+        val sharedPref = getPrivatePreferencesTrainFilter()
         val editor = sharedPref.edit()
-        val set = favorites.map { it.toString() }.toSet()
-        Timber.v("Put bike favorites: %s", set)
-        editor.putStringSet(PREFERENCE_FAVORITES_BIKE, set)
+        editor.putBoolean(stationId.toString() + "_" + line + "_" + direction, false)
         editor.apply()
     }
 
-    fun getBikeFavorites(): Set<Int> {
-        val sharedPref = getPrivatePreferences()
-        val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_BIKE, LinkedHashSet()) ?: setOf()
-        Timber.v("Read bike favorites : %s", setPref)
-        return setPref.map { it.toInt() }.sorted().toSet()
+    fun getTrainFilter(stationId: Int, line: TrainLine, direction: TrainDirection): Boolean {
+        val sharedPref = getPrivatePreferencesTrainFilter()
+        return sharedPref.getBoolean(stationId.toString() + "_" + line + "_" + direction, true)
     }
 
-    fun addBikeRouteNameMapping(bikeId: Int, bikeName: String) {
-        val sharedPref = getPrivatePreferencesBikeMapping()
+    fun removeTrainFilter(stationId: Int, line: TrainLine, direction: TrainDirection) {
+        val sharedPref = getPrivatePreferencesTrainFilter()
         val editor = sharedPref.edit()
-        editor.putString(bikeId.toString(), bikeName)
-        Timber.v("Add bike name mapping : %s => %s", bikeId, bikeName)
+        editor.remove(stationId.toString() + "_" + line + "_" + direction)
         editor.apply()
     }
 
-    fun getBikeRouteNameMapping(bikeId: Int): String {
-        val sharedPref = getPrivatePreferencesBikeMapping()
-        val bikeName = sharedPref.getString(bikeId.toString(), StringUtils.EMPTY)!!
-        Timber.v("Get bike name mapping : %s => %s", bikeId, bikeName)
-        return bikeName
-    }
-
-    /**
-     * Save bus into favorites
-     *
-     * @param favorites the list of favorites to save
-     */
+    // Buses
     fun saveBusFavorites(favorites: Set<String>) {
         val sharedPref = getPrivatePreferences()
         val editor = sharedPref.edit()
@@ -166,6 +193,14 @@ object PreferenceRepository {
         return routeName
     }
 
+    fun removeBusRouteNameMapping(busStopId: String) {
+        val sharedPref = getPrivatePreferencesBusRouteMapping()
+        val editor = sharedPref.edit()
+        editor.remove(busStopId)
+        Timber.v("Delete bus route name mapping  : %s", busStopId)
+        editor.apply()
+    }
+
     fun addBusStopNameMapping(busStopId: String, stopName: String) {
         val sharedPref = getPrivatePreferencesBusStopMapping()
         val editor = sharedPref.edit()
@@ -181,32 +216,55 @@ object PreferenceRepository {
         return stopName
     }
 
-    fun getTrainFavorites(): Set<Int> {
-        val sharedPref = getPrivatePreferences()
-        val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_TRAIN, LinkedHashSet())
-            ?: setOf()
-        Timber.v("Read train favorites : %s", setPref)
-        return setPref
-            .asSequence()
-            .map { it.toInt() }
-            .map { trainService.getStation(it) }
-            .sorted()
-            .map { it.id }
-            .toSet()
-    }
-
-    fun saveTrainFilter(stationId: Int, line: TrainLine, direction: TrainDirection, value: Boolean) {
-        val sharedPref = getPrivatePreferences()
+    fun removeBusStopNameMapping(busStopId: String) {
+        val sharedPref = getPrivatePreferencesBusStopMapping()
         val editor = sharedPref.edit()
-        editor.putBoolean(stationId.toString() + "_" + line + "_" + direction, value)
+        editor.remove(busStopId)
+        Timber.v("Delete bus stop name mapping  : %s", busStopId)
         editor.apply()
     }
 
-    fun getTrainFilter(stationId: Int, line: TrainLine, direction: TrainDirection): Boolean {
+    // Bikes
+    fun saveBikeFavorites(favorites: Set<Int>) {
         val sharedPref = getPrivatePreferences()
-        return sharedPref.getBoolean(stationId.toString() + "_" + line + "_" + direction, true)
+        val editor = sharedPref.edit()
+        val set = favorites.map { it.toString() }.toSet()
+        Timber.v("Put bike favorites: %s", set)
+        editor.putStringSet(PREFERENCE_FAVORITES_BIKE, set)
+        editor.apply()
     }
 
+    fun getBikeFavorites(): Set<Int> {
+        val sharedPref = getPrivatePreferences()
+        val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_BIKE, LinkedHashSet()) ?: setOf()
+        Timber.v("Read bike favorites : %s", setPref)
+        return setPref.map { it.toInt() }.sorted().toSet()
+    }
+
+    fun addBikeRouteNameMapping(bikeId: Int, bikeName: String) {
+        val sharedPref = getPrivatePreferencesBikeMapping()
+        val editor = sharedPref.edit()
+        editor.putString(bikeId.toString(), bikeName)
+        Timber.v("Add bike name mapping : %s => %s", bikeId, bikeName)
+        editor.apply()
+    }
+
+    fun getBikeRouteNameMapping(bikeId: Int): String {
+        val sharedPref = getPrivatePreferencesBikeMapping()
+        val bikeName = sharedPref.getString(bikeId.toString(), StringUtils.EMPTY)!!
+        Timber.v("Get bike name mapping : %s => %s", bikeId, bikeName)
+        return bikeName
+    }
+
+    fun removeBikeRouteNameMapping(bikeId: Int) {
+        val sharedPref = getPrivatePreferencesBikeMapping()
+        val editor = sharedPref.edit()
+        editor.remove(bikeId.toString())
+        Timber.v("Delete bike name mapping : %s", bikeId.toString())
+        editor.apply()
+    }
+
+    // Rate last seen
     fun getRateLastSeen(): Date {
         return try {
             val sharedPref = getPrivatePreferences()
@@ -224,10 +282,6 @@ object PreferenceRepository {
         editor.apply()
     }
 
-    fun clearPreferences() {
-        getPrivatePreferences().edit().clear().apply()
-    }
-
     private fun getPrivatePreferences(): SharedPreferences {
         return App.instance.getSharedPreferences(PREFERENCE_FAVORITES, MODE_PRIVATE)
     }
@@ -242,5 +296,9 @@ object PreferenceRepository {
 
     private fun getPrivatePreferencesBikeMapping(): SharedPreferences {
         return App.instance.getSharedPreferences(PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, MODE_PRIVATE)
+    }
+
+    private fun getPrivatePreferencesTrainFilter(): SharedPreferences {
+        return App.instance.getSharedPreferences(PREFERENCE_FAVORITES_TRAIN_FILTER, MODE_PRIVATE)
     }
 }

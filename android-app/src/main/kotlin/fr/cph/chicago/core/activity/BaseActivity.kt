@@ -34,6 +34,7 @@ import fr.cph.chicago.redux.DefaultSettingsAction
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.RealmConfig
+import fr.cph.chicago.service.PreferenceService
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
@@ -53,9 +54,11 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading), StoreSubscriber<Stat
     @BindView(R.id.retry_button)
     lateinit var retryButton: Button
 
+    private val preferencesService = PreferenceService
     private val realmConfig = RealmConfig
 
     override fun create(savedInstanceState: Bundle?) {
+        Timber.i("%s", preferencesService.getAllFavorites().blockingGet())
         store.subscribe(this)
         setUpRealm()
         retryButton.setOnClickListener {
