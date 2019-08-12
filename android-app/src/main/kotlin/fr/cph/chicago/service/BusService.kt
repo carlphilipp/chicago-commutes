@@ -67,6 +67,7 @@ import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
+import org.apache.commons.text.WordUtils
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -106,7 +107,7 @@ object BusService {
                 busStopsResponse.bustimeResponse.stops!!.map { stop ->
                     BusStop(
                         id = stop.stpid.toInt(),
-                        name = stop.stpnm,
+                        name = WordUtils.capitalizeFully(stop.stpnm),
                         description = stop.stpnm,
                         position = Position(stop.lat, stop.lon))
                 }
