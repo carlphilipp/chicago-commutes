@@ -23,6 +23,7 @@ import fr.cph.chicago.R
 import fr.cph.chicago.client.REQUEST_MAP_ID
 import fr.cph.chicago.client.REQUEST_ROUTE
 import fr.cph.chicago.client.REQUEST_STOP_ID
+import fr.cph.chicago.core.model.dto.PreferencesDTO
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.redux.store
@@ -78,7 +79,7 @@ object PreferenceService {
         return repo.hasFavorites()
     }
 
-    fun getAllFavorites(): Single<Map<String, Any>> {
+    fun getAllFavorites(): Single<PreferencesDTO> {
         return Single
             .fromCallable { repo.getAllPreferences() }
             .subscribeOn(Schedulers.io())
@@ -220,7 +221,8 @@ object PreferenceService {
                     .flatMap { bikeStationId -> store.state.bikeStations.filter { station -> station.id == bikeStationId } }
                     .sortedWith(util.bikeStationComparator)
                     .map { station -> station.id }
-            }.subscribeOn(Schedulers.io())
+            }
+            .subscribeOn(Schedulers.io())
     }
 
     fun getTrainFavorites(): Single<List<Int>> {

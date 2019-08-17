@@ -30,11 +30,11 @@ import butterknife.BindView
 import fr.cph.chicago.Constants.SELECTED_ID
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.BaseActivity
+import fr.cph.chicago.core.activity.DeveloperOptionsActivity
 import fr.cph.chicago.redux.ResetStateAction
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.RealmConfig
 import fr.cph.chicago.service.PreferenceService
-import java.io.File
 
 class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
@@ -55,9 +55,11 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     lateinit var theme: LinearLayout
     @BindView(R.id.theme_name)
     lateinit var themeName: TextView
+    @BindView(R.id.developer)
+    lateinit var developerLayout: LinearLayout
 
     override fun onCreateView(savedInstanceState: Bundle?) {
-        val version = "Version " + util.getCurrentVersion()
+        val version = "Version ${util.getCurrentVersion()}"
         versionNumber.text = version
         themeName.text = preferenceService.getTheme()
 
@@ -98,6 +100,12 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 .setPositiveButton("Yes", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener)
                 .show()
+        }
+
+        developerLayout.setOnClickListener {
+            // start new developer activity
+            val intent = Intent(context, DeveloperOptionsActivity::class.java)
+            context?.startActivity(intent)
         }
     }
 

@@ -113,6 +113,10 @@
             android:name=".core.activity.AlertActivity"
             android:label="@string/cta_alert"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".core.activity.DeveloperOptionsActivity"
+            android:label="@string/developer_options"
+            android:screenOrientation="portrait" />
 
         <uses-library
             android:name="org.apache.http.legacy"
