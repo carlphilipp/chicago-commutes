@@ -74,9 +74,13 @@ object PreferenceRepository {
         getAllPreferences(FAVORITES).forEach {
             val prefType = PrefType.of(it.key)
             if (prefType == null) {
-                Timber.e("Preference not found ${it.key}")
+                Timber.w("Preference not found ${it.key}")
             } else {
-                preferencesDTO.addPreference(prefType, it.value as Set<String>)
+                if(it.value is String) {
+                    preferencesDTO.addPreference(prefType, setOf(it.value))
+                } else {
+                    preferencesDTO.addPreference(prefType, it.value as Set<String>)
+                }
             }
         }
         preferencesDTO.addPreference(TRAIN_FILTER, getAllPreferences(TRAIN_FILTER))
