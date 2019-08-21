@@ -32,15 +32,12 @@ object GoogleMapUtil {
     }
 
     @Throws(SecurityException::class)
-    fun centerMap(mapFragment: SupportMapFragment, position: Position?) {
+    fun centerMap(mapFragment: SupportMapFragment, zoomIn: Boolean, position: Position?) {
         mapFragment.getMapAsync { googleMap ->
             googleMap.isMyLocationEnabled = true
-            if (position != null) {
-                val latLng = LatLng(position.latitude, position.longitude)
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
-            } else {
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(GoogleMapUtil.chicago, 10f))
-            }
+            val latLng = if (position != null) LatLng(position.latitude, position.longitude) else chicago
+            val cameraUpdate = if (zoomIn) CameraUpdateFactory.newLatLngZoom(latLng, 16f) else CameraUpdateFactory.newLatLng(latLng)
+            googleMap.moveCamera(cameraUpdate)
         }
     }
 }

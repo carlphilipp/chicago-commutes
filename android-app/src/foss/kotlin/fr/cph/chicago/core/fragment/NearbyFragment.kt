@@ -139,7 +139,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
 
     override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
         showProgress(false)
-        handleNearbyData(Position(0.0, 0.0))
+        handleNearbyData(Position(0.0, 0.0), true)
     }
 
     @SuppressLint("MissingPermission")
@@ -148,10 +148,10 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         initLocationEngine()
         initLocationLayer()
         val position = if (locationOrigin == null) Position() else Position(locationOrigin!!.latitude, locationOrigin!!.longitude)
-        handleNearbyData(position)
+        handleNearbyData(position, true)
     }
 
-    private fun handleNearbyData(position: Position) {
+    private fun handleNearbyData(position: Position, zoomIn: Boolean = false) {
         var chicago: Position? = null
         if (position.longitude == 0.0 && position.latitude == 0.0) {
             chicago = Position(chicagoPosition.latitude, chicagoPosition.longitude)
@@ -166,12 +166,18 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
             trainStationAround,
             busStopsAround,
             bikeStations,
-            zipper = { trains, buses, bikeStations ->
-                map.cameraPosition = CameraPosition.Builder()
-                    .target(LatLng(finalPosition.latitude, finalPosition.longitude))
-                    .zoom(15.0)
-                    .build()
-                updateMarkersAndModel(buses, trains, bikeStations)
+            zipper = { trains, buses, bikes ->
+                map.cameraPosition = if (zoomIn) {
+                    CameraPosition.Builder()
+                        .target(LatLng(finalPosition.latitude, finalPosition.longitude))
+                        .zoom(15.0)
+                        .build()
+                } else {
+                    CameraPosition.Builder()
+                        .target(LatLng(finalPosition.latitude, finalPosition.longitude))
+                        .build()
+                }
+                updateMarkersAndModel(buses, trains, bikes)
                 Any()
             }).subscribe()
     }
@@ -196,7 +202,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
             val position = Position(target.latitude, target.longitude)
             markerDataHolder.clear()
             this.map.removeAnnotations()
-            handleNearbyData(position)
+            handleNearbyData(position, false)
         }
         loadNearbyIfAllowed()
     }

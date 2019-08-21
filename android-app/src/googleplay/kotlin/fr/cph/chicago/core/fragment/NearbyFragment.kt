@@ -110,7 +110,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
                 googleMap.clear()
                 markerDataHolder.clear()
                 val target = googleMap.cameraPosition.target
-                handleNearbyData(Position(target.latitude, target.longitude))
+                handleNearbyData(Position(target.latitude, target.longitude), false)
             }
         }
         showProgress(true)
@@ -257,11 +257,11 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
                 Position()
             else
                 Position(location.latitude, location.longitude)
-            handleNearbyData(position)
+            handleNearbyData(position, true)
         }
     }
 
-    private fun handleNearbyData(position: Position) {
+    private fun handleNearbyData(position: Position, zoomIn: Boolean) {
         var finalPosition = position
         if (position.longitude == 0.0 && position.latitude == 0.0) {
             Timber.w("Could not get current user location")
@@ -273,7 +273,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
         val busStopsAround = busService.busStopsAround(finalPosition)
         val bikeStationsAround = mapUtil.readNearbyStation(finalPosition, store.state.bikeStations)
         Singles.zip(trainStationAround, busStopsAround, bikeStationsAround, zipper = { trains, buses, bikeStations ->
-            googleMapUtil.centerMap(mapFragment, finalPosition)
+            googleMapUtil.centerMap(mapFragment, zoomIn, finalPosition)
             updateMarkersAndModel(buses, trains, bikeStations)
             Any()
         }).subscribe()
