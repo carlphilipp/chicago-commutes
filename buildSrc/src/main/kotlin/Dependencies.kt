@@ -18,8 +18,8 @@ object Version {
     const val google_play_location = "17.0.0"
     const val jackson = "2.9.9"
     const val material = "1.0.0"
-    const val mapbox = "6.5.0" // TODO: Migrate to last mapbox version https://github.com/mapbox/mapbox-gl-native/wiki/Android-6.x-to-7.x-migration-guide
-    const val mapbox_location = "0.10.0"
+    const val mapbox = "7.0.1" // TODO: Migrate to last mapbox version https://github.com/mapbox/mapbox-gl-native/wiki/Android-6.x-to-7.x-migration-guide
+    const val mapbox_location = "0.11.0"
     const val photoview = "v2.0.0"
     const val rx = "2.2.11"
     const val rx_android = "2.1.1"

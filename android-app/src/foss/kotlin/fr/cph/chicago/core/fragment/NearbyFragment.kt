@@ -31,24 +31,27 @@ import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import butterknife.BindView
 import com.mapbox.android.core.location.LocationEngine
-import com.mapbox.android.core.location.LocationEngineListener
-import com.mapbox.android.core.location.LocationEnginePriority
+import com.mapbox.android.core.location.LocationEngineCallback
 import com.mapbox.android.core.location.LocationEngineProvider
+import com.mapbox.android.core.location.LocationEngineResult
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.annotations.IconFactory
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.location.LocationComponentOptions
+import com.mapbox.mapboxsdk.location.modes.CameraMode
+import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
+import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin
-import com.mapbox.mapboxsdk.plugins.locationlayer.modes.CameraMode
-import com.mapbox.mapboxsdk.plugins.locationlayer.modes.RenderMode
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import fr.cph.chicago.Constants.GPS_ACCESS
 import fr.cph.chicago.R
@@ -76,7 +79,7 @@ import java.util.UUID
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCallback, LocationEngineListener, EasyPermissions.PermissionCallbacks {
+class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCallback, EasyPermissions.PermissionCallbacks {
 
     companion object {
         private val util = Util
@@ -120,15 +123,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         markerDataHolder = MarkerDataHolder()
     }
 
-    @AfterPermissionGranted(GPS_ACCESS)
-    private fun loadNearbyIfAllowed() {
-        if (EasyPermissions.hasPermissions(context!!, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)) {
-            startLoadingNearby()
-        } else {
-            EasyPermissions.requestPermissions(this, "To access that feature, we need to access your current location", GPS_ACCESS, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
-        }
-    }
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
@@ -146,7 +140,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
     private fun startLoadingNearby() {
         showProgress(true)
         initLocationEngine()
-        initLocationLayer()
         val position = if (locationOrigin == null) Position() else Position(locationOrigin!!.latitude, locationOrigin!!.longitude)
         handleNearbyData(position, true)
     }
@@ -182,20 +175,17 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
             }).subscribe()
     }
 
-    override fun onConnected() {
-    }
-
     override fun onMapReady(mapboxMap: MapboxMap) {
         this.map = with(mapboxMap) {
             uiSettings.isLogoEnabled = false
             uiSettings.isAttributionEnabled = false
             uiSettings.isRotateGesturesEnabled = false
             uiSettings.isTiltGesturesEnabled = false
-            addOnCameraMoveListener {
-                searchAreaButton.visibility = View.VISIBLE
-            }
+            setStyle(Style.MAPBOX_STREETS)
+            addOnCameraMoveListener { searchAreaButton.visibility = View.VISIBLE }
             this
         }
+
         searchAreaButton.setOnClickListener { view ->
             view.visibility = View.INVISIBLE
             val target = this.map.cameraPosition.target
@@ -207,36 +197,51 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         loadNearbyIfAllowed()
     }
 
-    override fun onLocationChanged(location: Location?) {
-        if (location != null) {
-            locationOrigin = location
+    @AfterPermissionGranted(GPS_ACCESS)
+    private fun loadNearbyIfAllowed() {
+        if (EasyPermissions.hasPermissions(context!!, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)) {
+            startLoadingNearby()
+            val locationComponent = map.locationComponent
+
+            val options = LocationComponentOptions.builder(this.context!!)
+                .trackingGesturesManagement(true)
+                .accuracyColor(ContextCompat.getColor(this.context!!, R.color.green))
+                .build()
+
+            map.getStyle { style ->
+                // Activate the component
+                locationComponent.activateLocationComponent(this.context!!, style)
+
+                // Apply the options to the LocationComponent
+                locationComponent.applyStyle(options)
+
+                // Enable to make component visible
+                locationComponent.isLocationComponentEnabled = true
+
+                // Set the component's camera mode
+                locationComponent.cameraMode = CameraMode.TRACKING
+                locationComponent.renderMode = RenderMode.COMPASS
+            }
+        } else {
+            EasyPermissions.requestPermissions(this, "To access that feature, we need to access your current location", GPS_ACCESS, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
         }
     }
 
     @SuppressLint("MissingPermission")
     private fun initLocationEngine() {
         if (locationEngine == null) {
-            locationEngine = LocationEngineProvider(this.context).obtainBestLocationEngineAvailable()
+            locationEngine = LocationEngineProvider.getBestLocationEngine(this.context!!)
         }
-        locationEngine?.priority = LocationEnginePriority.HIGH_ACCURACY
-        locationEngine?.activate()
-
-        val lastLocation = locationEngine?.lastLocation
-        if (lastLocation != null) {
-            locationOrigin = lastLocation
-        } else {
-            locationEngine!!.addLocationEngineListener(this)
-        }
-    }
-
-    private fun initLocationLayer() {
-        if (locationLayerPlugin == null) {
-            locationLayerPlugin = LocationLayerPlugin(mapView!!, map, locationEngine)
-        }
-        locationLayerPlugin?.isLocationLayerEnabled = true
-        locationLayerPlugin?.cameraMode = CameraMode.TRACKING
-        locationLayerPlugin?.renderMode = RenderMode.NORMAL
-        lifecycle.addObserver(locationLayerPlugin!!)
+        locationEngine!!.getLastLocation(object : LocationEngineCallback<LocationEngineResult> {
+            override fun onSuccess(result: LocationEngineResult) {
+                if (result.lastLocation != null) {
+                    locationOrigin = result.lastLocation
+                }
+            }
+            override fun onFailure(exception: Exception) {
+                // ignored, handled later
+            }
+        })
     }
 
     private fun updateMarkersAndModel(
@@ -300,7 +305,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
 
     override fun onStart() {
         super.onStart()
-        locationEngine?.removeLocationUpdates()
+        //locationEngine?.removeLocationUpdates()
         locationLayerPlugin?.onStart()
         mapView?.onStart()
     }
@@ -313,7 +318,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
 
     override fun onStop() {
         super.onStop()
-        locationEngine?.removeLocationUpdates()
+        //locationEngine?.removeLocationUpdates()
         locationLayerPlugin?.onStop()
         mapView?.onStop()
     }
@@ -325,7 +330,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
 
     override fun onDestroy() {
         super.onDestroy()
-        locationEngine?.deactivate()
+        //locationEngine?.deactivate()
         mapView?.onDestroy()
     }
 
