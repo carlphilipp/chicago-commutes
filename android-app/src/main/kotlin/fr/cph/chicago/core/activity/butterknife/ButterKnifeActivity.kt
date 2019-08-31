@@ -26,10 +26,11 @@ import fr.cph.chicago.service.PreferenceService
 
 abstract class ButterKnifeActivity(private val contentView: Int) : AppCompatActivity() {
 
-    companion object {
-        @JvmStatic
-        protected val preferenceService = PreferenceService
-    }
+    // FIXME: Not sure yet why this can't be static anymore
+    //companion object {
+    //    @JvmStatic
+    protected val preferenceService = PreferenceService
+    //}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

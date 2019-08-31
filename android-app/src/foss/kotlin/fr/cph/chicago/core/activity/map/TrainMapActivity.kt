@@ -127,12 +127,12 @@ class TrainMapActivity : FragmentMapActivity() {
 
         Singles.zip(imageTrain, stationMarker,
             zipper = { bitmapTrain, bitmapStation ->
-                this.map.addImage("image-train", bitmapTrain)
-                this.map.addImage("station-marker", bitmapStation)
+                //this.map.addImage("image-train", bitmapTrain)
+                //this.map.addImage("station-marker", bitmapStation)
             }
         ).subscribe()
 
-        this.map.addLayer(
+        /*this.map.addLayer(
             SymbolLayer(VEHICLE_LAYER_ID, VEHICLE_SOURCE_ID)
                 .withProperties(
                     iconImage("image-train"),
@@ -193,11 +193,11 @@ class TrainMapActivity : FragmentMapActivity() {
                     iconAllowOverlap(true)
                 )
                 .withFilter(eq(get(PROPERTY_SELECTED), literal(true))))
-
+*/
         loadActivityData()
     }
 
-    override fun onMapClick(point: LatLng) {
+    override fun onMapClick(point: LatLng): Boolean {
         val finalPoint = map.projection.toScreenLocation(point)
         val vehicleInfoFeatures = map.queryRenderedFeatures(finalPoint, VEHICLE_INFO_LAYER_ID)
         if (vehicleInfoFeatures.isNotEmpty()) {
@@ -232,6 +232,7 @@ class TrainMapActivity : FragmentMapActivity() {
                 }
             }
         }
+        return false
     }
 
     override fun selectVehicle(feature: Feature) {
@@ -356,7 +357,7 @@ class TrainMapActivity : FragmentMapActivity() {
         }
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { bitmaps -> map.addImages(bitmaps as HashMap<String, Bitmap>) }
+            .subscribe { bitmaps -> /*map.addImages(bitmaps as HashMap<String, Bitmap>)*/ }
     }
 
     private fun colorDrawable(): Int {

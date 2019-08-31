@@ -20,7 +20,6 @@
 package fr.cph.chicago.core.activity.map
 
 import android.annotation.SuppressLint
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
 import butterknife.BindString
@@ -33,22 +32,6 @@ import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.annotations.PolylineOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.style.expressions.Expression.eq
-import com.mapbox.mapboxsdk.style.expressions.Expression.get
-import com.mapbox.mapboxsdk.style.expressions.Expression.literal
-import com.mapbox.mapboxsdk.style.expressions.Expression.step
-import com.mapbox.mapboxsdk.style.expressions.Expression.stop
-import com.mapbox.mapboxsdk.style.expressions.Expression.zoom
-import com.mapbox.mapboxsdk.style.layers.Property.ICON_ANCHOR_BOTTOM_LEFT
-import com.mapbox.mapboxsdk.style.layers.Property.ICON_ROTATION_ALIGNMENT_MAP
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAnchor
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconRotate
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconRotationAlignment
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconSize
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.BusPattern
@@ -100,6 +83,10 @@ class BusMapActivity : FragmentMapActivity() {
         setToolbar()
     }
 
+    override fun onMapClick(point: LatLng): Boolean {
+        return false
+    }
+
     override fun setToolbar() {
         super.setToolbar()
         toolbar.setOnMenuItemClickListener {
@@ -128,9 +115,9 @@ class BusMapActivity : FragmentMapActivity() {
         super.onMapReady(map)
         this.map.addOnMapClickListener(this)
 
-        this.map.addImage("image-bus", BitmapFactory.decodeResource(resources, R.drawable.bus))
+        //this.map.addImage("image-bus", BitmapFactory.decodeResource(resources, R.drawable.bus))
 
-        this.map.addLayer(
+        /*this.map.addLayer(
             SymbolLayer(VEHICLE_LAYER_ID, VEHICLE_SOURCE_ID)
                 .withProperties(
                     iconImage("image-bus"),
@@ -158,7 +145,7 @@ class BusMapActivity : FragmentMapActivity() {
                     iconOffset(arrayOf(-20.0f, -10.0f)),
                     iconAllowOverlap(true)
                 )
-                .withFilter(eq(get(PROPERTY_SELECTED), literal(true))))
+                .withFilter(eq(get(PROPERTY_SELECTED), literal(true))))*/
 
         loadActivityData()
 
@@ -171,7 +158,7 @@ class BusMapActivity : FragmentMapActivity() {
         }
     }
 
-    override fun onMapClick(point: LatLng) {
+    /*override fun onMapClick(point: LatLng) {
         val finalPoint = map.projection.toScreenLocation(point)
         val infoFeatures = map.queryRenderedFeatures(finalPoint, VEHICLE_INFO_LAYER_ID)
         if (infoFeatures.isNotEmpty()) {
@@ -194,7 +181,7 @@ class BusMapActivity : FragmentMapActivity() {
             }
         }
     }
-
+*/
     @SuppressLint("CheckResult")
     override fun selectVehicle(feature: Feature) {
         super.selectVehicle(feature)

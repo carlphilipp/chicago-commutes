@@ -39,6 +39,7 @@ import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.MapboxMap.OnMapClickListener
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
+import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeFragmentMapActivity
@@ -128,24 +129,24 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
 
     protected fun addVehicleFeatureCollection(featureCollection: FeatureCollection) {
         vehicleFeatureCollection = featureCollection
-        vehicleSource = map.getSource(VEHICLE_SOURCE_ID) as GeoJsonSource?
+        /*vehicleSource = map.getSource(VEHICLE_SOURCE_ID) as GeoJsonSource?
         if (vehicleSource == null) {
             vehicleSource = GeoJsonSource(VEHICLE_SOURCE_ID, featureCollection)
             map.addSource(vehicleSource!!)
         } else {
             vehicleSource!!.setGeoJson(featureCollection)
-        }
+        }*/
     }
 
     protected fun addStationFeatureCollection(featureCollection: FeatureCollection) {
         stationFeatureCollection = featureCollection
-        stationSource = map.getSource(STATION_SOURCE_ID) as GeoJsonSource?
+        /*stationSource = map.getSource(STATION_SOURCE_ID) as GeoJsonSource?
         if (stationSource == null) {
             stationSource = GeoJsonSource(STATION_SOURCE_ID, featureCollection)
             map.addSource(stationSource!!)
         } else {
             stationSource!!.setGeoJson(featureCollection)
-        }
+        }*/
     }
 
     protected fun drawPolyline(polylines: List<PolylineOptions>) {
@@ -175,10 +176,10 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { bitmap ->
-                map.addImage(id, bitmap)
+/*                map.addImage(id, bitmap)
                 feature.properties()?.addProperty(PROPERTY_SELECTED, true)
                 refreshVehicles()
-                showProgress(false)
+                showProgress(false)*/
             }
     }
 
@@ -188,6 +189,7 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
             uiSettings.isAttributionEnabled = false
             uiSettings.isRotateGesturesEnabled = false
             uiSettings.isTiltGesturesEnabled = false
+            setStyle(Style.MAPBOX_STREETS)
             this
         }
     }

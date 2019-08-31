@@ -18,7 +18,8 @@ object Version {
     const val google_play_location = "17.0.0"
     const val jackson = "2.9.9"
     const val material = "1.0.0"
-    const val mapbox = "7.0.1" // TODO: Migrate to last mapbox version https://github.com/mapbox/mapbox-gl-native/wiki/Android-6.x-to-7.x-migration-guide
+    const val mapbox = "8.2.1"
+    const val mapbox_annotation = "0.7.0"
     const val mapbox_location = "0.11.0"
     const val photoview = "v2.0.0"
     const val rx = "2.2.11"
@@ -61,6 +62,8 @@ object Lib {
     const val jackson_annotations = "com.fasterxml.jackson.core:jackson-annotations:${Version.jackson}"
     const val jackson_module_kotlin = "com.fasterxml.jackson.module:jackson-module-kotlin:${Version.jackson}"
     const val mapbox = "com.mapbox.mapboxsdk:mapbox-android-sdk:${Version.mapbox}"
+    const val mapbox_annotation = "com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v8:${Version.mapbox_annotation}"
+    const val mapbox_marker_view = "com.mapbox.mapboxsdk:mapbox-android-plugin-markerview-v8:0.3.0"
     const val mapbox_location = "com.mapbox.mapboxsdk:mapbox-android-plugin-locationlayer:${Version.mapbox_location}"
     const val photoview = "com.github.chrisbanes:PhotoView:${Version.photoview}"
     const val univocity = "com.univocity:univocity-parsers:${Version.univocity}"

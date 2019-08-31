@@ -36,8 +36,9 @@
         mapbox:mapbox_cameraTargetLat="41.8819"
         mapbox:mapbox_cameraTargetLng="-87.6278"
         mapbox:mapbox_cameraZoom="5"
-        mapbox:mapbox_cameraZoomMin="5"
-        mapbox:mapbox_styleUrl="@string/mapbox_style_light" />
+        mapbox:mapbox_cameraZoomMin="5" />
+
+    <!-- mapbox:mapbox_styleUrl="@string/mapbox_style_light" -->
 
     <LinearLayout
         android:id="@+id/bellow"

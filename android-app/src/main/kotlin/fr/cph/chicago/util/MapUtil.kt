@@ -2,8 +2,8 @@ package fr.cph.chicago.util
 
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import fr.cph.chicago.rx.RxUtil.handleListError
+import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import io.reactivex.Single
 import java.util.concurrent.Callable
 
@@ -11,9 +11,7 @@ object MapUtil {
 
     private const val DEFAULT_RANGE = 0.008
 
-    val chicagoPosition: Position by lazy {
-        Position(41.8819, -87.6278)
-    }
+    val chicagoPosition: Position by lazy { Position(41.8819, -87.6278) }
 
     fun getBounds(positions: List<Position>): Pair<Position, Position> {
         var maxLatitude = 0.0

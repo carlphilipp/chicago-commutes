@@ -19,21 +19,21 @@
 
 package fr.cph.chicago.core.model.marker
 
-import com.mapbox.mapboxsdk.annotations.Marker
+import com.mapbox.mapboxsdk.geometry.LatLng
 import fr.cph.chicago.core.model.Station
 
-class MarkerDataHolder {
-    private val data: MutableMap<String, Station> = mutableMapOf()
+class LatLngDataHolder {
+    private val data: MutableMap<LatLng, Station> = mutableMapOf()
 
-    fun addData(marker: Marker, station: Station) {
-        data[marker.icon!!.id] = station
+    fun addData(latLng: LatLng, station: Station) {
+        data[latLng] = station
     }
 
     fun clear() {
         data.clear()
     }
 
-    fun getStation(marker: Marker): Station? {
-        return data[marker.icon!!.id]
+    fun getStation(latLng: LatLng): Station? {
+        return data[latLng]
     }
 }

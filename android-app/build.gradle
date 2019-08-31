@@ -175,6 +175,8 @@ dependencies {
 
     // Foss flavor
     fossImplementation(Lib.mapbox)
+    fossImplementation(Lib.mapbox_annotation)
+    fossImplementation(Lib.mapbox_marker_view)
     fossImplementation(Lib.mapbox_location)
 
     kapt(Lib.butterknife_compiler)

@@ -21,17 +21,14 @@ package fr.cph.chicago.core.fragment
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.location.Location
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ProgressBar
-import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import butterknife.BindView
@@ -51,7 +48,6 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import fr.cph.chicago.Constants.GPS_ACCESS
 import fr.cph.chicago.R
@@ -60,6 +56,7 @@ import fr.cph.chicago.core.listener.OnMarkerClickListener
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.model.Station
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.marker.MarkerDataHolder
 import fr.cph.chicago.redux.store
@@ -68,9 +65,15 @@ import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.Util
+import fr.cph.chicago.util.merge
+import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Singles
+import io.reactivex.schedulers.Schedulers
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
+import timber.log.Timber
 import java.util.UUID
 
 /**
@@ -79,7 +82,7 @@ import java.util.UUID
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCallback, EasyPermissions.PermissionCallbacks {
+class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCallback {
 
     companion object {
         private val util = Util
@@ -109,8 +112,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
 
     private lateinit var map: MapboxMap
     private var locationEngine: LocationEngine? = null
-    private var locationLayerPlugin: LocationLayerPlugin? = null
-    private var locationOrigin: Location? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Mapbox.getInstance(this.context!!, getString(R.string.mapbox_token))
@@ -121,58 +122,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         slidingUpAdapter = SlidingUpAdapter(this)
         mapView?.getMapAsync(this)
         markerDataHolder = MarkerDataHolder()
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
-    }
-
-    override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
-        startLoadingNearby()
-    }
-
-    override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
-        showProgress(false)
-        handleNearbyData(Position(0.0, 0.0), true)
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun startLoadingNearby() {
-        showProgress(true)
-        initLocationEngine()
-        val position = if (locationOrigin == null) Position() else Position(locationOrigin!!.latitude, locationOrigin!!.longitude)
-        handleNearbyData(position, true)
-    }
-
-    private fun handleNearbyData(position: Position, zoomIn: Boolean = false) {
-        var chicago: Position? = null
-        if (position.longitude == 0.0 && position.latitude == 0.0) {
-            chicago = Position(chicagoPosition.latitude, chicagoPosition.longitude)
-            util.showSnackBar(mainActivity.drawer, R.string.message_cant_find_location)
-        }
-
-        val finalPosition = chicago ?: position
-        val trainStationAround = trainService.readNearbyStation(finalPosition)
-        val busStopsAround = busService.busStopsAround(finalPosition)
-        val bikeStations = mapUtil.readNearbyStation(finalPosition, store.state.bikeStations)
-        Singles.zip(
-            trainStationAround,
-            busStopsAround,
-            bikeStations,
-            zipper = { trains, buses, bikes ->
-                map.cameraPosition = if (zoomIn) {
-                    CameraPosition.Builder()
-                        .target(LatLng(finalPosition.latitude, finalPosition.longitude))
-                        .zoom(15.0)
-                        .build()
-                } else {
-                    CameraPosition.Builder()
-                        .target(LatLng(finalPosition.latitude, finalPosition.longitude))
-                        .build()
-                }
-                updateMarkersAndModel(buses, trains, bikes)
-                Any()
-            }).subscribe()
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
@@ -186,110 +135,147 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
             this
         }
 
+        map.setOnMarkerClickListener(OnMarkerClickListener(markerDataHolder, this@NearbyFragment))
+
         searchAreaButton.setOnClickListener { view ->
             view.visibility = View.INVISIBLE
-            val target = this.map.cameraPosition.target
-            val position = Position(target.latitude, target.longitude)
             markerDataHolder.clear()
             this.map.removeAnnotations()
-            handleNearbyData(position, false)
+            loadNearbyDataAroundPosition(
+                position = Position(map.cameraPosition.target.latitude, map.cameraPosition.target.longitude),
+                zoomIn = false
+            )
         }
-        loadNearbyIfAllowed()
+        startGpsTask()
     }
 
     @AfterPermissionGranted(GPS_ACCESS)
-    private fun loadNearbyIfAllowed() {
+    private fun startGpsTask() {
         if (EasyPermissions.hasPermissions(context!!, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)) {
-            startLoadingNearby()
-            val locationComponent = map.locationComponent
-
-            val options = LocationComponentOptions.builder(this.context!!)
-                .trackingGesturesManagement(true)
-                .accuracyColor(ContextCompat.getColor(this.context!!, R.color.green))
-                .build()
-
-            map.getStyle { style ->
-                // Activate the component
-                locationComponent.activateLocationComponent(this.context!!, style)
-
-                // Apply the options to the LocationComponent
-                locationComponent.applyStyle(options)
-
-                // Enable to make component visible
-                locationComponent.isLocationComponentEnabled = true
-
-                // Set the component's camera mode
-                locationComponent.cameraMode = CameraMode.TRACKING
-                locationComponent.renderMode = RenderMode.COMPASS
-            }
+            val currentPosition = getCurrentPosition()
+            loadNearbyDataAroundPosition(position = currentPosition, zoomIn = true)
         } else {
             EasyPermissions.requestPermissions(this, "To access that feature, we need to access your current location", GPS_ACCESS, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
         }
     }
 
-    @SuppressLint("MissingPermission")
-    private fun initLocationEngine() {
+    private fun loadNearbyDataAroundPosition(position: Position, zoomIn: Boolean = false) {
+        map.cameraPosition = CameraPosition.Builder()
+            .zoom(if (zoomIn) 15.0 else map.cameraPosition.zoom)
+            .target(LatLng(position.latitude, position.longitude))
+            .build()
+
+        val trainStations = trainService.readNearbyStation(position)
+        val busStops = busService.busStopsAround(position)
+        val bikeStations = mapUtil.readNearbyStation(position, store.state.bikeStations)
+        Singles.zip(
+            trainStations.observeOn(Schedulers.computation()),
+            busStops.observeOn(Schedulers.computation()),
+            bikeStations.observeOn(Schedulers.computation()),
+            zipper = { trains: List<Station>, buses, bikes -> merge(trains, buses, bikes) })
+            .toObservable()
+            .switchMap { stations -> generateMarkers(stations) }
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { pair ->
+                val markerOptions = pair.first
+                val station = pair.second
+                val marker = map.addMarker(markerOptions)
+                markerDataHolder.addData(marker, station)
+                station
+            }
+            .toList()
+            .subscribe(
+                {
+                    showProgress(false)
+                },
+                { throwable ->
+                    showProgress(false)
+                    Timber.e(throwable)
+                    // TODO handle error on screen
+                }
+            )
+    }
+
+    private fun getCurrentPosition(): Position {
         if (locationEngine == null) {
             locationEngine = LocationEngineProvider.getBestLocationEngine(this.context!!)
         }
+        var lastPosition = chicagoPosition
         locationEngine!!.getLastLocation(object : LocationEngineCallback<LocationEngineResult> {
             override fun onSuccess(result: LocationEngineResult) {
                 if (result.lastLocation != null) {
-                    locationOrigin = result.lastLocation
+                    lastPosition = Position(result.lastLocation!!.latitude, result.lastLocation!!.longitude)
+                    val locationComponent = map.locationComponent
+
+                    val options = LocationComponentOptions.builder(this@NearbyFragment.context!!)
+                        .trackingGesturesManagement(true)
+                        .accuracyColor(ContextCompat.getColor(this@NearbyFragment.context!!, R.color.green))
+                        .build()
+
+                    map.getStyle { style ->
+                        // Activate the component
+                        locationComponent.activateLocationComponent(this@NearbyFragment.context!!, style)
+
+                        // Apply the options to the LocationComponent
+                        locationComponent.applyStyle(options)
+
+                        // Enable to make component visible
+                        locationComponent.isLocationComponentEnabled = true
+
+                        // Set the component's camera mode
+                        locationComponent.cameraMode = CameraMode.TRACKING
+                        locationComponent.renderMode = RenderMode.COMPASS
+                    }
+                } else {
+                    displayErrorMessage()
                 }
             }
+
             override fun onFailure(exception: Exception) {
-                // ignored, handled later
+                // No need to log
+                displayErrorMessage()
+            }
+
+            private fun displayErrorMessage() {
+                util.showSnackBar(mainActivity.drawer, R.string.message_cant_find_location)
             }
         })
+        return lastPosition
     }
 
-    private fun updateMarkersAndModel(
-        busStops: List<BusStop>,
-        trainStations: List<TrainStation>,
-        bikeStations: List<BikeStation>) {
+    private fun generateMarkers(stations: List<Station>): Observable<Pair<MarkerOptions, Station>> {
+        val bitmapBus = createStop(context!!, R.drawable.bus_stop_icon)
+        val bitmapTrain = createStop(context!!, R.drawable.train_station_icon)
+        val bitmapBike = createStop(context!!, R.drawable.bike_station_icon)
 
-        val bitmapBus = createStop(context, R.drawable.bus_stop_icon)
-        val bitmapTrain = createStop(context, R.drawable.train_station_icon)
-        val bitmapBike = createStop(context, R.drawable.bike_station_icon)
-
-        busStops.forEach { busStop ->
-            val options = MarkerOptions()
-                .position(LatLng(busStop.position.latitude, busStop.position.longitude))
-                .title(busStop.name)
-                .snippet(busStop.description)
-            if (bitmapBus != null) {
-                options.icon = IconFactory.recreate(UUID.randomUUID().toString(), bitmapBus)
-            }
-            val marker = map.addMarker(options)
-            markerDataHolder.addData(marker, busStop)
-
-        }
-        trainStations.forEach { station ->
-            val position = station.stopsPosition.firstOrNull()
-            if (position != null) {
+        return Single.fromCallable { stations }
+            .flatMapObservable { preferences -> Observable.fromIterable(preferences) }
+            .map { station ->
+                val id = UUID.randomUUID().toString()
                 val options = MarkerOptions()
-                    .position(LatLng(position.latitude, position.longitude))
                     .title(station.name)
-                if (bitmapTrain != null) {
-                    options.icon = IconFactory.recreate(UUID.randomUUID().toString(), bitmapTrain)
+                when (station) {
+                    is TrainStation -> {
+                        val position = station.stopsPosition.first()
+                        options
+                            .position(LatLng(position.latitude, position.longitude))
+                            .icon(IconFactory.recreate(id, bitmapTrain))
+                    }
+                    is BusStop -> {
+                        options
+                            .position(LatLng(station.position.latitude, station.position.longitude))
+                            .snippet(station.description)
+                            .icon(IconFactory.recreate(id, bitmapBus))
+                    }
+                    is BikeStation -> {
+                        options
+                            .position(LatLng(station.latitude, station.longitude))
+                            .icon(IconFactory.recreate(id, bitmapBike))
+                    }
                 }
-                val marker = map.addMarker(options)
-                markerDataHolder.addData(marker, station)
+                Pair(options, station)
             }
-        }
-        bikeStations.forEach { station ->
-            val options = MarkerOptions()
-                .position(LatLng(station.latitude, station.longitude))
-                .title(station.name)
-            if (bitmapBike != null) {
-                options.icon = IconFactory.recreate(UUID.randomUUID().toString(), bitmapBike)
-            }
-            val marker = map.addMarker(options)
-            markerDataHolder.addData(marker, station)
-        }
-        map.setOnMarkerClickListener(OnMarkerClickListener(markerDataHolder, this@NearbyFragment))
-        showProgress(false)
+            .filter { pair -> pair.first.icon != null }
     }
 
     fun showProgress(show: Boolean) {
@@ -303,10 +289,12 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         }
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+
     override fun onStart() {
         super.onStart()
-        //locationEngine?.removeLocationUpdates()
-        locationLayerPlugin?.onStart()
         mapView?.onStart()
     }
 
@@ -318,8 +306,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
 
     override fun onStop() {
         super.onStop()
-        //locationEngine?.removeLocationUpdates()
-        locationLayerPlugin?.onStop()
         mapView?.onStop()
     }
 
@@ -330,21 +316,16 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
 
     override fun onDestroy() {
         super.onDestroy()
-        //locationEngine?.deactivate()
         mapView?.onDestroy()
     }
 
-    private fun createStop(context: Context?, @DrawableRes icon: Int): Bitmap? {
-        return if (context != null) {
-            val px = context.resources.getDimensionPixelSize(R.dimen.icon_shadow_2)
-            val bitMapStation = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bitMapStation)
-            val shape = ContextCompat.getDrawable(context, icon)!!
-            shape.setBounds(0, 0, px, bitMapStation.height)
-            shape.draw(canvas)
-            bitMapStation
-        } else {
-            null
-        }
+    private fun createStop(context: Context, @DrawableRes icon: Int): Bitmap {
+        val px = context.resources.getDimensionPixelSize(R.dimen.icon_shadow_2)
+        val bitMapStation = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitMapStation)
+        val shape = ContextCompat.getDrawable(context, icon)!!
+        shape.setBounds(0, 0, px, bitMapStation.height)
+        shape.draw(canvas)
+        return bitMapStation
     }
 }
