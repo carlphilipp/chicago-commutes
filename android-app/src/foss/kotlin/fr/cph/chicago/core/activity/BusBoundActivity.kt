@@ -51,6 +51,7 @@ import fr.cph.chicago.core.adapter.BusBoundAdapter
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.core.utils.setupMapbox
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.Util
@@ -193,13 +194,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
 
     @SuppressLint("CheckResult")
     override fun onMapReady(mapBox: MapboxMap) {
-        with(mapBox) {
-            uiSettings.isLogoEnabled = false
-            uiSettings.isAttributionEnabled = false
-            uiSettings.isRotateGesturesEnabled = false
-            uiSettings.isTiltGesturesEnabled = false
-            setStyle(Style.MAPBOX_STREETS)
-        }
+        setupMapbox(mapBox)
         busService.loadBusPattern(busRouteId, bound)
             .observeOn(Schedulers.computation())
             .map { busPattern: BusPattern ->

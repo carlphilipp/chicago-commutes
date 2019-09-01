@@ -19,6 +19,10 @@
 
 package fr.cph.chicago.core.activity.map
 
+const val IMAGE_TRAIN = "chicago.commutes.image.train"
+const val IMAGE_BUS = "chicago.commutes.image.bus"
+const val IMAGE_STATION = "chicago.commutes.image.station"
+
 const val VEHICLE_SOURCE_ID = "chicago.commutes.vehicle.source"
 const val VEHICLE_LAYER_ID = "chicago.commutes.vehicle.marker"
 const val VEHICLE_INFO_LAYER_ID = "chicago.commutes.vehicle.info"

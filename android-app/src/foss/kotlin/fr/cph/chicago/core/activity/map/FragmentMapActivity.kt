@@ -39,12 +39,12 @@ import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.MapboxMap.OnMapClickListener
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
-import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeFragmentMapActivity
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.utils.BitmapGenerator
+import fr.cph.chicago.core.utils.setupMapbox
 import fr.cph.chicago.util.MapUtil
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -129,24 +129,25 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
 
     protected fun addVehicleFeatureCollection(featureCollection: FeatureCollection) {
         vehicleFeatureCollection = featureCollection
-        /*vehicleSource = map.getSource(VEHICLE_SOURCE_ID) as GeoJsonSource?
+
+        vehicleSource = map.style!!.getSource(VEHICLE_SOURCE_ID) as GeoJsonSource?
         if (vehicleSource == null) {
             vehicleSource = GeoJsonSource(VEHICLE_SOURCE_ID, featureCollection)
-            map.addSource(vehicleSource!!)
+            map.style!!.addSource(vehicleSource!!)
         } else {
             vehicleSource!!.setGeoJson(featureCollection)
-        }*/
+        }
     }
 
     protected fun addStationFeatureCollection(featureCollection: FeatureCollection) {
         stationFeatureCollection = featureCollection
-        /*stationSource = map.getSource(STATION_SOURCE_ID) as GeoJsonSource?
+        stationSource = map.style!!.getSource(STATION_SOURCE_ID) as GeoJsonSource?
         if (stationSource == null) {
             stationSource = GeoJsonSource(STATION_SOURCE_ID, featureCollection)
-            map.addSource(stationSource!!)
+            map.style!!.addSource(stationSource!!)
         } else {
             stationSource!!.setGeoJson(featureCollection)
-        }*/
+        }
     }
 
     protected fun drawPolyline(polylines: List<PolylineOptions>) {
@@ -170,28 +171,20 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
         }
     }
 
-    @SuppressLint("CheckResult")
     protected fun update(feature: Feature, id: String, view: View) {
         Single.defer { Single.just(BitmapGenerator.generate(view)) }
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { bitmap ->
-/*                map.addImage(id, bitmap)
+                map.style!!.addImage(id, bitmap)
                 feature.properties()?.addProperty(PROPERTY_SELECTED, true)
                 refreshVehicles()
-                showProgress(false)*/
+                showProgress(false)
             }
     }
 
     override fun onMapReady(map: MapboxMap) {
-        this.map = with(map) {
-            uiSettings.isLogoEnabled = false
-            uiSettings.isAttributionEnabled = false
-            uiSettings.isRotateGesturesEnabled = false
-            uiSettings.isTiltGesturesEnabled = false
-            setStyle(Style.MAPBOX_STREETS)
-            this
-        }
+        this.map = setupMapbox(map)
     }
 
     override fun onStart() {

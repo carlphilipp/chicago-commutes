@@ -47,7 +47,6 @@ import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
-import com.mapbox.mapboxsdk.maps.Style
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import fr.cph.chicago.Constants.GPS_ACCESS
 import fr.cph.chicago.R
@@ -59,6 +58,7 @@ import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Station
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.marker.MarkerDataHolder
+import fr.cph.chicago.core.utils.setupMapbox
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
@@ -109,8 +109,8 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
 
     lateinit var slidingUpAdapter: SlidingUpAdapter
     private lateinit var markerDataHolder: MarkerDataHolder
-
     private lateinit var map: MapboxMap
+
     private var locationEngine: LocationEngine? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -125,17 +125,9 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
-        this.map = with(mapboxMap) {
-            uiSettings.isLogoEnabled = false
-            uiSettings.isAttributionEnabled = false
-            uiSettings.isRotateGesturesEnabled = false
-            uiSettings.isTiltGesturesEnabled = false
-            setStyle(Style.MAPBOX_STREETS)
-            addOnCameraMoveListener { searchAreaButton.visibility = View.VISIBLE }
-            this
-        }
-
-        map.setOnMarkerClickListener(OnMarkerClickListener(markerDataHolder, this@NearbyFragment))
+        this.map = setupMapbox(mapboxMap)
+        this.map.addOnCameraMoveListener { searchAreaButton.visibility = View.VISIBLE }
+        this.map.setOnMarkerClickListener(OnMarkerClickListener(markerDataHolder, this@NearbyFragment))
 
         searchAreaButton.setOnClickListener { view ->
             view.visibility = View.INVISIBLE
@@ -191,7 +183,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
                 { throwable ->
                     showProgress(false)
                     Timber.e(throwable)
-                    // TODO handle error on screen
+                    displayErrorMessage()
                 }
             )
     }
@@ -234,10 +226,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
             override fun onFailure(exception: Exception) {
                 // No need to log
                 displayErrorMessage()
-            }
-
-            private fun displayErrorMessage() {
-                util.showSnackBar(mainActivity.drawer, R.string.message_cant_find_location)
             }
         })
         return lastPosition
@@ -287,6 +275,10 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
                 progressBar.visibility = View.GONE
             }
         }
+    }
+
+    private fun displayErrorMessage() {
+        util.showSnackBar(mainActivity.drawer, R.string.message_cant_find_location)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {

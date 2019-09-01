@@ -33,6 +33,7 @@ import com.mapbox.mapboxsdk.annotations.BubbleLayout
 import com.mapbox.mapboxsdk.annotations.PolylineOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.expressions.Expression.eq
 import com.mapbox.mapboxsdk.style.expressions.Expression.get
 import com.mapbox.mapboxsdk.style.expressions.Expression.literal
@@ -122,79 +123,80 @@ class TrainMapActivity : FragmentMapActivity() {
         super.onMapReady(map)
         this.map.addOnMapClickListener(this)
 
-        val imageTrain = singleFromCallable(Callable { BitmapFactory.decodeResource(resources, R.drawable.train) }, Schedulers.computation())
-        val stationMarker = singleFromCallable(Callable { BitmapFactory.decodeResource(resources, colorDrawable()) }, Schedulers.computation())
+        this.map.setStyle(Style.LIGHT) { style ->
+            val imageTrain = singleFromCallable(Callable { BitmapFactory.decodeResource(resources, R.drawable.train) }, Schedulers.computation())
+            val stationMarker = singleFromCallable(Callable { BitmapFactory.decodeResource(resources, colorDrawable()) }, Schedulers.computation())
 
-        Singles.zip(imageTrain, stationMarker,
-            zipper = { bitmapTrain, bitmapStation ->
-                //this.map.addImage("image-train", bitmapTrain)
-                //this.map.addImage("station-marker", bitmapStation)
-            }
-        ).subscribe()
+            Singles.zip(imageTrain, stationMarker,
+                zipper = { bitmapTrain, bitmapStation ->
+                    style.addImage(IMAGE_TRAIN, bitmapTrain)
+                    style.addImage(IMAGE_STATION, bitmapStation)
+                }
+            ).subscribe()
 
-        /*this.map.addLayer(
-            SymbolLayer(VEHICLE_LAYER_ID, VEHICLE_SOURCE_ID)
-                .withProperties(
-                    iconImage("image-train"),
-                    iconRotate(get(PROPERTY_HEADING)),
-                    iconSize(
-                        step(zoom(), 0.05f,
-                            stop(9, 0.10f),
-                            stop(10.5, 0.15f),
-                            stop(12, 0.2f),
-                            stop(15, 0.3f),
-                            stop(17, 0.5f)
-                        )
-                    ),
-                    iconAllowOverlap(true),
-                    iconRotationAlignment(ICON_ROTATION_ALIGNMENT_MAP)))
+            style.addLayer(
+                SymbolLayer(VEHICLE_LAYER_ID, VEHICLE_SOURCE_ID)
+                    .withProperties(
+                        iconImage(IMAGE_TRAIN),
+                        iconRotate(get(PROPERTY_HEADING)),
+                        iconSize(
+                            step(zoom(), 0.05f,
+                                stop(9, 0.10f),
+                                stop(10.5, 0.15f),
+                                stop(12, 0.2f),
+                                stop(15, 0.3f),
+                                stop(17, 0.5f)
+                            )
+                        ),
+                        iconAllowOverlap(true),
+                        iconRotationAlignment(ICON_ROTATION_ALIGNMENT_MAP)))
 
-        this.map.addLayer(
-            SymbolLayer(VEHICLE_INFO_LAYER_ID, VEHICLE_SOURCE_ID)
-                .withProperties(
-                    // show image with id title based on the value of the title feature property
-                    iconImage("{title}"),
-                    // set anchor of icon to bottom-left
-                    iconAnchor(ICON_ANCHOR_BOTTOM_LEFT),
-                    // offset icon slightly to match bubble layout
-                    iconOffset(arrayOf(-20.0f, -10.0f)),
-                    iconAllowOverlap(true)
-                )
-                .withFilter(eq(get(PROPERTY_SELECTED), literal(true))))
+            style.addLayer(
+                SymbolLayer(VEHICLE_INFO_LAYER_ID, VEHICLE_SOURCE_ID)
+                    .withProperties(
+                        // show image with id title based on the value of the title feature property
+                        iconImage("{title}"),
+                        // set anchor of icon to bottom-left
+                        iconAnchor(ICON_ANCHOR_BOTTOM_LEFT),
+                        // offset icon slightly to match bubble layout
+                        iconOffset(arrayOf(-20.0f, -10.0f)),
+                        iconAllowOverlap(true)
+                    )
+                    .withFilter(eq(get(PROPERTY_SELECTED), literal(true))))
 
-        this.map.addLayerBelow(
-            SymbolLayer(STATION_LAYER_ID, STATION_SOURCE_ID)
-                .withProperties(
-                    iconImage("station-marker"),
-                    iconSize(
-                        step(zoom(), 0f,
-                            stop(13, 0.6f),
-                            stop(15, 1f),
-                            stop(17, 1.3f)
-                        )
-                    ),
-                    iconAllowOverlap(true)),
-            VEHICLE_INFO_LAYER_ID)
+            style.addLayerBelow(
+                SymbolLayer(STATION_LAYER_ID, STATION_SOURCE_ID)
+                    .withProperties(
+                        iconImage(IMAGE_STATION),
+                        iconSize(
+                            step(zoom(), 0f,
+                                stop(13, 0.6f),
+                                stop(15, 1f),
+                                stop(17, 1.3f)
+                            )
+                        ),
+                        iconAllowOverlap(true)),
+                VEHICLE_INFO_LAYER_ID)
 
-        this.map.addLayer(
-            SymbolLayer(STATION_INFO_LAYER_ID, STATION_SOURCE_ID)
-                .withProperties(
-                    // show image with id title based on the value of the title feature property
-                    iconImage("{title}"),
-                    // set anchor of icon to bottom-left
-                    iconAnchor(ICON_ANCHOR_BOTTOM_LEFT),
-                    iconSize(
-                        step(zoom(), 0f,
-                            stop(13, 1f)
-                        )
-                    ),
-                    // offset icon slightly to match bubble layout
-                    iconOffset(arrayOf(-20.0f, -24.0f)),
-                    iconAllowOverlap(true)
-                )
-                .withFilter(eq(get(PROPERTY_SELECTED), literal(true))))
-*/
-        loadActivityData()
+            style.addLayer(
+                SymbolLayer(STATION_INFO_LAYER_ID, STATION_SOURCE_ID)
+                    .withProperties(
+                        // show image with id title based on the value of the title feature property
+                        iconImage("{title}"),
+                        // set anchor of icon to bottom-left
+                        iconAnchor(ICON_ANCHOR_BOTTOM_LEFT),
+                        iconSize(
+                            step(zoom(), 0f,
+                                stop(13, 1f)
+                            )
+                        ),
+                        // offset icon slightly to match bubble layout
+                        iconOffset(arrayOf(-20.0f, -24.0f)),
+                        iconAllowOverlap(true)
+                    )
+                    .withFilter(eq(get(PROPERTY_SELECTED), literal(true))))
+            loadActivityData()
+        }
     }
 
     override fun onMapClick(point: LatLng): Boolean {
@@ -357,7 +359,7 @@ class TrainMapActivity : FragmentMapActivity() {
         }
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { bitmaps -> /*map.addImages(bitmaps as HashMap<String, Bitmap>)*/ }
+            .subscribe { bitmaps -> map.style!!.addImages(bitmaps as HashMap<String, Bitmap>) }
     }
 
     private fun colorDrawable(): Int {
