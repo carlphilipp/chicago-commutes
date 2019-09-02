@@ -81,7 +81,7 @@ enum class TrainLine constructor(private val text: String, private val fullText:
         }
 
         fun size(): Int {
-            return TrainLine.values().size
+            return values().size
         }
     }
 }
