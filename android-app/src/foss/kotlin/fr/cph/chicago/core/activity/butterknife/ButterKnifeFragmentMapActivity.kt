@@ -31,7 +31,7 @@ abstract class ButterKnifeFragmentMapActivity : FragmentActivity() {
 
     @BindView(R.id.mapView)
     @JvmField
-    var mapView: MapView? = null
+    protected var mapView: MapView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

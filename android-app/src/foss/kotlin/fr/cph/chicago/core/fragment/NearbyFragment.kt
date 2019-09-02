@@ -38,6 +38,7 @@ import com.mapbox.android.core.location.LocationEngineProvider
 import com.mapbox.android.core.location.LocationEngineResult
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.annotations.IconFactory
+import com.mapbox.mapboxsdk.annotations.Marker
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -82,6 +83,7 @@ import java.util.UUID
  * @author Carl-Philipp Harmant
  * @version 1
  */
+//FIXME: to remove deprecated API, need https://github.com/mapbox/mapbox-plugins-android/issues/649
 class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCallback {
 
     companion object {
@@ -171,7 +173,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
             .map { pair ->
                 val markerOptions = pair.first
                 val station = pair.second
-                val marker = map.addMarker(markerOptions)
+                val marker: Marker = map.addMarker(markerOptions)
                 markerDataHolder.addData(marker, station)
                 station
             }

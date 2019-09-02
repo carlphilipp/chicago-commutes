@@ -22,13 +22,15 @@ package fr.cph.chicago.core.utils
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 
+const val DEFAULT_MAPBOX_STYLE = Style.LIGHT
+
 fun setupMapbox(mapboxMap: MapboxMap): MapboxMap {
     return with(mapboxMap) {
         uiSettings.isLogoEnabled = false
         uiSettings.isAttributionEnabled = false
         uiSettings.isRotateGesturesEnabled = false
         uiSettings.isTiltGesturesEnabled = false
-        setStyle(Style.MAPBOX_STREETS)
+        setStyle(DEFAULT_MAPBOX_STYLE)
         this
     }
 }

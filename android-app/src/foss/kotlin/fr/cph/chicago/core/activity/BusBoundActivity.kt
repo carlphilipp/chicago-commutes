@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.core.activity
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.Drawable
@@ -35,14 +34,15 @@ import butterknife.BindDrawable
 import butterknife.BindString
 import butterknife.BindView
 import com.mapbox.mapboxsdk.Mapbox
-import com.mapbox.mapboxsdk.annotations.PolylineOptions
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
-import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.plugins.annotation.LineManager
+import com.mapbox.mapboxsdk.plugins.annotation.LineOptions
+import com.mapbox.mapboxsdk.utils.ColorUtils
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
@@ -51,7 +51,9 @@ import fr.cph.chicago.core.adapter.BusBoundAdapter
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.core.utils.DEFAULT_MAPBOX_STYLE
 import fr.cph.chicago.core.utils.setupMapbox
+import fr.cph.chicago.exception.CtaException
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.Util
@@ -105,6 +107,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
 
     @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
     lateinit var arrowBackWhite: Drawable
+    private var lineManager: LineManager? = null
 
     private lateinit var busRouteId: String
     private lateinit var busRouteName: String
@@ -118,7 +121,6 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
         super.onCreate(savedInstanceState)
     }
 
-    @SuppressLint("CheckResult")
     override fun create(savedInstanceState: Bundle?) {
         mapView!!.onCreate(savedInstanceState)
         busRouteId = intent.getStringExtra(bundleBusRouteId) ?: StringUtils.EMPTY
@@ -192,33 +194,39 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     }
 
-    @SuppressLint("CheckResult")
     override fun onMapReady(mapBox: MapboxMap) {
         setupMapbox(mapBox)
-        busService.loadBusPattern(busRouteId, bound)
-            .observeOn(Schedulers.computation())
-            .map { busPattern: BusPattern ->
-                val pair = mapUtil.getBounds(busPattern.busStopsPatterns.map { it.position })
-                val latLngBounds = LatLngBounds.Builder()
-                    .include(LatLng(pair.first.latitude, pair.first.longitude))
-                    .include(LatLng(pair.second.latitude, pair.second.longitude))
-                    .build()
-                val poly = PolylineOptions()
-                    .addAll(busPattern.busStopsPatterns.map { patternPoint -> LatLng(patternPoint.position.latitude, patternPoint.position.longitude) })
-                    .color(Color.BLACK)
-                    .width(App.instance.lineWidthMapBox)
-                Pair(latLngBounds, poly)
-            }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { pair ->
-                    mapBox.easeCamera(CameraUpdateFactory.newLatLngBounds(pair.first, 50), 500)
-                    mapBox.addPolyline(pair.second)
-                },
-                { error ->
-                    Timber.e(error)
-                    util.handleConnectOrParserException(error, layout)
-                })
+        mapBox.setStyle(DEFAULT_MAPBOX_STYLE) { style ->
+            lineManager = LineManager(this.mapView!!, mapBox, style)
+
+            busService.loadBusPattern(busRouteId, bound)
+                .observeOn(Schedulers.computation())
+                .map { busPattern: BusPattern ->
+                    val pair = mapUtil.getBounds(busPattern.busStopsPatterns.map { it.position })
+                    val latLngBounds = LatLngBounds.Builder()
+                        .include(LatLng(pair.first.latitude, pair.first.longitude))
+                        .include(LatLng(pair.second.latitude, pair.second.longitude))
+                        .build()
+                    val lineOptions = LineOptions()
+                        .withLatLngs(busPattern.busStopsPatterns.map { patternPoint -> LatLng(patternPoint.position.latitude, patternPoint.position.longitude) })
+                        .withLineColor(ColorUtils.colorToRgbaString(Color.BLACK))
+                        .withLineWidth((application as App).lineWidthMapBox)
+                    Pair(latLngBounds, lineOptions)
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { pair ->
+                        mapBox.easeCamera(CameraUpdateFactory.newLatLngBounds(pair.first, 50), 500)
+                        lineManager!!.create(pair.second)
+                    },
+                    { error ->
+                        Timber.e(error)
+                        when (error) {
+                            is CtaException -> util.showSnackBar(this.layout, R.string.message_error_could_not_load_path)
+                            else -> util.handleConnectOrParserException(error, layout)
+                        }
+                    })
+        }
     }
 
     public override fun onResume() {
@@ -261,5 +269,6 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
     override fun onDestroy() {
         super.onDestroy()
         mapView?.onDestroy()
+        lineManager?.onDestroy()
     }
 }

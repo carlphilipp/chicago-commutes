@@ -29,10 +29,10 @@ import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.annotations.Icon
 import com.mapbox.mapboxsdk.annotations.IconFactory
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
-import com.mapbox.mapboxsdk.annotations.PolylineOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.plugins.annotation.LineOptions
 import com.mapbox.mapboxsdk.style.expressions.Expression.eq
 import com.mapbox.mapboxsdk.style.expressions.Expression.get
 import com.mapbox.mapboxsdk.style.expressions.Expression.literal
@@ -49,10 +49,11 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconRotate
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconRotationAlignment
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconSize
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
+import com.mapbox.mapboxsdk.utils.ColorUtils
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.exception.CtaException
 import fr.cph.chicago.rx.BusesFunction
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.Util
@@ -66,6 +67,7 @@ import timber.log.Timber
  * @author Carl-Philipp Harmant
  * @version 1
  */
+//FIXME: to remove deprecated API, need https://github.com/mapbox/mapbox-plugins-android/issues/649
 class BusMapActivity : FragmentMapActivity() {
 
     companion object {
@@ -83,7 +85,7 @@ class BusMapActivity : FragmentMapActivity() {
     private var busId: Int = 0
     private lateinit var busRouteId: String
     private lateinit var bounds: Array<String>
-    private var markerOptions = listOf<MarkerOptions>()
+    private val markerOptions = mutableListOf<MarkerOptions>()
     private var showStops = false
 
     override fun create(savedInstanceState: Bundle?) {
@@ -128,42 +130,6 @@ class BusMapActivity : FragmentMapActivity() {
         super.onMapReady(map)
         this.map.addOnMapClickListener(this)
 
-        this.map.setStyle(Style.LIGHT) { style ->
-            style.addImage(IMAGE_BUS, BitmapFactory.decodeResource(resources, R.drawable.bus))
-
-            style.addLayer(
-                SymbolLayer(VEHICLE_LAYER_ID, VEHICLE_SOURCE_ID)
-                    .withProperties(
-                        iconImage(IMAGE_BUS),
-                        iconRotate(get(PROPERTY_HEADING)),
-                        iconSize(
-                            step(zoom(), 0.05f,
-                                stop(9, 0.10f),
-                                stop(10.5, 0.15f),
-                                stop(12, 0.2f),
-                                stop(15, 0.3f),
-                                stop(17, 0.5f)
-                            )
-                        ),
-                        iconAllowOverlap(true),
-                        iconRotationAlignment(ICON_ROTATION_ALIGNMENT_MAP)))
-
-            style.addLayer(
-                SymbolLayer(VEHICLE_INFO_LAYER_ID, VEHICLE_SOURCE_ID)
-                    .withProperties(
-                        // show image with id title based on the value of the title feature property
-                        iconImage("{title}"),
-                        // set anchor of icon to bottom-left
-                        iconAnchor(ICON_ANCHOR_BOTTOM_LEFT),
-                        // offset icon slightly to match bubble layout
-                        iconOffset(arrayOf(-20.0f, -10.0f)),
-                        iconAllowOverlap(true)
-                    )
-                    .withFilter(eq(get(PROPERTY_SELECTED), literal(true))))
-
-            loadActivityData()
-        }
-
         this.map.addOnCameraIdleListener {
             if (this.map.cameraPosition.zoom >= 15 && !showStops) {
                 this.map.addMarkers(markerOptions)
@@ -171,6 +137,42 @@ class BusMapActivity : FragmentMapActivity() {
                 this.map.markers.forEach { this.map.removeMarker(it) }
             }
         }
+    }
+
+    override fun onMapStyleReady(style: Style) {
+        style.addImage(IMAGE_BUS, BitmapFactory.decodeResource(resources, R.drawable.bus))
+
+        style.addLayer(
+            SymbolLayer(VEHICLE_LAYER_ID, VEHICLE_SOURCE_ID)
+                .withProperties(
+                    iconImage(IMAGE_BUS),
+                    iconRotate(get(PROPERTY_HEADING)),
+                    iconSize(
+                        step(zoom(), 0.05f,
+                            stop(9, 0.10f),
+                            stop(10.5, 0.15f),
+                            stop(12, 0.2f),
+                            stop(15, 0.3f),
+                            stop(17, 0.5f)
+                        )
+                    ),
+                    iconAllowOverlap(true),
+                    iconRotationAlignment(ICON_ROTATION_ALIGNMENT_MAP)))
+
+        style.addLayer(
+            SymbolLayer(VEHICLE_INFO_LAYER_ID, VEHICLE_SOURCE_ID)
+                .withProperties(
+                    // show image with id title based on the value of the title feature property
+                    iconImage("{title}"),
+                    // set anchor of icon to bottom-left
+                    iconAnchor(ICON_ANCHOR_BOTTOM_LEFT),
+                    // offset icon slightly to match bubble layout
+                    iconOffset(arrayOf(-20.0f, -10.0f)),
+                    iconAllowOverlap(true)
+                )
+                .withFilter(eq(get(PROPERTY_SELECTED), literal(true))))
+
+        loadActivityData()
     }
 
     override fun onMapClick(point: LatLng): Boolean {
@@ -235,14 +237,12 @@ class BusMapActivity : FragmentMapActivity() {
         if (drawLine) {
             val index = intArrayOf(0)
             Observable.fromCallable {
-                val patterns: MutableList<BusPattern> = mutableListOf()
                 if (busId == 0) {
                     // Search for directions
                     val busDirections = busService.loadBusDirectionsSingle(busRouteId).blockingGet()
                     bounds = busDirections.busDirections.map { busDirection -> busDirection.text }.toTypedArray()
                 }
-                busService.loadBusPattern(busRouteId, bounds).forEach { patterns.add(it) }
-                patterns
+                busService.loadBusPattern(busRouteId, bounds)
             }
                 .observeOn(Schedulers.computation())
                 .map { patterns ->
@@ -256,39 +256,26 @@ class BusMapActivity : FragmentMapActivity() {
                                     .position(latLng)
                                     .title(patternPoint.stopName)
                                     .snippet(pattern.direction)
-                                if (index[0] != 0) {
-                                    marketOptions.icon(blueIcon)
-                                } else {
-                                    marketOptions.icon(redIcon)
-                                }
+                                    .icon(if (index[0] != 0) blueIcon else redIcon)
                             }
                             Pair(latLng, marketOptions)
                         }
 
-                        val poly = PolylineOptions()
-                            .color(if (index[0] == 0) Color.RED else if (index[0] == 1) Color.BLUE else Color.YELLOW)
-                            .width((application as App).lineWidthMapBox)
-                            .addAll(positions.map { it.first })
-
+                        val lineOptions = LineOptions()
+                            .withLatLngs(positions.map { it.first })
+                            .withLineColor(ColorUtils.colorToRgbaString(if (index[0] == 0) Color.RED else if (index[0] == 1) Color.BLUE else Color.YELLOW))
+                            .withLineWidth((application as App).lineWidthMapBox)
                         index[0]++
-                        Pair(poly,
-                            positions
-                                .map { it.second }
-                                .filter { markerOptions -> markerOptions != null }
-                                .map { markerOptions -> markerOptions!! }
-                        )
+                        Pair(lineOptions, positions.mapNotNull { it.second })
                     }
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { result ->
-                        if (result != null) {
-                            drawPolyline(result.map { pair -> pair.first })
-                            this.markerOptions = result.flatMap { pair -> pair.second }
-                        } else {
-                            util.showSnackBar(layout, R.string.message_no_pattern_found)
-                        }
+                        result.map { pair -> pair.first }.forEach { drawPolyline(it) }
+                        this.markerOptions.clear()
+                        this.markerOptions.addAll(result.flatMap { pair -> pair.second })
                     },
                     { error ->
                         Timber.e(error)
@@ -322,15 +309,14 @@ class BusMapActivity : FragmentMapActivity() {
                 },
                 { error ->
                     Timber.e(error)
-                    util.handleConnectOrParserException(error, layout)
+                    when (error) {
+                        is CtaException -> util.showSnackBar(this.layout, R.string.message_error_could_not_load_path)
+                        else -> util.handleConnectOrParserException(error, layout)
+                    }
                 })
     }
 
-    private val blueIcon: Icon by lazy {
-        IconFactory.getInstance(this@BusMapActivity).fromResource(R.drawable.blue_marker)
-    }
+    private val blueIcon: Icon by lazy { IconFactory.getInstance(this@BusMapActivity).fromResource(R.drawable.blue_marker) }
 
-    private val redIcon: Icon by lazy {
-        IconFactory.getInstance(this@BusMapActivity).fromResource(R.drawable.red_marker)
-    }
+    private val redIcon: Icon by lazy { IconFactory.getInstance(this@BusMapActivity).fromResource(R.drawable.red_marker) }
 }

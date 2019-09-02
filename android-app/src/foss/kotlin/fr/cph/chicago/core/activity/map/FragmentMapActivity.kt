@@ -32,18 +32,21 @@ import butterknife.BindDrawable
 import butterknife.BindView
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
-import com.mapbox.mapboxsdk.annotations.PolylineOptions
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.MapboxMap.OnMapClickListener
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
+import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.plugins.annotation.LineManager
+import com.mapbox.mapboxsdk.plugins.annotation.LineOptions
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeFragmentMapActivity
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.utils.BitmapGenerator
+import fr.cph.chicago.core.utils.DEFAULT_MAPBOX_STYLE
 import fr.cph.chicago.core.utils.setupMapbox
 import fr.cph.chicago.util.MapUtil
 import io.reactivex.Single
@@ -69,6 +72,7 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
     lateinit var arrowBackWhite: Drawable
 
     protected lateinit var map: MapboxMap
+    private var lineManager: LineManager? = null
     protected var drawLine = true
 
     private var vehicleSource: GeoJsonSource? = null
@@ -150,8 +154,8 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
         }
     }
 
-    protected fun drawPolyline(polylines: List<PolylineOptions>) {
-        map.addPolylines(polylines)
+    protected fun drawPolyline(lineOptions: LineOptions) {
+        lineManager?.create(lineOptions)
         drawLine = false
     }
 
@@ -185,7 +189,13 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
 
     override fun onMapReady(map: MapboxMap) {
         this.map = setupMapbox(map)
+        this.map.setStyle(DEFAULT_MAPBOX_STYLE) { style ->
+            lineManager = LineManager(this.mapView!!, this.map, style)
+            onMapStyleReady(style)
+        }
     }
+
+    abstract fun onMapStyleReady(style: Style)
 
     override fun onStart() {
         super.onStart()
@@ -205,5 +215,6 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
     override fun onDestroy() {
         super.onDestroy()
         mapView?.onDestroy()
+        lineManager?.onDestroy()
     }
 }

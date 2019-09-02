@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.core.activity.map
 
-import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -30,10 +29,10 @@ import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.annotations.BubbleLayout
-import com.mapbox.mapboxsdk.annotations.PolylineOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.plugins.annotation.LineOptions
 import com.mapbox.mapboxsdk.style.expressions.Expression.eq
 import com.mapbox.mapboxsdk.style.expressions.Expression.get
 import com.mapbox.mapboxsdk.style.expressions.Expression.literal
@@ -50,10 +49,10 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconRotate
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconRotationAlignment
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconSize
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
+import com.mapbox.mapboxsdk.utils.ColorUtils
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Train
-import fr.cph.chicago.core.model.TrainStationPattern
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.utils.BitmapGenerator
 import fr.cph.chicago.rx.RxUtil.singleFromCallable
@@ -72,7 +71,7 @@ import java.util.concurrent.Callable
  * @author Carl-Philipp Harmant
  * @version 1
  */
-@SuppressLint("CheckResult")
+//FIXME: to remove deprecated API, need https://github.com/mapbox/mapbox-plugins-android/issues/649
 class TrainMapActivity : FragmentMapActivity() {
 
     companion object {
@@ -122,81 +121,78 @@ class TrainMapActivity : FragmentMapActivity() {
     override fun onMapReady(map: MapboxMap) {
         super.onMapReady(map)
         this.map.addOnMapClickListener(this)
+    }
 
-        this.map.setStyle(Style.LIGHT) { style ->
-            val imageTrain = singleFromCallable(Callable { BitmapFactory.decodeResource(resources, R.drawable.train) }, Schedulers.computation())
-            val stationMarker = singleFromCallable(Callable { BitmapFactory.decodeResource(resources, colorDrawable()) }, Schedulers.computation())
+    override fun onMapStyleReady(style: Style) {
+        val imageTrain = singleFromCallable(Callable { BitmapFactory.decodeResource(resources, R.drawable.train) }, Schedulers.computation())
+        val stationMarker = singleFromCallable(Callable { BitmapFactory.decodeResource(resources, colorDrawable()) }, Schedulers.computation())
 
-            Singles.zip(imageTrain, stationMarker,
-                zipper = { bitmapTrain, bitmapStation ->
-                    style.addImage(IMAGE_TRAIN, bitmapTrain)
-                    style.addImage(IMAGE_STATION, bitmapStation)
-                }
-            ).subscribe()
+        Singles.zip(imageTrain, stationMarker, zipper = { bitmapTrain, bitmapStation ->
+            style.addImage(IMAGE_TRAIN, bitmapTrain)
+            style.addImage(IMAGE_STATION, bitmapStation)
+        }).subscribe()
 
-            style.addLayer(
-                SymbolLayer(VEHICLE_LAYER_ID, VEHICLE_SOURCE_ID)
-                    .withProperties(
-                        iconImage(IMAGE_TRAIN),
-                        iconRotate(get(PROPERTY_HEADING)),
-                        iconSize(
-                            step(zoom(), 0.05f,
-                                stop(9, 0.10f),
-                                stop(10.5, 0.15f),
-                                stop(12, 0.2f),
-                                stop(15, 0.3f),
-                                stop(17, 0.5f)
-                            )
-                        ),
-                        iconAllowOverlap(true),
-                        iconRotationAlignment(ICON_ROTATION_ALIGNMENT_MAP)))
+        style.addLayer(
+            SymbolLayer(VEHICLE_LAYER_ID, VEHICLE_SOURCE_ID)
+                .withProperties(
+                    iconImage(IMAGE_TRAIN),
+                    iconRotate(get(PROPERTY_HEADING)),
+                    iconSize(
+                        step(zoom(), 0.05f,
+                            stop(9, 0.10f),
+                            stop(10.5, 0.15f),
+                            stop(12, 0.2f),
+                            stop(15, 0.3f),
+                            stop(17, 0.5f)
+                        )
+                    ),
+                    iconAllowOverlap(true),
+                    iconRotationAlignment(ICON_ROTATION_ALIGNMENT_MAP)))
 
-            style.addLayer(
-                SymbolLayer(VEHICLE_INFO_LAYER_ID, VEHICLE_SOURCE_ID)
-                    .withProperties(
-                        // show image with id title based on the value of the title feature property
-                        iconImage("{title}"),
-                        // set anchor of icon to bottom-left
-                        iconAnchor(ICON_ANCHOR_BOTTOM_LEFT),
-                        // offset icon slightly to match bubble layout
-                        iconOffset(arrayOf(-20.0f, -10.0f)),
-                        iconAllowOverlap(true)
-                    )
-                    .withFilter(eq(get(PROPERTY_SELECTED), literal(true))))
+        style.addLayerAbove(
+            SymbolLayer(VEHICLE_INFO_LAYER_ID, VEHICLE_SOURCE_ID)
+                .withProperties(
+                    // show image with id title based on the value of the title feature property
+                    iconImage("{title}"),
+                    // set anchor of icon to bottom-left
+                    iconAnchor(ICON_ANCHOR_BOTTOM_LEFT),
+                    // offset icon slightly to match bubble layout
+                    iconOffset(arrayOf(-20.0f, -10.0f)),
+                    iconAllowOverlap(true)
+                )
+                .withFilter(eq(get(PROPERTY_SELECTED), literal(true))), VEHICLE_LAYER_ID)
 
-            style.addLayerBelow(
-                SymbolLayer(STATION_LAYER_ID, STATION_SOURCE_ID)
-                    .withProperties(
-                        iconImage(IMAGE_STATION),
-                        iconSize(
-                            step(zoom(), 0f,
-                                stop(13, 0.6f),
-                                stop(15, 1f),
-                                stop(17, 1.3f)
-                            )
-                        ),
-                        iconAllowOverlap(true)),
-                VEHICLE_INFO_LAYER_ID)
+        style.addLayerBelow(
+            SymbolLayer(STATION_LAYER_ID, STATION_SOURCE_ID)
+                .withProperties(
+                    iconImage(IMAGE_STATION),
+                    iconSize(
+                        step(zoom(), 0f,
+                            stop(13, 0.6f),
+                            stop(15, 1f),
+                            stop(17, 1.3f)
+                        )
+                    ),
+                    iconAllowOverlap(true)), VEHICLE_LAYER_ID)
 
-            style.addLayer(
-                SymbolLayer(STATION_INFO_LAYER_ID, STATION_SOURCE_ID)
-                    .withProperties(
-                        // show image with id title based on the value of the title feature property
-                        iconImage("{title}"),
-                        // set anchor of icon to bottom-left
-                        iconAnchor(ICON_ANCHOR_BOTTOM_LEFT),
-                        iconSize(
-                            step(zoom(), 0f,
-                                stop(13, 1f)
-                            )
-                        ),
-                        // offset icon slightly to match bubble layout
-                        iconOffset(arrayOf(-20.0f, -24.0f)),
-                        iconAllowOverlap(true)
-                    )
-                    .withFilter(eq(get(PROPERTY_SELECTED), literal(true))))
-            loadActivityData()
-        }
+        style.addLayerAbove(
+            SymbolLayer(STATION_INFO_LAYER_ID, STATION_SOURCE_ID)
+                .withProperties(
+                    // show image with id title based on the value of the title feature property
+                    iconImage("{title}"),
+                    // set anchor of icon to bottom-left
+                    iconAnchor(ICON_ANCHOR_BOTTOM_LEFT),
+                    iconSize(
+                        step(zoom(), 0f,
+                            stop(13, 1f)
+                        )
+                    ),
+                    // offset icon slightly to match bubble layout
+                    iconOffset(arrayOf(-20.0f, -24.0f)),
+                    iconAllowOverlap(true)
+                )
+                .withFilter(eq(get(PROPERTY_SELECTED), literal(true))), VEHICLE_LAYER_ID)
+        loadActivityData()
     }
 
     override fun onMapClick(point: LatLng): Boolean {
@@ -286,15 +282,14 @@ class TrainMapActivity : FragmentMapActivity() {
 
         if (drawLine) {
             // Load pattern from local file
-            val polylineObs: Single<Pair<PolylineOptions, FeatureCollection>> = trainService.readPatterns(TrainLine.fromXmlString(line))
+            val patterns = trainService.readPatterns(TrainLine.fromXmlString(line))
                 .observeOn(Schedulers.computation())
                 .map { trainStationPatterns ->
-                    val poly = PolylineOptions()
-                        .width((application as App).lineWidthMapBox)
-                        .color(TrainLine.fromXmlString(line).color)
-                        .addAll(trainStationPatterns.map { trainStationPattern: TrainStationPattern ->
-                            LatLng(trainStationPattern.position.latitude, trainStationPattern.position.longitude)
-                        })
+                    val latLngs = trainStationPatterns.map { stationPattern -> LatLng(stationPattern.position.latitude, stationPattern.position.longitude) }
+                    val lineOptions = LineOptions()
+                        .withLatLngs(latLngs)
+                        .withLineColor(ColorUtils.colorToRgbaString(TrainLine.fromXmlString(line).color))
+                        .withLineWidth((application as App).lineWidthMapBox)
                     val features = trainStationPatterns
                         .filter { trainStationPattern -> trainStationPattern.stationName != null }
                         .map { trainStationPattern ->
@@ -303,20 +298,21 @@ class TrainMapActivity : FragmentMapActivity() {
                             feature
                         }
                     val featureCollection = FeatureCollection.fromFeatures(features)
-                    Pair(poly, featureCollection)
+                    Pair(lineOptions, featureCollection)
                 }
+
             Singles.zip(
                 featuresTrains.observeOn(AndroidSchedulers.mainThread()),
-                polylineObs.observeOn(AndroidSchedulers.mainThread()),
+                patterns.observeOn(AndroidSchedulers.mainThread()),
                 zipper = { featuresTrain, pair ->
                     addVehicleFeatureCollection(featuresTrain)
                     addStationFeatureCollection(pair.second)
                     addStationOnMap(pair.second)
-                    drawPolyline(listOf(pair.first))
+                    drawPolyline(pair.first)
                     if (featuresTrain.features() != null && featuresTrain.features()!!.isEmpty()) {
                         util.showSnackBar(layout, R.string.message_no_train_found)
                     }
-                    pair.first.points
+                    pair.first.latLngs
                 })
                 .subscribe(
                     { points -> centerMap(points) },
@@ -324,7 +320,6 @@ class TrainMapActivity : FragmentMapActivity() {
                         Timber.e(error)
                         util.showSnackBar(layout, R.string.message_error_while_loading_data)
                     })
-
         } else {
             featuresTrains
                 .observeOn(AndroidSchedulers.mainThread())
