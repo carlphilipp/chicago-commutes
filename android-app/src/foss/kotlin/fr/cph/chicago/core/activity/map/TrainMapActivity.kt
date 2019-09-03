@@ -130,7 +130,7 @@ class TrainMapActivity : FragmentMapActivity() {
                 this.map.addImage("image-train", bitmapTrain)
                 this.map.addImage("station-marker", bitmapStation)
             }
-        ).subscribe()
+        ).subscribe({}, { error -> Timber.e(error) })
 
         this.map.addLayer(
             SymbolLayer(VEHICLE_LAYER_ID, VEHICLE_SOURCE_ID)
@@ -356,7 +356,10 @@ class TrainMapActivity : FragmentMapActivity() {
         }
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { bitmaps -> map.addImages(bitmaps as HashMap<String, Bitmap>) }
+            .subscribe(
+                { bitmaps -> map.addImages(bitmaps as HashMap<String, Bitmap>) },
+                { error -> Timber.e(error) }
+            )
     }
 
     private fun colorDrawable(): Int {

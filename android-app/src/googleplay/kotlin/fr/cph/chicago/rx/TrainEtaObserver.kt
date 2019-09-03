@@ -28,6 +28,7 @@ import fr.cph.chicago.core.adapter.TrainMapSnippetAdapter
 import fr.cph.chicago.core.model.TrainEta
 import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
+import timber.log.Timber
 
 class TrainEtaObserver(view: View, private val trainMapActivity: TrainMapActivity) : SingleObserver<List<TrainEta>> {
 
@@ -50,5 +51,7 @@ class TrainEtaObserver(view: View, private val trainMapActivity: TrainMapActivit
 
     override fun onSubscribe(d: Disposable) {}
 
-    override fun onError(e: Throwable) {}
+    override fun onError(e: Throwable) {
+        Timber.e(e)
+    }
 }

@@ -80,8 +80,8 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
                     val busArrivalRouteDTO = BusArrivalRouteDTO(BusArrivalRouteDTO.busComparator)
                     result.forEach { busArrivalRouteDTO.addBusArrival(it) }
                     nearbyFragment.slidingUpAdapter.addBusArrival(busArrivalRouteDTO)
-                }
-            ) { onError -> Timber.e(onError, "Error while loading bus arrivals") }
+                },
+                { onError -> Timber.e(onError, "Error while loading bus arrivals") })
     }
 
     @SuppressLint("CheckResult")

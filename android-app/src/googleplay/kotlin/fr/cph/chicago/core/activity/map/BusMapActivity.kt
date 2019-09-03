@@ -105,11 +105,6 @@ class BusMapActivity : FragmentMapActivity() {
         loadPattern = false
     }
 
-    override fun initData() {
-        super.initData()
-        refreshBusesBitmap = RefreshBusMarkers()
-    }
-
     override fun setToolbar() {
         super.setToolbar()
         toolbar.setOnMenuItemClickListener {
@@ -167,8 +162,9 @@ class BusMapActivity : FragmentMapActivity() {
                 .color(if (index[0] == 0) Color.RED else if (index[0] == 1) Color.BLUE else Color.YELLOW)
                 .width(App.instance.lineWidthGoogleMap)
                 .geodesic(true)
+            // Potential null sent, if stream api change, it could fail
             pattern.busStopsPatterns
-                .map { patternPoint ->
+                .mapNotNull { patternPoint ->
                     val point = LatLng(patternPoint.position.latitude, patternPoint.position.longitude)
                     poly.add(point)
                     var markerOptions: MarkerOptions? = null
@@ -182,7 +178,6 @@ class BusMapActivity : FragmentMapActivity() {
                     // Potential null sent, if stream api change, it could fail
                     markerOptions
                 }
-                .filter { marker -> marker != null }
                 .distinct()
                 .map { markerOptions ->
                     val marker = googleMap.addMarker(markerOptions)
@@ -215,6 +210,8 @@ class BusMapActivity : FragmentMapActivity() {
 
     override fun onMapReady(googleMap: GoogleMap) {
         super.onMapReady(googleMap)
+
+        refreshBusesBitmap = RefreshBusMarkers()
 
         googleMap.setInfoWindowAdapter(object : InfoWindowAdapter {
             override fun getInfoWindow(marker: Marker): View? {

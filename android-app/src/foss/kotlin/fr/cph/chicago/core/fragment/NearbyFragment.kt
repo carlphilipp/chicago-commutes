@@ -68,6 +68,7 @@ import fr.cph.chicago.util.Util
 import io.reactivex.rxkotlin.Singles
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
+import timber.log.Timber
 import java.util.UUID
 
 /**
@@ -179,7 +180,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
                 }
                 updateMarkersAndModel(buses, trains, bikes)
                 Any()
-            }).subscribe()
+            }).subscribe({}, { error -> Timber.e(error) })
     }
 
     override fun onConnected() {

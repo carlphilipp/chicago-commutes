@@ -276,6 +276,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
             googleMapUtil.centerMap(mapFragment, zoomIn, finalPosition)
             updateMarkersAndModel(buses, trains, bikeStations)
             Any()
-        }).subscribe()
+        }).subscribe({}, { error -> Timber.e(error) })
     }
 }
