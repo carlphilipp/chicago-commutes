@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.core.activity.map
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -257,7 +256,6 @@ class BusMapActivity : FragmentMapActivity() {
         loadActivityData()
     }
 
-    @SuppressLint("CheckResult")
     private fun loadActivityData() {
         busService.busForRouteId(busRouteId)
             .observeOn(AndroidSchedulers.mainThread())
@@ -275,13 +273,18 @@ class BusMapActivity : FragmentMapActivity() {
             }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { result ->
-                    if (result != null) {
-                        drawPattern(result)
-                    } else {
+                .subscribe(
+                    { result ->
+                        if (result != null) {
+                            drawPattern(result)
+                        } else {
+                            util.showNetworkErrorMessage(layout)
+                        }
+                    },
+                    {
                         util.showNetworkErrorMessage(layout)
                     }
-                }
+                )
         }
     }
 }
