@@ -22,14 +22,24 @@ package fr.cph.chicago.core.listener
 import android.content.Intent
 import android.net.Uri
 import android.view.View
+import fr.cph.chicago.util.Util
+import java.util.Locale
 
-class GoogleMapOnClickListener(latitude: Double, longitude: Double) : GoogleMapListener(latitude, longitude) {
+// FIXME: Open lat/long in a new map activity with user
+class OpenMapOnClickListener(latitude: Double, longitude: Double) : GoogleMapListener(latitude, longitude) {
+
+    companion object {
+        private val util = Util
+    }
 
     override fun onClick(v: View) {
-        val uri = "http://maps.google.com/maps?z=12&t=m&q=loc:$latitude+$longitude"
-        val i = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
-        i.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity")
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        v.context.startActivity(i)
+        val uri = String.format(Locale.ENGLISH, "geo:%f,%f", latitude, longitude)
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
+
+        if (intent.resolveActivity(v.context.packageManager) != null) {
+            v.context.startActivity(intent)
+        } else {
+            util.showSnackBar(v, "Could not find any Map application on device", true)
+        }
     }
 }

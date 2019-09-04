@@ -29,7 +29,7 @@ import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
-import fr.cph.chicago.core.listener.GoogleMapOnClickListener
+import fr.cph.chicago.core.listener.OpenMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
@@ -178,7 +178,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
                 { busStop ->
                     toolbar.title = "$busRouteId - ${busStop.name}"
                     streetViewImage.setOnClickListener(GoogleStreetOnClickListener(position.latitude, position.longitude))
-                    mapContainer.setOnClickListener(GoogleMapOnClickListener(position.latitude, position.longitude))
+                    mapContainer.setOnClickListener(OpenMapOnClickListener(position.latitude, position.longitude))
                     walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(position.latitude, position.longitude))
                 },
                 { throwable ->

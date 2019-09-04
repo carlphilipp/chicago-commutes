@@ -35,7 +35,7 @@ import fr.cph.chicago.core.activity.MainActivity
 import fr.cph.chicago.core.listener.BikeDetailsButtonOnClickListener
 import fr.cph.chicago.core.listener.BusMapButtonOnClickListener
 import fr.cph.chicago.core.listener.BusStopOnClickListener
-import fr.cph.chicago.core.listener.GoogleMapOnClickListener
+import fr.cph.chicago.core.listener.OpenMapOnClickListener
 import fr.cph.chicago.core.listener.TrainDetailsButtonOnClickListener
 import fr.cph.chicago.core.listener.TrainMapButtonOnClickListener
 import fr.cph.chicago.core.model.BikeStation
@@ -180,7 +180,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         holder.detailsButton.setOnClickListener(BikeDetailsButtonOnClickListener(bikeStation))
 
         holder.mapButton.text = App.instance.getString(R.string.favorites_view_station)
-        holder.mapButton.setOnClickListener(GoogleMapOnClickListener(bikeStation.latitude, bikeStation.longitude))
+        holder.mapButton.setOnClickListener(OpenMapOnClickListener(bikeStation.latitude, bikeStation.longitude))
 
         val bikeResultLayout = layoutUtil.buildBikeFavoritesLayout(textAppearance, bikeStation)
 

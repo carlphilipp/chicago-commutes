@@ -33,7 +33,7 @@ import butterknife.BindDrawable
 import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
-import fr.cph.chicago.core.listener.GoogleMapOnClickListener
+import fr.cph.chicago.core.listener.OpenMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Stop
@@ -93,7 +93,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
 
             handleFavorite()
 
-            mapContainer.setOnClickListener(GoogleMapOnClickListener(position.latitude, position.longitude))
+            mapContainer.setOnClickListener(OpenMapOnClickListener(position.latitude, position.longitude))
             walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(position.latitude, position.longitude))
 
             val stopByLines = trainStation.stopByLines
