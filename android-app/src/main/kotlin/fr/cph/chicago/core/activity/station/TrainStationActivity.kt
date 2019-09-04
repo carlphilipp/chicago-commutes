@@ -32,7 +32,7 @@ import androidx.appcompat.widget.AppCompatCheckBox
 import butterknife.BindDrawable
 import butterknife.BindView
 import fr.cph.chicago.R
-import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
+import fr.cph.chicago.core.listener.OpenMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.OpenMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.model.Position
@@ -94,7 +94,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
             handleFavorite()
 
             mapContainer.setOnClickListener(OpenMapOnClickListener(position.latitude, position.longitude))
-            walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(position.latitude, position.longitude))
+            walkContainer.setOnClickListener(OpenMapDirectionOnClickListener(position.latitude, position.longitude))
 
             val stopByLines = trainStation.stopByLines
             randomTrainLine = getRandomLine(stopByLines)

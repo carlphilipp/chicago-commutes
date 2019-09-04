@@ -27,7 +27,7 @@ import android.widget.TextView
 import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
+import fr.cph.chicago.core.listener.OpenMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.OpenMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.model.BusStop
@@ -177,7 +177,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
                     toolbar.title = "$busRouteId - ${busStop.name}"
                     streetViewImage.setOnClickListener(GoogleStreetOnClickListener(position.latitude, position.longitude))
                     mapContainer.setOnClickListener(OpenMapOnClickListener(position.latitude, position.longitude))
-                    walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(position.latitude, position.longitude))
+                    walkContainer.setOnClickListener(OpenMapDirectionOnClickListener(position.latitude, position.longitude))
                 },
                 { throwable ->
                     Timber.e(throwable, "Error while loading street image and stop details")

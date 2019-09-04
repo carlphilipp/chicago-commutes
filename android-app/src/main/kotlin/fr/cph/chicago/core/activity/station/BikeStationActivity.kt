@@ -24,7 +24,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import butterknife.BindView
 import fr.cph.chicago.R
-import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
+import fr.cph.chicago.core.listener.OpenMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.OpenMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.model.BikeStation
@@ -72,7 +72,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
         bikeStationValue.text = bikeStation.address
         streetViewImage.setOnClickListener(GoogleStreetOnClickListener(position.latitude, position.longitude))
         mapContainer.setOnClickListener(OpenMapOnClickListener(position.latitude, position.longitude))
-        walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(position.latitude, position.longitude))
+        walkContainer.setOnClickListener(OpenMapDirectionOnClickListener(position.latitude, position.longitude))
 
         drawData()
         setToolbar()
