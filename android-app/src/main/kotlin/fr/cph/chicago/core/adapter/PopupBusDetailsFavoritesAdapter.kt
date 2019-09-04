@@ -27,7 +27,6 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
-import org.apache.commons.text.WordUtils
 
 /**
  * @author Carl-Philipp Harmant
@@ -46,7 +45,7 @@ class PopupBusDetailsFavoritesAdapter(context: Context, private val values: List
         } else {
             holder = view.tag as ViewHolder
         }
-        val label = values[position].stopName + " (" + WordUtils.capitalize(values[position].bound.toLowerCase()) + ")"
+        val label = values[position].stopName + " (" + values[position].bound.toLowerCase() + ")"
         holder.label.text = label
         return view!!
     }

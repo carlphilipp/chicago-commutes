@@ -242,7 +242,7 @@ object BusService {
                 busArrivals
                     .filter { (_, _, _, _, _, _, routeDirection) -> routeDirection == bound || routeDirection == boundTitle }
                     .fold(BusArrivalStopDTO()) { accumulator, busArrival ->
-                        accumulator.getOrPut(busArrival.busDestination, {mutableListOf()}).add(busArrival)
+                        accumulator.getOrPut(busArrival.busDestination, { mutableListOf() }).add(busArrival)
                         accumulator
                     }
             }
@@ -275,7 +275,7 @@ object BusService {
                             .map { prd ->
                                 BusArrival(
                                     timeStamp = simpleDateFormatBus.parseNotNull(prd.tmstmp),
-                                    stopName = prd.stpnm,
+                                    stopName = WordUtils.capitalizeFully(prd.stpnm),
                                     stopId = prd.stpid.toInt(),
                                     busId = prd.vid.toInt(),
                                     routeId = prd.rt,
