@@ -24,9 +24,9 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import butterknife.BindView
 import fr.cph.chicago.R
+import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.listener.OpenMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.OpenMapOnClickListener
-import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.redux.AddBikeFavoriteAction

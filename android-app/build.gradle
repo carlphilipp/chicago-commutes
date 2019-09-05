@@ -184,6 +184,8 @@ dependencies {
     testImplementation(Lib.junit) { exclude group: "org.hamcrest", module: "hamcrest-core" }
     testImplementation(Lib.mockito) { exclude group: "org.hamcrest", module: "hamcrest-core" }
     testImplementation(Lib.hamcrest)
+
+    debugImplementation(Lib.leakcanary)
 }
 
 task currentVersion {

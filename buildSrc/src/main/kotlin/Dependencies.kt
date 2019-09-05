@@ -38,6 +38,9 @@ object Version {
     const val junit = "4.12"
     const val mockito = "2.10.0"
     const val hamcrest = "1.3"
+
+    // Debug
+    const val leakcanary = "2.0-beta-3"
 }
 
 object Lib {
@@ -82,4 +85,7 @@ object Lib {
     // Update
     const val commons_io = "commons-io:commons-io:${Version.commons_io}"
     const val annimon = "com.annimon:stream:${Version.annimon}"
+
+    // Debug
+    const val leakcanary = "com.squareup.leakcanary:leakcanary-android:${Version.leakcanary}"
 }
