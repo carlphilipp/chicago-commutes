@@ -182,12 +182,15 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
         Single.defer { Single.just(BitmapGenerator.generate(view)) }
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { bitmap ->
-                map.style!!.addImage(id, bitmap)
-                feature.properties()?.addProperty(PROPERTY_SELECTED, true)
-                refreshVehicles()
-                showProgress(false)
-            }
+            .subscribe(
+                { bitmap ->
+                    map.style!!.addImage(id, bitmap)
+                    feature.properties()?.addProperty(PROPERTY_SELECTED, true)
+                    refreshVehicles()
+                    showProgress(false)
+                },
+                { error -> Timber.e(error) }
+            )
     }
 
     override fun onMapReady(map: MapboxMap) {
