@@ -87,11 +87,6 @@ class TrainMapActivity : FragmentMapActivity() {
         setToolbar()
     }
 
-    override fun initData() {
-        super.initData()
-        refreshTrainMarkers = RefreshTrainMarkers()
-    }
-
     override fun setToolbar() {
         super.setToolbar()
         toolbar.setOnMenuItemClickListener {
@@ -173,9 +168,10 @@ class TrainMapActivity : FragmentMapActivity() {
         refreshTrainMarkers.refreshTrainAndStation(googleMap.cameraPosition, trainsMarker, stationMarkers)
     }
 
-    @SuppressLint("CheckResult")
     override fun onMapReady(googleMap: GoogleMap) {
         super.onMapReady(googleMap)
+
+        refreshTrainMarkers = RefreshTrainMarkers()
 
         Observable.fromCallable { BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(resources, colorDrawable())) }
             .flatMapIterable { icon -> trainService.getStationsForLine(TrainLine.fromXmlString(line)).map { Pair(it, icon) } }
@@ -189,11 +185,13 @@ class TrainMapActivity : FragmentMapActivity() {
             }
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { markerOptions ->
-                val marker = googleMap.addMarker(markerOptions)
-                marker.isVisible = false
-                stationMarkers.add(marker)
-            }
+            .subscribe(
+                { markerOptions ->
+                    val marker = googleMap.addMarker(markerOptions)
+                    marker.isVisible = false
+                    stationMarkers.add(marker)
+                },
+                { error -> Timber.e(error) })
 
         googleMap.setInfoWindowAdapter(object : InfoWindowAdapter {
             override fun getInfoWindow(marker: Marker): View? {
@@ -261,16 +259,18 @@ class TrainMapActivity : FragmentMapActivity() {
                 }
             )
         } else {
-            trainsSingle.subscribe { trains ->
-                if (trains != null) {
-                    drawTrains(trains)
-                    if (trains.isEmpty()) {
-                        util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_no_train_found)
+            trainsSingle.subscribe(
+                { trains ->
+                    if (trains != null) {
+                        drawTrains(trains)
+                        if (trains.isEmpty()) {
+                            util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_no_train_found)
+                        }
+                    } else {
+                        util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_error_while_loading_data)
                     }
-                } else {
-                    util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_error_while_loading_data)
-                }
-            }
+                },
+                { error -> Timber.e(error) })
         }
     }
 

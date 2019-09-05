@@ -52,6 +52,7 @@ import fr.cph.chicago.util.MapUtil
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 
 @SuppressLint("Registered")
 abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapReadyCallback, OnMapClickListener {
@@ -115,7 +116,9 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
             }
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { latLngBounds -> map.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 50), 500) }
+            .subscribe(
+                { latLngBounds -> map.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 50), 500) },
+                { error -> Timber.e(error) })
     }
 
     protected open fun selectVehicle(feature: Feature) {

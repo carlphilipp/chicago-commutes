@@ -33,6 +33,7 @@ import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import io.reactivex.android.schedulers.AndroidSchedulers
+import timber.log.Timber
 
 @SuppressLint("CheckResult")
 class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, private val nearbyFragment: NearbyFragment) : com.mapbox.mapboxsdk.maps.MapboxMap.OnMarkerClickListener {
@@ -68,7 +69,10 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
         nearbyFragment.slidingUpAdapter.updateTitleTrain(trainTrainStation.name)
         trainService.loadStationTrainArrival(trainTrainStation.id)
             .onErrorReturn { TrainArrival.buildEmptyTrainArrival() }
-            .subscribe { result -> nearbyFragment.slidingUpAdapter.addTrainStation(result) }
+            .subscribe(
+                { result -> nearbyFragment.slidingUpAdapter.addTrainStation(result) },
+                { error -> Timber.e(error) }
+            )
     }
 
     private fun loadBusArrivals(busStop: BusStop) {
@@ -80,13 +84,19 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
                 busArrivalRouteDTO
             }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { busArrivalRouteDTO -> nearbyFragment.slidingUpAdapter.addBusArrival(busArrivalRouteDTO) }
+            .subscribe(
+                { busArrivalRouteDTO -> nearbyFragment.slidingUpAdapter.addBusArrival(busArrivalRouteDTO) },
+                { error -> Timber.e(error) }
+            )
     }
 
     private fun loadBikes(bikeStation: BikeStation) {
         nearbyFragment.slidingUpAdapter.updateTitleBike(bikeStation.name)
         bikeService.findBikeStation(bikeStation.id)
-            .subscribe { result -> nearbyFragment.slidingUpAdapter.addBike(result) }
+            .subscribe(
+                { result -> nearbyFragment.slidingUpAdapter.addBike(result) },
+                { error -> Timber.e(error) }
+            )
 
     }
 }

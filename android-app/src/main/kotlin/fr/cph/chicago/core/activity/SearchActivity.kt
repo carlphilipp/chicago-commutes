@@ -42,6 +42,7 @@ import fr.cph.chicago.service.TrainService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Singles
 import org.apache.commons.lang3.StringUtils
+import timber.log.Timber
 
 class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
 
@@ -144,7 +145,8 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
 
     private fun handleIntent(intent: Intent) {
         if (Intent.ACTION_SEARCH == intent.action) {
-            query = ((intent.getStringExtra(SearchManager.QUERY)) ?: StringUtils.EMPTY).trim { it <= ' ' }
+            query = ((intent.getStringExtra(SearchManager.QUERY))
+                ?: StringUtils.EMPTY).trim { it <= ' ' }
             val foundStations = trainService.searchStations(query)
             val foundBusRoutes = busService.searchBusRoutes(query)
             val foundBikeStations = bikeService.searchBikeStations(query)
@@ -153,10 +155,13 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
                 foundBikeStations,
                 zipper = { trains, buses, bikes -> Triple(trains, buses, bikes) })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { result ->
-                    searchAdapter.updateData(result.first, result.second, result.third)
-                    searchAdapter.notifyDataSetChanged()
-                }
+                .subscribe(
+                    { result ->
+                        searchAdapter.updateData(result.first, result.second, result.third)
+                        searchAdapter.notifyDataSetChanged()
+                    },
+                    { error -> Timber.e(error) }
+                )
         }
     }
 }

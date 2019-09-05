@@ -28,6 +28,7 @@ import fr.cph.chicago.R
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 
 class CtaMapFragment : Fragment(R.layout.fragment_cta_map) {
 
@@ -52,9 +53,11 @@ class CtaMapFragment : Fragment(R.layout.fragment_cta_map) {
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { bitmap ->
-                this@CtaMapFragment.bitmapCache = bitmap
-                ctaMap.setImageBitmap(bitmap)
-            }
+            .subscribe(
+                { bitmap ->
+                    this@CtaMapFragment.bitmapCache = bitmap
+                    ctaMap.setImageBitmap(bitmap)
+                },
+                { error -> Timber.e(error) })
     }
 }

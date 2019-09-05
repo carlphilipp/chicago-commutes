@@ -354,7 +354,10 @@ class TrainMapActivity : FragmentMapActivity() {
         }
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { bitmaps -> map.style!!.addImages(bitmaps as HashMap<String, Bitmap>) }
+            .subscribe(
+                { bitmaps -> map.style!!.addImages(bitmaps as HashMap<String, Bitmap>) },
+                { error -> Timber.e(error) }
+            )
     }
 
     private fun colorDrawable(): Int {
