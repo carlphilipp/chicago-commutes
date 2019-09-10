@@ -83,7 +83,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<Stat
     lateinit var retryButton: Button
 
     private lateinit var adapter: FavoritesAdapter
-    private lateinit var refreshTimingTask: RefreshTimingTask
+    private var refreshTimingTask: RefreshTimingTask? = null
 
     override fun onCreateView(savedInstanceState: Bundle?) {
         adapter = FavoritesAdapter(context!!)
@@ -111,18 +111,18 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<Stat
 
     override fun onPause() {
         super.onPause()
-        refreshTimingTask.cancel(true)
+        refreshTimingTask?.cancel(true)
         store.unsubscribe(this)
     }
 
     override fun onStop() {
         super.onStop()
-        refreshTimingTask.cancel(true)
+        refreshTimingTask?.cancel(true)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        refreshTimingTask.cancel(true)
+        refreshTimingTask?.cancel(true)
     }
 
     override fun onResume() {
@@ -137,7 +137,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<Stat
         }
         adapter.refreshFavorites()
         adapter.notifyDataSetChanged()
-        if (refreshTimingTask.status == Status.FINISHED) {
+        if (refreshTimingTask?.status == Status.FINISHED) {
             startRefreshTask()
         }
     }

@@ -36,10 +36,13 @@ import butterknife.BindView
 import com.google.android.material.navigation.NavigationView
 import fr.cph.chicago.Constants.SELECTED_ID
 import fr.cph.chicago.R
+import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.fragment.FavoritesFragment
 import fr.cph.chicago.core.fragment.buildFragment
+import fr.cph.chicago.redux.store
 import fr.cph.chicago.util.RateUtil
+import org.apache.commons.lang3.StringUtils
 
 class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView.OnNavigationItemSelectedListener {
 
@@ -84,6 +87,11 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     private var title: String? = null
 
     override fun create(savedInstanceState: Bundle?) {
+        if (store.state.ctaTrainKey == StringUtils.EMPTY) {
+            // Start error activity when state is empty (usually when android restart the app on error)
+            App.startErrorActivity()
+            finish()
+        }
         currentPosition = when {
             savedInstanceState != null -> savedInstanceState.getInt(SELECTED_ID, R.id.navigation_favorites)
             intent.extras != null -> intent.extras!!.getInt(SELECTED_ID, R.id.navigation_favorites)

@@ -42,7 +42,7 @@ class App : Application() {
     companion object {
         lateinit var instance: App
 
-        private fun startErrorActivity() {
+        fun startErrorActivity() {
             val context = instance.applicationContext
             val intent = Intent(context, ErrorActivity::class.java)
             intent.putExtra(context.getString(R.string.bundle_error), "Something went wrong")
