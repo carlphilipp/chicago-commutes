@@ -31,6 +31,7 @@ import android.widget.RelativeLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.BindView
 import fr.cph.chicago.R
+import fr.cph.chicago.core.activity.MainActivity
 import fr.cph.chicago.core.adapter.BikeAdapter
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.redux.BikeStationAction
@@ -74,7 +75,7 @@ class BikeFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<St
         bikeAdapter = BikeAdapter()
         listView.adapter = bikeAdapter
         swipeRefreshLayout.setOnRefreshListener { startRefreshing() }
-        mainActivity.toolbar.setOnMenuItemClickListener { startRefreshing(); true }
+        (activity as MainActivity).toolbar.setOnMenuItemClickListener { startRefreshing(); true }
         retryButton.setOnClickListener { startRefreshing() }
     }
 

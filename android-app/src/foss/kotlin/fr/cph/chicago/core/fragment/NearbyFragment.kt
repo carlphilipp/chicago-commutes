@@ -51,6 +51,7 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import fr.cph.chicago.Constants.GPS_ACCESS
 import fr.cph.chicago.R
+import fr.cph.chicago.core.activity.MainActivity
 import fr.cph.chicago.core.adapter.SlidingUpAdapter
 import fr.cph.chicago.core.listener.OnMarkerClickListener
 import fr.cph.chicago.core.model.BikeStation
@@ -280,7 +281,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
     }
 
     private fun displayErrorMessage() {
-        util.showSnackBar(mainActivity.drawer, R.string.message_cant_find_location)
+        util.showSnackBar((activity as MainActivity).drawer, R.string.message_cant_find_location)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {

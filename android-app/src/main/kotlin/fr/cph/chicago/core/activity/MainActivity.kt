@@ -24,7 +24,9 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.FrameLayout
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
@@ -35,19 +37,9 @@ import com.google.android.material.navigation.NavigationView
 import fr.cph.chicago.Constants.SELECTED_ID
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
-import fr.cph.chicago.core.fragment.AlertFragment
-import fr.cph.chicago.core.fragment.BikeFragment
-import fr.cph.chicago.core.fragment.BusFragment
-import fr.cph.chicago.core.fragment.CtaMapFragment
 import fr.cph.chicago.core.fragment.FavoritesFragment
-import fr.cph.chicago.core.fragment.NearbyFragment
-import fr.cph.chicago.core.fragment.SettingsFragment
-import fr.cph.chicago.core.fragment.TrainFragment
+import fr.cph.chicago.core.fragment.buildFragment
 import fr.cph.chicago.util.RateUtil
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView.OnNavigationItemSelectedListener {
 
@@ -61,6 +53,8 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     lateinit var drawer: NavigationView
     @BindView(R.id.drawer_layout)
     lateinit var drawerLayout: DrawerLayout
+    @BindView(R.id.container)
+    lateinit var container: FrameLayout
 
     @BindString(R.string.bundle_title)
     lateinit var bundleTitle: String
@@ -87,15 +81,6 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     private lateinit var menuItem: MenuItem
     private lateinit var inputMethodManager: InputMethodManager
 
-    private var favoritesFragment: FavoritesFragment? = null
-    private var trainFragment: TrainFragment? = null
-    private var busFragment: BusFragment? = null
-    private var bikeFragment: BikeFragment? = null
-    private var nearbyFragment: NearbyFragment? = null
-    private var ctaMapFragment: CtaMapFragment? = null
-    private var alertFragment: AlertFragment? = null
-    private var settingsFragment: SettingsFragment? = null
-
     private var title: String? = null
 
     override fun create(savedInstanceState: Bundle?) {
@@ -108,10 +93,23 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
         setToolbar()
 
         inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        drawerToggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+        drawerToggle = object : ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+            override fun onDrawerClosed(drawerView: View) {
+                super.onDrawerClosed(drawerView)
+                updateFragment(currentPosition)
+            }
+        }
+
         drawerLayout.addDrawerListener(drawerToggle)
         drawerToggle.syncState()
-        itemSelection(currentPosition)
+
+        firstLoad()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (title != null)
+            setBarTitle(title!!)
     }
 
     override fun onBackPressed() {
@@ -119,13 +117,8 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
             finish()
         } else {
             onNavigationItemSelected(menuItem)
+            loadFragment(currentPosition)
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (title != null)
-            setBarTitle(title!!)
     }
 
     private fun initView() {
@@ -145,64 +138,58 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
         toolbar.title = title
     }
 
+    private fun firstLoad() {
+        setBarTitle(favorites)
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.container, FavoritesFragment.newInstance(R.id.navigation_favorites))
+            .commit()
+        container.animate().alpha(1.0f)
+    }
+
+    private fun loadFragment(navigationId: Int) {
+        val transaction = supportFragmentManager.beginTransaction()
+        var fragment = supportFragmentManager.findFragmentByTag(navigationId.toString())
+        if (fragment == null) {
+            fragment = buildFragment(navigationId)
+            transaction.add(fragment, navigationId.toString())
+        }
+        transaction.replace(R.id.container, fragment).commit()
+        container.animate().alpha(1.0f)
+    }
+
+    private fun updateFragment(position: Int) {
+        when (position) {
+            R.id.navigation_favorites -> loadFragment(R.id.navigation_favorites)
+            R.id.navigation_train -> loadFragment(R.id.navigation_train)
+            R.id.navigation_bus -> loadFragment(R.id.navigation_bus)
+            R.id.navigation_bike -> loadFragment(R.id.navigation_bike)
+            R.id.navigation_nearby -> loadFragment(R.id.navigation_nearby)
+            R.id.navigation_cta_map -> loadFragment(R.id.navigation_cta_map)
+            R.id.navigation_alert_cta -> loadFragment(R.id.navigation_alert_cta)
+            R.id.navigation_settings -> loadFragment(R.id.navigation_settings)
+        }
+    }
+
     private fun itemSelection(position: Int) {
         currentPosition = position
         when (position) {
-            R.id.navigation_favorites -> {
-                setBarTitle(favorites)
-                favoritesFragment = favoritesFragment ?: FavoritesFragment.newInstance(position + 1)
-                supportFragmentManager.beginTransaction().replace(R.id.container, favoritesFragment as androidx.fragment.app.Fragment).commit()
-                closeDrawerAndUpdateActionBar(true)
-            }
-            R.id.navigation_train -> {
-                setBarTitle(train)
-                trainFragment = trainFragment ?: TrainFragment.newInstance(position + 1)
-                supportFragmentManager.beginTransaction().replace(R.id.container, trainFragment as androidx.fragment.app.Fragment).commit()
-                closeDrawerAndUpdateActionBar(false)
-            }
-            R.id.navigation_bus -> {
-                setBarTitle(bus)
-                busFragment = busFragment ?: BusFragment.newInstance(position + 1)
-                supportFragmentManager.beginTransaction().replace(R.id.container, busFragment as androidx.fragment.app.Fragment).commit()
-                closeDrawerAndUpdateActionBar(true)
-            }
-            R.id.navigation_bike -> {
-                setBarTitle(divvy)
-                bikeFragment = bikeFragment ?: BikeFragment.newInstance(position + 1)
-                supportFragmentManager.beginTransaction().replace(R.id.container, bikeFragment as androidx.fragment.app.Fragment).commit()
-                closeDrawerAndUpdateActionBar(true)
-            }
-            R.id.navigation_nearby -> {
-                setBarTitle(nearby)
-                nearbyFragment = nearbyFragment ?: NearbyFragment.newInstance(position + 1)
-                Observable.fromCallable { drawerLayout.closeDrawer(GravityCompat.START) }
-                    .delay(500, TimeUnit.MILLISECONDS)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnError { throwable -> Timber.e(throwable) }
-                    .subscribe { supportFragmentManager.beginTransaction().replace(R.id.container, nearbyFragment as androidx.fragment.app.Fragment).commitAllowingStateLoss() }
-                drawerLayout.closeDrawer(GravityCompat.START)
-                hideActionBarMenu()
-            }
-            R.id.navigation_cta_map -> {
-                setBarTitle(ctaMap)
-                ctaMapFragment = ctaMapFragment ?: CtaMapFragment.newInstance(position + 1)
-                supportFragmentManager.beginTransaction().replace(R.id.container, ctaMapFragment as androidx.fragment.app.Fragment).commit()
-                closeDrawerAndUpdateActionBar(false)
-            }
-            R.id.alert_cta -> {
-                setBarTitle(ctaAlert)
-                alertFragment = alertFragment ?: AlertFragment.newInstance(position + 1)
-                supportFragmentManager.beginTransaction().replace(R.id.container, alertFragment as androidx.fragment.app.Fragment).commit()
-                closeDrawerAndUpdateActionBar(true)
-            }
-            R.id.rate_this_app -> rateUtil.rateThisApp(this)
-            R.id.settings -> {
-                setBarTitle(settings)
-                settingsFragment = settingsFragment ?: SettingsFragment.newInstance(position + 1)
-                supportFragmentManager.beginTransaction().replace(R.id.container, settingsFragment as androidx.fragment.app.Fragment).commit()
-                closeDrawerAndUpdateActionBar(false)
-            }
+            R.id.navigation_favorites -> itemSelected(favorites, true)
+            R.id.navigation_train -> itemSelected(train, false)
+            R.id.navigation_bus -> itemSelected(bus, true)
+            R.id.navigation_bike -> itemSelected(divvy, true)
+            R.id.navigation_nearby -> itemSelected(nearby, false)
+            R.id.navigation_cta_map -> itemSelected(ctaMap, true)
+            R.id.navigation_alert_cta -> itemSelected(ctaAlert, true)
+            R.id.navigation_rate_this_app -> rateUtil.rateThisApp(this)
+            R.id.navigation_settings -> itemSelected(settings, false)
         }
+    }
+
+    private fun itemSelected(title: String, showActionBarMenu: Boolean) {
+        container.animate().alpha(0.0f)
+        setBarTitle(title)
+        closeDrawerAndUpdateActionBar(showActionBarMenu)
     }
 
     private fun closeDrawerAndUpdateActionBar(showActionBarMenu: Boolean) {

@@ -1,6 +1,6 @@
 package fr.cph.chicago.core.listener
 
-import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -13,7 +13,7 @@ import fr.cph.chicago.core.adapter.PopupFavoritesTrainAdapter
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.util.Color
 
-class TrainMapButtonOnClickListener(private val activity: Activity, private val trainLines: Set<TrainLine>) : View.OnClickListener {
+class TrainMapButtonOnClickListener(private val context: Context, private val trainLines: Set<TrainLine>) : View.OnClickListener {
 
     override fun onClick(v: View?) {
         if (trainLines.size == 1) {
@@ -27,11 +27,11 @@ class TrainMapButtonOnClickListener(private val activity: Activity, private val 
                     listOf(line.toStringWithLine())
                 }
 
-            val ada = PopupFavoritesTrainAdapter(activity, values, colors)
+            val ada = PopupFavoritesTrainAdapter(context, values, colors)
 
             val lines = trainLines.toList()
 
-            val builder = AlertDialog.Builder(activity)
+            val builder = AlertDialog.Builder(context)
             builder.setAdapter(ada) { _, position -> startTrainMapActivity(lines[position]) }
 
             val dialog = builder.create()
@@ -43,9 +43,9 @@ class TrainMapButtonOnClickListener(private val activity: Activity, private val 
 
     private fun startTrainMapActivity(trainLine: TrainLine) {
         val extras = Bundle()
-        val intent = Intent(activity.applicationContext, TrainMapActivity::class.java)
+        val intent = Intent(context.applicationContext, TrainMapActivity::class.java)
         extras.putString(App.instance.getString(R.string.bundle_train_line), trainLine.toTextString())
         intent.putExtras(extras)
-        activity.startActivity(intent)
+        context.startActivity(intent)
     }
 }

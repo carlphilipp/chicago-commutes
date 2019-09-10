@@ -19,29 +19,36 @@
 
 package fr.cph.chicago.core.adapter
 
-import android.annotation.SuppressLint
-import android.app.Activity
+import android.content.Context
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
-
 import fr.cph.chicago.R
 
 /**
  * @author Carl-Philipp Harmant
  * @version 1
  */
-internal class PopupFavoritesTrainAdapter(private val activity: Activity, private val values: List<String>, private val colors: List<Int>) : ArrayAdapter<String>(activity, R.layout.popup_train_cell, values) {
+internal class PopupFavoritesTrainAdapter(context: Context, private val values: List<String>, private val colors: List<Int>) : ArrayAdapter<String>(context, R.layout.popup_train_cell, values) {
 
-    @SuppressLint("ViewHolder")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val rowView = activity.layoutInflater.inflate(R.layout.popup_train_cell, parent, false)
-        val imageView: ImageView = rowView.findViewById(R.id.popup_train_map)
-        imageView.setColorFilter(colors[position])
-        val textView: TextView = rowView.findViewById(R.id.label)
-        textView.text = values[position]
-        return rowView
+        var view = convertView
+        val holder: ViewHolder
+        if (view == null) {
+            val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            view = vi.inflate(R.layout.popup_train_cell, parent, false)
+            holder = ViewHolder(view.findViewById(R.id.popup_train_map), view.findViewById(R.id.label))
+            view.tag = holder
+        } else {
+            holder = view.tag as ViewHolder
+        }
+        holder.label.text = values[position]
+        holder.imageView.setColorFilter(colors[position])
+        return view!!
     }
+
+    private class ViewHolder(val imageView: ImageView, val label: TextView)
 }

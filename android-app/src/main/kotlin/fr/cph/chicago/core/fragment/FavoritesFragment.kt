@@ -34,6 +34,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fr.cph.chicago.R
 import fr.cph.chicago.R.string
 import fr.cph.chicago.core.App
+import fr.cph.chicago.core.activity.MainActivity
 import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.adapter.FavoritesAdapter
 import fr.cph.chicago.redux.BusRoutesAction
@@ -85,11 +86,11 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<Stat
     private lateinit var refreshTimingTask: RefreshTimingTask
 
     override fun onCreateView(savedInstanceState: Bundle?) {
-        adapter = FavoritesAdapter(mainActivity)
+        adapter = FavoritesAdapter(context!!)
 
         recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(mainActivity)
-        floatingButton.setOnClickListener { mainActivity.startActivity(Intent(mainActivity, SearchActivity::class.java)) }
+        recyclerView.layoutManager = LinearLayoutManager(context!!)
+        floatingButton.setOnClickListener { activity?.startActivity(Intent(context!!, SearchActivity::class.java)) }
 
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -102,10 +103,10 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<Stat
         })
         swipeRefreshLayout.setOnRefreshListener { reloadData() }
         retryButton.setOnClickListener { reloadData() }
-        mainActivity.toolbar.setOnMenuItemClickListener { reloadData(); true }
+        (activity as MainActivity).toolbar.setOnMenuItemClickListener { reloadData(); true }
 
         startRefreshTask()
-        rateUtil.displayRateSnackBarIfNeeded(swipeRefreshLayout, mainActivity)
+        rateUtil.displayRateSnackBarIfNeeded(swipeRefreshLayout, activity!!)
     }
 
     override fun onPause() {

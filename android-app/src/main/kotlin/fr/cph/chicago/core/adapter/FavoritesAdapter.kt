@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.adapter
 
+import android.content.Context
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -31,7 +32,6 @@ import androidx.annotation.StyleRes
 import androidx.recyclerview.widget.RecyclerView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.activity.MainActivity
 import fr.cph.chicago.core.listener.BikeDetailsButtonOnClickListener
 import fr.cph.chicago.core.listener.BusMapButtonOnClickListener
 import fr.cph.chicago.core.listener.BusStopOnClickListener
@@ -58,7 +58,7 @@ import java.util.Calendar
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder>() {
+class FavoritesAdapter(private val context: Context) : RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder>() {
 
     companion object {
         private val util = Util
@@ -67,7 +67,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         private val timeUtil = TimeUtil
     }
 
-    private val textAppearance: Int = util.getAttribute(activity, R.attr.textAppearance)
+    private val textAppearance: Int = util.getAttribute(context, R.attr.textAppearance)
     private var lastUpdate: String = StringUtils.EMPTY
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoritesViewHolder {
@@ -109,7 +109,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         holder.detailsButton.isEnabled = true
 
         holder.mapButton.text = App.instance.getString(R.string.favorites_view_trains)
-        holder.mapButton.setOnClickListener(TrainMapButtonOnClickListener(activity, trainStation.lines))
+        holder.mapButton.setOnClickListener(TrainMapButtonOnClickListener(context, trainStation.lines))
 
         trainStation.lines.forEach { trainLine ->
             var newLine = true
@@ -167,9 +167,9 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         }
 
         holder.mapButton.text = App.instance.getString(R.string.favorites_view_buses)
-        holder.detailsButton.setOnClickListener(BusStopOnClickListener(activity, holder.parent, busDetailsDTOs))
+        holder.detailsButton.setOnClickListener(BusStopOnClickListener(context, holder.parent, busDetailsDTOs))
         holder.detailsButton.isEnabled = true
-        holder.mapButton.setOnClickListener(BusMapButtonOnClickListener(activity, busRoute, busDetailsDTOs.map { it.bound }.toSet()))
+        holder.mapButton.setOnClickListener(BusMapButtonOnClickListener(context, busRoute, busDetailsDTOs.map { it.bound }.toSet()))
     }
 
     private fun handleBikeStation(@StyleRes textAppearance: Int, holder: FavoritesViewHolder, bikeStation: BikeStation) {

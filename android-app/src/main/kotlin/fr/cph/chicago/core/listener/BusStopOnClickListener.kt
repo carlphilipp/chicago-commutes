@@ -19,8 +19,6 @@
 
 package fr.cph.chicago.core.listener
 
-import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -35,7 +33,7 @@ import fr.cph.chicago.core.activity.station.BusStopActivity
 import fr.cph.chicago.core.adapter.PopupBusDetailsFavoritesAdapter
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
 
-class BusStopOnClickListener(private val activity: Activity, private val parent: ViewGroup, private val busDetailsDTOs: List<BusDetailsDTO>) : View.OnClickListener {
+class BusStopOnClickListener(private val context: Context, private val parent: ViewGroup, private val busDetailsDTOs: List<BusDetailsDTO>) : View.OnClickListener {
 
     override fun onClick(view: View) {
         if (busDetailsDTOs.size == 1) {
@@ -51,12 +49,12 @@ class BusStopOnClickListener(private val activity: Activity, private val parent:
     }
 
     private fun onClickMultipleBound() {
-        val ada = PopupBusDetailsFavoritesAdapter(App.instance, busDetailsDTOs)
-        val view = App.instance.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val ada = PopupBusDetailsFavoritesAdapter(context, busDetailsDTOs)
+        val view = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val popupView = view.inflate(R.layout.popup_bus, parent, false)
         val listView: ListView = popupView.findViewById(R.id.details)
         listView.adapter = ada
-        val builder = AlertDialog.Builder(activity)
+        val builder = AlertDialog.Builder(context)
         builder.setAdapter(ada) { _, position ->
             val busDetails = busDetailsDTOs[position]
             startBusStopActivity(busDetails)
@@ -66,18 +64,17 @@ class BusStopOnClickListener(private val activity: Activity, private val parent:
         dialog.window?.setLayout((App.instance.screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
-    @SuppressLint("CheckResult")
     private fun startBusStopActivity(busDetails: BusDetailsDTO) {
-        val intent = Intent(App.instance, BusStopActivity::class.java)
+        val intent = Intent(context, BusStopActivity::class.java)
         val extras = Bundle()
-        extras.putInt(App.instance.getString(R.string.bundle_bus_stop_id), busDetails.stopId)
-        extras.putString(App.instance.getString(R.string.bundle_bus_route_id), busDetails.busRouteId)
-        extras.putString(App.instance.getString(R.string.bundle_bus_route_name), busDetails.routeName)
-        extras.putString(App.instance.getString(R.string.bundle_bus_bound), busDetails.bound)
-        extras.putString(App.instance.getString(R.string.bundle_bus_bound_title), busDetails.boundTitle)
+        extras.putInt(context.getString(R.string.bundle_bus_stop_id), busDetails.stopId)
+        extras.putString(context.getString(R.string.bundle_bus_route_id), busDetails.busRouteId)
+        extras.putString(context.getString(R.string.bundle_bus_route_name), busDetails.routeName)
+        extras.putString(context.getString(R.string.bundle_bus_bound), busDetails.bound)
+        extras.putString(context.getString(R.string.bundle_bus_bound_title), busDetails.boundTitle)
 
         intent.putExtras(extras)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        App.instance.startActivity(intent)
+        context.startActivity(intent)
     }
 }

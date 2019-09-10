@@ -110,16 +110,16 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     }
 
     private fun reloadActivity() {
-        val intent = mainActivity.intent
-        intent.putExtra(SELECTED_ID, R.id.settings)
-        mainActivity.finish()
-        startActivity(mainActivity.intent)
+        val intent = activity?.intent
+        intent?.putExtra(SELECTED_ID, R.id.navigation_settings)
+        activity?.finish()
+        startActivity(activity?.intent)
     }
 
     private fun restartApp() {
         store.dispatch(ResetStateAction())
         val intent = Intent(context, BaseActivity::class.java)
-        mainActivity.finish()
+        activity?.finish()
         startActivity(intent)
     }
 
@@ -134,6 +134,5 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             context?.cacheDir?.deleteRecursively()
         } catch (ignored: Exception) {
         }
-
     }
 }

@@ -33,6 +33,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.AlertActivity
+import fr.cph.chicago.core.activity.MainActivity
 import fr.cph.chicago.core.adapter.AlertAdapter
 import fr.cph.chicago.core.model.dto.AlertType
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
@@ -77,7 +78,7 @@ class AlertFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<S
         adapter = AlertAdapter()
         listView.adapter = adapter
         swipeRefreshLayout.setOnRefreshListener { startRefreshing() }
-        mainActivity.toolbar.setOnMenuItemClickListener { startRefreshing(); true }
+        (activity as MainActivity).toolbar.setOnMenuItemClickListener { startRefreshing(); true }
         retryButton.setOnClickListener { startRefreshing() }
     }
 

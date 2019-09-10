@@ -25,17 +25,17 @@
             android:icon="@drawable/ic_map_white_24dp"
             android:title="@string/menu_cta_map" />
         <item
-            android:id="@+id/alert_cta"
+            android:id="@+id/navigation_alert_cta"
             android:icon="@drawable/ic_action_alert_warning"
             android:title="@string/menu_cta_alert" />
     </group>
     <group android:checkableBehavior="single" android:id="@+id/group_more">
         <item
-            android:id="@+id/rate_this_app"
+            android:id="@+id/navigation_rate_this_app"
             android:icon="@drawable/ic_star_white_24dp"
             android:title="@string/menu_rate" />
         <item
-            android:id="@+id/settings"
+            android:id="@+id/navigation_settings"
             android:icon="@drawable/ic_settings_white_24dp"
             android:title="@string/menu_settings" />
     </group>

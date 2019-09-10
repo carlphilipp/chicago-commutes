@@ -59,6 +59,7 @@
             android:name=".core.activity.MainActivity"
             android:alwaysRetainTaskState="true"
             android:label="@string/app_name"
+            android:hardwareAccelerated="true"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.app.default_searchable"

@@ -31,6 +31,7 @@ import android.widget.RelativeLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.BindView
 import fr.cph.chicago.R
+import fr.cph.chicago.core.activity.MainActivity
 import fr.cph.chicago.core.adapter.BusAdapter
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.redux.BusRoutesAction
@@ -74,7 +75,7 @@ class BusFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<Sta
         busAdapter = BusAdapter()
         listView.adapter = busAdapter
         swipeRefreshLayout.setOnRefreshListener { startRefreshing() }
-        mainActivity.toolbar.setOnMenuItemClickListener { startRefreshing(); true }
+        (activity as MainActivity).toolbar.setOnMenuItemClickListener { startRefreshing(); true }
         retryButton.setOnClickListener { startRefreshing() }
     }
 
