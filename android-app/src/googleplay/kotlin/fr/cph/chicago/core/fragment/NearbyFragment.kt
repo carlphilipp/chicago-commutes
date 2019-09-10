@@ -46,6 +46,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import fr.cph.chicago.Constants.GPS_ACCESS
 import fr.cph.chicago.R
+import fr.cph.chicago.core.activity.MainActivity
 import fr.cph.chicago.core.adapter.SlidingUpAdapter
 import fr.cph.chicago.core.listener.OnMarkerClickListener
 import fr.cph.chicago.core.model.BikeStation
@@ -118,7 +119,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
 
     override fun onStart() {
         super.onStart()
-        googleApiClient = GoogleApiClient.Builder(mainActivity)
+        googleApiClient = GoogleApiClient.Builder(activity!!)
             .addApi(LocationServices.API)
             .build()
         val options = GoogleMapOptions()
@@ -126,7 +127,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
         options.camera(camera)
         mapFragment = SupportMapFragment.newInstance(options)
         mapFragment.retainInstance = true
-        val fm = mainActivity.supportFragmentManager
+        val fm = activity!!.supportFragmentManager
         loadNearbyIfAllowed()
         fm.beginTransaction().replace(R.id.map, mapFragment).commit()
     }
@@ -250,7 +251,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
     private fun startLoadingNearby() {
         showProgress(true)
         if (fusedLocationClient == null) {
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(mainActivity)
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity!!)
         }
         fusedLocationClient?.lastLocation?.addOnSuccessListener { location ->
             val position = if (location == null)
@@ -265,7 +266,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
         var finalPosition = position
         if (position.longitude == 0.0 && position.latitude == 0.0) {
             Timber.w("Could not get current user location")
-            util.showSnackBar(mainActivity.drawer, R.string.message_cant_find_location)
+            util.showSnackBar((activity as MainActivity).drawer, R.string.message_cant_find_location)
             finalPosition = chicagoPosition
         }
 
