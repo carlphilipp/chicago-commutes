@@ -270,7 +270,7 @@ object BusService {
                         res ?: throw CtaException(result)
                     }
                     else -> {
-                        val buses = result.bustimeResponse
+                        result.bustimeResponse
                             .prd!!
                             .map { prd ->
                                 BusArrival(
@@ -284,8 +284,7 @@ object BusService {
                                     predictionTime = simpleDateFormatBus.parseNotNull(prd.prdtm),
                                     isDelay = prd.dly)
                             }
-                        // limiting the number of bus arrival returned so it's not too ugly on the map
-                        if (buses.size >= 20) buses.subList(0, 19) else buses
+                            .sortedBy { it.timeLeftMilli }
                     }
                 }
             }

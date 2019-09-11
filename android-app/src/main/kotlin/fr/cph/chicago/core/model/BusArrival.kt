@@ -71,7 +71,7 @@ data class BusArrival(
         predictionTime = Date(source.readLong()),
         isDelay = source.readString()!!.toBoolean())
 
-    val timeLeft: String
+    val timeLeftMinutes: String
         get() {
             return if (StringUtils.EMPTY == errorMessage) {
                 val time = predictionTime.time - timeStamp.time
@@ -81,15 +81,21 @@ data class BusArrival(
             }
         }
 
+    val timeLeftMilli: Long
+        get() {
+            return predictionTime.time - timeStamp.time
+        }
+
+
     val timeLeftDueDelay: String
         get() {
             return if (isDelay) {
                 "Delay"
             } else {
-                if ("0 min" == timeLeft.trim { it <= ' ' }) {
+                if ("0 min" == timeLeftMinutes.trim { it <= ' ' }) {
                     "Due"
                 } else {
-                    timeLeft
+                    timeLeftMinutes
                 }
             }
         }

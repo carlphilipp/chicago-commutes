@@ -244,6 +244,6 @@ object Util {
     }
 
     fun formatArrivalTime(busArrival: BusArrival): String {
-        return if (busArrival.isDelay) " Delay" else " " + busArrival.timeLeft
+        return if (busArrival.isDelay) " Delay" else " " + busArrival.timeLeftMinutes
     }
 }
