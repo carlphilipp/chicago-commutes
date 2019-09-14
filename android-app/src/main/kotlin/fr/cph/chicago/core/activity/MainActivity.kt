@@ -38,7 +38,6 @@ import fr.cph.chicago.Constants.SELECTED_ID
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
-import fr.cph.chicago.core.fragment.FavoritesFragment
 import fr.cph.chicago.core.fragment.buildFragment
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.util.RateUtil
@@ -81,14 +80,14 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     private var currentPosition: Int = 0
 
     private lateinit var drawerToggle: ActionBarDrawerToggle
-    private lateinit var menuItem: MenuItem
+    private lateinit var favoriteMenuItem: MenuItem
     private lateinit var inputMethodManager: InputMethodManager
 
     private var title: String? = null
 
     override fun create(savedInstanceState: Bundle?) {
         if (store.state.ctaTrainKey == StringUtils.EMPTY) {
-            // Start error activity when state is empty (usually when android restart the app on error)
+            // Start error activity when state is empty (usually when android restart the activity on error)
             App.startErrorActivity()
             finish()
         }
@@ -97,8 +96,17 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
             intent.extras != null -> intent.extras!!.getInt(SELECTED_ID, R.id.navigation_favorites)
             else -> R.id.navigation_favorites
         }
-        initView()
-        setToolbar()
+        title = when {
+            savedInstanceState != null -> savedInstanceState.getString(bundleTitle, favorites)
+            intent.extras != null -> intent.extras!!.getString(bundleTitle, favorites)
+            else -> favorites
+        }
+        drawer.setNavigationItemSelectedListener(this)
+        favoriteMenuItem = drawer.menu.getItem(0)
+        toolbar.inflateMenu(R.menu.main)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            toolbar.elevation = 4f
+        }
 
         inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         drawerToggle = object : ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
@@ -111,7 +119,8 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
         drawerLayout.addDrawerListener(drawerToggle)
         drawerToggle.syncState()
 
-        firstLoad()
+        setBarTitle(title!!)
+        updateFragment(currentPosition)
     }
 
     override fun onResume() {
@@ -124,35 +133,15 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
         if (currentPosition == R.id.navigation_favorites) {
             finish()
         } else {
-            onNavigationItemSelected(menuItem)
+            // Switch to favorites if in another fragment
+            onNavigationItemSelected(favoriteMenuItem)
             loadFragment(currentPosition)
-        }
-    }
-
-    private fun initView() {
-        drawer.setNavigationItemSelectedListener(this)
-        menuItem = drawer.menu.getItem(0)
-    }
-
-    private fun setToolbar() {
-        toolbar.inflateMenu(R.menu.main)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            toolbar.elevation = 4f
         }
     }
 
     private fun setBarTitle(title: String) {
         this.title = title
         toolbar.title = title
-    }
-
-    private fun firstLoad() {
-        setBarTitle(favorites)
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.container, FavoritesFragment.newInstance(R.id.navigation_favorites))
-            .commit()
-        container.animate().alpha(1.0f)
     }
 
     private fun loadFragment(navigationId: Int) {
@@ -179,21 +168,6 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
         }
     }
 
-    private fun itemSelection(position: Int) {
-        currentPosition = position
-        when (position) {
-            R.id.navigation_favorites -> itemSelected(favorites, true)
-            R.id.navigation_train -> itemSelected(train, false)
-            R.id.navigation_bus -> itemSelected(bus, true)
-            R.id.navigation_bike -> itemSelected(divvy, true)
-            R.id.navigation_nearby -> itemSelected(nearby, false)
-            R.id.navigation_cta_map -> itemSelected(ctaMap, true)
-            R.id.navigation_alert_cta -> itemSelected(ctaAlert, true)
-            R.id.navigation_rate_this_app -> rateUtil.rateThisApp(this)
-            R.id.navigation_settings -> itemSelected(settings, false)
-        }
-    }
-
     private fun itemSelected(title: String, showActionBarMenu: Boolean) {
         container.animate().alpha(0.0f)
         setBarTitle(title)
@@ -202,10 +176,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
 
     private fun closeDrawerAndUpdateActionBar(showActionBarMenu: Boolean) {
         drawerLayout.closeDrawer(GravityCompat.START)
-        if (showActionBarMenu)
-            showActionBarMenu()
-        else
-            hideActionBarMenu()
+        showHideActionBarMenu(showActionBarMenu)
         // Force keyboard to hide if present
         inputMethodManager.hideSoftInputFromWindow(drawerLayout.windowToken, 0)
     }
@@ -216,10 +187,25 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     }
 
     override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
-        menuItem.isChecked = true
-        currentPosition = menuItem.itemId
-        if (!isFinishing)
-            itemSelection(currentPosition)
+        if (!isFinishing) {
+            if (currentPosition != menuItem.itemId) {
+                currentPosition = menuItem.itemId
+                when (menuItem.itemId) {
+                    R.id.navigation_favorites -> itemSelected(favorites, true)
+                    R.id.navigation_train -> itemSelected(train, false)
+                    R.id.navigation_bus -> itemSelected(bus, true)
+                    R.id.navigation_bike -> itemSelected(divvy, true)
+                    R.id.navigation_nearby -> itemSelected(nearby, false)
+                    R.id.navigation_cta_map -> itemSelected(ctaMap, true)
+                    R.id.navigation_alert_cta -> itemSelected(ctaAlert, false)
+                    R.id.navigation_rate_this_app -> rateUtil.rateThisApp(this)
+                    R.id.navigation_settings -> itemSelected(settings, false)
+                }
+            } else {
+                currentPosition = menuItem.itemId
+                drawerLayout.closeDrawer(GravityCompat.START)
+            }
+        }
         return true
     }
 
@@ -235,19 +221,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
         currentPosition = savedInstanceState.getInt(SELECTED_ID)
     }
 
-    private fun hideActionBarMenu() {
-        if (toolbar.menu.getItem(0).isVisible) {
-            showHideActionBarMenu(false)
-        }
-    }
-
-    private fun showActionBarMenu() {
-        if (!toolbar.menu.getItem(0).isVisible) {
-            showHideActionBarMenu(true)
-        }
-    }
-
-    private fun showHideActionBarMenu(bool: Boolean) {
-        toolbar.menu.getItem(0).isVisible = bool
+    private fun showHideActionBarMenu(show: Boolean) {
+        toolbar.menu.getItem(0).isVisible = show
     }
 }

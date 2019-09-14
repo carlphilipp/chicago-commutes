@@ -122,7 +122,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
     }
 
     override fun create(savedInstanceState: Bundle?) {
-        mapView!!.onCreate(savedInstanceState)
+        mapView?.onCreate(savedInstanceState)
         busRouteId = intent.getStringExtra(bundleBusRouteId) ?: StringUtils.EMPTY
         busRouteName = intent.getStringExtra(bundleBusRouteName) ?: StringUtils.EMPTY
         bound = intent.getStringExtra(bundleBusBound) ?: StringUtils.EMPTY
@@ -172,7 +172,6 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
             }
         })
 
-        util.setWindowsColor(this, toolbar, TrainLine.NA)
         toolbar.title = "$busRouteId - $boundTitle"
 
         toolbar.navigationIcon = arrowBackWhite

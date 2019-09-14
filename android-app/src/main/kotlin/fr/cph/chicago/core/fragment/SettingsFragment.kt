@@ -26,6 +26,7 @@ import android.os.Bundle
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import butterknife.BindString
 import butterknife.BindView
 import fr.cph.chicago.Constants.SELECTED_ID
 import fr.cph.chicago.R
@@ -46,6 +47,11 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             return fragmentWithBundle(SettingsFragment(), sectionNumber) as SettingsFragment
         }
     }
+
+    @BindString(R.string.settings)
+    lateinit var settings: String
+    @BindString(R.string.bundle_title)
+    lateinit var bundleTitle: String
 
     @BindView(R.id.clear_cache)
     lateinit var clearCache: LinearLayout
@@ -112,6 +118,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     private fun reloadActivity() {
         val intent = activity?.intent
         intent?.putExtra(SELECTED_ID, R.id.navigation_settings)
+        intent?.putExtra(bundleTitle, settings)
         activity?.finish()
         startActivity(activity?.intent)
     }
