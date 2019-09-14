@@ -38,17 +38,12 @@ import fr.cph.chicago.service.PreferenceService
  */
 class ErrorActivity : Activity() {
 
-    companion object {
-        private val preferenceService = PreferenceService
-    }
-
     @BindView(R.id.retry_button)
     lateinit var button: Button
     @BindView(R.id.failure)
     lateinit var failure: RelativeLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(preferenceService.getCurrentTheme())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.error)
         ButterKnife.bind(this)

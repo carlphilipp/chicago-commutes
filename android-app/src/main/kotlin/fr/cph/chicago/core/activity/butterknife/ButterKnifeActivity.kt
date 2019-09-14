@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity
 import butterknife.ButterKnife
 import fr.cph.chicago.service.PreferenceService
 
+
 abstract class ButterKnifeActivity(private val contentView: Int) : AppCompatActivity() {
 
     protected val preferenceService = PreferenceService
@@ -31,7 +32,6 @@ abstract class ButterKnifeActivity(private val contentView: Int) : AppCompatActi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!this.isFinishing) {
-            setTheme(preferenceService.getCurrentTheme())
             setContentView(contentView)
             ButterKnife.bind(this)
             create(savedInstanceState)

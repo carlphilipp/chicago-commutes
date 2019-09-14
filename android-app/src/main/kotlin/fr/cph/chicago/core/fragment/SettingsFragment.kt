@@ -30,8 +30,10 @@ import butterknife.BindString
 import butterknife.BindView
 import fr.cph.chicago.Constants.SELECTED_ID
 import fr.cph.chicago.R
+import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.BaseActivity
 import fr.cph.chicago.core.activity.DeveloperOptionsActivity
+import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.redux.ResetStateAction
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.RealmConfig
@@ -67,12 +69,12 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     override fun onCreateView(savedInstanceState: Bundle?) {
         val version = "Version ${util.getCurrentVersion()}"
         versionNumber.text = version
-        themeName.text = preferenceService.getTheme()
+        themeName.text = preferenceService.getTheme().description
 
         theme.setOnClickListener {
             val builder = AlertDialog.Builder(context!!)
-            val choices = arrayOf("Light", "Dark")
-            val selected = choices.indexOf(preferenceService.getTheme())
+            val choices = Theme.values().map { it.description }.toTypedArray()
+            val selected = choices.indexOf(preferenceService.getTheme().description)
             builder.setTitle("Theme change")
             builder.setSingleChoiceItems(choices, selected, null)
             builder.setPositiveButton("Save & Reload") { dialog: DialogInterface, _ ->
@@ -80,7 +82,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 for (i in 0 until list.count) {
                     val checked = list.isItemChecked(i)
                     if (checked) {
-                        preferenceService.saveTheme(choices[i])
+                        preferenceService.saveTheme(Theme.values()[i])
                         reloadActivity()
                     }
                 }
@@ -116,6 +118,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     }
 
     private fun reloadActivity() {
+        App.instance.themeSetup()
         val intent = activity?.intent
         intent?.putExtra(SELECTED_ID, R.id.navigation_settings)
         intent?.putExtra(bundleTitle, settings)

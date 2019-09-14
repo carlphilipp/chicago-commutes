@@ -18,24 +18,26 @@
 
 <resources>
 
-    <!-- Day Theme -->
+    <!-- Night Theme -->
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/lightPrimaryColor</item> <!-- Top action bar color -->
-        <item name="colorPrimaryDark">@color/lightPrimaryColorDark</item> <!-- Top status color -->
-        <item name="colorAccent">@color/lightColorAccent</item> <!-- Search bar / some windows -->
-        <item name="android:textColorPrimary">@color/lightColorTextPrimary</item>
-        <item name="android:textColorSecondary">@color/lightColorTextSecondary</item>
-        <item name="android:navigationBarColor">@color/lightPrimaryColorDarker</item>
-        <item name="favoriteCardBackground">@color/white</item>
-        <item name="streetViewBackground">@color/white</item>
+        <item name="colorPrimary">@color/darkPrimaryColor</item> <!-- Top action bar color -->
+        <item name="colorPrimaryDark">@color/darkPrimaryColorDarker</item> <!-- Top status color -->
+        <item name="colorAccent">@color/darkColorAccent</item> <!-- Search bar / some windows -->
+        <item name="android:textColorPrimary">@color/darkColorTextPrimary</item>
+        <item name="android:textColorSecondary">@color/darkColorTextSecondary</item>
+        <item name="android:navigationBarColor">@color/darkNavigationBar</item>
+        <item name="android:colorBackground">@color/darkBackgroundColorStart</item>
+        <item name="favoriteCardBackground">@color/favoriteCardBackground</item>
+        <item name="streetViewBackground">@color/colorPrimary</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
-        <item name="android:windowBackground">@drawable/bg_selector_light</item>
-        <item name="iconTint">@color/grey_5</item>
-        <item name="favoriteButton">@style/FavoriteButtonLight</item>
-        <item name="textAppearance">@style/AppTextAppearanceLight</item>
-        <item name="iconStationTint">@color/grey_5</item>
-        <item name="popupBackground">@drawable/bg_selector_popup_light</item>
-        <item name="alertDialogTheme">@style/AlertDialogLight</item>
+        <item name="android:windowBackground">@drawable/bg_selector_dark</item>
+        <item name="iconTint">@color/white</item>
+        <item name="favoriteButton">@style/FavoriteButtonDark</item>
+        <item name="textAppearance">@style/AppTextAppearanceDark</item>
+        <item name="iconStationTint">@color/white</item>
+        <item name="popupBackground">@drawable/bg_selector_popup_dark</item>
+        <item name="alertDialogTheme">@style/AlertDialogDark</item>
+        <item name="colorControlHighlight">@color/darkPrimaryColor</item>
     </style>
 
     <style name="FavoriteButtonLight" parent="Theme.AppCompat.Light">

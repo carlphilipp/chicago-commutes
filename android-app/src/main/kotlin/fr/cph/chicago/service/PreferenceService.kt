@@ -19,10 +19,10 @@
 
 package fr.cph.chicago.service
 
-import fr.cph.chicago.R
 import fr.cph.chicago.client.REQUEST_MAP_ID
 import fr.cph.chicago.client.REQUEST_ROUTE
 import fr.cph.chicago.client.REQUEST_STOP_ID
+import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.model.dto.PreferencesDTO
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
@@ -33,7 +33,6 @@ import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
-import timber.log.Timber
 import java.util.Date
 
 object PreferenceService {
@@ -41,22 +40,12 @@ object PreferenceService {
     private val repo = PreferenceRepository
     private val util = Util
 
-    fun getTheme(): String {
-        return repo.getTheme()
+    fun getTheme(): Theme {
+        return Theme.convert(repo.getTheme())
     }
 
-    fun getCurrentTheme(): Int {
-        val theme = repo.getTheme()
-        return if (theme == "Light") R.style.AppTheme else R.style.AppThemeDark
-    }
-
-    fun saveTheme(theme: String) {
-        if (theme != "Light" && theme != "Dark") {
-            Timber.w("The theme can only be Light or Dark")
-            repo.saveTheme("Light")
-            return
-        }
-        repo.saveTheme(theme)
+    fun saveTheme(theme: Theme) {
+        repo.saveTheme(theme.key)
     }
 
     fun isTrainStationFavorite(trainStationId: Int): Boolean {

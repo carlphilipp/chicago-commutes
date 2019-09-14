@@ -24,9 +24,13 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Point
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.view.WindowManager
+import androidx.appcompat.app.AppCompatDelegate
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.ErrorActivity
+import fr.cph.chicago.core.model.Theme
+import fr.cph.chicago.service.PreferenceService
 import io.reactivex.plugins.RxJavaPlugins
 import timber.log.Timber
 import timber.log.Timber.DebugTree
@@ -41,6 +45,8 @@ class App : Application() {
 
     companion object {
         lateinit var instance: App
+
+        private val preferenceService = PreferenceService
 
         fun startErrorActivity() {
             val context = instance.applicationContext
@@ -77,7 +83,23 @@ class App : Application() {
             Timber.e(throwable, "RxError not handled")
             startErrorActivity()
         }
+
+        themeSetup()
+
         super.onCreate()
+    }
+
+    fun themeSetup() {
+        when (preferenceService.getTheme()) {
+            Theme.AUTO -> {
+                when {
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                    else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
+                }
+            }
+            Theme.LIGHT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            Theme.DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        }
     }
 
     private val screenSize: IntArray by lazy {
