@@ -32,7 +32,6 @@
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
         <item name="android:windowBackground">@drawable/bg_selector_light</item>
         <item name="iconTint">@color/grey_5</item>
-        <item name="favoriteButtonTextColor">@color/black</item>
         <item name="textAppearance">@style/AppTextAppearanceLight</item>
         <item name="iconStationTint">@color/grey_5</item>
         <item name="popupBackground">@drawable/bg_selector_popup_light</item>
@@ -42,10 +41,6 @@
     <style name="FavoriteButtonLight" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:textColor">@color/black</item>
     </style>
-
-<!--    <style name="FavoriteButtonLight" parent="Theme.AppCompat.Light">
-        <item name="colorControlHighlight">@color/lightColorTextPrimary</item>
-    </style>-->
 
     <style name="AppTextAppearanceLight" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/grey_5</item>

@@ -28,6 +28,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import butterknife.BindString
 import butterknife.BindView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import fr.cph.chicago.Constants.SELECTED_ID
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
@@ -72,7 +73,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         themeName.text = preferenceService.getTheme().description
 
         theme.setOnClickListener {
-            val builder = AlertDialog.Builder(context!!, R.style.AlertDialog)
+            val builder = MaterialAlertDialogBuilder(context, R.style.AlertDialog)
             val choices = Theme.values().map { it.description }.toTypedArray()
             val selected = choices.indexOf(preferenceService.getTheme().description)
             builder.setTitle("Theme change")
@@ -103,7 +104,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 }
             }
 
-            AlertDialog.Builder(context!!, R.style.AlertDialog)
+            MaterialAlertDialogBuilder(context, R.style.AlertDialog)
                 .setMessage("This is going to:\n\n- Delete all your favorites\n- Clear application cache\n- Reload the application")
                 .setPositiveButton("Yes", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener)

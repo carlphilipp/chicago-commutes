@@ -106,7 +106,7 @@
                     android:layout_height="wrap_content"
                     android:layout_toStartOf="@+id/view_map_button"
                     android:text="@string/favorites_detail"
-                    android:textColor="?attr/favoriteButtonTextColor" />
+                    android:textColor="?android:textColorPrimary" />
 
                 <Button
                     android:id="@+id/view_map_button"
@@ -115,7 +115,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:text="@string/favorites_view_trains"
-                    android:textColor="?attr/favoriteButtonTextColor" />
+                    android:textColor="?android:textColorPrimary" />
 
             </RelativeLayout>
         </LinearLayout>

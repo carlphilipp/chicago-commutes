@@ -20,7 +20,6 @@
     <attr name="iconTint" format="color" />
     <attr name="favoriteCardBackground" format="color" />
     <attr name="streetViewBackground" format="color" />
-    <attr name="favoriteButtonTextColor" format="reference" />
     <attr name="iconStationTint" format="color" />
     <attr name="textAppearance" format="reference" />
     <attr name="popupBackground" format="reference" />

@@ -64,7 +64,7 @@
     <color name="favoriteCardBackground">#323949</color>
     <color name="darkDialogColorAccent">#586583</color>
     <color name="darkColorTextPrimary">#fff</color>
-    <color name="darkColorTextSecondary">#fff</color>
+    <color name="darkColorTextSecondary">#BEFFFFFF</color>
     <color name="darkBackgroundColorStart">#131317</color>
     <color name="darkBackgroundColorEnd">#131317</color>
 

@@ -103,7 +103,9 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
         }
         drawer.setNavigationItemSelectedListener(this)
         favoriteMenuItem = drawer.menu.getItem(0)
-        favoriteMenuItem.isChecked = true
+        if (currentPosition == R.id.navigation_favorites) {
+            favoriteMenuItem.isChecked = true
+        }
         toolbar.inflateMenu(R.menu.main)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.elevation = 4f
