@@ -93,6 +93,7 @@
             android:clickable="true"
             android:focusable="true"
             android:src="@drawable/ic_search_white_24dp"
+            app:tint="@color/white"
             app:layout_anchor="@id/favorites_list"
             app:layout_anchorGravity="bottom|right|end" />
 

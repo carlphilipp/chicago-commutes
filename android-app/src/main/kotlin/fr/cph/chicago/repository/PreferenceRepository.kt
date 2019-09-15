@@ -22,6 +22,7 @@ package fr.cph.chicago.repository
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import fr.cph.chicago.core.App
+import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.model.dto.PreferencesDTO
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
@@ -106,7 +107,7 @@ object PreferenceRepository {
     // Themes
     fun getTheme(): String {
         val sharedPref = getPrivatePreferences()
-        return sharedPref.getString(THEME.value, "Light")!!
+        return sharedPref.getString(THEME.value, Theme.AUTO.key)!!
     }
 
     fun saveTheme(theme: String) {

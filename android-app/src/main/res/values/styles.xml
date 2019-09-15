@@ -22,6 +22,7 @@
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/lightPrimaryColor</item> <!-- Top action bar color -->
         <item name="colorPrimaryDark">@color/lightPrimaryColorDark</item> <!-- Top status color -->
+        <item name="colorSecondary">@color/lightPrimaryColorDark</item> <!-- Floating button background -->
         <item name="colorAccent">@color/lightColorAccent</item> <!-- Search bar / some windows -->
         <item name="android:textColorPrimary">@color/lightColorTextPrimary</item>
         <item name="android:textColorSecondary">@color/lightColorTextSecondary</item>
@@ -31,16 +32,20 @@
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
         <item name="android:windowBackground">@drawable/bg_selector_light</item>
         <item name="iconTint">@color/grey_5</item>
-        <item name="favoriteButton">@style/FavoriteButtonLight</item>
+        <item name="favoriteButtonTextColor">@color/black</item>
         <item name="textAppearance">@style/AppTextAppearanceLight</item>
         <item name="iconStationTint">@color/grey_5</item>
         <item name="popupBackground">@drawable/bg_selector_popup_light</item>
         <item name="alertDialogTheme">@style/AlertDialogLight</item>
     </style>
 
-    <style name="FavoriteButtonLight" parent="Theme.AppCompat.Light">
-        <item name="colorControlHighlight">@color/lightColorTextPrimary</item>
+    <style name="FavoriteButtonLight" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/black</item>
     </style>
+
+<!--    <style name="FavoriteButtonLight" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">@color/lightColorTextPrimary</item>
+    </style>-->
 
     <style name="AppTextAppearanceLight" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/grey_5</item>
@@ -49,21 +54,6 @@
 
     <style name="AlertDialogLight" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">@color/lightPrimaryColorDark</item>
-    </style>
-
-    <style name="FavoriteButtonDark" parent="Theme.AppCompat">
-        <item name="colorPrimary">@color/darkColorTextPrimary</item>
-        <item name="colorControlHighlight">@color/lightColorTextPrimary</item>
-    </style>
-
-    <style name="AppTextAppearanceDark" parent="@android:style/TextAppearance">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">14sp</item>
-    </style>
-
-    <style name="AlertDialogDark" parent="Theme.AppCompat.Dialog.Alert">
-        <item name="android:windowBackground">@color/darkPrimaryColorDarker</item>
-        <item name="colorAccent">@color/darkDialogColorAccent</item>
     </style>
 
     <!-- Arrow style -->

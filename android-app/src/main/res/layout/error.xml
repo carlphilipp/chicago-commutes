@@ -45,6 +45,5 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/error_message"
         android:layout_centerHorizontal="true"
-        android:text="@string/bus_bike_retry_button"
-        android:theme="?attr/favoriteButton" />
+        android:text="@string/bus_bike_retry_button"/>
 </RelativeLayout>

@@ -100,30 +100,22 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/retry_button"
-                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:id="@+id/details_button"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toStartOf="@+id/view_map_button"
-                    android:paddingLeft="16dp"
-                    android:paddingTop="16dp"
-                    android:paddingRight="16dp"
-                    android:paddingBottom="16dp"
                     android:text="@string/favorites_detail"
-                    android:theme="?attr/favoriteButton" />
+                    android:textColor="?attr/favoriteButtonTextColor" />
 
                 <Button
                     android:id="@+id/view_map_button"
-                    style="@style/Widget.AppCompat.Button.Borderless"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:paddingLeft="16dp"
-                    android:paddingTop="16dp"
-                    android:paddingRight="16dp"
-                    android:paddingBottom="16dp"
                     android:text="@string/favorites_view_trains"
-                    android:theme="?attr/favoriteButton" />
+                    android:textColor="?attr/favoriteButtonTextColor" />
 
             </RelativeLayout>
         </LinearLayout>
