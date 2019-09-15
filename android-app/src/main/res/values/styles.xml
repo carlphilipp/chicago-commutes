@@ -61,4 +61,9 @@
         <item name="spinBars">true</item>
         <item name="color">@android:color/white</item>
     </style>
+
+    <!-- Alert Dialog -->
+    <style name="AlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog.Centered">
+
+    </style>
 </resources>
