@@ -102,6 +102,8 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<Stat
             }
         })
         swipeRefreshLayout.setOnRefreshListener { reloadData() }
+        swipeRefreshLayout.setColorSchemeColors(preferenceService.getColorSchemeColors(resources.configuration))
+        swipeRefreshLayout.setProgressBackgroundColorSchemeResource(preferenceService.getProgressBackgroundColorSchemeResource(resources.configuration))
         retryButton.setOnClickListener { reloadData() }
         (activity as MainActivity).toolbar.setOnMenuItemClickListener { reloadData(); true }
 

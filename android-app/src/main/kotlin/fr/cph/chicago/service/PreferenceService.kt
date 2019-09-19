@@ -19,9 +19,14 @@
 
 package fr.cph.chicago.service
 
+import android.content.res.Configuration
+import android.graphics.Color
+import fr.cph.chicago.R
 import fr.cph.chicago.client.REQUEST_MAP_ID
 import fr.cph.chicago.client.REQUEST_ROUTE
 import fr.cph.chicago.client.REQUEST_STOP_ID
+import fr.cph.chicago.core.App
+import fr.cph.chicago.core.App.Companion
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.model.dto.PreferencesDTO
 import fr.cph.chicago.core.model.enumeration.TrainDirection
@@ -39,6 +44,22 @@ object PreferenceService {
 
     private val repo = PreferenceRepository
     private val util = Util
+
+    fun getColorSchemeColors(configuration: Configuration): Int {
+        return when (configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_NO -> Color.BLACK
+            Configuration.UI_MODE_NIGHT_YES -> Color.WHITE
+            else -> Color.BLACK
+        }
+    }
+
+    fun getProgressBackgroundColorSchemeResource(configuration: Configuration): Int {
+        return when (configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_NO -> R.color.white
+            Configuration.UI_MODE_NIGHT_YES -> R.color.black
+            else -> R.color.white
+        }
+    }
 
     fun getTheme(): Theme {
         return Theme.convert(repo.getTheme())

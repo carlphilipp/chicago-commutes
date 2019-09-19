@@ -138,7 +138,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
         } else {
             // Switch to favorites if in another fragment
             onNavigationItemSelected(favoriteMenuItem)
-            loadFragment(currentPosition)
+            loadFragment(currentPosition, true)
         }
     }
 
@@ -147,7 +147,20 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
         toolbar.title = title
     }
 
-    private fun loadFragment(navigationId: Int) {
+    private fun updateFragment(position: Int) {
+        when (position) {
+            R.id.navigation_favorites -> loadFragment(R.id.navigation_favorites, true)
+            R.id.navigation_train -> loadFragment(R.id.navigation_train, false)
+            R.id.navigation_bus -> loadFragment(R.id.navigation_bus, true)
+            R.id.navigation_bike -> loadFragment(R.id.navigation_bike, true)
+            R.id.navigation_nearby -> loadFragment(R.id.navigation_nearby, false)
+            R.id.navigation_cta_map -> loadFragment(R.id.navigation_cta_map, false)
+            R.id.navigation_alert_cta -> loadFragment(R.id.navigation_alert_cta, true)
+            R.id.navigation_settings -> loadFragment(R.id.navigation_settings, false)
+        }
+    }
+
+    private fun loadFragment(navigationId: Int, showActionBarMenu: Boolean) {
         val transaction = supportFragmentManager.beginTransaction()
         var fragment = supportFragmentManager.findFragmentByTag(navigationId.toString())
         if (fragment == null) {
@@ -155,31 +168,18 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
             transaction.add(fragment, navigationId.toString())
         }
         transaction.replace(R.id.container, fragment).commit()
+        showHideActionBarMenu(showActionBarMenu)
         container.animate().alpha(1.0f)
     }
 
-    private fun updateFragment(position: Int) {
-        when (position) {
-            R.id.navigation_favorites -> loadFragment(R.id.navigation_favorites)
-            R.id.navigation_train -> loadFragment(R.id.navigation_train)
-            R.id.navigation_bus -> loadFragment(R.id.navigation_bus)
-            R.id.navigation_bike -> loadFragment(R.id.navigation_bike)
-            R.id.navigation_nearby -> loadFragment(R.id.navigation_nearby)
-            R.id.navigation_cta_map -> loadFragment(R.id.navigation_cta_map)
-            R.id.navigation_alert_cta -> loadFragment(R.id.navigation_alert_cta)
-            R.id.navigation_settings -> loadFragment(R.id.navigation_settings)
-        }
-    }
-
-    private fun itemSelected(title: String, showActionBarMenu: Boolean) {
+    private fun itemSelected(title: String) {
         container.animate().alpha(0.0f)
         setBarTitle(title)
-        closeDrawerAndUpdateActionBar(showActionBarMenu)
+        closeDrawerAndUpdateActionBar()
     }
 
-    private fun closeDrawerAndUpdateActionBar(showActionBarMenu: Boolean) {
+    private fun closeDrawerAndUpdateActionBar() {
         drawerLayout.closeDrawer(GravityCompat.START)
-        showHideActionBarMenu(showActionBarMenu)
         // Force keyboard to hide if present
         inputMethodManager.hideSoftInputFromWindow(drawerLayout.windowToken, 0)
     }
@@ -195,15 +195,15 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
             if (currentPosition != menuItem.itemId) {
                 currentPosition = menuItem.itemId
                 when (menuItem.itemId) {
-                    R.id.navigation_favorites -> itemSelected(favorites, true)
-                    R.id.navigation_train -> itemSelected(train, false)
-                    R.id.navigation_bus -> itemSelected(bus, true)
-                    R.id.navigation_bike -> itemSelected(divvy, true)
-                    R.id.navigation_nearby -> itemSelected(nearby, false)
-                    R.id.navigation_cta_map -> itemSelected(ctaMap, true)
-                    R.id.navigation_alert_cta -> itemSelected(ctaAlert, false)
+                    R.id.navigation_favorites -> itemSelected(favorites)
+                    R.id.navigation_train -> itemSelected(train)
+                    R.id.navigation_bus -> itemSelected(bus)
+                    R.id.navigation_bike -> itemSelected(divvy)
+                    R.id.navigation_nearby -> itemSelected(nearby)
+                    R.id.navigation_cta_map -> itemSelected(ctaMap)
+                    R.id.navigation_alert_cta -> itemSelected(ctaAlert)
                     R.id.navigation_rate_this_app -> rateUtil.rateThisApp(this)
-                    R.id.navigation_settings -> itemSelected(settings, false)
+                    R.id.navigation_settings -> itemSelected(settings)
                 }
             } else {
                 currentPosition = menuItem.itemId

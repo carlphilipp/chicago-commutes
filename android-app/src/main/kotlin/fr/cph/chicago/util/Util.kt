@@ -38,7 +38,6 @@ import fr.cph.chicago.exception.ConnectException
 import java.io.Closeable
 import java.io.IOException
 import java.io.Reader
-import java.util.Arrays
 import java.util.Random
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.regex.Pattern
@@ -170,9 +169,8 @@ object Util {
 
     val randomColor: Int
         get() {
-            val random = Random()
-            val keys = Arrays.asList(*TrainLine.values())
-            return keys[random.nextInt(keys.size)].color
+            val keys = TrainLine.values().map { it.color }.dropLast(1)
+            return keys[Random().nextInt(keys.size)]
         }
 
     fun convertDpToPixel(dp: Int): Int {
