@@ -66,4 +66,8 @@ abstract class Fragment(private val layout: Int) : Fragment() {
     }
 
     abstract fun onCreateView(savedInstanceState: Bundle?)
+
+    open fun hasActionBar(): Boolean {
+        return false
+    }
 }

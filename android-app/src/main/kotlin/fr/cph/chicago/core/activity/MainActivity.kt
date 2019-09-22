@@ -38,6 +38,7 @@ import fr.cph.chicago.Constants.SELECTED_ID
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
+import fr.cph.chicago.core.fragment.Fragment
 import fr.cph.chicago.core.fragment.buildFragment
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.util.RateUtil
@@ -138,7 +139,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
         } else {
             // Switch to favorites if in another fragment
             onNavigationItemSelected(favoriteMenuItem)
-            loadFragment(currentPosition, true)
+            loadFragment(currentPosition)
         }
     }
 
@@ -149,18 +150,18 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
 
     private fun updateFragment(position: Int) {
         when (position) {
-            R.id.navigation_favorites -> loadFragment(R.id.navigation_favorites, true)
-            R.id.navigation_train -> loadFragment(R.id.navigation_train, false)
-            R.id.navigation_bus -> loadFragment(R.id.navigation_bus, true)
-            R.id.navigation_bike -> loadFragment(R.id.navigation_bike, true)
-            R.id.navigation_nearby -> loadFragment(R.id.navigation_nearby, false)
-            R.id.navigation_cta_map -> loadFragment(R.id.navigation_cta_map, false)
-            R.id.navigation_alert_cta -> loadFragment(R.id.navigation_alert_cta, true)
-            R.id.navigation_settings -> loadFragment(R.id.navigation_settings, false)
+            R.id.navigation_favorites -> loadFragment(R.id.navigation_favorites)
+            R.id.navigation_train -> loadFragment(R.id.navigation_train)
+            R.id.navigation_bus -> loadFragment(R.id.navigation_bus)
+            R.id.navigation_bike -> loadFragment(R.id.navigation_bike)
+            R.id.navigation_nearby -> loadFragment(R.id.navigation_nearby)
+            R.id.navigation_cta_map -> loadFragment(R.id.navigation_cta_map)
+            R.id.navigation_alert_cta -> loadFragment(R.id.navigation_alert_cta)
+            R.id.navigation_settings -> loadFragment(R.id.navigation_settings)
         }
     }
 
-    private fun loadFragment(navigationId: Int, showActionBarMenu: Boolean) {
+    private fun loadFragment(navigationId: Int) {
         val transaction = supportFragmentManager.beginTransaction()
         var fragment = supportFragmentManager.findFragmentByTag(navigationId.toString())
         if (fragment == null) {
@@ -168,7 +169,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
             transaction.add(fragment, navigationId.toString())
         }
         transaction.replace(R.id.container, fragment).commit()
-        showHideActionBarMenu(showActionBarMenu)
+        showHideActionBarMenu((fragment as Fragment).hasActionBar())
         container.animate().alpha(1.0f)
     }
 

@@ -28,4 +28,8 @@ abstract class RefreshFragment(layout: Int) : Fragment(layout) {
     protected fun stopRefreshing() {
         swipeRefreshLayout.isRefreshing = false
     }
+
+    override fun hasActionBar(): Boolean {
+        return true
+    }
 }
