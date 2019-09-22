@@ -28,11 +28,9 @@ import android.widget.Button
 import android.widget.RelativeLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.BindView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fr.cph.chicago.R
-import fr.cph.chicago.R.string
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.MainActivity
 import fr.cph.chicago.core.activity.SearchActivity
@@ -58,7 +56,7 @@ import timber.log.Timber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<State> {
+class FavoritesFragment : RefreshFragment(R.layout.fragment_main), StoreSubscriber<State> {
 
     companion object {
         private val rateUtil = RateUtil
@@ -71,8 +69,6 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<Stat
 
     @BindView(R.id.welcome)
     lateinit var welcomeLayout: RelativeLayout
-    @BindView(R.id.activity_main_swipe_refresh_layout)
-    lateinit var swipeRefreshLayout: SwipeRefreshLayout
     @BindView(R.id.favorites_list)
     lateinit var recyclerView: RecyclerView
     @BindView(R.id.floating_button)
@@ -86,6 +82,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<Stat
     private var refreshTimingTask: RefreshTimingTask? = null
 
     override fun onCreateView(savedInstanceState: Bundle?) {
+        super.onCreateView(savedInstanceState)
         adapter = FavoritesAdapter(context!!)
 
         recyclerView.adapter = adapter
@@ -102,8 +99,6 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<Stat
             }
         })
         swipeRefreshLayout.setOnRefreshListener { reloadData() }
-        swipeRefreshLayout.setColorSchemeColors(preferenceService.getColorSchemeColors(resources.configuration))
-        swipeRefreshLayout.setProgressBackgroundColorSchemeResource(preferenceService.getProgressBackgroundColorSchemeResource(resources.configuration))
         retryButton.setOnClickListener { reloadData() }
         (activity as MainActivity).toolbar.setOnMenuItemClickListener { reloadData(); true }
 
@@ -153,12 +148,12 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<Stat
             }
             FAILURE -> {
                 showSuccessUi()
-                displayErrorSnackBar(string.message_something_went_wrong)
+                displayErrorSnackBar(R.string.message_something_went_wrong)
                 stopRefreshing()
             }
             FULL_FAILURE -> {
                 showFullFailureUi()
-                displayErrorSnackBar(string.message_something_went_wrong)
+                displayErrorSnackBar(R.string.message_something_went_wrong)
                 stopRefreshing()
             }
             UNKNOWN -> Timber.d("Unknown status on new state")
@@ -192,18 +187,6 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<Stat
         stopRefreshing()
     }
 
-    private fun startRefreshing() {
-        swipeRefreshLayout.setColorSchemeColors(util.randomColor)
-        swipeRefreshLayout.isRefreshing = true
-    }
-
-    private fun stopRefreshing() {
-        swipeRefreshLayout.isRefreshing = false
-    }
-
-    /**
-     * Start refreshBusAndStation task
-     */
     private fun startRefreshTask() {
         refreshTimingTask = RefreshTimingTask(adapter).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR) as RefreshTimingTask
         adapter.update()

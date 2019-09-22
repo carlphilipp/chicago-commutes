@@ -28,7 +28,6 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.RelativeLayout
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.MainActivity
@@ -48,7 +47,7 @@ import timber.log.Timber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<State> {
+class BusFragment : RefreshFragment(R.layout.fragment_filter_list), StoreSubscriber<State> {
 
     companion object {
         fun newInstance(sectionNumber: Int): BusFragment {
@@ -56,8 +55,6 @@ class BusFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<Sta
         }
     }
 
-    @BindView(R.id.fragment_bike_swipe_refresh_layout)
-    lateinit var swipeRefreshLayout: SwipeRefreshLayout
     @BindView(R.id.success)
     lateinit var successLayout: LinearLayout
     @BindView(R.id.failure)
@@ -72,6 +69,7 @@ class BusFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<Sta
     private lateinit var busAdapter: BusAdapter
 
     override fun onCreateView(savedInstanceState: Bundle?) {
+        super.onCreateView(savedInstanceState)
         busAdapter = BusAdapter()
         listView.adapter = busAdapter
         swipeRefreshLayout.setOnRefreshListener { startRefreshing() }
@@ -108,7 +106,7 @@ class BusFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<Sta
             }
         }
         updateData(state.busRoutes)
-        swipeRefreshLayout.isRefreshing = false
+        stopRefreshing()
     }
 
     private fun showSuccessLayout() {
@@ -121,8 +119,8 @@ class BusFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<Sta
         failureLayout.visibility = View.VISIBLE
     }
 
-    private fun startRefreshing() {
-        swipeRefreshLayout.isRefreshing = true
+    override fun startRefreshing() {
+        super.startRefreshing()
         store.dispatch(BusRoutesAction())
     }
 

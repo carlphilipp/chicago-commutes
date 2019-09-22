@@ -29,7 +29,6 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.RelativeLayout
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.AlertActivity
@@ -51,7 +50,7 @@ import timber.log.Timber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class AlertFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<State> {
+class AlertFragment : RefreshFragment(R.layout.fragment_filter_list), StoreSubscriber<State> {
 
     companion object {
         fun newInstance(sectionNumber: Int): AlertFragment {
@@ -59,8 +58,6 @@ class AlertFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<S
         }
     }
 
-    @BindView(R.id.fragment_bike_swipe_refresh_layout)
-    lateinit var swipeRefreshLayout: SwipeRefreshLayout
     @BindView(R.id.success)
     lateinit var successLayout: LinearLayout
     @BindView(R.id.failure)
@@ -75,6 +72,7 @@ class AlertFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<S
     private lateinit var adapter: AlertAdapter
 
     override fun onCreateView(savedInstanceState: Bundle?) {
+        super.onCreateView(savedInstanceState)
         adapter = AlertAdapter()
         listView.adapter = adapter
         swipeRefreshLayout.setOnRefreshListener { startRefreshing() }
@@ -86,7 +84,7 @@ class AlertFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<S
         super.onResume()
         store.subscribe(this)
         if (store.state.alertsDTO.isEmpty()) {
-            swipeRefreshLayout.isRefreshing = true
+            startRefreshing()
             store.dispatch(AlertAction())
         }
     }
@@ -99,22 +97,21 @@ class AlertFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<S
     override fun newState(state: State) {
         Timber.d("Alert new state")
         when (state.alertStatus) {
-            Status.SUCCESS -> {
-                swipeRefreshLayout.isRefreshing = false
-                showSuccessLayout()
-            }
-            Status.FAILURE -> {
-                swipeRefreshLayout.isRefreshing = false
-                util.showSnackBar(swipeRefreshLayout, state.alertErrorMessage)
-            }
+            Status.SUCCESS -> showSuccessLayout()
+            Status.FAILURE -> util.showSnackBar(swipeRefreshLayout, state.alertErrorMessage)
             Status.FULL_FAILURE -> {
-                swipeRefreshLayout.isRefreshing = false
                 util.showSnackBar(swipeRefreshLayout, state.alertErrorMessage)
                 showFailureLayout()
             }
             else -> Timber.d("Unknown status on new state")
         }
+        stopRefreshing()
         updateData(state.alertsDTO)
+    }
+
+    override fun startRefreshing() {
+        super.startRefreshing()
+        store.dispatch(AlertAction())
     }
 
     private fun updateData(alertDTO: List<RoutesAlertsDTO>) {
@@ -162,10 +159,5 @@ class AlertFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<S
     private fun showFailureLayout() {
         successLayout.visibility = View.GONE
         failureLayout.visibility = View.VISIBLE
-    }
-
-    private fun startRefreshing() {
-        swipeRefreshLayout.isRefreshing = true
-        store.dispatch(AlertAction())
     }
 }

@@ -56,7 +56,7 @@ object PreferenceService {
     fun getProgressBackgroundColorSchemeResource(configuration: Configuration): Int {
         return when (configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
             Configuration.UI_MODE_NIGHT_NO -> R.color.white
-            Configuration.UI_MODE_NIGHT_YES -> R.color.black
+            Configuration.UI_MODE_NIGHT_YES -> R.color.darkPrimaryColor
             else -> R.color.white
         }
     }

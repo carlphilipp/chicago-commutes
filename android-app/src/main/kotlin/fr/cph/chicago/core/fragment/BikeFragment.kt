@@ -28,7 +28,6 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.RelativeLayout
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.MainActivity
@@ -48,7 +47,7 @@ import timber.log.Timber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BikeFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<State> {
+class BikeFragment : RefreshFragment(R.layout.fragment_filter_list), StoreSubscriber<State> {
 
     companion object {
         fun newInstance(sectionNumber: Int): BikeFragment {
@@ -56,8 +55,6 @@ class BikeFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<St
         }
     }
 
-    @BindView(R.id.fragment_bike_swipe_refresh_layout)
-    lateinit var swipeRefreshLayout: SwipeRefreshLayout
     @BindView(R.id.success)
     lateinit var successLayout: LinearLayout
     @BindView(R.id.failure)
@@ -72,6 +69,7 @@ class BikeFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<St
     private lateinit var bikeAdapter: BikeAdapter
 
     override fun onCreateView(savedInstanceState: Bundle?) {
+        super.onCreateView(savedInstanceState)
         bikeAdapter = BikeAdapter()
         listView.adapter = bikeAdapter
         swipeRefreshLayout.setOnRefreshListener { startRefreshing() }
@@ -111,7 +109,7 @@ class BikeFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<St
             }
         }
         updateData(state.bikeStations)
-        swipeRefreshLayout.isRefreshing = false
+        stopRefreshing()
     }
 
     private fun updateData(bikeStations: List<BikeStation>) {
@@ -148,8 +146,8 @@ class BikeFragment : Fragment(R.layout.fragment_filter_list), StoreSubscriber<St
         failureLayout.visibility = View.VISIBLE
     }
 
-    private fun startRefreshing() {
-        swipeRefreshLayout.isRefreshing = true
+    override fun startRefreshing() {
+        super.startRefreshing()
         store.dispatch(BikeStationAction())
     }
 }
