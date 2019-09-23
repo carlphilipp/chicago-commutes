@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.core.activity.station
 
-import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -74,11 +73,12 @@ abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentVi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         swipeRefreshLayout.setOnRefreshListener { refresh() }
+        swipeRefreshLayout.setColorSchemeColors(preferenceService.getColorSchemeColors(resources.configuration))
+        swipeRefreshLayout.setProgressBackgroundColorSchemeResource(preferenceService.getProgressBackgroundColorSchemeResource(resources.configuration))
         favoritesImageContainer.setOnClickListener { switchFavorite() }
         favoritesImageContainer.setOnClickListener { switchFavorite() }
     }
 
-    @SuppressLint("CheckResult")
     fun loadGoogleStreetImage(position: Position) {
         if (streetViewImage.tag == TAG_DEFAULT || streetViewImage.tag == TAG_ERROR) {
             googleStreetClient.connect(position.latitude, position.longitude)
