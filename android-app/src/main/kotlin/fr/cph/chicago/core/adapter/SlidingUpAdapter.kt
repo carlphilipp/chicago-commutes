@@ -107,7 +107,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
                 var newLine = true
                 for ((i, entry) in etas.entries.withIndex()) {
                     val containParams = layoutUtil.getInsideParams(newLine, i == etas.size - 1)
-                    val container = layoutUtil.createTrainArrivalsLayout(textAppearance, containParams, entry, trainLine)
+                    val container = layoutUtil.createTrainArrivalsLayout(nearbyFragment.context!!, containParams, entry, trainLine)
 
                     linearLayout.addView(container)
                     newLine = false
@@ -137,7 +137,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
 
                 for ((i, entry2) in boundMap.entries.withIndex()) {
                     val containParams = layoutUtil.getInsideParams(newLine, i == boundMap.size - 1)
-                    val container = layoutUtil.createFavoritesBusArrivalsLayout(textAppearance, containParams, stopNameTrimmed, BusDirection.fromString(entry2.key), entry2.value as MutableSet<out BusArrival>)
+                    val container = layoutUtil.createFavoritesBusArrivalsLayout(nearbyFragment.context!!, containParams, stopNameTrimmed, BusDirection.fromString(entry2.key), entry2.value as MutableSet<out BusArrival>)
 
                     linearLayout.addView(container)
                     newLine = false
@@ -162,7 +162,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
          * it just mean that the view has been updated already with a faster request.
          */
         if (linearLayout.childCount == 0 || "error" == bikeStation.name) {
-            val bikeResultLayout = layoutUtil.buildBikeFavoritesLayout(textAppearance, bikeStation)
+            val bikeResultLayout = layoutUtil.buildBikeFavoritesLayout(nearbyFragment.context!!, bikeStation)
             linearLayout.addView(bikeResultLayout)
             nearbyFragment.slidingUpPanelLayout.panelHeight = getSlidingPanelHeight(2)
             updatePanelState()
@@ -177,7 +177,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
 
     private fun handleNoResults(linearLayout: LinearLayout) {
         val containParams = layoutUtil.getInsideParams(true, true)
-        val container = layoutUtil.createFavoritesBusArrivalsNoResult(textAppearance, containParams)
+        val container = layoutUtil.createFavoritesBusArrivalsNoResult(nearbyFragment.context!!, containParams)
         linearLayout.addView(container)
     }
 
