@@ -61,7 +61,8 @@
     <color name="darkPrimaryColorDarker">#131317</color>
     <color name="darkNavigationBar">#0d0d10</color>
     <color name="darkColorAccent">#4a5670</color>
-    <color name="favoriteCardBackground">#323949</color>
+    <color name="darkFloatingButton">#333B4E</color>
+    <color name="favoriteCardBackground">#212129</color>
     <color name="darkDialogColorAccent">#586583</color>
     <color name="darkColorTextPrimary">#fff</color>
     <color name="darkColorTextSecondary">#BEFFFFFF</color>

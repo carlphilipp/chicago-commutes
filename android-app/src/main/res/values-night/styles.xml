@@ -22,7 +22,7 @@
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/darkPrimaryColor</item> <!-- Top action bar color -->
         <item name="colorPrimaryDark">@color/darkPrimaryColorDarker</item> <!-- Top status color -->
-        <item name="colorSecondary">@color/lightPrimaryColorDark</item> <!-- Floating button background -->
+        <item name="colorSecondary">@color/darkFloatingButton</item> <!-- Floating button background -->
         <item name="colorAccent">@color/darkColorAccent</item> <!-- Search bar / some windows -->
         <item name="android:textColorPrimary">@color/darkColorTextPrimary</item>
         <item name="android:textColorSecondary">@color/darkColorTextSecondary</item>
@@ -46,8 +46,8 @@
     </style>
 
     <style name="AlertDialogDark" parent="Theme.AppCompat.Dialog.Alert">
-        <item name="android:windowBackground">@color/darkPrimaryColorDarker</item>
-        <item name="colorAccent">@color/darkDialogColorAccent</item>
+        <item name="android:windowBackground">@color/colorPrimary</item>
+        <item name="colorAccent">@color/darkColorAccent</item>
     </style>
 
     <!-- Button -->

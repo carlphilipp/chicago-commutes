@@ -31,10 +31,9 @@ class TrainMapButtonOnClickListener(private val context: Context, private val tr
 
             val lines = trainLines.toList()
 
-            val builder = AlertDialog.Builder(context)
-            builder.setAdapter(ada) { _, position -> startTrainMapActivity(lines[position]) }
-
-            val dialog = builder.create()
+            val dialog = AlertDialog.Builder(context)
+                .setAdapter(ada) { _, position -> startTrainMapActivity(lines[position]) }
+                .create()
             dialog.show()
             dialog.window?.setLayout((App.instance.screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
 
