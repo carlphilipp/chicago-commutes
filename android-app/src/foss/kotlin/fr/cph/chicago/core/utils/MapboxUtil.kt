@@ -19,18 +19,25 @@
 
 package fr.cph.chicago.core.utils
 
+import android.content.res.Configuration
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 
-const val DEFAULT_MAPBOX_STYLE = Style.LIGHT
-
-fun setupMapbox(mapboxMap: MapboxMap): MapboxMap {
+fun setupMapbox(mapboxMap: MapboxMap, configuration: Configuration): MapboxMap {
     return with(mapboxMap) {
         uiSettings.isLogoEnabled = false
         uiSettings.isAttributionEnabled = false
         uiSettings.isRotateGesturesEnabled = false
         uiSettings.isTiltGesturesEnabled = false
-        setStyle(DEFAULT_MAPBOX_STYLE)
+        setStyle(getCurrentStyle(configuration))
         this
+    }
+}
+
+fun getCurrentStyle(configuration: Configuration): String {
+    return when (configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+        Configuration.UI_MODE_NIGHT_NO -> Style.LIGHT
+        Configuration.UI_MODE_NIGHT_YES -> Style.DARK
+        else -> Style.LIGHT
     }
 }

@@ -46,7 +46,7 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeFragmentMapActivity
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.utils.BitmapGenerator
-import fr.cph.chicago.core.utils.DEFAULT_MAPBOX_STYLE
+import fr.cph.chicago.core.utils.getCurrentStyle
 import fr.cph.chicago.core.utils.setupMapbox
 import fr.cph.chicago.util.MapUtil
 import io.reactivex.Single
@@ -194,8 +194,8 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
     }
 
     override fun onMapReady(map: MapboxMap) {
-        this.map = setupMapbox(map)
-        this.map.setStyle(DEFAULT_MAPBOX_STYLE) { style ->
+        this.map = setupMapbox(map, resources.configuration)
+        this.map.setStyle(getCurrentStyle(resources.configuration)) { style ->
             lineManager = LineManager(this.mapView!!, this.map, style)
             onMapStyleReady(style)
         }

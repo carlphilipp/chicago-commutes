@@ -50,8 +50,7 @@ import fr.cph.chicago.core.activity.station.BusStopActivity
 import fr.cph.chicago.core.adapter.BusBoundAdapter
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.BusStop
-import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.core.utils.DEFAULT_MAPBOX_STYLE
+import fr.cph.chicago.core.utils.getCurrentStyle
 import fr.cph.chicago.core.utils.setupMapbox
 import fr.cph.chicago.exception.CtaException
 import fr.cph.chicago.service.BusService
@@ -194,8 +193,8 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
     }
 
     override fun onMapReady(mapBox: MapboxMap) {
-        setupMapbox(mapBox)
-        mapBox.setStyle(DEFAULT_MAPBOX_STYLE) { style ->
+        setupMapbox(mapBox, resources.configuration)
+        mapBox.setStyle(getCurrentStyle(resources.configuration)) { style ->
             lineManager = LineManager(this.mapView!!, mapBox, style)
 
             busService.loadBusPattern(busRouteId, bound)

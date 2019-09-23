@@ -128,7 +128,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
-        this.map = setupMapbox(mapboxMap)
+        this.map = setupMapbox(mapboxMap, resources.configuration)
         this.map.addOnCameraMoveListener { searchAreaButton.visibility = View.VISIBLE }
         this.map.setOnMarkerClickListener(OnMarkerClickListener(markerDataHolder, this@NearbyFragment))
 
