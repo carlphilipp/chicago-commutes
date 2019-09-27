@@ -116,6 +116,7 @@ abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentVi
 
     protected open fun refresh() {
         swipeRefreshLayout.isRefreshing = true
+        swipeRefreshLayout.setColorSchemeColors(util.randomColor)
     }
 
     protected fun stopRefreshing() {
