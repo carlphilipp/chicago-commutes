@@ -76,7 +76,6 @@ abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentVi
         swipeRefreshLayout.setColorSchemeColors(preferenceService.getColorSchemeColors(resources.configuration))
         swipeRefreshLayout.setProgressBackgroundColorSchemeResource(preferenceService.getProgressBackgroundColorSchemeResource(resources.configuration))
         favoritesImageContainer.setOnClickListener { switchFavorite() }
-        favoritesImageContainer.setOnClickListener { switchFavorite() }
     }
 
     fun loadGoogleStreetImage(position: Position) {
