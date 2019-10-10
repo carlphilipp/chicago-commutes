@@ -27,20 +27,20 @@ STOP_ID,DIRECTION_ID,STOP_NAME,STATION_NAME,STATION_DESCRIPTIVE_NAME,MAP_ID,ADA,
 30088,N,95th/Dan Ryan (Howard-bound),95th/Ran Ryan,95th/Ran Ryan (Red Line),40450,true,true,false,false,false,false,false,false,false,false,"(41.722377, -87.624342)",18,21861,45,187,13
 30132,S,Adams/Wabash (Inner Loop),Adams/Wabash,"Adams/Wabash (Brown, Green, Orange, Pink & Purple Lines)",40680,false,false,false,true,false,false,true,false,true,true,"(41.879507, -87.626037)",22,14912,38,367,36
 30131,N,Adams/Wabash (Outer Loop),Adams/Wabash,"Adams/Wabash (Brown, Green, Orange, Pink & Purple Lines)",40680,false,false,false,true,true,false,false,false,false,false,"(41.879507, -87.626037)",22,14912,38,367,36
+30239,N,Addison (O'Hare-bound),Addison,Addison (Blue Line),41240,true,false,true,false,false,false,false,false,false,false,"(41.94738, -87.71906)",15,21538,16,326,50
+30240,S,Addison (Forest Pk-bound),Addison,Addison (Blue Line),41240,true,false,true,false,false,false,false,false,false,false,"(41.94738, -87.71906)",15,21538,16,326,50
 30277,N,Addison (Kimball-bound),Addison,Addison (Brown Line),41440,true,false,false,false,true,false,false,false,false,false,"(41.947028, -87.674642)",13,21186,46,644,18
 30278,S,Addison (Loop-bound),Addison,Addison (Brown Line),41440,true,false,false,false,true,false,false,false,false,false,"(41.947028, -87.674642)",13,21186,46,644,18
 30274,S,Addison (95th-bound),Addison,Addison (Red Line),41420,true,true,false,false,false,false,false,false,false,false,"(41.947428, -87.653626)",38,21186,57,727,25
 30273,N,Addison (Howard-bound),Addison,Addison (Red Line),41420,true,true,false,false,false,false,false,false,false,false,"(41.947428, -87.653626)",38,21186,57,727,25
-30240,S,Addison (Forest Pk-bound),Addison,Addison (Blue Line),41240,true,false,true,false,false,false,false,false,false,false,"(41.94738, -87.71906)",15,21538,16,326,50
-30239,N,Addison (O'Hare-bound),Addison,Addison (Blue Line),41240,true,false,true,false,false,false,false,false,false,false,"(41.94738, -87.71906)",15,21538,16,326,50
 30230,S,Argyle (95th-bound),Argyle,Argyle (Red Line),41200,false,true,false,false,false,false,false,false,false,false,"(41.973453, -87.65853)",40,22616,31,634,16
 30229,N,Argyle (Howard-bound),Argyle,Argyle (Red Line),41200,false,true,false,false,false,false,false,false,false,false,"(41.973453, -87.65853)",40,22616,31,634,16
 30127,N,Armitage (Kimball-Linden-bound),Armitage,Armitage (Brown & Purple Lines),40660,true,false,false,false,true,false,true,false,false,false,"(41.918217, -87.652644)",51,21190,68,744,34
 30128,S,Armitage (Loop-bound),Armitage,Armitage (Brown & Purple Lines),40660,true,false,false,false,true,false,true,false,false,false,"(41.918217, -87.652644)",51,21190,68,744,34
+30032,E,Ashland (Loop-63rd-bound),Ashland,Ashland (Green & Pink Lines),40170,true,false,false,true,false,false,false,false,true,false,"(41.885269, -87.666969)",41,14917,29,579,46
+30033,W,Ashland (Harlem-54th/Cermak-bound),Ashland,Ashland (Green & Pink Lines),40170,true,false,false,true,false,false,false,false,true,false,"(41.885269, -87.666969)",41,14917,29,579,46
 30205,N,Ashland (Loop-bound),Ashland,Ashland (Orange Line),41060,true,false,false,false,false,false,false,false,false,true,"(41.839234, -87.665317)",26,14920,33,126,26
 30206,S,Ashland (Midway-bound),Ashland,Ashland (Orange Line),41060,true,false,false,false,false,false,false,false,false,true,"(41.839234, -87.665317)",26,14920,33,126,26
-30033,W,Ashland (Harlem-54th/Cermak-bound),Ashland,Ashland (Green & Pink Lines),40170,true,false,false,true,false,false,false,false,true,false,"(41.885269, -87.666969)",41,14917,29,579,46
-30032,E,Ashland (Loop-63rd-bound),Ashland,Ashland (Green & Pink Lines),40170,true,false,false,true,false,false,false,false,true,false,"(41.885269, -87.666969)",41,14917,29,579,46
 30056,E,Ashland/63rd (Harlem-bound),Ashland/63rd,Ashland/63rd (Green Line),40290,true,false,false,true,false,false,false,false,false,false,"(41.77886, -87.663766)",19,22257,65,279,2
 30057,W,Ashland/63rd (Terminal arrival),Ashland/63rd,Ashland/63rd (Green Line),40290,true,false,false,true,false,false,false,false,false,false,"(41.77886, -87.663766)",19,22257,65,279,2
 30002,W,Austin (Forest Pk-bound),Austin,Austin (Blue Line),40010,false,false,true,false,false,false,false,false,false,false,"(41.870851, -87.776812)",,26618,,,
@@ -71,8 +71,8 @@ STOP_ID,DIRECTION_ID,STOP_NAME,STATION_NAME,STATION_DESCRIPTIVE_NAME,MAP_ID,ADA,
 30151,E,Central Park (Loop-bound),Central Park,Central Park (Pink Line),40780,true,false,false,false,false,false,false,false,true,false,"(41.853839, -87.714842)",36,21569,30,157,14
 30194,S,Cermak-Chinatown (95th-bound),Cermak-Chinatown,Cermak-Chinatown (Red Line),41000,true,true,false,false,false,false,false,false,false,false,"(41.853206, -87.630968)",8,21194,35,3,26
 30193,N,Cermak-Chinatown (Howard-bound),Cermak-Chinatown,Cermak-Chinatown (Red Line),41000,true,true,false,false,false,false,false,false,false,false,"(41.853206, -87.630968)",8,21194,35,3,26
-30381,N,Cermak-McCormick Place (Harlem-bound),Cermak-McCormick Place,Cermak-McCormick Place (Green Line),41690,true,false,false,true,false,false,false,false,false,false,"(41.853115, -87.626402)",12,21194,34,374,9
 30382,S,Cermak-McCormick Place (63rd-bound),Cermak-McCormick Place,Cermak-McCormick Place (Green Line),41690,true,false,false,true,false,false,false,false,false,false,"(41.853115, -87.626402)",12,21194,34,374,9
+30381,N,Cermak-McCormick Place (Harlem-bound),Cermak-McCormick Place,Cermak-McCormick Place (Green Line),41690,true,false,false,true,false,false,false,false,false,false,"(41.853115, -87.626402)",12,21194,34,374,9
 30271,N,Chicago (O'Hare-bound),Chicago,Chicago (Blue Line),41410,false,false,true,false,false,false,false,false,false,false,"(41.896075, -87.655214)",41,22620,25,522,46
 30138,S,Chicago (Loop-bound),Chicago,Chicago (Brown & Purple Lines),40710,true,false,false,false,true,false,true,false,false,false,"(41.89681, -87.635924)",41,14926,37,652,46
 30137,N,Chicago (Kimball-Linden-bound),Chicago,Chicago (Brown & Purple Lines),40710,true,false,false,false,true,false,true,false,false,false,"(41.89681, -87.635924)",41,14926,37,652,46
@@ -85,8 +85,8 @@ STOP_ID,DIRECTION_ID,STOP_NAME,STATION_NAME,STATION_DESCRIPTIVE_NAME,MAP_ID,ADA,
 30187,E,Cicero (O'Hare-bound),Cicero,Cicero (Blue Line),40970,false,false,true,false,false,false,false,false,false,false,"(41.871574, -87.745154)",36,22216,26,61,7
 30094,E,Cicero (63rd-bound),Cicero,Cicero (Green Line),40480,true,false,false,true,false,false,false,false,false,false,"(41.886519, -87.744698)",11,22216,26,696,23
 30009,W,Cicero (Harlem-bound),Cicero,Cicero (Green Line),40480,true,false,false,true,false,false,false,false,false,false,"(41.886519, -87.744698)",11,22216,26,696,23
-30121,N,Clark/Division (Howard-bound),Clark/Division,Clark/Division (Red Line),40630,true,true,false,false,false,false,false,false,false,false,"(41.90392, -87.631412)",22,14926,37,17,11
 30122,S,Clark/Division (95th-bound),Clark/Division,Clark/Division (Red Line),40630,true,true,false,false,false,false,false,false,false,false,"(41.90392, -87.631412)",22,14926,37,17,11
+30121,N,Clark/Division (Howard-bound),Clark/Division,Clark/Division (Red Line),40630,true,true,false,false,false,false,false,false,false,false,"(41.90392, -87.631412)",22,14926,37,17,11
 30074,E,Clark/Lake (Inner Loop),Clark/Lake,"Clark/Lake (Blue, Brown, Green, Orange, Purple & Pink Lines)",40380,true,false,false,true,false,false,true,false,true,true,"(41.885737, -87.630886)",22,14309,38,92,36
 30075,W,Clark/Lake (Outer Loop),Clark/Lake,"Clark/Lake (Blue, Brown, Green, Orange, Purple & Pink Lines)",40380,true,false,false,true,true,false,false,false,false,false,"(41.885737, -87.630886)",22,14309,38,92,36
 30374,S,Clark/Lake (Forest Pk-bound),Clark/Lake,"Clark/Lake (Blue, Brown, Green, Orange, Purple & Pink Lines)",40380,true,false,true,false,false,false,false,false,false,false,"(41.885737, -87.630886)",22,14309,38,92,36
@@ -279,8 +279,8 @@ STOP_ID,DIRECTION_ID,STOP_NAME,STATION_NAME,STATION_DESCRIPTIVE_NAME,MAP_ID,ADA,
 30068,E,UIC-Halsted (O'Hare-bound),UIC-Halsted,UIC-Halsted (Blue Line),40350,true,false,true,false,false,false,false,false,false,false,"(41.875474, -87.649707)",48,14917,29,97,26
 30073,S,Washington (Forest Pk-bound),Washington,Washington (Blue Line),40370,false,false,true,false,false,false,false,false,false,false,"(41.883164, -87.62944)",22,14310,38,92,36
 30072,N,Washington (O'Hare-bound),Washington,Washington (Blue Line),40370,false,false,true,false,false,false,false,false,false,false,"(41.883164, -87.62944)",22,14310,38,92,36
-30384,S,Washington/Wabash (Inner Loop),Washington/Wabash,"Washington/Wabash (Brown, Green, Orange, Purple & Pink Lines)",41700,true,false,false,true,false,false,true,false,true,true,"(41.88322, -87.626189)",22,14310,38,580,36
 30383,N,Washington/Wabash (Outer Loop),Washington/Wabash,"Washington/Wabash (Brown, Green, Orange, Purple & Pink Lines)",41700,true,false,false,true,true,false,false,false,false,false,"(41.88322, -87.626189)",22,14310,38,580,36
+30384,S,Washington/Wabash (Inner Loop),Washington/Wabash,"Washington/Wabash (Brown, Green, Orange, Purple & Pink Lines)",41700,true,false,false,true,false,false,true,false,true,true,"(41.88322, -87.626189)",22,14310,38,580,36
 30141,N,Washington/Wells (Inner Loop),Washington/Wells,"Washington/Wells (Brown, Orange, Purple & Pink Lines)",40730,true,false,false,false,false,false,true,false,true,true,"(41.882695, -87.63378)",22,14310,38,92,36
 30142,S,Washington/Wells (Outer Loop),Washington/Wells,"Washington/Wells (Brown, Orange, Purple & Pink Lines)",40730,true,false,false,false,true,false,false,false,false,false,"(41.882695, -87.63378)",22,14310,38,92,36
 30231,N,Wellington (Kimball-Linden-bound),Wellington,Wellington (Brown & Purple Lines),41210,true,false,false,false,true,false,true,false,false,false,"(41.936033, -87.653266)",38,4449,57,681,25
@@ -295,7 +295,7 @@ STOP_ID,DIRECTION_ID,STOP_NAME,STATION_NAME,STATION_DESCRIPTIVE_NAME,MAP_ID,ADA,
 30042,E,Western (Forest Pk Branch) (O'Hare-bound),Western,Western (Blue Line - Forest Park Branch),40220,false,false,true,false,false,false,false,false,false,false,"(41.875478, -87.688436)",48,21184,29,756,23
 30043,W,Western (Forest Pk Branch) (Forest Pk-bound),Western,Western (Blue Line - Forest Park Branch),40220,false,false,true,false,false,false,false,false,false,false,"(41.875478, -87.688436)",48,21184,29,756,23
 30129,N,Western (O'Hare Branch) (O'Hare-bound),Western,Western (Blue Line - O'Hare Branch),40670,true,false,true,false,false,false,false,false,false,false,"(41.916157, -87.687364)",24,22535,23,373,40
-30386,N,Wilson (Linden-bound),Wilson,Wilson (Red & Purple Lines),40540,true,false,false,false,false,false,true,false,false,false,"(41.964273, -87.657588)",37,22616,31,241,39
-30105,N,Wilson (Howard-bound),Wilson,Wilson (Red & Purple Lines),40540,true,true,false,false,false,false,false,false,false,false,"(41.964273, -87.657588)",37,22616,31,241,39
-30106,S,Wilson (95th-bound),Wilson,Wilson (Red & Purple Lines),40540,true,true,false,false,false,false,false,false,false,false,"(41.964273, -87.657588)",37,22616,31,241,39
 30385,S,Wilson (Loop-bound),Wilson,Wilson (Red & Purple Lines),40540,true,false,false,false,false,false,true,false,false,false,"(41.964273, -87.657588)",37,22616,31,241,39
+30106,S,Wilson (95th-bound),Wilson,Wilson (Red & Purple Lines),40540,true,true,false,false,false,false,false,false,false,false,"(41.964273, -87.657588)",37,22616,31,241,39
+30105,N,Wilson (Howard-bound),Wilson,Wilson (Red & Purple Lines),40540,true,true,false,false,false,false,false,false,false,false,"(41.964273, -87.657588)",37,22616,31,241,39
+30386,N,Wilson (Linden-bound),Wilson,Wilson (Red & Purple Lines),40540,true,false,false,false,false,false,true,false,false,false,"(41.964273, -87.657588)",37,22616,31,241,39
