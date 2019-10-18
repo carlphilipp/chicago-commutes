@@ -75,7 +75,7 @@ object TrainService {
                     if ("mapid" == key) {
                         val list = value as MutableList<String>
                         if (list.size < 5) {
-                            trainArrivals = getTrainArrivals(trainParams)
+                            trainArrivals = getTrainArrivals(trainParams).blockingGet()
                         } else {
                             val size = list.size
                             var start = 0
@@ -86,7 +86,7 @@ object TrainService {
                                 for (sub in subList) {
                                     paramsTemp.put(key, sub)
                                 }
-                                val temp = getTrainArrivals(paramsTemp)
+                                val temp = getTrainArrivals(paramsTemp).blockingGet()
                                 for (j in 0..temp.size() - 1) {
                                     trainArrivals.put(temp.keyAt(j), temp.valueAt(j))
                                 }
@@ -130,18 +130,16 @@ object TrainService {
     }
 
     fun loadStationTrainArrival(stationId: Int): Single<TrainArrival> {
-        return singleFromCallable(Callable {
-            val map = getTrainArrivals(stationTrainParams(stationId))
-            map.get(stationId, TrainArrival.buildEmptyTrainArrival())
-        })
+        return getTrainArrivals(stationTrainParams(stationId))
+            .observeOn(Schedulers.computation())
+            .map { trainArrivals -> trainArrivals.get(stationId, TrainArrival.buildEmptyTrainArrival()) }
+            .subscribeOn(Schedulers.io())
     }
 
     fun trainEtas(runNumber: String, loadAll: Boolean): Single<List<TrainEta>> {
-        return singleFromCallable(
-            Callable {
-                val content = ctaClient.get(TRAIN_FOLLOW, trainEtasParams(runNumber), TrainArrivalResponse::class.java)
-                val arrivals = getTrainArrivalsInternal(content)
-
+        return ctaClient.get(TRAIN_FOLLOW, trainEtasParams(runNumber), TrainArrivalResponse::class.java)
+            .map { trainArrivalResponse ->
+                val arrivals = getTrainArrivalsInternal(trainArrivalResponse)
                 var trainEta = mutableListOf<TrainEta>()
                 var index = 0
                 while (index < arrivals.size()) {
@@ -161,23 +159,23 @@ object TrainService {
                     trainEta.add(eta)
                 }
                 trainEta.toList()
-            })
+            }
             .onErrorReturn(handleListError())
     }
 
     fun trainLocations(line: String): Single<List<Train>> {
-        return singleFromCallable(Callable {
-            val result = ctaClient.get(TRAIN_LOCATION, trainLocationParams(line), TrainLocationResponse::class.java)
-            if (result.ctatt.route == null) {
-                val error = result.ctatt.errNm
-                Timber.e(error)
-                listOf()
-            } else {
-                result.ctatt.route!!
-                    .flatMap { route -> route.train }
-                    .map { route -> Train(route.rn.toInt(), route.destNm, route.approaching.toBoolean(), Position(route.lat.toDouble(), route.lon.toDouble()), route.heading.toInt()) }
+        return ctaClient.get(TRAIN_LOCATION, trainLocationParams(line), TrainLocationResponse::class.java)
+            .map { trainLocationResponse ->
+                if (trainLocationResponse.ctatt.route == null) {
+                    val error = trainLocationResponse.ctatt.errNm
+                    Timber.e(error)
+                    listOf()
+                } else {
+                    trainLocationResponse.ctatt.route!!
+                        .flatMap { route -> route.train }
+                        .map { route -> Train(route.rn.toInt(), route.destNm, route.approaching.toBoolean(), Position(route.lat.toDouble(), route.lon.toDouble()), route.heading.toInt()) }
+                }
             }
-        })
     }
 
     fun getStation(id: Int): TrainStation {
@@ -244,9 +242,9 @@ object TrainService {
             .observeOn(Schedulers.computation())
     }
 
-    private fun getTrainArrivals(params: MultiValuedMap<String, String>): SparseArray<TrainArrival> {
-        val trainArrivalResponse = ctaClient.get(TRAIN_ARRIVALS, params, TrainArrivalResponse::class.java)
-        return getTrainArrivalsInternal(trainArrivalResponse)
+    private fun getTrainArrivals(params: MultiValuedMap<String, String>): Single<SparseArray<TrainArrival>> {
+        return ctaClient.get(TRAIN_ARRIVALS, params, TrainArrivalResponse::class.java)
+            .map { trainArrivalResponse -> getTrainArrivalsInternal(trainArrivalResponse) }
     }
 
     private fun getTrainArrivalsInternal(trainArrivalResponse: TrainArrivalResponse): SparseArray<TrainArrival> {

@@ -121,14 +121,6 @@ object Favorites {
             .map { it.id }
     }
 
-    /**
-     * Is in bus favorites
-     *
-     * @param routeId the route id
-     * @param stopId  the stop id
-     * @param bound   the bound
-     * @return a boolean
-     */
     private fun isBusInFavorites(routeId: String, stopId: Int, bound: String): Boolean {
         return busFavorites
             .map { util.decodeBusFavorite(it) }

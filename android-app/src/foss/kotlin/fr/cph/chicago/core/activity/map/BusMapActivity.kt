@@ -242,7 +242,7 @@ class BusMapActivity : FragmentMapActivity() {
                     val busDirections = busService.loadBusDirectionsSingle(busRouteId).blockingGet()
                     bounds = busDirections.busDirections.map { busDirection -> busDirection.text }.toTypedArray()
                 }
-                busService.loadBusPattern(busRouteId, bounds)
+                busService.loadBusPattern(busRouteId, bounds).blockingGet()
             }
                 .observeOn(Schedulers.computation())
                 .map { patterns ->

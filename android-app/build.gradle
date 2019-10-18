@@ -197,7 +197,7 @@ task currentVersion {
         println("Version name: " + versionName)
         println("Version code: " + versionCode)
         println("FDroid tag: " + fdroidVersionName)
-        println("Git tag cmd: git tag "+ fdroidVersionName + " && git push origin " + fdroidVersionName)
+        println("Git tag cmd: git tag " + fdroidVersionName + " && git push origin " + fdroidVersionName)
     }
 }
 

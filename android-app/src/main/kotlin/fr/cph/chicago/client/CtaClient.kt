@@ -60,16 +60,10 @@ object CtaClient {
     private val jsonParser = JsonParser
     private val httpClient = HttpClient
 
-    fun <T> get(requestType: CtaRequestType, params: MultiValuedMap<String, String>, clazz: Class<T>): T {
-        val address = address(requestType, params)
-        val inputStream = httpClient.connect(address)
-        return jsonParser.parse(inputStream, clazz)
-    }
-
-    fun <T> getRx(requestType: CtaRequestType, params: MultiValuedMap<String, String>, clazz: Class<T>): Single<T> {
+    fun <T> get(requestType: CtaRequestType, params: MultiValuedMap<String, String>, clazz: Class<T>): Single<T> {
         return Single.fromCallable { address(requestType, params) }
             .observeOn(Schedulers.io())
-            .flatMap { res -> httpClient.connectRx(res) }
+            .flatMap { address -> httpClient.connectRx(address) }
             .observeOn(Schedulers.computation())
             .map { inputStream -> jsonParser.parse(inputStream, clazz) }
             .subscribeOn(Schedulers.computation())

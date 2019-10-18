@@ -26,6 +26,7 @@ import fr.cph.chicago.entity.StationStatusResponse
 import fr.cph.chicago.exception.ConnectException
 import fr.cph.chicago.parser.JsonParser
 import fr.cph.chicago.redux.store
+import io.reactivex.Single
 
 /**
  * Class that build connect to the Divvy API.
@@ -39,20 +40,24 @@ object DivvyClient {
     private val jsonParser = JsonParser
 
     @Throws(ConnectException::class)
-    fun getStationsInformation(): Map<String, DivvyStationInformation> {
-        val inputStream = httpClient.connect(store.state.divvyStationInformationUrl)
-        return jsonParser
-            .parse(inputStream, StationInformationResponse::class.java)
-            .data.stations
-            .associateBy { it.id }
+    fun getStationsInformation(): Single<Map<String, DivvyStationInformation>> {
+        return httpClient.connectRx(store.state.divvyStationInformationUrl)
+            .map { inputStream ->
+                jsonParser
+                    .parse(inputStream, StationInformationResponse::class.java)
+                    .data.stations
+                    .associateBy { it.id }
+            }
     }
 
     @Throws(ConnectException::class)
-    fun getStationsStatus(): Map<String, DivvyStationStatus> {
-        val inputStream =  httpClient.connect(store.state.divvyStationStatusUrl)
-        return jsonParser
-            .parse(inputStream, StationStatusResponse::class.java)
-            .data.stations
-            .associateBy { it.id }
+    fun getStationsStatus(): Single<Map<String, DivvyStationStatus>> {
+        return httpClient.connectRx(store.state.divvyStationStatusUrl)
+            .map { inputStream ->
+                jsonParser
+                    .parse(inputStream, StationStatusResponse::class.java)
+                    .data.stations
+                    .associateBy { it.id }
+            }
     }
 }

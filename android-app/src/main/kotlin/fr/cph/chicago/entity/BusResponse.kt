@@ -102,8 +102,7 @@ data class BusRoutesResponse(
     @JsonProperty("bustime-response")
     val bustimeResponse: BustimeResponse) {
 
-    data class BustimeResponse(
-        var routes: List<Route>)
+    data class BustimeResponse(var routes: List<Route>)
 
     data class Route(
         @JsonProperty("rt")

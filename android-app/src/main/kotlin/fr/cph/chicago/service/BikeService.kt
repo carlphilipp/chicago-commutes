@@ -73,8 +73,8 @@ object BikeService {
     }
 
     private fun loadAllBikeStations(): Single<List<BikeStation>> {
-        val informationSingle = singleFromCallable(Callable { client.getStationsInformation() }).onErrorReturn(handleMapError())
-        val statusSingle = singleFromCallable(Callable { client.getStationsStatus() }).onErrorReturn(handleMapError())
+        val informationSingle = client.getStationsInformation().onErrorReturn(handleMapError())
+        val statusSingle = client.getStationsStatus().onErrorReturn(handleMapError())
         return Singles.zip(informationSingle, statusSingle, zipper = { info, stat ->
             val res = mutableListOf<BikeStation>()
             for ((key, stationInfo) in info) {

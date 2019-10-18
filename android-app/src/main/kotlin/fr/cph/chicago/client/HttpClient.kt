@@ -31,8 +31,12 @@ object HttpClient {
 
     private const val TIMEOUT = 5000
 
+    fun connectRx(address: String): Single<InputStream> {
+        return Single.fromCallable { connect(address) }.subscribeOn(Schedulers.io())
+    }
+
     @Throws(ConnectException::class)
-    fun connect(address: String): InputStream {
+    private fun connect(address: String): InputStream {
         try {
             Timber.d("Address: $address")
             val url = URL(address)
@@ -44,9 +48,5 @@ object HttpClient {
             Timber.e(exception)
             throw ConnectException.defaultException(exception)
         }
-    }
-
-    fun connectRx(address: String): Single<InputStream> {
-        return Single.fromCallable { connect(address) }.subscribeOn(Schedulers.io())
     }
 }

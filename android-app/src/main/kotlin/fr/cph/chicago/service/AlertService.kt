@@ -43,7 +43,7 @@ object AlertService {
     private val displayFormat = SimpleDateFormat("MM/dd/yyyy h:mm a", Locale.US)
 
     fun alerts(): Single<List<RoutesAlertsDTO>> {
-        return ctaClient.getRx(CtaRequestType.ALERTS_ROUTES, alertsParams(), AlertsRoutesResponse::class.java)
+        return ctaClient.get(CtaRequestType.ALERTS_ROUTES, alertsParams(), AlertsRoutesResponse::class.java)
             .map { alertRoutes ->
                 if (alertRoutes.ctaRoutes.routeInfo.isEmpty()) {
                     val errors = alertRoutes.ctaRoutes.errorMessage.joinToString()
@@ -67,7 +67,7 @@ object AlertService {
     }
 
     fun routeAlertForId(id: String): Single<List<RouteAlertsDTO>> {
-        return ctaClient.getRx(CtaRequestType.ALERTS_ROUTE, alertParams(id), AlertsRouteResponse::class.java)
+        return ctaClient.get(CtaRequestType.ALERTS_ROUTE, alertParams(id), AlertsRouteResponse::class.java)
             .map { alertRoutes ->
                 if (alertRoutes.ctaAlerts.errorMessage != null) {
                     Timber.e(alertRoutes.ctaAlerts.errorMessage.toString())
