@@ -29,6 +29,7 @@ import android.widget.LinearLayout
 import android.widget.ListView
 import androidx.appcompat.app.AlertDialog
 import fr.cph.chicago.R
+import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.BusBoundActivity
 import fr.cph.chicago.core.activity.map.BusMapActivity
 import fr.cph.chicago.core.adapter.PopupBusAdapter
@@ -39,7 +40,7 @@ import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
 import timber.log.Timber
 
-class BusDirectionObserver(private val screenWidth: Int,
+class BusDirectionObserver(private val viewClickable: View,
                            private val parent: ViewGroup,
                            private val convertView: View,
                            private val busRoute: BusRoute) : SingleObserver<BusDirections> {
@@ -92,11 +93,13 @@ class BusDirectionObserver(private val screenWidth: Int,
         alertDialog.setOnCancelListener { convertView.visibility = LinearLayout.GONE }
         val dialog = alertDialog.create()
         dialog.show()
-        dialog.window?.setLayout((screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+        dialog.window?.setLayout((App.instance.screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
         convertView.visibility = LinearLayout.GONE
+        viewClickable.isClickable = true
     }
 
     override fun onError(throwable: Throwable) {
+        viewClickable.isClickable = true
         util.handleConnectOrParserException(throwable, convertView)
         convertView.visibility = LinearLayout.GONE
         Timber.e(throwable, "Error while loading bus directions")

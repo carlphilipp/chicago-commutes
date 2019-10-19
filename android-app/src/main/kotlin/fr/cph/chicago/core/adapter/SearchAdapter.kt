@@ -108,13 +108,13 @@ class SearchAdapter(private val context: Context) : BaseAdapter() {
                 routeName.text = name
 
                 val loadingTextView: TextView = view.findViewById(R.id.loading_text_view)
-                view.setOnClickListener {
+                view.setOnClickListener { v ->
                     loadingTextView.visibility = LinearLayout.VISIBLE
                     busService.loadBusDirectionsSingle(busRoute.id)
                         .doOnError { error ->
                             util.handleConnectOrParserException(error, loadingTextView)
                             Timber.e(error, "Error while getting bus directions")
-                        }.subscribe(BusDirectionObserver(App.instance.screenWidth, parent, loadingTextView, busRoute))
+                        }.subscribe(BusDirectionObserver(v, parent, loadingTextView, busRoute))
                 }
             }
             else -> {

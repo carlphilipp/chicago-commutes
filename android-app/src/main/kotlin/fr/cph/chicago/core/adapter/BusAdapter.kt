@@ -75,10 +75,11 @@ class BusAdapter(private var busRoutes: List<BusRoute> = listOf()) : BaseAdapter
         holder.routeNameView.text = route.name
         holder.routeNumberView.text = route.id
 
-        view?.setOnClickListener {
+        view?.setOnClickListener { v ->
+            v.isClickable = false
             holder.detailsLayout.visibility = LinearLayout.VISIBLE
             busService.loadBusDirectionsSingle(route.id)
-                .subscribe(BusDirectionObserver(App.instance.screenWidth, parent, holder.detailsLayout, route))
+                .subscribe(BusDirectionObserver(v, parent, holder.detailsLayout, route))
         }
         return view
     }
