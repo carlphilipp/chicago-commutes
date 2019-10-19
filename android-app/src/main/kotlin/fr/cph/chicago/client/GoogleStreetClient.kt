@@ -53,8 +53,7 @@ object GoogleStreetClient {
      * @return a drawable map
      */
     private fun connectUrl(address: String): Single<Drawable> {
-        return httpClient.connectRx(address)
-            .observeOn(Schedulers.computation())
+        return httpClient.connect(address)
             .map { inputStream ->
                 try {
                     Drawable.createFromStream(inputStream, "src name")

@@ -41,23 +41,15 @@ object DivvyClient {
 
     @Throws(ConnectException::class)
     fun getStationsInformation(): Single<Map<String, DivvyStationInformation>> {
-        return httpClient.connectRx(store.state.divvyStationInformationUrl)
-            .map { inputStream ->
-                jsonParser
-                    .parse(inputStream, StationInformationResponse::class.java)
-                    .data.stations
-                    .associateBy { it.id }
-            }
+        return httpClient.connect(store.state.divvyStationInformationUrl)
+            .map { inputStream -> jsonParser.parse(inputStream, StationInformationResponse::class.java) }
+            .map { stationInfo -> stationInfo.data.stations.associateBy { it.id } }
     }
 
     @Throws(ConnectException::class)
     fun getStationsStatus(): Single<Map<String, DivvyStationStatus>> {
-        return httpClient.connectRx(store.state.divvyStationStatusUrl)
-            .map { inputStream ->
-                jsonParser
-                    .parse(inputStream, StationStatusResponse::class.java)
-                    .data.stations
-                    .associateBy { it.id }
-            }
+        return httpClient.connect(store.state.divvyStationStatusUrl)
+            .map { inputStream -> jsonParser.parse(inputStream, StationStatusResponse::class.java) }
+            .map { stationStatus -> stationStatus.data.stations.associateBy { it.id } }
     }
 }

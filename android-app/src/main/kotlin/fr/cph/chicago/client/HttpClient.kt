@@ -31,22 +31,21 @@ object HttpClient {
 
     private const val TIMEOUT = 5000
 
-    fun connectRx(address: String): Single<InputStream> {
-        return Single.fromCallable { connect(address) }.subscribeOn(Schedulers.io())
-    }
-
-    @Throws(ConnectException::class)
-    private fun connect(address: String): InputStream {
-        try {
-            Timber.d("Address: $address")
-            val url = URL(address)
-            val con = url.openConnection()
-            con.connectTimeout = TIMEOUT
-            con.readTimeout = TIMEOUT
-            return con.getInputStream()
-        } catch (exception: IOException) {
-            Timber.e(exception)
-            throw ConnectException.defaultException(exception)
+    fun connect(address: String): Single<InputStream> {
+        return Single.fromCallable {
+            try {
+                Timber.d("Address: $address")
+                val url = URL(address)
+                val con = url.openConnection()
+                con.connectTimeout = TIMEOUT
+                con.readTimeout = TIMEOUT
+                con.getInputStream()
+            } catch (exception: IOException) {
+                Timber.e(exception)
+                throw ConnectException.defaultException(exception)
+            }
         }
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.computation())
     }
 }

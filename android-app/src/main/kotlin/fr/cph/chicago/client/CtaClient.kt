@@ -62,9 +62,7 @@ object CtaClient {
 
     fun <T> get(requestType: CtaRequestType, params: MultiValuedMap<String, String>, clazz: Class<T>): Single<T> {
         return Single.fromCallable { address(requestType, params) }
-            .observeOn(Schedulers.io())
-            .flatMap { address -> httpClient.connectRx(address) }
-            .observeOn(Schedulers.computation())
+            .flatMap { address -> httpClient.connect(address) }
             .map { inputStream -> jsonParser.parse(inputStream, clazz) }
             .subscribeOn(Schedulers.computation())
     }
