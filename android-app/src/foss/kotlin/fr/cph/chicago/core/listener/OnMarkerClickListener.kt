@@ -33,6 +33,7 @@ import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
 @SuppressLint("CheckResult")
@@ -69,6 +70,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
         nearbyFragment.slidingUpAdapter.updateTitleTrain(trainTrainStation.name)
         trainService.loadStationTrainArrival(trainTrainStation.id)
             .onErrorReturn { TrainArrival.buildEmptyTrainArrival() }
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { result -> nearbyFragment.slidingUpAdapter.addTrainStation(result) },
                 { error -> Timber.e(error) }
@@ -93,6 +95,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
     private fun loadBikes(bikeStation: BikeStation) {
         nearbyFragment.slidingUpAdapter.updateTitleBike(bikeStation.name)
         bikeService.findBikeStation(bikeStation.id)
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { result -> nearbyFragment.slidingUpAdapter.addBike(result) },
                 { error -> Timber.e(error) }

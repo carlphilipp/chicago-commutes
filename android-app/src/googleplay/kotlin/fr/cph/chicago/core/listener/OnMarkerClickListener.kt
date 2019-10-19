@@ -63,6 +63,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
     private fun loadTrainArrivals(trainTrainStation: TrainStation) {
         nearbyFragment.slidingUpAdapter.updateTitleTrain(trainTrainStation.name)
         trainService.loadStationTrainArrival(trainTrainStation.id)
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { nearbyFragment.slidingUpAdapter.addTrainStation(it) },
                 { onError -> Timber.e(onError, "Error while loading train arrivals") })
@@ -84,6 +85,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
     private fun loadBikes(bikeStation: BikeStation) {
         nearbyFragment.slidingUpAdapter.updateTitleBike(bikeStation.name)
         bikeService.findBikeStation(bikeStation.id)
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { nearbyFragment.slidingUpAdapter.addBike(it) },
                 { onError -> Timber.e(onError, "Error while loading bike stations") }
