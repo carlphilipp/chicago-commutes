@@ -24,12 +24,14 @@ import android.text.SpannableString
 import android.text.TextUtils
 import android.text.style.RelativeSizeSpan
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import fr.cph.chicago.R
+import fr.cph.chicago.R.layout
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusArrival
@@ -54,7 +56,6 @@ object LayoutUtil {
         params.width = App.instance.resources.getDimensionPixelSize(R.dimen.layout_round_width)
         params.addRule(RelativeLayout.CENTER_VERTICAL)
         lineIndication.setBackgroundColor(trainLine.color)
-        lineIndication.layoutParams = params
         lineIndication.layoutParams = params
         return lineIndication
     }
@@ -100,7 +101,7 @@ object LayoutUtil {
         container.layoutParams = containParams
 
         // Left layout
-        val left = createLeftLayout()
+        val left = createLeftLayout(context)
 
         val lineIndication = createColoredRoundForFavorites(TrainLine.NA)
         val lineId = util.generateViewId()
@@ -155,7 +156,7 @@ object LayoutUtil {
         container.layoutParams = containParams
 
         // Left layout
-        val left = createLeftLayout()
+        val left = createLeftLayout(context)
 
         val lineIndication = createColoredRoundForFavorites(trainLine)
         val lineId = util.generateViewId()
@@ -199,11 +200,32 @@ object LayoutUtil {
     }
 
     fun buildBikeFavoritesLayout(context: Context, bikeStation: BikeStation): LinearLayout {
-        val container = buildBusBikeLayout()
-        val linearLayout = (container.getChildAt(0) as LinearLayout)
-        linearLayout.addView(createBikeLine(context, App.instance.getString(R.string.bike_available_bikes), bikeStation.availableBikes, true))
-        linearLayout.addView(createBikeLine(context, App.instance.getString(R.string.bike_available_docks), bikeStation.availableDocks, true))
-        return container
+        //val container = buildBusBikeLayout()
+        //val linearLayout = (container.getChildAt(0) as LinearLayout)
+        //linearLayout.addView(createBikeLine(context, App.instance.getString(R.string.bike_available_bikes), bikeStation.availableBikes, true))
+        //linearLayout.addView(createBikeLine(context, App.instance.getString(R.string.bike_available_docks), bikeStation.availableDocks, true))
+        //return container
+        val vi = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val layout = vi.inflate(layout.fav_bike, null) as LinearLayout
+        if (bikeStation.availableBikes != -1) {
+            val availableBikes = layout.findViewById<TextView>(R.id.available_bikes)
+            availableBikes.text = formatNumber(bikeStation.availableBikes)
+            availableBikes.setTextColor(if (bikeStation.availableBikes == 0) Color.red else Color.green)
+        }
+        if (bikeStation.availableDocks != -1) {
+            val availableDocks = layout.findViewById<TextView>(R.id.available_docks)
+            availableDocks.text = formatNumber(bikeStation.availableDocks)
+            availableDocks.setTextColor(if (bikeStation.availableDocks == 0) Color.red else Color.green)
+        }
+        return layout
+    }
+
+    private fun formatNumber(number: Int): String {
+        return if (number > 9) {
+            number.toString()
+        } else {
+            "\u0020\u0020" + number.toString()
+        }
     }
 
     fun createLineBelowLayoutParams(id: Int): RelativeLayout.LayoutParams {
@@ -227,10 +249,10 @@ object LayoutUtil {
 
     private fun createBikeLine(context: Context, lineTitle: String, lineValue: Int, withDots: Boolean): LinearLayout {
         // Create line
-        val line = createLineLayout()
+        val line = createLineLayout(context)
 
         // Left layout
-        val left = createLeftLayout()
+        val left = createLeftLayout(context)
         val lineId = util.generateViewId()
 
         val lineTitleTextView = createLineTitle(
@@ -261,19 +283,14 @@ object LayoutUtil {
         return line
     }
 
-    private fun createLineLayout(): LinearLayout {
-        val lineParams = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
-        val line = LinearLayout(App.instance)
-        line.orientation = LinearLayout.HORIZONTAL
-        line.layoutParams = lineParams
-        return line
+    private fun createLineLayout(context: Context): LinearLayout {
+        val vi = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        return vi.inflate(layout.fav_line, null) as LinearLayout
     }
 
-    private fun createLeftLayout(): RelativeLayout {
-        val leftParam = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
-        val left = RelativeLayout(App.instance)
-        left.layoutParams = leftParam
-        return left
+    private fun createLeftLayout(context: Context): RelativeLayout {
+        val vi = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        return vi.inflate(layout.fav_left, null) as RelativeLayout
     }
 
     private fun createTitleParams(dp: Int): RelativeLayout.LayoutParams {

@@ -121,6 +121,7 @@
     <string name="bike_fragment_filter">Filter</string>
     <string name="bike_available_bikes">Available bikes</string>
     <string name="bike_available_docks">Available docks</string>
+    <string name="bike_default_value">\u0020\u0020\?</string>
 
     <!-- Map -->
     <string name="map_activity">Map</string>

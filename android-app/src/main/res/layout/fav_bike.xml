@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  Copyright 2019 Carl-Philipp Harmant
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="15dp"
+    android:paddingEnd="15dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include
+            android:id="@+id/square"
+            layout="@layout/fav_square" />
+
+        <TextView
+            android:id="@+id/available_bikes_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/square"
+            android:paddingStart="10dp"
+            android:text="@string/bike_available_bikes"
+            tools:ignore="RtlSymmetry" />
+
+        <TextView
+            android:id="@+id/available_bikes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="150dp"
+            android:layout_toEndOf="@+id/square"
+            android:text="@string/bike_default_value"
+            android:textColor="@color/orange" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <include
+            android:id="@+id/square2"
+            layout="@layout/fav_square" />
+
+        <TextView
+            android:id="@+id/available_docks_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/square2"
+            android:paddingStart="10dp"
+            android:text="@string/bike_available_docks"
+            tools:ignore="RtlSymmetry" />
+
+        <TextView
+            android:id="@+id/available_docks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="150dp"
+            android:layout_toEndOf="@+id/square2"
+            android:text="@string/bike_default_value"
+            android:textColor="@color/orange" />
+    </RelativeLayout>
+
+</LinearLayout>

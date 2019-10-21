@@ -90,6 +90,7 @@
 -keep,includedescriptorclasses class io.realm.internal.fields.FieldDescriptor$SchemaProxy { *; }
 -keep,includedescriptorclasses class com.sothree.slidinguppanel.SlidingUpPanelLayout { *; }
 -keep,includedescriptorclasses class io.realm.internal.android.AndroidRealmNotifier { *; }
+-keep,includedescriptorclasses class io.realm.BaseModuleMediator { *; }
 -keep,includedescriptorclasses class kotlin.reflect.** { *; }
 -keep class kotlin.Metadata { *; }
 -keep class androidx.versionedparcelable.VersionedParcel { *; }
@@ -158,7 +159,7 @@
 -dontnote androidx.fragment.app.Fragment
 -dontnote androidx.fragment.app.Fragment$SavedState
 -dontnote androidx.fragment.app.Fragment$OnStartEnterTransitionListener
--dontnote androidx.lifecycle.Lifecycle$Event
+-dontnote androidx.lifecycle.Lifecycle$Eventandroid.enableR8
 -dontnote androidx.lifecycle.MethodCallsLogger
 -dontnote androidx.lifecycle.LifecycleOwner
 -dontnote androidx.media.**
