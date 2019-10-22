@@ -17,14 +17,14 @@
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingStart="15dp"
     android:paddingEnd="15dp">
+    <!-- TODO: to parametrized -->
 
-    <RelativeLayout
+    <RelativeLayout xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -33,7 +33,7 @@
             layout="@layout/fav_square" />
 
         <TextView
-            android:id="@+id/available_bikes_text"
+            android:id="@+id/available_bikes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -43,10 +43,9 @@
             tools:ignore="RtlSymmetry" />
 
         <TextView
-            android:id="@+id/available_bikes"
+            android:id="@+id/available_bikes_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
             android:layout_centerVertical="true"
             android:layout_marginStart="150dp"
             android:layout_toEndOf="@+id/square"
@@ -54,30 +53,31 @@
             android:textColor="@color/orange" />
     </RelativeLayout>
 
-    <RelativeLayout
+    <RelativeLayout xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content">
 
         <include
-            android:id="@+id/square2"
+            android:id="@+id/square"
             layout="@layout/fav_square" />
-
-        <TextView
-            android:id="@+id/available_docks_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/square2"
-            android:paddingStart="10dp"
-            android:text="@string/bike_available_docks"
-            tools:ignore="RtlSymmetry" />
 
         <TextView
             android:id="@+id/available_docks"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/square"
+            android:paddingStart="10dp"
+            android:text="@string/bike_available_docks"
+            tools:ignore="RtlSymmetry" />
+
+        <TextView
+            android:id="@+id/available_docks_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_marginStart="150dp"
-            android:layout_toEndOf="@+id/square2"
+            android:layout_toEndOf="@+id/square"
             android:text="@string/bike_default_value"
             android:textColor="@color/orange" />
     </RelativeLayout>

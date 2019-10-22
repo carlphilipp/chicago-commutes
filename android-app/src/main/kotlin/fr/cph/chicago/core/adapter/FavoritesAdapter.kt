@@ -38,7 +38,6 @@ import fr.cph.chicago.core.listener.OpenMapOnClickListener
 import fr.cph.chicago.core.listener.TrainDetailsButtonOnClickListener
 import fr.cph.chicago.core.listener.TrainMapButtonOnClickListener
 import fr.cph.chicago.core.model.BikeStation
-import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.Favorites
 import fr.cph.chicago.core.model.TrainStation
@@ -46,6 +45,7 @@ import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.util.LayoutUtil
+import fr.cph.chicago.util.LayoutUtil.createBusArrivalLine
 import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
@@ -128,39 +128,28 @@ class FavoritesAdapter(private val context: Context) : RecyclerView.Adapter<Favo
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bus_white_24dp)
 
         val busDetailsDTOs = mutableListOf<BusDetailsDTO>()
-
         val busArrivalDTO = favorites.getBusArrivalsMapped(busRoute.id)
-        val entrySet = busArrivalDTO.entries
 
-        for ((stopName, boundMap) in entrySet) {
+        val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val container = inflater.inflate(R.layout.fav_bus, holder.parent, false) as LinearLayout
+        holder.mainLayout.addView(container)
+
+        for ((stopName, boundMap) in busArrivalDTO.entries) {
             val stopNameTrimmed = util.trimBusStopNameIfNeeded(stopName)
-
-            var newLine = true
-            var i = 0
-
             for ((key, value) in boundMap) {
-
-                // Build data for button outside of the loop
+                // Extract values we are interested in
                 val (_, _, _, stopId, _, routeId, boundTitle) = value.iterator().next()
                 val busDirectionEnum: BusDirection = BusDirection.fromString(boundTitle)
-                val busDetails = BusDetailsDTO(
-                    routeId,
-                    busDirectionEnum.shortUpperCase,
-                    boundTitle,
-                    stopId,
-                    busRoute.name,
-                    stopName
-                )
+
+                // Save details for listeners
+                val busDetails = BusDetailsDTO(routeId, busDirectionEnum.shortUpperCase, boundTitle, stopId, busRoute.name, stopName)
                 busDetailsDTOs.add(busDetails)
 
-                // Build UI
-                val containParams = layoutUtil.getInsideParams(newLine, i == boundMap.size - 1)
-                val container = layoutUtil.createFavoritesBusArrivalsLayout(context, containParams, stopNameTrimmed, BusDirection.fromString(key), value as MutableSet<out BusArrival>)
+                // Create line bus arrivals
+                val line = createBusArrivalLine(context, holder.parent, stopNameTrimmed = stopNameTrimmed, busDirection = BusDirection.fromString(key), buses = value)
 
-                holder.mainLayout.addView(container)
-
-                newLine = false
-                i++
+                // Add view to container
+                container.addView(line)
             }
         }
 
@@ -180,7 +169,7 @@ class FavoritesAdapter(private val context: Context) : RecyclerView.Adapter<Favo
         holder.mapButton.text = App.instance.getString(R.string.favorites_view_station)
         holder.mapButton.setOnClickListener(OpenMapOnClickListener(bikeStation.latitude, bikeStation.longitude))
 
-        val bikeResultLayout = layoutUtil.buildBikeFavoritesLayout(context, bikeStation)
+        val bikeResultLayout = layoutUtil.buildBikeFavoritesLayout(context, holder.parent, bikeStation)
 
         holder.mainLayout.addView(bikeResultLayout)
     }

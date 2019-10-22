@@ -26,23 +26,25 @@
         layout="@layout/fav_square" />
 
     <TextView
-        android:id="@+id/available_bikes_text"
+        android:id="@+id/stop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toEndOf="@id/square"
         android:paddingStart="10dp"
-        android:text="@string/bike_available_bikes"
+        android:singleLine="true"
         tools:ignore="RtlSymmetry" />
 
     <TextView
-        android:id="@+id/available_bikes"
+        android:id="@+id/value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:layout_marginStart="150dp"
-        android:layout_toEndOf="@+id/square"
-        android:text="@string/bike_default_value"
-        android:textColor="@color/orange" />
+        android:layout_toEndOf="@+id/stop"
+        android:ellipsize="end"
+        android:gravity="end"
+        android:layout_marginStart="5dp"
+        android:singleLine="true"
+        android:text="No result" />
 </RelativeLayout>
