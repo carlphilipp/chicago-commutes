@@ -21,10 +21,9 @@ package fr.cph.chicago.util
 
 import android.content.Context
 import android.text.SpannableString
-import android.text.TextUtils
 import android.text.style.RelativeSizeSpan
-import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
@@ -45,19 +44,6 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
  */
 object LayoutUtil {
 
-    private val util = Util
-
-    private fun createColoredRoundForFavorites(trainLine: TrainLine): RelativeLayout {
-        val lineIndication = RelativeLayout(App.instance)
-        val params = RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
-        params.height = App.instance.resources.getDimensionPixelSize(R.dimen.layout_round_height)
-        params.width = App.instance.resources.getDimensionPixelSize(R.dimen.layout_round_width)
-        params.addRule(RelativeLayout.CENTER_VERTICAL)
-        lineIndication.setBackgroundColor(trainLine.color)
-        lineIndication.layoutParams = params
-        return lineIndication
-    }
-
     fun createColoredRoundForMultiple(trainLine: TrainLine): LinearLayout {
         val lineIndication = LinearLayout(App.instance)
         val params = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
@@ -67,22 +53,6 @@ object LayoutUtil {
         lineIndication.setBackgroundColor(trainLine.color)
         lineIndication.layoutParams = params
         return lineIndication
-    }
-
-    fun getInsideParams(newLine: Boolean, lastLine: Boolean): LinearLayout.LayoutParams {
-        val pixels = util.dpToPixel16
-        val pixelsQuarter = pixels / 4
-        val paramsLeft = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, WRAP_CONTENT)
-        if (newLine && lastLine) {
-            paramsLeft.setMargins(pixels, pixelsQuarter, pixels, pixelsQuarter)
-        } else if (newLine) {
-            paramsLeft.setMargins(pixels, pixelsQuarter, pixels, 0)
-        } else if (lastLine) {
-            paramsLeft.setMargins(pixels, 0, pixels, pixelsQuarter)
-        } else {
-            paramsLeft.setMargins(pixels, 0, pixels, 0)
-        }
-        return paramsLeft
     }
 
     fun createBusArrivalLine(context: Context, viewGroup: ViewGroup, stopNameTrimmed: String, busDirection: BusDirection?, buses: MutableSet<out BusArrival>): RelativeLayout {
@@ -105,56 +75,25 @@ object LayoutUtil {
         return createBusArrivalLine(context, viewGroup, "No Results", null, mutableSetOf())
     }
 
-    fun createTrainArrivalsLayout(context: Context, containParams: LinearLayout.LayoutParams, entry: Map.Entry<String, String>, trainLine: TrainLine): LinearLayout {
-        val pixels = util.dpToPixel16
-        val pixelsHalf = pixels / 2
-        val marginLeftPixel = util.convertDpToPixel(10)
-
+    fun createTrainArrivalTrainLine(context: Context, viewGroup: ViewGroup, map: Map<String, String>, trainLine: TrainLine): LinearLayout {
+        val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val container = LinearLayout(context)
-        container.orientation = LinearLayout.HORIZONTAL
-        container.layoutParams = containParams
+        container.orientation = LinearLayout.VERTICAL
+        for (e in map.entries) {
+            // Inflate bus line and populate texts.
+            val line = inflater.inflate(R.layout.fav_bus_line, viewGroup, false) as RelativeLayout
 
-        // Left layout
-        val left = createLeftLayout(context)
+            val square = line.findViewById<View>(R.id.square)
+            square.setBackgroundColor(trainLine.color)
 
-        val lineIndication = createColoredRoundForFavorites(trainLine)
-        val lineId = util.generateViewId()
-        lineIndication.id = lineId
+            val stop = line.findViewById<TextView>(R.id.stop)
+            stop.text = e.key
 
-        val destinationParams = RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
-        destinationParams.addRule(RelativeLayout.RIGHT_OF, lineId)
-        destinationParams.setMargins(pixelsHalf, 0, 0, 0)
+            val arrivalTimes = line.findViewById<TextView>(R.id.value)
+            arrivalTimes.text = e.value
 
-        val destination = entry.key
-        val destinationTextView = TextView(context)
-        destinationTextView.text = destination
-        destinationTextView.setLines(1)
-        destinationTextView.layoutParams = destinationParams
-        //destinationTextView.setTextAppearance(textAppearance, App.instance)
-
-        left.addView(lineIndication)
-        left.addView(destinationTextView)
-
-        // Right
-        val rightParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, WRAP_CONTENT)
-        rightParams.setMargins(marginLeftPixel, 0, 0, 0)
-        val right = LinearLayout(context)
-        right.orientation = LinearLayout.VERTICAL
-        right.layoutParams = rightParams
-
-        val currentEtas = entry.value
-        val arrivalText = TextView(context)
-        arrivalText.text = currentEtas
-        arrivalText.gravity = Gravity.END
-        arrivalText.isSingleLine = true
-        arrivalText.ellipsize = TextUtils.TruncateAt.END
-        //arrivalText.setTextAppearance(textAppearance, App.instance)
-
-        right.addView(arrivalText)
-
-        container.addView(left)
-        container.addView(right)
-
+            container.addView(line)
+        }
         return container
     }
 
@@ -186,10 +125,5 @@ object LayoutUtil {
         val arrivalLayoutParams = RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
         arrivalLayoutParams.addRule(RelativeLayout.BELOW, id)
         return arrivalLayoutParams
-    }
-
-    private fun createLeftLayout(context: Context): RelativeLayout {
-        val vi = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        return vi.inflate(R.layout.fav_left, null) as RelativeLayout
     }
 }

@@ -21,5 +21,6 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingStart="15dp"
-    android:paddingEnd="15dp"> <!-- TODO: to parametrized -->
+    android:paddingEnd="15dp">
+    <!-- TODO: to parametrized -->
 </LinearLayout>

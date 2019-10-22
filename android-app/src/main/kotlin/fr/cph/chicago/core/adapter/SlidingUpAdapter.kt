@@ -88,7 +88,9 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
          */
         if (linearLayout.childCount == 0) {
             var nbOfLine = 0
-
+            val inflater = nearbyFragment.context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val container = inflater.inflate(R.layout.fav_bus, linearLayout, false) as LinearLayout
+            linearLayout.addView(container)
             for (trainLine in TrainLine.values()) {
                 val etaResult = trainArrival.getEtas(trainLine)
                 val etas = etaResult.fold(mutableMapOf<String, String>()) { accumulator, eta ->
@@ -102,14 +104,8 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
                     accumulator
                 }
 
-                var newLine = true
-                for ((i, entry) in etas.entries.withIndex()) {
-                    val containParams = layoutUtil.getInsideParams(newLine, i == etas.size - 1)
-                    val container = layoutUtil.createTrainArrivalsLayout(nearbyFragment.context!!, containParams, entry, trainLine)
-
-                    linearLayout.addView(container)
-                    newLine = false
-                }
+                val trainLayout = layoutUtil.createTrainArrivalTrainLine(nearbyFragment.context!!, linearLayout, etas, trainLine)
+                container.addView(trainLayout)
                 nbOfLine += etas.size
             }
             nearbyFragment.slidingUpPanelLayout.panelHeight = getSlidingPanelHeight(nbOfLine)
@@ -127,13 +123,16 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
         if (linearLayout.childCount == 0) {
             nbOfLine = intArrayOf(0)
 
+            val inflater = nearbyFragment.context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val container = inflater.inflate(R.layout.fav_bus, linearLayout, false) as LinearLayout
+            linearLayout.addView(container)
             busArrivalRouteDTO.entries.forEach { entry ->
                 val stopNameTrimmed = util.trimBusStopNameIfNeeded(entry.key)
                 val boundMap = entry.value
 
                 for (entry2 in boundMap.entries) {
-                    val container = layoutUtil.createBusArrivalLine(nearbyFragment.context!!, linearLayout, stopNameTrimmed, BusDirection.fromString(entry2.key), entry2.value as MutableSet<out BusArrival>)
-                    linearLayout.addView(container)
+                    val busLayout = layoutUtil.createBusArrivalLine(nearbyFragment.context!!, linearLayout, stopNameTrimmed, BusDirection.fromString(entry2.key), entry2.value as MutableSet<out BusArrival>)
+                    container.addView(busLayout)
                 }
                 nbOfLine[0] = nbOfLine[0] + boundMap.size
             }

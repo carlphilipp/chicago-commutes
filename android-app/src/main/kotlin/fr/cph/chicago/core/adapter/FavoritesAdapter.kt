@@ -110,16 +110,16 @@ class FavoritesAdapter(private val context: Context) : RecyclerView.Adapter<Favo
         holder.mapButton.setOnClickListener(TrainMapButtonOnClickListener(context, trainStation.lines))
 
         trainStation.lines.forEach { trainLine ->
-            var newLine = true
             val etas = favorites.getTrainArrivalByLine(trainStation.id, trainLine)
-            for ((i, entry) in etas.entries.withIndex()) {
-                val containParams = layoutUtil.getInsideParams(newLine, i == etas.size - 1)
-                val container = layoutUtil.createTrainArrivalsLayout(context, containParams, entry, trainLine)
 
-                holder.mainLayout.addView(container)
+            val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val container = inflater.inflate(R.layout.fav_bus, holder.parent, false) as LinearLayout
+            holder.mainLayout.addView(container)
 
-                newLine = false
-            }
+            //for (entry in etas.entries) {
+                val line = layoutUtil.createTrainArrivalTrainLine(context, holder.parent, etas, trainLine)
+                container.addView(line)
+            //}
         }
     }
 
