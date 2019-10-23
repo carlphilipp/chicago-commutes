@@ -68,8 +68,8 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
         val vi = nearbyFragment.context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val convertView = vi.inflate(R.layout.nearby_station_main, nearbyFragment.slidingUpPanelLayout, false)
 
-        val stationNameView: TextView = convertView.findViewById(R.id.station_name)
-        val imageView: ImageView = convertView.findViewById(R.id.icon)
+        val stationNameView = convertView.findViewById<TextView>(R.id.station_name)
+        val imageView = convertView.findViewById<ImageView>(R.id.icon)
 
         stationNameView.text = title
         stationNameView.maxLines = 1

@@ -59,7 +59,7 @@ class AlertAdapter(private var routesAlertsDTOS: List<RoutesAlertsDTO> = listOf(
         val view = vi.inflate(R.layout.list_alerts, parent, false)
         val item = getItem(position)
 
-        val color: LinearLayout = view.findViewById(R.id.station_color_value)
+        val color = view.findViewById<LinearLayout>(R.id.station_color_value)
         color.setBackgroundColor(
             if (item.alertType == AlertType.TRAIN)
                 Color.parseColor(item.routeBackgroundColor)
@@ -67,18 +67,18 @@ class AlertAdapter(private var routesAlertsDTOS: List<RoutesAlertsDTO> = listOf(
                 Color.GRAY
         )
 
-        val stationName: TextView = view.findViewById(R.id.station_name_value)
+        val stationName = view.findViewById<TextView>(R.id.station_name_value)
         stationName.text =
             if (item.alertType === AlertType.TRAIN)
                 item.routeName
             else
                 item.id + " - " + item.routeName
 
-        val status: TextView = view.findViewById(R.id.status)
+        val status = view.findViewById<TextView>(R.id.status)
         status.text = item.routeStatus
 
         if ("Normal Service" != item.routeStatus) {
-            val imageView: ImageView = view.findViewById(R.id.alert_warning)
+            val imageView = view.findViewById<ImageView>(R.id.alert_warning)
             imageView.visibility = View.VISIBLE
         }
         return view

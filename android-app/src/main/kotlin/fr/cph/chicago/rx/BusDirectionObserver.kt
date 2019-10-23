@@ -60,7 +60,7 @@ class BusDirectionObserver(private val viewClickable: View,
 
         val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val popupView = vi.inflate(R.layout.popup_bus, parent, false)
-        val listView: ListView = popupView.findViewById(R.id.details)
+        val listView = popupView.findViewById<ListView>(R.id.details)
         val ada = PopupBusAdapter(parent.context.applicationContext, data)
         listView.adapter = ada
 

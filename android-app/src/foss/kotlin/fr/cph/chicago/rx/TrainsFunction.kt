@@ -37,11 +37,11 @@ class TrainsFunction(trainMapActivity: TrainMapActivity, private val feature: Fe
 
     override fun apply(trains: List<TrainEta>): View {
         val view = createView(feature, activity)
-        val arrivals: ListView = view.findViewById(R.id.arrivals)
-        val error: TextView = view.findViewById(R.id.error)
+        val arrivals = view.findViewById<ListView>(R.id.arrivals)
+        val error = view.findViewById<TextView>(R.id.error)
 
         if (trains.isNotEmpty()) {
-            val container: RelativeLayout = view.findViewById(R.id.container)
+            val container = view.findViewById<RelativeLayout>(R.id.container)
             addParams(container, trains.size)
 
             val ada = TrainMapSnippetAdapter(trains)

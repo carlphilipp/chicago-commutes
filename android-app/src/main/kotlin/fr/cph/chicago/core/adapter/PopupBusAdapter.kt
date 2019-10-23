@@ -41,7 +41,7 @@ class PopupBusAdapter(context: Context, private val values: List<String>) : Arra
         } else {
             vi.inflate(R.layout.popup_bus_cell, parent, false)
         }
-        val textView: TextView = view.findViewById(R.id.label)
+        val textView = view.findViewById<TextView>(R.id.label)
         textView.text = values[position]
         return view
     }

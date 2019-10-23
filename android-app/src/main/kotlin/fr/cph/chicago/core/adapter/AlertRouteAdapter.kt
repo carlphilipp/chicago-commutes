@@ -57,19 +57,19 @@ class AlertRouteAdapter(private val routeAlertsDTOS: List<RouteAlertsDTO>) : Bas
         val view = vi.inflate(R.layout.list_alert_route, parent, false)
         val item = getItem(position)
 
-        val headline: TextView = view.findViewById(R.id.headline)
+        val headline = view.findViewById<TextView>(R.id.headline)
         headline.text = item.headLine
 
-        val description: TextView = view.findViewById(R.id.description)
+        val description = view.findViewById<TextView>(R.id.description)
         description.text = item.description
 
-        val impact: TextView = view.findViewById(R.id.impact)
+        val impact = view.findViewById<TextView>(R.id.impact)
         impact.text = item.impact
 
-        val start: TextView = view.findViewById(R.id.start)
+        val start = view.findViewById<TextView>(R.id.start)
         start.text = "From: ${item.start}"
 
-        val end: TextView = view.findViewById(R.id.end)
+        val end = view.findViewById<TextView>(R.id.end)
         if (item.end == StringUtils.EMPTY) {
             end.visibility = LinearLayout.GONE
         } else {

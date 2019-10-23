@@ -61,7 +61,7 @@ object LayoutUtil {
         // Inflate bus line and populate texts.
         val line = inflater.inflate(R.layout.fav_bus_line, viewGroup, false) as RelativeLayout
         val stop = line.findViewById<TextView>(R.id.stop)
-        val stopNameDisplay = if (busDirection == null) stopNameTrimmed else stopNameTrimmed + " " + busDirection.shortLowerCase
+        val stopNameDisplay = if (busDirection == null) stopNameTrimmed else "$stopNameTrimmed ${busDirection.shortLowerCase}"
         val destinationSpannable = SpannableString(stopNameDisplay)
         destinationSpannable.setSpan(RelativeSizeSpan(0.65f), stopNameTrimmed.length, stopNameDisplay.length, 0)
         stop.text = destinationSpannable
@@ -102,28 +102,22 @@ object LayoutUtil {
         val layout = inflater.inflate(R.layout.fav_bike, parent, false) as LinearLayout
         if (bikeStation.availableBikes != -1) {
             val availableBikesValue = layout.findViewById<TextView>(R.id.available_bikes_value)
-            availableBikesValue.text = formatNumber(bikeStation.availableBikes)
+            availableBikesValue.text = formatBikeNumber(bikeStation.availableBikes)
             availableBikesValue.setTextColor(if (bikeStation.availableBikes == 0) Color.red else Color.green)
         }
         if (bikeStation.availableDocks != -1) {
             val availableDocksValue = layout.findViewById<TextView>(R.id.available_docks_value)
-            availableDocksValue.text = formatNumber(bikeStation.availableDocks)
+            availableDocksValue.text = formatBikeNumber(bikeStation.availableDocks)
             availableDocksValue.setTextColor(if (bikeStation.availableDocks == 0) Color.red else Color.green)
         }
         return layout
     }
 
-    private fun formatNumber(number: Int): String {
+    private fun formatBikeNumber(number: Int): String {
         return if (number > 9) {
             number.toString()
         } else {
             "\u0020\u0020" + number.toString()
         }
-    }
-
-    fun createLineBelowLayoutParams(id: Int): RelativeLayout.LayoutParams {
-        val arrivalLayoutParams = RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
-        arrivalLayoutParams.addRule(RelativeLayout.BELOW, id)
-        return arrivalLayoutParams
     }
 }

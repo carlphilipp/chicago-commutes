@@ -32,8 +32,8 @@ import timber.log.Timber
 
 class TrainEtaObserver(view: View, private val trainMapActivity: TrainMapActivity) : SingleObserver<List<TrainEta>> {
 
-    private val arrivals: ListView = view.findViewById(R.id.arrivals)
-    private val error: TextView = view.findViewById(R.id.error)
+    private val arrivals = view.findViewById<ListView>(R.id.arrivals)
+    private val error = view.findViewById<TextView>(R.id.error)
 
     override fun onSuccess(trainEtas: List<TrainEta>) {
         // View can be null

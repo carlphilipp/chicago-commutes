@@ -52,7 +52,7 @@ class BusStopOnClickListener(private val context: Context, private val parent: V
         val ada = PopupBusDetailsFavoritesAdapter(context, busDetailsDTOs)
         val view = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val popupView = view.inflate(R.layout.popup_bus, parent, false)
-        val listView: ListView = popupView.findViewById(R.id.details)
+        val listView = popupView.findViewById<ListView>(R.id.details)
         listView.adapter = ada
         val builder = AlertDialog.Builder(context)
         builder.setAdapter(ada) { _, position ->

@@ -47,7 +47,7 @@ abstract class AFunction {
         val inflater = LayoutInflater.from(activity.get())
         val view = inflater.inflate(R.layout.marker_mapbox, null)
         val destination = feature.getStringProperty(PROPERTY_DESTINATION)
-        val title = view.findViewById(R.id.title) as TextView
+        val title = view.findViewById<TextView>(R.id.title)
         title.text = destination
         return view
     }

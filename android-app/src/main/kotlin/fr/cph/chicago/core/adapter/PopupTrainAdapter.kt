@@ -41,10 +41,10 @@ class PopupTrainAdapter(context: Context, private val values: List<String>, priv
             rowView = inflater.inflate(R.layout.popup_train_cell_0, parent, false)
         } else {
             rowView = inflater.inflate(R.layout.popup_train_cell, parent, false)
-            val imageView: ImageView = rowView.findViewById(R.id.popup_train_map)
+            val imageView = rowView.findViewById<ImageView>(R.id.popup_train_map)
             imageView.setColorFilter(colors[position - 1])
         }
-        val textView: TextView = rowView.findViewById(R.id.label)
+        val textView = rowView.findViewById<TextView>(R.id.label)
         textView.text = values[position]
         return rowView
     }

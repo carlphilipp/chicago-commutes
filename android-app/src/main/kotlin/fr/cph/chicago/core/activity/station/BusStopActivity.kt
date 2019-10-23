@@ -1,4 +1,4 @@
- /**
+/**
  * Copyright 2019 Carl-Philipp Harmant
  *
  *
@@ -21,15 +21,16 @@ package fr.cph.chicago.core.activity.station
 
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
+import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.listener.OpenMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.OpenMapOnClickListener
-import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
@@ -243,7 +244,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
                     text = it.key
                     id = util.generateViewId()
                     isSingleLine = true
-                    layoutParams = layoutUtil.createLineBelowLayoutParams(idBelowTitle)
+                    layoutParams = createLineBelowLayoutParams(idBelowTitle)
                     this
                 }
 
@@ -253,7 +254,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
                     text = it.value.joinToString(separator = " ") { util.formatArrivalTime(it) }
                     id = util.generateViewId()
                     isSingleLine = true
-                    layoutParams = layoutUtil.createLineBelowLayoutParams(idBellowArrival)
+                    layoutParams = createLineBelowLayoutParams(idBellowArrival)
                     this
                 }
                 idBellowArrival = belowArrival.id
@@ -276,6 +277,13 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
             val view2 = rightLayout.getChildAt(rightLayout.childCount - 1)
             rightLayout.removeView(view2)
         }
+    }
+
+
+    private fun createLineBelowLayoutParams(id: Int): RelativeLayout.LayoutParams {
+        val arrivalLayoutParams = RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
+        arrivalLayoutParams.addRule(RelativeLayout.BELOW, id)
+        return arrivalLayoutParams
     }
 
     override fun isFavorite(): Boolean {

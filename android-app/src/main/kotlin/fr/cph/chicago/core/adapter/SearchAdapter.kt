@@ -30,7 +30,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import fr.cph.chicago.R
-import fr.cph.chicago.core.App
 import fr.cph.chicago.core.listener.BikeStationOnClickListener
 import fr.cph.chicago.core.listener.TrainOnClickListener
 import fr.cph.chicago.core.model.BikeStation
@@ -83,14 +82,14 @@ class SearchAdapter(private val context: Context) : BaseAdapter() {
         val vi = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val view = vi.inflate(R.layout.list_search, parent, false)
 
-        val routeName: TextView = view.findViewById(R.id.station_name)
+        val routeName = view.findViewById<TextView>(R.id.station_name)
 
         when {
             position < trains.size -> {
                 val station = getItem(position) as TrainStation
                 routeName.text = station.name
 
-                val stationColorView: LinearLayout = view.findViewById(R.id.station_color)
+                val stationColorView = view.findViewById<LinearLayout>(R.id.station_color)
 
                 station.lines
                     .map { layoutUtil.createColoredRoundForMultiple(it) }
@@ -101,13 +100,13 @@ class SearchAdapter(private val context: Context) : BaseAdapter() {
             position < trains.size + busRoutes.size -> {
                 val busRoute = getItem(position) as BusRoute
 
-                val icon: ImageView = view.findViewById(R.id.icon)
+                val icon = view.findViewById<ImageView>(R.id.icon)
                 icon.setImageDrawable(ContextCompat.getDrawable(parent.context, R.drawable.ic_directions_bus_white_24dp))
 
                 val name = "${busRoute.id} ${busRoute.name}"
                 routeName.text = name
 
-                val loadingTextView: TextView = view.findViewById(R.id.loading_text_view)
+                val loadingTextView = view.findViewById<TextView>(R.id.loading_text_view)
                 view.setOnClickListener { v ->
                     loadingTextView.visibility = LinearLayout.VISIBLE
                     busService.loadBusDirectionsSingle(busRoute.id)
@@ -120,7 +119,7 @@ class SearchAdapter(private val context: Context) : BaseAdapter() {
             else -> {
                 val bikeStation = getItem(position) as BikeStation
 
-                val icon: ImageView = view.findViewById(R.id.icon)
+                val icon = view.findViewById<ImageView>(R.id.icon)
                 icon.setImageDrawable(ContextCompat.getDrawable(parent.context, R.drawable.ic_directions_bike_white_24dp))
 
                 routeName.text = bikeStation.name

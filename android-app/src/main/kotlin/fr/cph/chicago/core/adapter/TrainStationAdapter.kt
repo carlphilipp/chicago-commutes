@@ -55,10 +55,10 @@ class TrainStationAdapter : BaseAdapter() {
         val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val view = vi.inflate(R.layout.list_train_line, parent, false)
 
-        val color: LinearLayout = view.findViewById(R.id.station_color_value)
+        val color = view.findViewById<LinearLayout>(R.id.station_color_value)
         color.setBackgroundColor(TrainLine.values()[position].color)
 
-        val stationName: TextView = view.findViewById(R.id.station_name_value)
+        val stationName = view.findViewById<TextView>(R.id.station_name_value)
         stationName.text = TrainLine.values()[position].toString()
         return view
     }

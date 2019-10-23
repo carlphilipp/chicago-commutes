@@ -39,8 +39,8 @@ class BusesFunction(busMapActivity: BusMapActivity, private val feature: Feature
 
     override fun apply(busArrivalsRes: List<BusArrival>): View {
         val view = createView(feature, activity)
-        val arrivals: ListView = view.findViewById(R.id.arrivals)
-        val error: TextView = view.findViewById(R.id.error)
+        val arrivals = view.findViewById<ListView>(R.id.arrivals)
+        val error = view.findViewById<TextView>(R.id.error)
 
         var busArrivals = busArrivalsRes.toMutableList()
         if (!loadAll && busArrivals.size > 7) {
@@ -49,7 +49,7 @@ class BusesFunction(busMapActivity: BusMapActivity, private val feature: Feature
             busArrivals.add(busArrival)
         }
         if (busArrivals.isNotEmpty()) {
-            val container: RelativeLayout = view.findViewById(R.id.container)
+            val container = view.findViewById<RelativeLayout>(R.id.container)
             addParams(container, busArrivals.size)
 
             val ada = BusMapSnippetAdapter(busArrivals)

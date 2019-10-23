@@ -69,7 +69,6 @@ class FavoritesAdapter(private val context: Context) : RecyclerView.Adapter<Favo
     private var lastUpdate: String = StringUtils.EMPTY
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoritesViewHolder {
-        // create a new view
         val view = LayoutInflater.from(parent.context).inflate(R.layout.list_favorites, parent, false)
         return FavoritesViewHolder(view, parent)
     }
@@ -82,17 +81,17 @@ class FavoritesAdapter(private val context: Context) : RecyclerView.Adapter<Favo
         when (model) {
             is TrainStation -> handleTrainStation(holder, model)
             is BusRoute -> handleBusRoute(holder, model)
-            else -> handleBikeStation(holder, model as BikeStation)
+            is BikeStation -> handleBikeStation(holder, model)
         }
     }
 
     class FavoritesViewHolder(view: View, val parent: ViewGroup) : RecyclerView.ViewHolder(view) {
-        val mainLayout: LinearLayout = view.findViewById(R.id.favorites_arrival_layout)
-        val lastUpdateTextView: TextView = view.findViewById(R.id.last_update)
-        val stationNameTextView: TextView = view.findViewById(R.id.favorites_station_name)
-        val favoriteImage: ImageView = view.findViewById(R.id.favorites_icon)
-        val detailsButton: Button = view.findViewById(R.id.details_button)
-        val mapButton: Button = view.findViewById(R.id.view_map_button)
+        val mainLayout = view.findViewById<LinearLayout>(R.id.favorites_arrival_layout)
+        val lastUpdateTextView = view.findViewById<TextView>(R.id.last_update)
+        val stationNameTextView = view.findViewById<TextView>(R.id.favorites_station_name)
+        val favoriteImage = view.findViewById<ImageView>(R.id.favorites_icon)
+        val detailsButton = view.findViewById<Button>(R.id.details_button)
+        val mapButton = view.findViewById<Button>(R.id.view_map_button)
         var isNew: Boolean = true
 
         init {
