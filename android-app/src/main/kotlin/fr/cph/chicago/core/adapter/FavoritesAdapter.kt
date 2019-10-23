@@ -93,6 +93,7 @@ class FavoritesAdapter(private val context: Context) : RecyclerView.Adapter<Favo
         val favoriteImage: ImageView = view.findViewById(R.id.favorites_icon)
         val detailsButton: Button = view.findViewById(R.id.details_button)
         val mapButton: Button = view.findViewById(R.id.view_map_button)
+        var isNew: Boolean = true
 
         init {
             this.stationNameTextView.setLines(1)
@@ -101,13 +102,16 @@ class FavoritesAdapter(private val context: Context) : RecyclerView.Adapter<Favo
     }
 
     private fun handleTrainStation(holder: FavoritesViewHolder, trainStation: TrainStation) {
-        holder.favoriteImage.setImageResource(R.drawable.ic_train_white_24dp)
-        holder.stationNameTextView.text = trainStation.name
-        holder.detailsButton.setOnClickListener(TrainDetailsButtonOnClickListener(trainStation.id))
-        holder.detailsButton.isEnabled = true
+        if (holder.isNew) {
+            holder.favoriteImage.setImageResource(R.drawable.ic_train_white_24dp)
+            holder.stationNameTextView.text = trainStation.name
+            holder.detailsButton.setOnClickListener(TrainDetailsButtonOnClickListener(trainStation.id))
+            holder.detailsButton.isEnabled = true
+            holder.mapButton.text = App.instance.getString(R.string.favorites_view_trains)
+            holder.mapButton.setOnClickListener(TrainMapButtonOnClickListener(context, trainStation.lines))
 
-        holder.mapButton.text = App.instance.getString(R.string.favorites_view_trains)
-        holder.mapButton.setOnClickListener(TrainMapButtonOnClickListener(context, trainStation.lines))
+            holder.isNew = false
+        }
 
         trainStation.lines.forEach { trainLine ->
             val etas = favorites.getTrainArrivalByLine(trainStation.id, trainLine)
@@ -116,16 +120,19 @@ class FavoritesAdapter(private val context: Context) : RecyclerView.Adapter<Favo
             val container = inflater.inflate(R.layout.fav_bus, holder.parent, false) as LinearLayout
             holder.mainLayout.addView(container)
 
-            //for (entry in etas.entries) {
-                val line = layoutUtil.createTrainArrivalTrainLine(context, holder.parent, etas, trainLine)
-                container.addView(line)
-            //}
+            val line = layoutUtil.layoutForTrainLine(context, holder.parent, etas, trainLine)
+            container.addView(line)
         }
     }
 
     private fun handleBusRoute(holder: FavoritesViewHolder, busRoute: BusRoute) {
-        holder.stationNameTextView.text = busRoute.id
-        holder.favoriteImage.setImageResource(R.drawable.ic_directions_bus_white_24dp)
+        if (holder.isNew) {
+            holder.stationNameTextView.text = busRoute.id
+            holder.favoriteImage.setImageResource(R.drawable.ic_directions_bus_white_24dp)
+            holder.mapButton.text = App.instance.getString(R.string.favorites_view_buses)
+
+            holder.isNew = false
+        }
 
         val busDetailsDTOs = mutableListOf<BusDetailsDTO>()
         val busArrivalDTO = favorites.getBusArrivalsMapped(busRoute.id)
@@ -146,31 +153,32 @@ class FavoritesAdapter(private val context: Context) : RecyclerView.Adapter<Favo
                 busDetailsDTOs.add(busDetails)
 
                 // Create line bus arrivals
-                val line = createBusArrivalLine(context, holder.parent, stopNameTrimmed = stopNameTrimmed, busDirection = BusDirection.fromString(key), buses = value)
+                val line = createBusArrivalLine(context, holder.parent, stopNameTrimmed, BusDirection.fromString(key), buses = value)
 
                 // Add view to container
                 container.addView(line)
             }
         }
 
-        holder.mapButton.text = App.instance.getString(R.string.favorites_view_buses)
         holder.detailsButton.setOnClickListener(BusStopOnClickListener(context, holder.parent, busDetailsDTOs))
         holder.detailsButton.isEnabled = true
         holder.mapButton.setOnClickListener(BusMapButtonOnClickListener(context, busRoute, busDetailsDTOs.map { it.bound }.toSet()))
     }
 
     private fun handleBikeStation(holder: FavoritesViewHolder, bikeStation: BikeStation) {
-        holder.stationNameTextView.text = bikeStation.name
-        holder.favoriteImage.setImageResource(R.drawable.ic_directions_bike_white_24dp)
+        if (holder.isNew) {
+            holder.stationNameTextView.text = bikeStation.name
+            holder.favoriteImage.setImageResource(R.drawable.ic_directions_bike_white_24dp)
+            holder.mapButton.text = App.instance.getString(R.string.favorites_view_station)
+
+            holder.isNew = false
+        }
 
         holder.detailsButton.isEnabled = bikeStation.latitude != 0.0 && bikeStation.longitude != 0.0
         holder.detailsButton.setOnClickListener(BikeDetailsButtonOnClickListener(bikeStation))
-
-        holder.mapButton.text = App.instance.getString(R.string.favorites_view_station)
         holder.mapButton.setOnClickListener(OpenMapOnClickListener(bikeStation.latitude, bikeStation.longitude))
 
         val bikeResultLayout = layoutUtil.buildBikeFavoritesLayout(context, holder.parent, bikeStation)
-
         holder.mainLayout.addView(bikeResultLayout)
     }
 

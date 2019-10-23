@@ -104,7 +104,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
                     accumulator
                 }
 
-                val trainLayout = layoutUtil.createTrainArrivalTrainLine(nearbyFragment.context!!, linearLayout, etas, trainLine)
+                val trainLayout = layoutUtil.layoutForTrainLine(nearbyFragment.context!!, linearLayout, etas, trainLine)
                 container.addView(trainLayout)
                 nbOfLine += etas.size
             }

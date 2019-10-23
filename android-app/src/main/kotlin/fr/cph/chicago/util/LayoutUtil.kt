@@ -75,7 +75,7 @@ object LayoutUtil {
         return createBusArrivalLine(context, viewGroup, "No Results", null, mutableSetOf())
     }
 
-    fun createTrainArrivalTrainLine(context: Context, viewGroup: ViewGroup, map: Map<String, String>, trainLine: TrainLine): LinearLayout {
+    fun layoutForTrainLine(context: Context, viewGroup: ViewGroup, map: Map<String, String>, trainLine: TrainLine): LinearLayout {
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val container = LinearLayout(context)
         container.orientation = LinearLayout.VERTICAL
