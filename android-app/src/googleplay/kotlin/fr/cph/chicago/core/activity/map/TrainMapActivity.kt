@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.core.activity.map
 
-import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.View
@@ -232,12 +231,11 @@ class TrainMapActivity : FragmentMapActivity() {
         loadActivityData()
     }
 
-    @SuppressLint("CheckResult")
     private fun loadActivityData() {
         // Load train location
-        val trainsSingle = trainService.trainLocations(line)
+        val trainsSingle = trainService.trainLocations(line).observeOn(AndroidSchedulers.mainThread())
         // Load pattern from local file
-        val positionsSingle = trainService.readPatterns(TrainLine.fromXmlString(line))
+        val positionsSingle = trainService.readPatterns(TrainLine.fromXmlString(line)).observeOn(AndroidSchedulers.mainThread())
 
         if (drawLine) {
             Singles.zip(trainsSingle, positionsSingle, zipper = { trains, positions ->

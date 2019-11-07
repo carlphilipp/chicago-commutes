@@ -193,6 +193,7 @@ object BusService {
                     }
             }
             .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.computation())
     }
 
     fun busForRouteId(busRouteId: String): Single<List<Bus>> {

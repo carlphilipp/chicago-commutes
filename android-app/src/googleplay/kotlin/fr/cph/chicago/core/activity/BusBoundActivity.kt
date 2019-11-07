@@ -187,6 +187,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
                 uiSettings.isMapToolbarEnabled = false
             }
             busService.loadBusPattern(busRouteId, bound)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { result ->
                         if (result.direction != "error") {
