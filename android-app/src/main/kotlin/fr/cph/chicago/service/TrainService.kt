@@ -45,6 +45,7 @@ import fr.cph.chicago.repository.TrainRepository
 import fr.cph.chicago.rx.RxUtil.handleListError
 import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
@@ -161,6 +162,7 @@ object TrainService {
                 trainEta.toList()
             }
             .onErrorReturn(handleListError())
+            .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun trainLocations(line: String): Single<List<Train>> {
