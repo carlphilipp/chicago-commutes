@@ -92,7 +92,6 @@ class FavoritesAdapter(private val context: Context) : RecyclerView.Adapter<Favo
         val favoriteImage = view.findViewById<ImageView>(R.id.favorites_icon)
         val detailsButton = view.findViewById<Button>(R.id.details_button)
         val mapButton = view.findViewById<Button>(R.id.view_map_button)
-        var isNew: Boolean = true
 
         init {
             this.stationNameTextView.setLines(1)
@@ -101,16 +100,13 @@ class FavoritesAdapter(private val context: Context) : RecyclerView.Adapter<Favo
     }
 
     private fun handleTrainStation(holder: FavoritesViewHolder, trainStation: TrainStation) {
-        if (holder.isNew) {
-            holder.favoriteImage.setImageResource(R.drawable.ic_train_white_24dp)
-            holder.stationNameTextView.text = trainStation.name
-            holder.detailsButton.setOnClickListener(TrainDetailsButtonOnClickListener(trainStation.id))
-            holder.detailsButton.isEnabled = true
-            holder.mapButton.text = App.instance.getString(R.string.favorites_view_trains)
-            holder.mapButton.setOnClickListener(TrainMapButtonOnClickListener(context, trainStation.lines))
+        holder.favoriteImage.setImageResource(R.drawable.ic_train_white_24dp)
+        holder.stationNameTextView.text = trainStation.name
+        holder.detailsButton.setOnClickListener(TrainDetailsButtonOnClickListener(trainStation.id))
+        holder.detailsButton.isEnabled = true
+        holder.mapButton.text = App.instance.getString(R.string.favorites_view_trains)
+        holder.mapButton.setOnClickListener(TrainMapButtonOnClickListener(context, trainStation.lines))
 
-            holder.isNew = false
-        }
 
         trainStation.lines.forEach { trainLine ->
             val etas = favorites.getTrainArrivalByLine(trainStation.id, trainLine)
@@ -125,13 +121,9 @@ class FavoritesAdapter(private val context: Context) : RecyclerView.Adapter<Favo
     }
 
     private fun handleBusRoute(holder: FavoritesViewHolder, busRoute: BusRoute) {
-        if (holder.isNew) {
-            holder.stationNameTextView.text = busRoute.id
-            holder.favoriteImage.setImageResource(R.drawable.ic_directions_bus_white_24dp)
-            holder.mapButton.text = App.instance.getString(R.string.favorites_view_buses)
-
-            holder.isNew = false
-        }
+        holder.stationNameTextView.text = busRoute.id
+        holder.favoriteImage.setImageResource(R.drawable.ic_directions_bus_white_24dp)
+        holder.mapButton.text = App.instance.getString(R.string.favorites_view_buses)
 
         val busDetailsDTOs = mutableListOf<BusDetailsDTO>()
         val busArrivalDTO = favorites.getBusArrivalsMapped(busRoute.id)
@@ -165,13 +157,9 @@ class FavoritesAdapter(private val context: Context) : RecyclerView.Adapter<Favo
     }
 
     private fun handleBikeStation(holder: FavoritesViewHolder, bikeStation: BikeStation) {
-        if (holder.isNew) {
-            holder.stationNameTextView.text = bikeStation.name
-            holder.favoriteImage.setImageResource(R.drawable.ic_directions_bike_white_24dp)
-            holder.mapButton.text = App.instance.getString(R.string.favorites_view_station)
-
-            holder.isNew = false
-        }
+        holder.stationNameTextView.text = bikeStation.name
+        holder.favoriteImage.setImageResource(R.drawable.ic_directions_bike_white_24dp)
+        holder.mapButton.text = App.instance.getString(R.string.favorites_view_station)
 
         holder.detailsButton.isEnabled = bikeStation.latitude != 0.0 && bikeStation.longitude != 0.0
         holder.detailsButton.setOnClickListener(BikeDetailsButtonOnClickListener(bikeStation))
