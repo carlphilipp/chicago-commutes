@@ -8,8 +8,8 @@ object Android {
 
 object Version {
     const val kotlin =                  "1.3.61"
-    const val android_tools_build =     "3.4.2"
-    const val realm =                   "5.15.1"
+    const val android_tools_build =     "3.5.3"
+    const val realm =                   "6.0.2"
 
     const val butterknife =             "10.2.0"
     const val commons_collections4 =    "4.4"
@@ -17,14 +17,14 @@ object Version {
     const val easypermissions =         "1.3.0"
     const val google_play_maps =        "17.0.0"
     const val google_play_location =    "17.0.0"
-    const val jackson =                 "2.10.0"
-    const val material =                "1.1.0-beta01"
+    const val jackson =                 "2.10.1"
+    const val material =                "1.1.0-beta02"
     const val mapbox =                  "8.4.0"
     const val mapbox_annotation =       "0.7.0"
     const val mapbox_marker_view =      "0.3.0"
     const val mapbox_location =         "0.11.0"
     const val photoview =               "v2.0.0"
-    const val rx =                      "2.2.13"
+    const val rx =                      "2.2.15"
     const val rx_android =              "2.1.1"
     const val rx_kotlin =               "2.4.0"
     const val re_kotlin =               "1.0.4"
