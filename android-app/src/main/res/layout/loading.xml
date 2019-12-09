@@ -21,7 +21,7 @@
     android:layout_height="match_parent">
 
     <RelativeLayout
-        android:id="@+id/loading_layout"
+        android:id="@+id/loadingLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="visible">

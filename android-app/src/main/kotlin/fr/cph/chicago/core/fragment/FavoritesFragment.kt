@@ -73,9 +73,9 @@ class FavoritesFragment : RefreshFragment(R.layout.fragment_main), StoreSubscrib
     lateinit var recyclerView: RecyclerView
     @BindView(R.id.floating_button)
     lateinit var floatingButton: FloatingActionButton
-    @BindView(R.id.failure)
+    @BindView(R.id.failureLayout)
     lateinit var failureLayout: RelativeLayout
-    @BindView(R.id.retry_button)
+    @BindView(R.id.retryButton)
     lateinit var retryButton: Button
 
     private lateinit var adapter: FavoritesAdapter

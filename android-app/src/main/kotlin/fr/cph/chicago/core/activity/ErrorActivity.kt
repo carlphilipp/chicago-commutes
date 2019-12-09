@@ -28,7 +28,6 @@ import android.widget.RelativeLayout
 import butterknife.BindView
 import butterknife.ButterKnife
 import fr.cph.chicago.R
-import fr.cph.chicago.service.PreferenceService
 
 /**
  * BusArrivalError activity that can be thrown from anywhere in the app
@@ -38,9 +37,9 @@ import fr.cph.chicago.service.PreferenceService
  */
 class ErrorActivity : Activity() {
 
-    @BindView(R.id.retry_button)
+    @BindView(R.id.retryButton)
     lateinit var button: Button
-    @BindView(R.id.failure)
+    @BindView(R.id.failureLayout)
     lateinit var failure: RelativeLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {

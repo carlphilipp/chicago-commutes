@@ -22,18 +22,18 @@ package fr.cph.chicago.core.activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.RelativeLayout
-import butterknife.BindView
+import androidx.appcompat.app.AppCompatActivity
 import fr.cph.chicago.R
 import fr.cph.chicago.R.string
-import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.redux.BaseAction
 import fr.cph.chicago.redux.DefaultSettingsAction
 import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.RealmConfig
+import kotlinx.android.synthetic.main.error.failureLayout
+import kotlinx.android.synthetic.main.error.retryButton
+import kotlinx.android.synthetic.main.loading.loadingLayout
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
@@ -44,24 +44,21 @@ import timber.log.Timber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BaseActivity : ButterKnifeActivity(R.layout.loading), StoreSubscriber<State> {
-
-    @BindView(R.id.loading_layout)
-    lateinit var loadingLayout: RelativeLayout
-    @BindView(R.id.failure)
-    lateinit var failureLayout: RelativeLayout
-    @BindView(R.id.retry_button)
-    lateinit var retryButton: Button
+class BaseActivity : AppCompatActivity(), StoreSubscriber<State> {
 
     private val realmConfig = RealmConfig
 
-    override fun create(savedInstanceState: Bundle?) {
-        store.subscribe(this)
-        setUpRealm()
-        retryButton.setOnClickListener {
-            if (failureLayout.visibility != View.GONE) failureLayout.visibility = View.GONE
-            if (loadingLayout.visibility != View.VISIBLE) loadingLayout.visibility = View.VISIBLE
-            store.dispatch(BaseAction())
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (!this.isFinishing) {
+            setContentView(R.layout.loading)
+            store.subscribe(this)
+            setUpRealm()
+            retryButton.setOnClickListener {
+                if (failureLayout.visibility != View.GONE) failureLayout.visibility = View.GONE
+                if (loadingLayout.visibility != View.VISIBLE) loadingLayout.visibility = View.VISIBLE
+                store.dispatch(BaseAction())
+            }
         }
     }
 

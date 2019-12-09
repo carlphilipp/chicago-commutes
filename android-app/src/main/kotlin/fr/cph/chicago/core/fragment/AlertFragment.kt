@@ -60,13 +60,13 @@ class AlertFragment : RefreshFragment(R.layout.fragment_filter_list), StoreSubsc
 
     @BindView(R.id.success)
     lateinit var successLayout: LinearLayout
-    @BindView(R.id.failure)
+    @BindView(R.id.failureLayout)
     lateinit var failureLayout: RelativeLayout
     @BindView(R.id.list)
     lateinit var listView: ListView
     @BindView(R.id.filter)
     lateinit var filter: EditText
-    @BindView(R.id.retry_button)
+    @BindView(R.id.retryButton)
     lateinit var retryButton: Button
 
     private lateinit var adapter: AlertAdapter
