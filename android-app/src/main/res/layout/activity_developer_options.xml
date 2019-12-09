@@ -36,7 +36,7 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/show_cache"
+                android:id="@+id/showCacheLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
@@ -60,7 +60,7 @@
                     android:textSize="14sp" />
 
                 <LinearLayout
-                    android:id="@+id/cache_details"
+                    android:id="@+id/cacheDetailsLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
