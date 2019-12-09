@@ -26,14 +26,10 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.FrameLayout
-import android.widget.ListView
 import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.appcompat.widget.Toolbar
-import butterknife.BindView
 import fr.cph.chicago.R
-import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.adapter.SearchAdapter
 import fr.cph.chicago.exception.BaseException
 import fr.cph.chicago.service.BikeService
@@ -41,23 +37,18 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Singles
+import kotlinx.android.synthetic.main.activity_search.searchListView
+import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
-class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
+class SearchActivity : AppCompatActivity() {
 
     companion object {
         private val trainService = TrainService
         private val busService = BusService
         private val bikeService = BikeService
     }
-
-    @BindView(R.id.container)
-    lateinit var container: FrameLayout
-    @BindView(R.id.search_list)
-    lateinit var listView: ListView
-    @BindView(R.id.toolbar)
-    lateinit var toolbar: Toolbar
 
     private lateinit var searchView: SearchView
     private lateinit var searchAdapter: SearchAdapter
@@ -68,26 +59,30 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
     private val supportActionBarNotNull: ActionBar
         get() = supportActionBar ?: throw BaseException()
 
-    override fun create(savedInstanceState: Bundle?) {
-        setupToolbar()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (!this.isFinishing) {
+            setContentView(R.layout.activity_search)
+            setupToolbar()
 
-        searchAdapter = SearchAdapter(this.baseContext)
-        handleIntent(intent)
+            searchAdapter = SearchAdapter(this.baseContext)
+            handleIntent(intent)
 
-        listView.adapter = searchAdapter
+            searchListView.adapter = searchAdapter
 
-        // Associate searchable configuration with the SearchView
-        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        searchView = SearchView(supportActionBarNotNull.themedContext)
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
-        searchView.isSubmitButtonEnabled = true
-        searchView.setIconifiedByDefault(false)
-        searchView.isIconified = false
-        searchView.maxWidth = 1000
-        searchView.isFocusable = true
-        searchView.isFocusableInTouchMode = true
-        searchView.requestFocus()
-        searchView.requestFocusFromTouch()
+            // Associate searchable configuration with the SearchView
+            val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+            searchView = SearchView(supportActionBarNotNull.themedContext)
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
+            searchView.isSubmitButtonEnabled = true
+            searchView.setIconifiedByDefault(false)
+            searchView.isIconified = false
+            searchView.maxWidth = 1000
+            searchView.isFocusable = true
+            searchView.isFocusableInTouchMode = true
+            searchView.requestFocus()
+            searchView.requestFocusFromTouch()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

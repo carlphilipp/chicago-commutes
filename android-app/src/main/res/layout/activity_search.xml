@@ -32,7 +32,7 @@
             android:layout_height="wrap_content" />
 
         <FrameLayout
-            android:id="@+id/container"
+            android:id="@+id/searchContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingStart="@dimen/list_view_padding_left"
@@ -41,7 +41,7 @@
             android:paddingBottom="@dimen/list_view_padding_bottom">
 
             <ListView
-                android:id="@+id/search_list"
+                android:id="@+id/searchListView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </FrameLayout>

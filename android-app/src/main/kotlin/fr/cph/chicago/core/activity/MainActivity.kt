@@ -56,7 +56,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     lateinit var drawer: NavigationView
     @BindView(R.id.drawer_layout)
     lateinit var drawerLayout: DrawerLayout
-    @BindView(R.id.container)
+    @BindView(R.id.searchContainer)
     lateinit var container: FrameLayout
 
     @BindString(R.string.bundle_title)
@@ -168,7 +168,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
             fragment = buildFragment(navigationId)
             transaction.add(fragment, navigationId.toString())
         }
-        transaction.replace(R.id.container, fragment).commit()
+        transaction.replace(R.id.searchContainer, fragment).commit()
         showHideActionBarMenu((fragment as Fragment).hasActionBar())
         container.animate().alpha(1.0f)
     }
