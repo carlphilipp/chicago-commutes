@@ -23,11 +23,9 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.RelativeLayout
-import butterknife.BindView
-import butterknife.ButterKnife
 import fr.cph.chicago.R
+import kotlinx.android.synthetic.main.error.failureLayout
+import kotlinx.android.synthetic.main.error.retryButton
 
 /**
  * BusArrivalError activity that can be thrown from anywhere in the app
@@ -37,18 +35,11 @@ import fr.cph.chicago.R
  */
 class ErrorActivity : Activity() {
 
-    @BindView(R.id.retryButton)
-    lateinit var button: Button
-    @BindView(R.id.failureLayout)
-    lateinit var failure: RelativeLayout
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.error)
-        ButterKnife.bind(this)
-
-        failure.visibility = View.VISIBLE
-        button.setOnClickListener {
+        failureLayout.visibility = View.VISIBLE
+        retryButton.setOnClickListener {
             val intent = Intent(this@ErrorActivity, BaseActivity::class.java)
             finish()
             startActivity(intent)
