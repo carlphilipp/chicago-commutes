@@ -28,14 +28,14 @@
         android:layout_height="wrap_content" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/activity_alerts_swipe_refresh_layout"
+        android:id="@+id/scrollView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:elevation="3dp"
         tools:targetApi="lollipop">
 
         <ListView
-            android:id="@+id/alert_route_list"
+            android:id="@+id/listView"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

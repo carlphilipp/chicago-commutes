@@ -22,42 +22,38 @@ package fr.cph.chicago.core.activity
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
-import android.widget.ListView
-import androidx.appcompat.widget.Toolbar
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import butterknife.BindView
+import androidx.appcompat.app.AppCompatActivity
 import fr.cph.chicago.R
-import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.adapter.AlertRouteAdapter
 import fr.cph.chicago.service.AlertService
 import fr.cph.chicago.util.Util
 import io.reactivex.android.schedulers.AndroidSchedulers
+import kotlinx.android.synthetic.main.activity_alert.listView
+import kotlinx.android.synthetic.main.activity_alert.scrollView
+import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
-class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
+class AlertActivity : AppCompatActivity() {
 
     companion object {
         private val alertService = AlertService
         private val util = Util
     }
 
-    @BindView(R.id.activity_alerts_swipe_refresh_layout)
-    lateinit var scrollView: SwipeRefreshLayout
-    @BindView(R.id.toolbar)
-    lateinit var toolbar: Toolbar
-    @BindView(R.id.alert_route_list)
-    lateinit var listView: ListView
-
     private lateinit var routeId: String
     private lateinit var title: String
 
-    override fun create(savedInstanceState: Bundle?) {
-        routeId = intent.getStringExtra("routeId") ?: StringUtils.EMPTY
-        title = intent.getStringExtra("title") ?: StringUtils.EMPTY
-        scrollView.setOnRefreshListener { this.refreshData() }
-        setToolBar()
-        refreshData()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (!this.isFinishing) {
+            setContentView(R.layout.activity_alert)
+            routeId = intent.getStringExtra("routeId") ?: StringUtils.EMPTY
+            title = intent.getStringExtra("title") ?: StringUtils.EMPTY
+            scrollView.setOnRefreshListener { this.refreshData() }
+            setToolBar()
+            refreshData()
+        }
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
