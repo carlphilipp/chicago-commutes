@@ -60,7 +60,7 @@
                     android:layout_height="wrap_content" />
 
                 <TextView
-                    android:id="@+id/activity_bike_station_value"
+                    android:id="@+id/bikeStationValue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -78,7 +78,7 @@
                     android:orientation="horizontal">
 
                     <RelativeLayout
-                        android:id="@+id/left_layout"
+                        android:id="@+id/leftLayout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
 
@@ -96,21 +96,21 @@
                     </RelativeLayout>
 
                     <RelativeLayout
-                        android:id="@+id/right_layout"
+                        android:id="@+id/rightLayout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="50dp">
 
                         <TextView
-                            android:id="@+id/activity_bike_available_bike_value"
+                            android:id="@+id/availableBikes"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
 
                         <TextView
-                            android:id="@+id/activity_bike_available_docks_value"
+                            android:id="@+id/availableDocks"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_below="@+id/activity_bike_available_bike_value" />
+                            android:layout_below="@+id/availableBikes" />
                     </RelativeLayout>
                 </LinearLayout>
             </LinearLayout>

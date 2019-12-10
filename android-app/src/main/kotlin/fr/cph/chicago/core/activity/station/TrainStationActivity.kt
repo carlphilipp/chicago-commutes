@@ -20,21 +20,17 @@
 package fr.cph.chicago.core.activity.station
 
 import android.content.res.ColorStateList
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils.TruncateAt
 import android.view.View
-import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatCheckBox
-import butterknife.BindDrawable
-import butterknife.BindView
 import fr.cph.chicago.R
+import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.listener.OpenMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.OpenMapOnClickListener
-import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Stop
 import fr.cph.chicago.core.model.TrainEta
@@ -49,6 +45,13 @@ import fr.cph.chicago.redux.TrainStationAction
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Color
+import kotlinx.android.synthetic.main.activity_header_fav_layout.favoritesImage
+import kotlinx.android.synthetic.main.activity_header_fav_layout.mapContainer
+import kotlinx.android.synthetic.main.activity_header_fav_layout.mapImage
+import kotlinx.android.synthetic.main.activity_header_fav_layout.walkContainer
+import kotlinx.android.synthetic.main.activity_station.stopsView
+import kotlinx.android.synthetic.main.activity_station_header_layout.streetViewImage
+import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
@@ -62,24 +65,14 @@ import java.util.Random
  */
 class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSubscriber<State> {
 
-    @BindView(android.R.id.content)
-    lateinit var viewGroup: ViewGroup
-    @BindView(R.id.map_container)
-    lateinit var mapContainer: LinearLayout
-    @BindView(R.id.walk_container)
-    lateinit var walkContainer: LinearLayout
-    @BindView(R.id.activity_train_station_details)
-    lateinit var stopsView: LinearLayout
-    @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
-    lateinit var arrowBackWhite: Drawable
-
     private lateinit var trainStation: TrainStation
 
     private var stationId: Int = 0
     private var ids: MutableMap<String, Int> = mutableMapOf()
     private var randomTrainLine = TrainLine.NA
 
-    override fun create(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         // Get train station id from bundle
         stationId = intent.extras?.getInt(getString(R.string.bundle_train_stationId), 0) ?: 0
         if (stationId != 0) {
@@ -152,7 +145,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
         stopByLines.entries.forEach { entry ->
             val line = entry.key
             val stops = entry.value
-            val lineTitleView = layoutInflater.inflate(R.layout.activity_station_line_title, viewGroup, false)
+            val lineTitleView = layoutInflater.inflate(R.layout.activity_station_line_title, stopsView, false)
 
             val testView = lineTitleView.findViewById<TextView>(R.id.train_line_title)
             testView.text = line.toStringWithLine()
@@ -189,7 +182,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
                     }
                 }
 
-                val arrivalTrainsLayout = view.findViewById<LinearLayout>(R.id.arrivals)
+                val arrivalTrainsLayout = view.findViewById<LinearLayout>(R.id.arrivalsTextView)
                 val id = util.generateViewId()
                 arrivalTrainsLayout.id = id
                 ids[line.toString() + "_" + stop.direction.toString()] = id
@@ -207,7 +200,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         stationId = savedInstanceState.getInt(getString(R.string.bundle_train_stationId))
-        position = savedInstanceState.getParcelable(getString(R.string.bundle_position)) as Position? ?:Position()
+        position = savedInstanceState.getParcelable(getString(R.string.bundle_position)) as Position? ?: Position()
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {

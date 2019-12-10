@@ -19,21 +19,13 @@
 
 package fr.cph.chicago.core.activity
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.WindowManager
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.ListView
-import androidx.appcompat.widget.Toolbar
-import butterknife.BindDrawable
-import butterknife.BindString
-import butterknife.BindView
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
@@ -42,7 +34,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.activity.station.BusStopActivity
 import fr.cph.chicago.core.adapter.BusBoundAdapter
 import fr.cph.chicago.core.model.BusPattern
@@ -51,6 +42,10 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.GoogleMapUtil
 import fr.cph.chicago.util.Util
 import io.reactivex.android.schedulers.AndroidSchedulers
+import kotlinx.android.synthetic.main.activity_bus_bound.bellowLayout
+import kotlinx.android.synthetic.main.activity_bus_bound.busFilter
+import kotlinx.android.synthetic.main.activity_bus_bound.listView
+import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
@@ -60,41 +55,12 @@ import timber.log.Timber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
+class BusBoundActivity : AppCompatActivity() {
 
     companion object {
         private val busService = BusService
         private val util: Util = Util
     }
-
-    @BindView(R.id.bellow)
-    lateinit var layout: LinearLayout
-    @BindView(R.id.toolbar)
-    lateinit var toolbar: Toolbar
-    @BindView(R.id.bus_filter)
-    lateinit var filter: EditText
-    @BindView(R.id.list)
-    lateinit var listView: ListView
-
-    @BindString(R.string.bundle_bus_stop_id)
-    lateinit var bundleBusStopId: String
-    @BindString(R.string.bundle_bus_route_id)
-    lateinit var bundleBusRouteId: String
-    @BindString(R.string.bundle_bus_bound)
-    lateinit var bundleBusBound: String
-    @BindString(R.string.bundle_bus_bound_title)
-    lateinit var bundleBusBoundTitle: String
-    @BindString(R.string.bundle_bus_stop_name)
-    lateinit var bundleBusStopName: String
-    @BindString(R.string.bundle_bus_route_name)
-    lateinit var bundleBusRouteName: String
-    @BindString(R.string.bundle_bus_latitude)
-    lateinit var bundleBusLatitude: String
-    @BindString(R.string.bundle_bus_longitude)
-    lateinit var bundleBusLongitude: String
-
-    @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
-    lateinit var arrowBackWhite: Drawable
 
     private lateinit var mapFragment: SupportMapFragment
     private lateinit var busRouteId: String
@@ -104,77 +70,80 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
     private lateinit var adapter: BusBoundAdapter
     private var busStops: List<BusStop> = listOf()
 
-    @SuppressLint("CheckResult")
-    override fun create(savedInstanceState: Bundle?) {
-        busRouteId = intent.getStringExtra(bundleBusRouteId) ?: StringUtils.EMPTY
-        busRouteName = intent.getStringExtra(bundleBusRouteName) ?: StringUtils.EMPTY
-        bound = intent.getStringExtra(bundleBusBound) ?: StringUtils.EMPTY
-        boundTitle = intent.getStringExtra(bundleBusBoundTitle) ?: StringUtils.EMPTY
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (!this.isFinishing) {
+            setContentView(R.layout.activity_bus_bound)
+            busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
+            busRouteName = intent.getStringExtra(getString(R.string.bundle_bus_route_name)) ?: StringUtils.EMPTY
+            bound = intent.getStringExtra(getString(R.string.bundle_bus_bound)) ?: StringUtils.EMPTY
+            boundTitle = intent.getStringExtra(getString(R.string.bundle_bus_bound_title)) ?: StringUtils.EMPTY
 
-        mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+            mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
 
-        adapter = BusBoundAdapter()
-        listView.setOnItemClickListener { _, _, position, _ ->
-            val busStop = adapter.getItem(position) as BusStop
-            val intent = Intent(applicationContext, BusStopActivity::class.java)
+            adapter = BusBoundAdapter()
+            listView.setOnItemClickListener { _, _, position, _ ->
+                val busStop = adapter.getItem(position) as BusStop
+                val intent = Intent(applicationContext, BusStopActivity::class.java)
 
-            val extras = with(Bundle()) {
-                putInt(bundleBusStopId, busStop.id)
-                putString(bundleBusStopName, busStop.name)
-                putString(bundleBusRouteId, busRouteId)
-                putString(bundleBusRouteName, busRouteName)
-                putString(bundleBusBound, bound)
-                putString(bundleBusBoundTitle, boundTitle)
-                putDouble(bundleBusLatitude, busStop.position.latitude)
-                putDouble(bundleBusLongitude, busStop.position.longitude)
-                this
+                val extras = with(Bundle()) {
+                    putInt(getString(R.string.bundle_bus_stop_id), busStop.id)
+                    putString(getString(R.string.bundle_bus_stop_name), busStop.name)
+                    putString(getString(R.string.bundle_bus_route_id), busRouteId)
+                    putString(getString(R.string.bundle_bus_route_name), busRouteName)
+                    putString(getString(R.string.bundle_bus_bound), bound)
+                    putString(getString(R.string.bundle_bus_bound_title), boundTitle)
+                    putDouble(getString(R.string.bundle_bus_latitude), busStop.position.latitude)
+                    putDouble(getString(R.string.bundle_bus_longitude), busStop.position.longitude)
+                    this
+                }
+
+                intent.putExtras(extras)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
             }
+            listView.adapter = adapter
 
-            intent.putExtras(extras)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)
-        }
-        listView.adapter = adapter
+            busFilter.addTextChangedListener(object : TextWatcher {
+                private var busStopsFiltered: MutableList<BusStop> = mutableListOf()
 
-        filter.addTextChangedListener(object : TextWatcher {
-            private var busStopsFiltered: MutableList<BusStop> = mutableListOf()
+                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+                    busStopsFiltered = mutableListOf()
+                }
 
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-                busStopsFiltered = mutableListOf()
-            }
+                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                    busStops
+                        .filter { busStop -> StringUtils.containsIgnoreCase(busStop.name, s) }
+                        .forEach { busStopsFiltered.add(it) }
+                }
 
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                busStops
-                    .filter { busStop -> StringUtils.containsIgnoreCase(busStop.name, s) }
-                    .forEach { busStopsFiltered.add(it) }
-            }
-
-            override fun afterTextChanged(s: Editable) {
-                adapter.updateBusStops(busStopsFiltered)
-                adapter.notifyDataSetChanged()
-            }
-        })
-
-        toolbar.title = "$busRouteId - $boundTitle"
-
-        toolbar.navigationIcon = arrowBackWhite
-        toolbar.setOnClickListener { finish() }
-
-        busService.loadAllBusStopsForRouteBound(busRouteId, bound)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { result ->
-                    busStops = result
-                    adapter.updateBusStops(result)
+                override fun afterTextChanged(s: Editable) {
+                    adapter.updateBusStops(busStopsFiltered)
                     adapter.notifyDataSetChanged()
-                },
-                { throwable ->
-                    Timber.e(throwable, "Error while getting bus stops for route bound")
-                    util.showOopsSomethingWentWrong(listView)
-                })
+                }
+            })
 
-        // Preventing keyboard from moving background when showing up
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+            toolbar.title = "$busRouteId - $boundTitle"
+
+            toolbar.navigationIcon = getDrawable(R.drawable.ic_arrow_back_white_24dp)
+            toolbar.setOnClickListener { finish() }
+
+            busService.loadAllBusStopsForRouteBound(busRouteId, bound)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { result ->
+                        busStops = result
+                        adapter.updateBusStops(result)
+                        adapter.notifyDataSetChanged()
+                    },
+                    { throwable ->
+                        Timber.e(throwable, "Error while getting bus stops for route bound")
+                        util.showOopsSomethingWentWrong(listView)
+                    })
+
+            // Preventing keyboard from moving background when showing up
+            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+        }
     }
 
     public override fun onResume() {
@@ -202,11 +171,11 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
                             }
                             drawPattern(googleMap, result)
                         } else {
-                            util.showSnackBar(this.layout, R.string.message_error_could_not_load_path)
+                            util.showSnackBar(bellowLayout, R.string.message_error_could_not_load_path)
                         }
                     },
                     { throwable ->
-                        util.handleConnectOrParserException(throwable, layout)
+                        util.handleConnectOrParserException(throwable, bellowLayout)
                         Timber.e(throwable, "Error while getting bus patterns")
                     })
         }
@@ -223,17 +192,17 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        busRouteId = savedInstanceState.getString(bundleBusRouteId) ?: StringUtils.EMPTY
-        busRouteName = savedInstanceState.getString(bundleBusRouteName) ?: StringUtils.EMPTY
-        bound = savedInstanceState.getString(bundleBusBound) ?: StringUtils.EMPTY
-        boundTitle = savedInstanceState.getString(bundleBusBoundTitle) ?: StringUtils.EMPTY
+        busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
+        busRouteName = savedInstanceState.getString(getString(R.string.bundle_bus_route_name)) ?: StringUtils.EMPTY
+        bound = savedInstanceState.getString(getString(R.string.bundle_bus_bound)) ?: StringUtils.EMPTY
+        boundTitle = savedInstanceState.getString(getString(R.string.bundle_bus_bound_title)) ?: StringUtils.EMPTY
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        if (::busRouteId.isInitialized) savedInstanceState.putString(bundleBusRouteId, busRouteId)
-        if (::busRouteName.isInitialized) savedInstanceState.putString(bundleBusRouteName, busRouteName)
-        if (::bound.isInitialized) savedInstanceState.putString(bundleBusBound, bound)
-        if (::boundTitle.isInitialized) savedInstanceState.putString(bundleBusBoundTitle, boundTitle)
+        if (::busRouteId.isInitialized) savedInstanceState.putString(getString(R.string.bundle_bus_route_id), busRouteId)
+        if (::busRouteName.isInitialized) savedInstanceState.putString(getString(R.string.bundle_bus_route_name), busRouteName)
+        if (::bound.isInitialized) savedInstanceState.putString(getString(R.string.bundle_bus_bound), bound)
+        if (::boundTitle.isInitialized) savedInstanceState.putString(getString(R.string.bundle_bus_bound_title), boundTitle)
         super.onSaveInstanceState(savedInstanceState)
     }
 }

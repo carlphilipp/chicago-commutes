@@ -73,6 +73,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_main.drawer
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import timber.log.Timber
@@ -281,7 +282,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
     }
 
     private fun displayErrorMessage() {
-        util.showSnackBar((activity as MainActivity).drawer, R.string.message_cant_find_location)
+        util.showSnackBar(drawer, R.string.message_cant_find_location)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {

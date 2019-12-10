@@ -23,23 +23,25 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
-import androidx.appcompat.widget.Toolbar
+import androidx.appcompat.app.AppCompatActivity
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.Color
 import fr.cph.chicago.util.Util
 import io.reactivex.android.schedulers.AndroidSchedulers
+import kotlinx.android.synthetic.main.activity_header_fav_layout.favoritesImage
+import kotlinx.android.synthetic.main.activity_header_fav_layout.favoritesImageContainer
+import kotlinx.android.synthetic.main.activity_station_header_layout.streetViewImage
+import kotlinx.android.synthetic.main.activity_station_header_layout.streetViewProgressBar
+import kotlinx.android.synthetic.main.activity_station_header_layout.streetViewText
+import kotlinx.android.synthetic.main.toolbar.toolbar
 import timber.log.Timber
 
-abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentView) {
+abstract class StationActivity(private val contentView: Int) : AppCompatActivity() {
 
     companion object {
         private const val TAG_ERROR = "error"
@@ -47,35 +49,27 @@ abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentVi
         private const val TAG_STREET_VIEW = "streetview"
         private val googleStreetClient = GoogleStreetClient
         @JvmStatic
+        protected val preferenceService = PreferenceService
+        @JvmStatic
         protected val util = Util
     }
 
-    @BindView(R.id.toolbar)
-    lateinit var toolbar: Toolbar
-    @BindView(R.id.activity_station_swipe_refresh_layout)
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
-    @BindView(R.id.favorites_container)
-    lateinit var favoritesImageContainer: LinearLayout
-    @BindView(R.id.activity_station_streetview_image)
-    lateinit var streetViewImage: ImageView
-    @BindView(R.id.street_view_text)
-    lateinit var streetViewText: TextView
-    @BindView(R.id.street_view_progress_bar)
-    lateinit var streetViewProgressBar: ProgressBar
-    @BindView(R.id.activity_favorite_star)
-    lateinit var favoritesImage: ImageView
-    @BindView(R.id.activity_map_image)
-    lateinit var mapImage: ImageView
 
     protected var position: Position = Position()
     protected var applyFavorite: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        swipeRefreshLayout.setOnRefreshListener { refresh() }
-        swipeRefreshLayout.setColorSchemeColors(preferenceService.getColorSchemeColors(resources.configuration))
-        swipeRefreshLayout.setProgressBackgroundColorSchemeResource(preferenceService.getProgressBackgroundColorSchemeResource(resources.configuration))
-        favoritesImageContainer.setOnClickListener { switchFavorite() }
+        if (!this.isFinishing) {
+            setContentView(contentView)
+            swipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.activity_station_swipe_refresh_layout).apply {
+                setOnRefreshListener { refresh() }
+                setColorSchemeColors(preferenceService.getColorSchemeColors(resources.configuration))
+                setProgressBackgroundColorSchemeResource(preferenceService.getProgressBackgroundColorSchemeResource(resources.configuration))
+            }
+            favoritesImageContainer.setOnClickListener { switchFavorite() }
+        }
     }
 
     fun loadGoogleStreetImage(position: Position) {

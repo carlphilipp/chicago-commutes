@@ -22,10 +22,8 @@ package fr.cph.chicago.core.activity.station
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
-import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
@@ -42,10 +40,21 @@ import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.Color
-import fr.cph.chicago.util.LayoutUtil
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_bus.arrivalsTextView
+import kotlinx.android.synthetic.main.activity_bus.busRouteNameView
+import kotlinx.android.synthetic.main.activity_bus.destinationTextView
+import kotlinx.android.synthetic.main.activity_bus.leftLayout
+import kotlinx.android.synthetic.main.activity_bus.rightLayout
+import kotlinx.android.synthetic.main.activity_header_fav_layout.favoritesImage
+import kotlinx.android.synthetic.main.activity_header_fav_layout.mapContainer
+import kotlinx.android.synthetic.main.activity_header_fav_layout.mapImage
+import kotlinx.android.synthetic.main.activity_header_fav_layout.walkContainer
+import kotlinx.android.synthetic.main.activity_station_header_layout.streetViewImage
+import kotlinx.android.synthetic.main.activity_station_header_layout.streetViewProgressBar
+import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
@@ -59,24 +68,8 @@ import timber.log.Timber
 class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<State> {
 
     companion object {
-        private val layoutUtil = LayoutUtil
         private val busService = BusService
     }
-
-    @BindView(R.id.left_layout)
-    lateinit var leftLayout: RelativeLayout
-    @BindView(R.id.right_layout)
-    lateinit var rightLayout: RelativeLayout
-    @BindView(R.id.walk_container)
-    lateinit var walkContainer: LinearLayout
-    @BindView(R.id.map_container)
-    lateinit var mapContainer: LinearLayout
-    @BindView(R.id.activity_bus_station_value)
-    lateinit var busRouteNameView: TextView
-    @BindView(R.id.destination)
-    lateinit var destinationTextView: TextView
-    @BindView(R.id.arrivals)
-    lateinit var arrivalsTextView: TextView
 
     private lateinit var busRouteId: String
     private lateinit var bound: String
@@ -86,7 +79,8 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
     private lateinit var busRouteName: String
     private lateinit var action: BusStopArrivalsAction
 
-    override fun create(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         busStopId = intent.getIntExtra(getString(R.string.bundle_bus_stop_id), 0)
         busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
         bound = intent.getStringExtra(getString(R.string.bundle_bus_bound)) ?: StringUtils.EMPTY

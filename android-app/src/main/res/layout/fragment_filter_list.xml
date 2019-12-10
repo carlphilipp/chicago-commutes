@@ -55,7 +55,7 @@
                 android:paddingEnd="@dimen/activity_train_line_padding_right" />
 
             <ListView
-                android:id="@+id/list"
+                android:id="@+id/listView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="true"

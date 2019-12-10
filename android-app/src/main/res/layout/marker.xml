@@ -38,7 +38,7 @@
         android:textStyle="bold" />
 
     <ListView
-        android:id="@+id/arrivals"
+        android:id="@+id/arrivalsTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/title"

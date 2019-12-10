@@ -40,6 +40,7 @@ import fr.cph.chicago.redux.AlertAction
 import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
+import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
@@ -62,7 +63,7 @@ class AlertFragment : RefreshFragment(R.layout.fragment_filter_list), StoreSubsc
     lateinit var successLayout: LinearLayout
     @BindView(R.id.failureLayout)
     lateinit var failureLayout: RelativeLayout
-    @BindView(R.id.list)
+    @BindView(R.id.listView)
     lateinit var listView: ListView
     @BindView(R.id.filter)
     lateinit var filter: EditText
@@ -76,7 +77,7 @@ class AlertFragment : RefreshFragment(R.layout.fragment_filter_list), StoreSubsc
         adapter = AlertAdapter()
         listView.adapter = adapter
         swipeRefreshLayout.setOnRefreshListener { startRefreshing() }
-        (activity as MainActivity).toolbar.setOnMenuItemClickListener { startRefreshing(); true }
+        (activity as MainActivity).tb.setOnMenuItemClickListener { startRefreshing(); true }
         retryButton.setOnClickListener { startRefreshing() }
     }
 

@@ -60,7 +60,7 @@
                     android:layout_height="wrap_content" />
 
                 <TextView
-                    android:id="@+id/activity_bus_station_value"
+                    android:id="@+id/busRouteNameView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -79,12 +79,12 @@
                     android:orientation="horizontal">
 
                     <RelativeLayout
-                        android:id="@+id/left_layout"
+                        android:id="@+id/leftLayout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
 
                         <TextView
-                            android:id="@+id/destination"
+                            android:id="@+id/destinationTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
@@ -92,13 +92,13 @@
                     </RelativeLayout>
 
                     <RelativeLayout
-                        android:id="@+id/right_layout"
+                        android:id="@+id/rightLayout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="50dp">
 
                         <TextView
-                            android:id="@+id/arrivals"
+                            android:id="@+id/arrivalsTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:ellipsize="end"

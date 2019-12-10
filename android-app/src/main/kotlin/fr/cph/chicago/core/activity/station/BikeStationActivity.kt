@@ -20,9 +20,6 @@
 package fr.cph.chicago.core.activity.station
 
 import android.os.Bundle
-import android.widget.LinearLayout
-import android.widget.TextView
-import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.listener.OpenMapDirectionOnClickListener
@@ -36,6 +33,15 @@ import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.util.Color
+import kotlinx.android.synthetic.main.activity_bike_station.availableBikes
+import kotlinx.android.synthetic.main.activity_bike_station.availableDocks
+import kotlinx.android.synthetic.main.activity_bike_station.bikeStationValue
+import kotlinx.android.synthetic.main.activity_header_fav_layout.favoritesImage
+import kotlinx.android.synthetic.main.activity_header_fav_layout.mapContainer
+import kotlinx.android.synthetic.main.activity_header_fav_layout.mapImage
+import kotlinx.android.synthetic.main.activity_header_fav_layout.walkContainer
+import kotlinx.android.synthetic.main.activity_station_header_layout.streetViewImage
+import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
@@ -47,20 +53,10 @@ import timber.log.Timber
  */
 class BikeStationActivity : StationActivity(R.layout.activity_bike_station), StoreSubscriber<State> {
 
-    @BindView(R.id.map_container)
-    lateinit var mapContainer: LinearLayout
-    @BindView(R.id.walk_container)
-    lateinit var walkContainer: LinearLayout
-    @BindView(R.id.activity_bike_station_value)
-    lateinit var bikeStationValue: TextView
-    @BindView(R.id.activity_bike_available_bike_value)
-    lateinit var availableBikes: TextView
-    @BindView(R.id.activity_bike_available_docks_value)
-    lateinit var availableDocks: TextView
-
     private lateinit var bikeStation: BikeStation
 
-    override fun create(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         bikeStation = intent.extras?.getParcelable(getString(R.string.bundle_bike_station))
             ?: BikeStation.buildUnknownStation()
         position = Position(bikeStation.latitude, bikeStation.longitude)

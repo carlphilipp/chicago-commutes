@@ -100,7 +100,7 @@ class FavoritesFragment : RefreshFragment(R.layout.fragment_main), StoreSubscrib
         })
         swipeRefreshLayout.setOnRefreshListener { reloadData() }
         retryButton.setOnClickListener { reloadData() }
-        (activity as MainActivity).toolbar.setOnMenuItemClickListener { reloadData(); true }
+        (activity as MainActivity).tb.setOnMenuItemClickListener { reloadData(); true }
 
         startRefreshTask()
         rateUtil.displayRateSnackBarIfNeeded(swipeRefreshLayout, activity!!)

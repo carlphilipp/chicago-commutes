@@ -36,7 +36,7 @@
         tools:context="fr.cph.chicago.core.activity.BusBoundActivity" />
 
     <LinearLayout
-        android:id="@+id/bellow"
+        android:id="@+id/bellowLayout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
@@ -50,7 +50,7 @@
         android:visibility="visible">
 
         <EditText
-            android:id="@+id/bus_filter"
+            android:id="@+id/busFilter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/bus_fragment_filter"
@@ -59,7 +59,7 @@
             android:paddingEnd="@dimen/activity_train_line_padding_right" />
 
         <ListView
-            android:id="@+id/list"
+            android:id="@+id/listView"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </LinearLayout>

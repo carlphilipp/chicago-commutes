@@ -21,23 +21,15 @@ package fr.cph.chicago.core.activity
 
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.WindowManager
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.ListView
-import androidx.appcompat.widget.Toolbar
-import butterknife.BindDrawable
-import butterknife.BindString
-import butterknife.BindView
+import androidx.appcompat.app.AppCompatActivity
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
-import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.plugins.annotation.LineManager
@@ -45,7 +37,6 @@ import com.mapbox.mapboxsdk.plugins.annotation.LineOptions
 import com.mapbox.mapboxsdk.utils.ColorUtils
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.activity.station.BusStopActivity
 import fr.cph.chicago.core.adapter.BusBoundAdapter
 import fr.cph.chicago.core.model.BusPattern
@@ -58,6 +49,11 @@ import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.Util
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.foss.activity_bus_bound_mapbox.bellowLayout
+import kotlinx.android.synthetic.foss.activity_bus_bound_mapbox.busFilter
+import kotlinx.android.synthetic.foss.activity_bus_bound_mapbox.listView
+import kotlinx.android.synthetic.foss.activity_bus_bound_mapbox.mapView
+import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
@@ -67,7 +63,7 @@ import timber.log.Timber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox), OnMapReadyCallback {
+class BusBoundActivity : AppCompatActivity(), OnMapReadyCallback {
 
     companion object {
         private val busService = BusService
@@ -75,37 +71,6 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
         private val mapUtil = MapUtil
     }
 
-    @BindView(R.id.bellow)
-    lateinit var layout: LinearLayout
-    @BindView(R.id.toolbar)
-    lateinit var toolbar: Toolbar
-    @BindView(R.id.bus_filter)
-    lateinit var filter: EditText
-    @BindView(R.id.list)
-    lateinit var listView: ListView
-
-    @BindString(R.string.bundle_bus_stop_id)
-    lateinit var bundleBusStopId: String
-    @BindString(R.string.bundle_bus_route_id)
-    lateinit var bundleBusRouteId: String
-    @BindString(R.string.bundle_bus_bound)
-    lateinit var bundleBusBound: String
-    @BindString(R.string.bundle_bus_bound_title)
-    lateinit var bundleBusBoundTitle: String
-    @BindString(R.string.bundle_bus_stop_name)
-    lateinit var bundleBusStopName: String
-    @BindString(R.string.bundle_bus_route_name)
-    lateinit var bundleBusRouteName: String
-    @BindString(R.string.bundle_bus_latitude)
-    lateinit var bundleBusLatitude: String
-    @BindString(R.string.bundle_bus_longitude)
-    lateinit var bundleBusLongitude: String
-    @BindView(R.id.mapView)
-    @JvmField
-    var mapView: MapView? = null
-
-    @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
-    lateinit var arrowBackWhite: Drawable
     private var lineManager: LineManager? = null
 
     private lateinit var busRouteId: String
@@ -118,78 +83,78 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
     public override fun onCreate(savedInstanceState: Bundle?) {
         Mapbox.getInstance(this, getString(R.string.mapbox_token))
         super.onCreate(savedInstanceState)
-    }
+        if (!this.isFinishing) {
+            setContentView(R.layout.activity_bus_bound_mapbox)
+            mapView?.onCreate(savedInstanceState)
+            busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
+            busRouteName = intent.getStringExtra(getString(R.string.bundle_bus_route_name)) ?: StringUtils.EMPTY
+            bound = intent.getStringExtra(getString(R.string.bundle_bus_bound)) ?: StringUtils.EMPTY
+            boundTitle = intent.getStringExtra(getString(R.string.bundle_bus_bound_title)) ?: StringUtils.EMPTY
 
-    override fun create(savedInstanceState: Bundle?) {
-        mapView?.onCreate(savedInstanceState)
-        busRouteId = intent.getStringExtra(bundleBusRouteId) ?: StringUtils.EMPTY
-        busRouteName = intent.getStringExtra(bundleBusRouteName) ?: StringUtils.EMPTY
-        bound = intent.getStringExtra(bundleBusBound) ?: StringUtils.EMPTY
-        boundTitle = intent.getStringExtra(bundleBusBoundTitle) ?: StringUtils.EMPTY
+            mapView?.getMapAsync(this)
 
-        mapView?.getMapAsync(this)
+            busBoundAdapter = BusBoundAdapter()
+            listView.setOnItemClickListener { _, _, position, _ ->
+                val busStop = busBoundAdapter.getItem(position) as BusStop
+                val intent = Intent(applicationContext, BusStopActivity::class.java)
 
-        busBoundAdapter = BusBoundAdapter()
-        listView.setOnItemClickListener { _, _, position, _ ->
-            val busStop = busBoundAdapter.getItem(position) as BusStop
-            val intent = Intent(applicationContext, BusStopActivity::class.java)
+                val extras = with(Bundle()) {
+                    putInt(getString(R.string.bundle_bus_stop_id), busStop.id)
+                    putString(getString(R.string.bundle_bus_stop_name), busStop.name)
+                    putString(getString(R.string.bundle_bus_route_id), busRouteId)
+                    putString(getString(R.string.bundle_bus_route_name), busRouteName)
+                    putString(getString(R.string.bundle_bus_bound), bound)
+                    putString(getString(R.string.bundle_bus_bound_title), boundTitle)
+                    putDouble(getString(R.string.bundle_bus_latitude), busStop.position.latitude)
+                    putDouble(getString(R.string.bundle_bus_longitude), busStop.position.longitude)
+                    this
+                }
 
-            val extras = with(Bundle()) {
-                putInt(bundleBusStopId, busStop.id)
-                putString(bundleBusStopName, busStop.name)
-                putString(bundleBusRouteId, busRouteId)
-                putString(bundleBusRouteName, busRouteName)
-                putString(bundleBusBound, bound)
-                putString(bundleBusBoundTitle, boundTitle)
-                putDouble(bundleBusLatitude, busStop.position.latitude)
-                putDouble(bundleBusLongitude, busStop.position.longitude)
-                this
+                intent.putExtras(extras)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
             }
+            listView.adapter = busBoundAdapter
 
-            intent.putExtras(extras)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)
+            busFilter.addTextChangedListener(object : TextWatcher {
+                private var busStopsFiltered: MutableList<BusStop> = mutableListOf()
+
+                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+                    busStopsFiltered = mutableListOf()
+                }
+
+                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                    busStops
+                        .filter { busStop -> StringUtils.containsIgnoreCase(busStop.name, s) }
+                        .forEach { busStopsFiltered.add(it) }
+                }
+
+                override fun afterTextChanged(s: Editable) {
+                    busBoundAdapter.updateBusStops(busStopsFiltered)
+                    busBoundAdapter.notifyDataSetChanged()
+                }
+            })
+
+            toolbar.title = "$busRouteId - $boundTitle"
+
+            toolbar.navigationIcon = getDrawable(R.drawable.ic_arrow_back_white_24dp)
+            toolbar.setOnClickListener { finish() }
+
+            busService.loadAllBusStopsForRouteBound(busRouteId, bound)
+                .doOnSuccess { busStops ->
+                    this.busStops = busStops
+                    busBoundAdapter.updateBusStops(busStops)
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { busBoundAdapter.notifyDataSetChanged() },
+                    { error ->
+                        Timber.e(error)
+                        util.showOopsSomethingWentWrong(listView)
+                    })
+            // Preventing keyboard from moving background when showing up
+            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         }
-        listView.adapter = busBoundAdapter
-
-        filter.addTextChangedListener(object : TextWatcher {
-            private var busStopsFiltered: MutableList<BusStop> = mutableListOf()
-
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-                busStopsFiltered = mutableListOf()
-            }
-
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                busStops
-                    .filter { busStop -> StringUtils.containsIgnoreCase(busStop.name, s) }
-                    .forEach { busStopsFiltered.add(it) }
-            }
-
-            override fun afterTextChanged(s: Editable) {
-                busBoundAdapter.updateBusStops(busStopsFiltered)
-                busBoundAdapter.notifyDataSetChanged()
-            }
-        })
-
-        toolbar.title = "$busRouteId - $boundTitle"
-
-        toolbar.navigationIcon = arrowBackWhite
-        toolbar.setOnClickListener { finish() }
-
-        busService.loadAllBusStopsForRouteBound(busRouteId, bound)
-            .doOnSuccess { busStops ->
-                this.busStops = busStops
-                busBoundAdapter.updateBusStops(busStops)
-            }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { busBoundAdapter.notifyDataSetChanged() },
-                { error ->
-                    Timber.e(error)
-                    util.showOopsSomethingWentWrong(listView)
-                })
-        // Preventing keyboard from moving background when showing up
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     }
 
     override fun onMapReady(mapBox: MapboxMap) {
@@ -220,8 +185,8 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
                     { error ->
                         Timber.e(error)
                         when (error) {
-                            is CtaException -> util.showSnackBar(this.layout, R.string.message_error_could_not_load_path)
-                            else -> util.handleConnectOrParserException(error, layout)
+                            is CtaException -> util.showSnackBar(bellowLayout, R.string.message_error_could_not_load_path)
+                            else -> util.handleConnectOrParserException(error, bellowLayout)
                         }
                     })
         }
@@ -234,17 +199,17 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        busRouteId = savedInstanceState.getString(bundleBusRouteId) ?: StringUtils.EMPTY
-        busRouteName = savedInstanceState.getString(bundleBusRouteName) ?: StringUtils.EMPTY
-        bound = savedInstanceState.getString(bundleBusBound) ?: StringUtils.EMPTY
-        boundTitle = savedInstanceState.getString(bundleBusBoundTitle) ?: StringUtils.EMPTY
+        busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
+        busRouteName = savedInstanceState.getString(getString(R.string.bundle_bus_route_name)) ?: StringUtils.EMPTY
+        bound = savedInstanceState.getString(getString(R.string.bundle_bus_bound)) ?: StringUtils.EMPTY
+        boundTitle = savedInstanceState.getString(getString(R.string.bundle_bus_bound_title)) ?: StringUtils.EMPTY
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.putString(bundleBusRouteId, busRouteId)
-        savedInstanceState.putString(bundleBusRouteName, busRouteName)
-        savedInstanceState.putString(bundleBusBound, bound)
-        savedInstanceState.putString(bundleBusBoundTitle, boundTitle)
+        savedInstanceState.putString(getString(R.string.bundle_bus_route_id), busRouteId)
+        savedInstanceState.putString(getString(R.string.bundle_bus_route_name), busRouteName)
+        savedInstanceState.putString(getString(R.string.bundle_bus_bound), bound)
+        savedInstanceState.putString(getString(R.string.bundle_bus_bound_title), boundTitle)
         mapView?.onSaveInstanceState(savedInstanceState)
         super.onSaveInstanceState(savedInstanceState)
     }

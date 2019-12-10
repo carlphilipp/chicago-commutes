@@ -26,105 +26,83 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.FrameLayout
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
-import butterknife.BindString
-import butterknife.BindView
 import com.google.android.material.navigation.NavigationView
 import fr.cph.chicago.Constants.SELECTED_ID
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.fragment.Fragment
 import fr.cph.chicago.core.fragment.buildFragment
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.util.RateUtil
+import kotlinx.android.synthetic.main.activity_main.drawer
+import kotlinx.android.synthetic.main.activity_main.drawerLayout
+import kotlinx.android.synthetic.main.activity_main.searchContainer
+import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 
-class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     companion object {
         private val rateUtil: RateUtil = RateUtil
     }
-
-    @BindView(R.id.toolbar)
-    lateinit var toolbar: Toolbar
-    @BindView(R.id.main_drawer)
-    lateinit var drawer: NavigationView
-    @BindView(R.id.drawer_layout)
-    lateinit var drawerLayout: DrawerLayout
-    @BindView(R.id.searchContainer)
-    lateinit var container: FrameLayout
-
-    @BindString(R.string.bundle_title)
-    lateinit var bundleTitle: String
-    @BindString(R.string.favorites)
-    lateinit var favorites: String
-    @BindString(R.string.train)
-    lateinit var train: String
-    @BindString(R.string.bus)
-    lateinit var bus: String
-    @BindString(R.string.divvy)
-    lateinit var divvy: String
-    @BindString(R.string.nearby)
-    lateinit var nearby: String
-    @BindString(R.string.cta_map)
-    lateinit var ctaMap: String
-    @BindString(R.string.cta_alert)
-    lateinit var ctaAlert: String
-    @BindString(R.string.settings)
-    lateinit var settings: String
 
     private var currentPosition: Int = 0
 
     private lateinit var drawerToggle: ActionBarDrawerToggle
     private lateinit var favoriteMenuItem: MenuItem
     private lateinit var inputMethodManager: InputMethodManager
+    lateinit var tb: Toolbar
 
     private var title: String? = null
 
-    override fun create(savedInstanceState: Bundle?) {
-        if (store.state.ctaTrainKey == StringUtils.EMPTY) {
-            // Start error activity when state is empty (usually when android restart the activity on error)
-            App.startErrorActivity()
-            finish()
-        }
-        currentPosition = when {
-            savedInstanceState != null -> savedInstanceState.getInt(SELECTED_ID, R.id.navigation_favorites)
-            intent.extras != null -> intent.extras!!.getInt(SELECTED_ID, R.id.navigation_favorites)
-            else -> R.id.navigation_favorites
-        }
-        title = when {
-            savedInstanceState != null -> savedInstanceState.getString(bundleTitle, favorites)
-            intent.extras != null -> intent.extras!!.getString(bundleTitle, favorites)
-            else -> favorites
-        }
-        drawer.setNavigationItemSelectedListener(this)
-        favoriteMenuItem = drawer.menu.getItem(0)
-        if (currentPosition == R.id.navigation_favorites) {
-            favoriteMenuItem.isChecked = true
-        }
-        toolbar.inflateMenu(R.menu.main)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            toolbar.elevation = 4f
-        }
-
-        inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        drawerToggle = object : ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
-            override fun onDrawerClosed(drawerView: View) {
-                super.onDrawerClosed(drawerView)
-                updateFragment(currentPosition)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (!this.isFinishing) {
+            setContentView(R.layout.activity_main)
+            this.tb = toolbar
+            if (store.state.ctaTrainKey == StringUtils.EMPTY) {
+                // Start error activity when state is empty (usually when android restart the activity on error)
+                App.startErrorActivity()
+                finish()
             }
+            currentPosition = when {
+                savedInstanceState != null -> savedInstanceState.getInt(SELECTED_ID, R.id.navigation_favorites)
+                intent.extras != null -> intent.extras!!.getInt(SELECTED_ID, R.id.navigation_favorites)
+                else -> R.id.navigation_favorites
+            }
+            title = when {
+                savedInstanceState != null -> savedInstanceState.getString(getString(R.string.bundle_title), getString(R.string.favorites))
+                intent.extras != null -> intent.extras!!.getString(getString(R.string.bundle_title), getString(R.string.favorites))
+                else -> getString(R.string.favorites)
+            }
+            drawer.setNavigationItemSelectedListener(this)
+            favoriteMenuItem = drawer.menu.getItem(0)
+            if (currentPosition == R.id.navigation_favorites) {
+                favoriteMenuItem.isChecked = true
+            }
+            toolbar.inflateMenu(R.menu.main)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                toolbar.elevation = 4f
+            }
+
+            inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            drawerToggle = object : ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+                override fun onDrawerClosed(drawerView: View) {
+                    super.onDrawerClosed(drawerView)
+                    updateFragment(currentPosition)
+                }
+            }
+
+            drawerLayout.addDrawerListener(drawerToggle)
+            drawerToggle.syncState()
+
+            setBarTitle(title!!)
+            updateFragment(currentPosition)
         }
-
-        drawerLayout.addDrawerListener(drawerToggle)
-        drawerToggle.syncState()
-
-        setBarTitle(title!!)
-        updateFragment(currentPosition)
     }
 
     override fun onResume() {
@@ -170,11 +148,11 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
         }
         transaction.replace(R.id.searchContainer, fragment).commit()
         showHideActionBarMenu((fragment as Fragment).hasActionBar())
-        container.animate().alpha(1.0f)
+        searchContainer.animate().alpha(1.0f)
     }
 
     private fun itemSelected(title: String) {
-        container.animate().alpha(0.0f)
+        searchContainer.animate().alpha(0.0f)
         setBarTitle(title)
         closeDrawerAndUpdateActionBar()
     }
@@ -196,15 +174,15 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
             if (currentPosition != menuItem.itemId) {
                 currentPosition = menuItem.itemId
                 when (menuItem.itemId) {
-                    R.id.navigation_favorites -> itemSelected(favorites)
-                    R.id.navigation_train -> itemSelected(train)
-                    R.id.navigation_bus -> itemSelected(bus)
-                    R.id.navigation_bike -> itemSelected(divvy)
-                    R.id.navigation_nearby -> itemSelected(nearby)
-                    R.id.navigation_cta_map -> itemSelected(ctaMap)
-                    R.id.navigation_alert_cta -> itemSelected(ctaAlert)
+                    R.id.navigation_favorites -> itemSelected(getString(R.string.favorites))
+                    R.id.navigation_train -> itemSelected(getString(R.string.train))
+                    R.id.navigation_bus -> itemSelected(getString(R.string.bus))
+                    R.id.navigation_bike -> itemSelected(getString(R.string.divvy))
+                    R.id.navigation_nearby -> itemSelected(getString(R.string.nearby))
+                    R.id.navigation_cta_map -> itemSelected(getString(R.string.cta_map))
+                    R.id.navigation_alert_cta -> itemSelected(getString(R.string.cta_alert))
                     R.id.navigation_rate_this_app -> rateUtil.rateThisApp(this)
-                    R.id.navigation_settings -> itemSelected(settings)
+                    R.id.navigation_settings -> itemSelected(getString(R.string.settings))
                 }
             } else {
                 currentPosition = menuItem.itemId
@@ -216,13 +194,13 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
         savedInstanceState.putInt(SELECTED_ID, currentPosition)
-        if (title != null) savedInstanceState.putString(bundleTitle, title)
+        if (title != null) savedInstanceState.putString(getString(R.string.bundle_title), title)
         super.onSaveInstanceState(savedInstanceState)
     }
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        title = savedInstanceState.getString(bundleTitle)
+        title = savedInstanceState.getString(getString(R.string.bundle_title))
         currentPosition = savedInstanceState.getInt(SELECTED_ID)
     }
 

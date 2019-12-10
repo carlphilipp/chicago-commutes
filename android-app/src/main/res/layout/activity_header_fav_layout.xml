@@ -27,7 +27,7 @@
     android:orientation="horizontal">
 
     <LinearLayout
-        android:id="@+id/favorites_container"
+        android:id="@+id/favoritesImageContainer"
         android:layout_width="0px"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -38,7 +38,7 @@
         tools:ignore="UseCompoundDrawables">
 
         <ImageView
-            android:id="@+id/activity_favorite_star"
+            android:id="@+id/favoritesImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -59,7 +59,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/map_container"
+        android:id="@+id/mapContainer"
         android:layout_width="0px"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -70,7 +70,7 @@
         tools:ignore="UseCompoundDrawables">
 
         <ImageView
-            android:id="@+id/activity_map_image"
+            android:id="@+id/mapImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -92,7 +92,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/walk_container"
+        android:id="@+id/walkContainer"
         android:layout_width="0px"
         android:layout_height="wrap_content"
         android:layout_weight="1"

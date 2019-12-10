@@ -19,18 +19,14 @@
 
 package fr.cph.chicago.core.activity
 
-import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.widget.ListView
-import androidx.appcompat.widget.Toolbar
-import butterknife.BindDrawable
-import butterknife.BindString
-import butterknife.BindView
+import androidx.appcompat.app.AppCompatActivity
 import fr.cph.chicago.R
-import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.adapter.TrainAdapter
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.util.Util
+import kotlinx.android.synthetic.main.activity_train_station.listView
+import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 
 /**
@@ -39,49 +35,44 @@ import org.apache.commons.lang3.StringUtils
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class TrainListStationActivity : ButterKnifeActivity(R.layout.activity_train_station) {
+class TrainListStationActivity : AppCompatActivity() {
 
     companion object {
         private val util = Util
     }
 
-    @BindView(R.id.toolbar)
-    lateinit var toolbar: Toolbar
-    @BindString(R.string.bundle_train_line)
-    lateinit var bundleTrainLine: String
-    @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
-    lateinit var arrowBackWhite: Drawable
-    @BindView(R.id.list)
-    lateinit var listView: ListView
-
     private lateinit var trainLine: TrainLine
     private lateinit var lineParam: String
 
-    override fun create(savedInstanceState: Bundle?) {
-        // Load data
-        lineParam = if (savedInstanceState != null) savedInstanceState.getString(bundleTrainLine)
-            ?: StringUtils.EMPTY else intent.getStringExtra(bundleTrainLine) ?: StringUtils.EMPTY
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (!this.isFinishing) {
+            setContentView(R.layout.activity_train_station)
+            // Load data
+            lineParam = if (savedInstanceState != null) savedInstanceState.getString(getString(R.string.bundle_train_line))
+                ?: StringUtils.EMPTY else intent.getStringExtra(getString(R.string.bundle_train_line)) ?: StringUtils.EMPTY
 
-        trainLine = TrainLine.fromString(lineParam)
-        title = trainLine.toStringWithLine()
+            trainLine = TrainLine.fromString(lineParam)
+            title = trainLine.toStringWithLine()
 
-        util.setWindowsColor(this, toolbar, trainLine)
-        toolbar.title = trainLine.toStringWithLine()
+            util.setWindowsColor(this, toolbar, trainLine)
+            toolbar.title = trainLine.toStringWithLine()
 
-        toolbar.navigationIcon = arrowBackWhite
-        toolbar.setOnClickListener { finish() }
+            toolbar.navigationIcon = getDrawable(R.drawable.ic_arrow_back_white_24dp)
+            toolbar.setOnClickListener { finish() }
 
-        listView.adapter = TrainAdapter(trainLine)
+            listView.adapter = TrainAdapter(trainLine)
+        }
     }
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        lineParam = savedInstanceState.getString(bundleTrainLine) ?: StringUtils.EMPTY
+        lineParam = savedInstanceState.getString(getString(R.string.bundle_train_line)) ?: StringUtils.EMPTY
         trainLine = TrainLine.fromString(lineParam)
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        if (::lineParam.isInitialized) savedInstanceState.putString(bundleTrainLine, lineParam)
+        if (::lineParam.isInitialized) savedInstanceState.putString(getString(R.string.bundle_train_line), lineParam)
         super.onSaveInstanceState(savedInstanceState)
     }
 }

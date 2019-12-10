@@ -47,7 +47,7 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), EasyPermi
 
     @BindView(android.R.id.content)
     protected lateinit var viewGroup: ViewGroup
-    @BindView(R.id.map_container)
+    @BindView(R.id.mapContainer)
     protected lateinit var layout: LinearLayout
     @BindView(R.id.toolbar)
     protected lateinit var toolbar: Toolbar
