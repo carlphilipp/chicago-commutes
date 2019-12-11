@@ -45,8 +45,8 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
     override fun onMarkerClick(marker: Marker): Boolean {
         nearbyFragment.showProgress(true)
         val station = markerDataHolder.getStation(marker)
-        if (nearbyFragment.layoutContainer.childCount != 0) {
-            nearbyFragment.layoutContainer.removeViewAt(0)
+        if (nearbyFragment.loadingLayout.childCount != 0) {
+            nearbyFragment.loadingLayout.removeViewAt(0)
         }
         station?.let { loadArrivals(station) }
         return false

@@ -22,12 +22,11 @@ package fr.cph.chicago.core.fragment
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import butterknife.BindView
-import com.github.chrisbanes.photoview.PhotoView
 import fr.cph.chicago.R
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.fragment_cta_map.ctaMap
 import timber.log.Timber
 
 class CtaMapFragment : Fragment(R.layout.fragment_cta_map) {
@@ -38,11 +37,10 @@ class CtaMapFragment : Fragment(R.layout.fragment_cta_map) {
         }
     }
 
-    @BindView(R.id.cta_map)
-    lateinit var ctaMap: PhotoView
     private var bitmapCache: Bitmap? = null
 
-    override fun onCreateView(savedInstanceState: Bundle?) {
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         loadBitmap()
     }
 

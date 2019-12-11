@@ -21,7 +21,7 @@
     android:layout_height="match_parent">
 
     <com.github.chrisbanes.photoview.PhotoView
-        android:id="@+id/cta_map"
+        android:id="@+id/ctaMap"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 </LinearLayout>

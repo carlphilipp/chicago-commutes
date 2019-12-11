@@ -22,42 +22,45 @@ package fr.cph.chicago.core.activity.map
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
-import android.graphics.drawable.Drawable
 import android.os.Build
-import android.view.ViewGroup
+import android.os.Bundle
 import android.widget.LinearLayout
-import androidx.appcompat.widget.Toolbar
-import butterknife.BindDrawable
-import butterknife.BindView
+import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import fr.cph.chicago.Constants.GPS_ACCESS
 import fr.cph.chicago.R
-import fr.cph.chicago.core.activity.butterknife.ButterKnifeFragmentMapActivity
 import fr.cph.chicago.util.GoogleMapUtil
+import kotlinx.android.synthetic.main.activity_map.mapContainer
+import kotlinx.android.synthetic.main.toolbar.toolbar
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 
 @SuppressLint("Registered")
-abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), EasyPermissions.PermissionCallbacks, GoogleMap.OnCameraIdleListener, OnMapReadyCallback {
+abstract class FragmentMapActivity : FragmentActivity(), EasyPermissions.PermissionCallbacks, GoogleMap.OnCameraIdleListener, OnMapReadyCallback {
 
-    @BindView(android.R.id.content)
-    protected lateinit var viewGroup: ViewGroup
-    @BindView(R.id.mapContainer)
-    protected lateinit var layout: LinearLayout
-    @BindView(R.id.toolbar)
-    protected lateinit var toolbar: Toolbar
-
-    @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
-    lateinit var arrowBackWhite: Drawable
-
+    protected lateinit var mapContainerLayout: LinearLayout
     protected lateinit var selectedMarker: Marker
     protected lateinit var googleMap: GoogleMap
     protected var refreshingInfoWindow = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (!this.isFinishing) {
+            MapsInitializer.initialize(applicationContext)
+            setContentView(R.layout.activity_map)
+            create(savedInstanceState)
+        }
+    }
+
+    open fun create(savedInstanceState: Bundle?) {
+        mapContainerLayout = mapContainer
+    }
 
     protected open fun initData() {
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
@@ -70,7 +73,7 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), EasyPermi
             toolbar.elevation = 4f
         }
 
-        toolbar.navigationIcon = arrowBackWhite
+        toolbar.navigationIcon = getDrawable(R.drawable.ic_arrow_back_white_24dp)
         toolbar.setOnClickListener { finish() }
     }
 

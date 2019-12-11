@@ -22,7 +22,6 @@ package fr.cph.chicago.core.activity.map
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
-import butterknife.BindString
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
@@ -60,6 +59,8 @@ import fr.cph.chicago.util.Util
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.foss.activity_map_mapbox.mapContainer
+import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
@@ -75,28 +76,22 @@ class BusMapActivity : FragmentMapActivity() {
         private val busService: BusService = BusService
     }
 
-    @BindString(R.string.bundle_bus_id)
-    lateinit var bundleBusId: String
-    @BindString(R.string.bundle_bus_route_id)
-    lateinit var bundleBusRouteId: String
-    @BindString(R.string.bundle_bus_bounds)
-    lateinit var bundleBusBounds: String
-
     private var busId: Int = 0
     private lateinit var busRouteId: String
     private lateinit var bounds: Array<String>
     private val markerOptions = mutableListOf<MarkerOptions>()
     private var showStops = false
 
-    override fun create(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         if (savedInstanceState != null) {
-            busId = savedInstanceState.getInt(bundleBusId)
-            busRouteId = savedInstanceState.getString(bundleBusRouteId) ?: StringUtils.EMPTY
-            bounds = savedInstanceState.getStringArray(bundleBusBounds) ?: arrayOf()
+            busId = savedInstanceState.getInt(getString(R.string.bundle_bus_id))
+            busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
+            bounds = savedInstanceState.getStringArray(getString(R.string.bundle_bus_bounds)) ?: arrayOf()
         } else {
-            busId = intent.getIntExtra(bundleBusId, 0)
-            busRouteId = intent.getStringExtra(bundleBusRouteId) ?: StringUtils.EMPTY
-            bounds = intent.getStringArrayExtra(bundleBusBounds) ?: arrayOf()
+            busId = intent.getIntExtra(getString(R.string.bundle_bus_id), 0)
+            busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
+            bounds = intent.getStringArrayExtra(getString(R.string.bundle_bus_bounds)) ?: arrayOf()
         }
         initMap()
         setToolbar()
@@ -114,15 +109,15 @@ class BusMapActivity : FragmentMapActivity() {
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        busId = savedInstanceState.getInt(bundleBusId)
-        busRouteId = savedInstanceState.getString(bundleBusRouteId) ?: StringUtils.EMPTY
-        bounds = savedInstanceState.getStringArray(bundleBusBounds) ?: arrayOf()
+        busId = savedInstanceState.getInt(getString(R.string.bundle_bus_id))
+        busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
+        bounds = savedInstanceState.getStringArray(getString(R.string.bundle_bus_bounds)) ?: arrayOf()
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.putInt(bundleBusId, busId)
-        if (::busRouteId.isInitialized) savedInstanceState.putString(bundleBusRouteId, busRouteId)
-        if (::bounds.isInitialized) savedInstanceState.putStringArray(bundleBusBounds, bounds)
+        savedInstanceState.putInt(getString(R.string.bundle_bus_id), busId)
+        if (::busRouteId.isInitialized) savedInstanceState.putString(getString(R.string.bundle_bus_route_id), busRouteId)
+        if (::bounds.isInitialized) savedInstanceState.putStringArray(getString(R.string.bundle_bus_bounds), bounds)
         super.onSaveInstanceState(savedInstanceState)
     }
 
@@ -211,7 +206,7 @@ class BusMapActivity : FragmentMapActivity() {
                 { view -> update(feature, id, view) },
                 { error ->
                     Timber.e(error)
-                    util.showSnackBar(layout, R.string.message_no_data)
+                    util.showSnackBar(mapContainer, R.string.message_no_data)
                     showProgress(false)
                 })
     }
@@ -227,7 +222,7 @@ class BusMapActivity : FragmentMapActivity() {
                 { view -> update(feature, id, view) },
                 { error ->
                     Timber.e(error)
-                    util.showSnackBar(layout, R.string.message_no_data)
+                    util.showSnackBar(mapContainer, R.string.message_no_data)
                     showProgress(false)
                 })
     }
@@ -279,7 +274,7 @@ class BusMapActivity : FragmentMapActivity() {
                     },
                     { error ->
                         Timber.e(error)
-                        util.handleConnectOrParserException(error, layout)
+                        util.handleConnectOrParserException(error, mapContainer)
                     })
         }
     }
@@ -304,14 +299,14 @@ class BusMapActivity : FragmentMapActivity() {
                 { featureCollection: FeatureCollection ->
                     addVehicleFeatureCollection(featureCollection)
                     if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
-                        util.showSnackBar(layout, R.string.message_no_bus_found)
+                        util.showSnackBar(mapContainer, R.string.message_no_bus_found)
                     }
                 },
                 { error ->
                     Timber.e(error)
                     when (error) {
-                        is CtaException -> util.showSnackBar(this.layout, R.string.message_error_could_not_load_path)
-                        else -> util.handleConnectOrParserException(error, layout)
+                        is CtaException -> util.showSnackBar(this.mapContainer, R.string.message_error_could_not_load_path)
+                        else -> util.handleConnectOrParserException(error, mapContainer)
                     }
                 })
     }

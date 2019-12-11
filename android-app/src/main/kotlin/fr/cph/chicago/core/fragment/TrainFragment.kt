@@ -21,13 +21,11 @@ package fr.cph.chicago.core.fragment
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.ListView
-import butterknife.BindString
-import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.TrainListStationActivity
 import fr.cph.chicago.core.adapter.TrainStationAdapter
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import kotlinx.android.synthetic.main.fragment_train.trainListView
 
 /**
  * Train Fragment
@@ -43,19 +41,15 @@ class TrainFragment : Fragment(R.layout.fragment_train) {
         }
     }
 
-    @BindView(R.id.train_list)
-    lateinit var listView: ListView
-    @BindString(R.string.bundle_train_line)
-    lateinit var bundleTrainLine: String
-
-    override fun onCreateView(savedInstanceState: Bundle?) {
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         val ada = TrainStationAdapter()
-        listView.adapter = ada
-        listView.setOnItemClickListener { _, _, position, _ ->
+        trainListView.adapter = ada
+        trainListView.setOnItemClickListener { _, _, position, _ ->
             val intent = Intent(context, TrainListStationActivity::class.java)
             val extras = Bundle()
             val line = TrainLine.values()[position].toString()
-            extras.putString(bundleTrainLine, line)
+            extras.putString(getString(R.string.bundle_train_line), line)
             intent.putExtras(extras)
             startActivity(intent)
         }

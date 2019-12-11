@@ -160,7 +160,6 @@ dependencies {
     implementation(Lib.rx_kotlin)
 
     // Tools
-    implementation(Lib.butterknife)
     implementation(Lib.commons_collections4)
     implementation(Lib.commons_text)
     implementation(Lib.sliding_up_panel)
@@ -179,8 +178,6 @@ dependencies {
     fossImplementation(Lib.mapbox_annotation)
     fossImplementation(Lib.mapbox_marker_view)
     fossImplementation(Lib.mapbox_location)
-
-    kapt(Lib.butterknife_compiler)
 
     testImplementation(Lib.junit) { exclude group: "org.hamcrest", module: "hamcrest-core" }
     testImplementation(Lib.mockito) { exclude group: "org.hamcrest", module: "hamcrest-core" }

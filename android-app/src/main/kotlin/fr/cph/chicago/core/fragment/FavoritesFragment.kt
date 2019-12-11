@@ -24,12 +24,8 @@ import android.os.AsyncTask
 import android.os.AsyncTask.Status
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.RelativeLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import butterknife.BindView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.MainActivity
@@ -44,9 +40,13 @@ import fr.cph.chicago.redux.Status.FULL_FAILURE
 import fr.cph.chicago.redux.Status.SUCCESS
 import fr.cph.chicago.redux.Status.UNKNOWN
 import fr.cph.chicago.redux.store
-import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.task.RefreshTimingTask
 import fr.cph.chicago.util.RateUtil
+import kotlinx.android.synthetic.main.error.failureLayout
+import kotlinx.android.synthetic.main.error.retryButton
+import kotlinx.android.synthetic.main.fragment_main.favoritesListView
+import kotlinx.android.synthetic.main.fragment_main.floatingButton
+import kotlinx.android.synthetic.main.fragment_main.welcomeLayout
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
@@ -60,36 +60,24 @@ class FavoritesFragment : RefreshFragment(R.layout.fragment_main), StoreSubscrib
 
     companion object {
         private val rateUtil = RateUtil
-        private val preferenceService = PreferenceService
 
         fun newInstance(sectionNumber: Int): FavoritesFragment {
             return fragmentWithBundle(FavoritesFragment(), sectionNumber) as FavoritesFragment
         }
     }
 
-    @BindView(R.id.welcome)
-    lateinit var welcomeLayout: RelativeLayout
-    @BindView(R.id.favorites_list)
-    lateinit var recyclerView: RecyclerView
-    @BindView(R.id.floating_button)
-    lateinit var floatingButton: FloatingActionButton
-    @BindView(R.id.failureLayout)
-    lateinit var failureLayout: RelativeLayout
-    @BindView(R.id.retryButton)
-    lateinit var retryButton: Button
-
     private lateinit var adapter: FavoritesAdapter
     private var refreshTimingTask: RefreshTimingTask? = null
 
-    override fun onCreateView(savedInstanceState: Bundle?) {
-        super.onCreateView(savedInstanceState)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         adapter = FavoritesAdapter(context!!)
 
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(context!!)
+        favoritesListView.adapter = adapter
+        favoritesListView.layoutManager = LinearLayoutManager(context!!)
         floatingButton.setOnClickListener { activity?.startActivity(Intent(context!!, SearchActivity::class.java)) }
 
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        favoritesListView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (dy > 0 && floatingButton.isShown) {
                     floatingButton.hide()
@@ -165,13 +153,13 @@ class FavoritesFragment : RefreshFragment(R.layout.fragment_main), StoreSubscrib
     private fun showSuccessUi() {
         if (failureLayout.visibility != View.GONE) failureLayout.visibility = View.GONE
         welcomeLayout.visibility = if (preferenceService.hasFavorites()) View.GONE else View.VISIBLE
-        if (recyclerView.visibility != View.VISIBLE) recyclerView.visibility = View.VISIBLE
+        if (favoritesListView.visibility != View.VISIBLE) favoritesListView.visibility = View.VISIBLE
     }
 
     private fun showFullFailureUi() {
         if (failureLayout.visibility != View.VISIBLE) failureLayout.visibility = View.VISIBLE
         if (welcomeLayout.visibility != View.GONE) welcomeLayout.visibility = View.GONE
-        if (recyclerView.visibility != View.GONE) recyclerView.visibility = View.GONE
+        if (favoritesListView.visibility != View.GONE) favoritesListView.visibility = View.GONE
     }
 
     private fun reloadData() {

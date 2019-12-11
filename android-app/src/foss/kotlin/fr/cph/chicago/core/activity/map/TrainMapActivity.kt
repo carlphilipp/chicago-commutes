@@ -24,7 +24,6 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.TextView
-import butterknife.BindString
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
@@ -63,6 +62,8 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.foss.activity_map_mapbox.mapContainer
+import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 import java.util.concurrent.Callable
@@ -79,19 +80,17 @@ class TrainMapActivity : FragmentMapActivity() {
         private val util = Util
     }
 
-    @BindString(R.string.bundle_train_line)
-    lateinit var bundleTrainLine: String
-
     private lateinit var line: String
     val trainLine: TrainLine by lazy {
         TrainLine.fromXmlString(line)
     }
 
-    override fun create(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         line = if (savedInstanceState != null)
-            savedInstanceState.getString(bundleTrainLine) ?: StringUtils.EMPTY
+            savedInstanceState.getString(getString(R.string.bundle_train_line)) ?: StringUtils.EMPTY
         else
-            intent.getStringExtra(bundleTrainLine) ?: StringUtils.EMPTY
+            intent.getStringExtra(getString(R.string.bundle_train_line)) ?: StringUtils.EMPTY
 
         initMap()
 
@@ -110,11 +109,11 @@ class TrainMapActivity : FragmentMapActivity() {
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        line = savedInstanceState.getString(bundleTrainLine) ?: StringUtils.EMPTY
+        line = savedInstanceState.getString(getString(R.string.bundle_train_line)) ?: StringUtils.EMPTY
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.putString(bundleTrainLine, line)
+        savedInstanceState.putString(getString(R.string.bundle_train_line), line)
         super.onSaveInstanceState(savedInstanceState)
     }
 
@@ -259,7 +258,7 @@ class TrainMapActivity : FragmentMapActivity() {
                 { view -> update(feature, runNumber, view) },
                 { error ->
                     Timber.e(error)
-                    util.showSnackBar(layout, R.string.message_no_data)
+                    util.showSnackBar(mapContainer, R.string.message_no_data)
                     showProgress(false)
                 })
     }
@@ -310,7 +309,7 @@ class TrainMapActivity : FragmentMapActivity() {
                     addStationOnMap(pair.second)
                     drawPolyline(pair.first)
                     if (featuresTrain.features() != null && featuresTrain.features()!!.isEmpty()) {
-                        util.showSnackBar(layout, R.string.message_no_train_found)
+                        util.showSnackBar(mapContainer, R.string.message_no_train_found)
                     }
                     pair.first.latLngs
                 })
@@ -318,7 +317,7 @@ class TrainMapActivity : FragmentMapActivity() {
                     { points -> centerMap(points) },
                     { error ->
                         Timber.e(error)
-                        util.showSnackBar(layout, R.string.message_error_while_loading_data)
+                        util.showSnackBar(mapContainer, R.string.message_error_while_loading_data)
                     })
         } else {
             featuresTrains
@@ -327,12 +326,12 @@ class TrainMapActivity : FragmentMapActivity() {
                     { featureCollection ->
                         addVehicleFeatureCollection(featureCollection)
                         if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
-                            util.showSnackBar(layout, R.string.message_no_train_found)
+                            util.showSnackBar(mapContainer, R.string.message_no_train_found)
                         }
                     },
                     { error ->
                         Timber.e(error)
-                        util.showSnackBar(layout, R.string.message_error_while_loading_data)
+                        util.showSnackBar(mapContainer, R.string.message_error_while_loading_data)
                     })
         }
     }

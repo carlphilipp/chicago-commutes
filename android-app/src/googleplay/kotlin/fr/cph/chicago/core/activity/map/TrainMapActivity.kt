@@ -23,7 +23,6 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
-import butterknife.BindString
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -45,6 +44,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
@@ -59,25 +59,21 @@ class TrainMapActivity : FragmentMapActivity() {
         private val trainService = TrainService
     }
 
-    @BindString(R.string.bundle_train_line)
-    lateinit var bundleTrainLine: String
-
     private var views: MutableMap<Marker, View> = hashMapOf()
-
-    private lateinit var line: String
-    private lateinit var refreshTrainMarkers: RefreshTrainMarkers
     private var status: MutableMap<Marker, Boolean> = mutableMapOf()
     private var trainsMarker: List<Marker> = listOf()
     private val stationMarkers: MutableList<Marker> = mutableListOf()
-
+    private lateinit var line: String
+    private lateinit var refreshTrainMarkers: RefreshTrainMarkers
     private var centerMap = true
     private var drawLine = true
 
     override fun create(savedInstanceState: Bundle?) {
+        super.create(savedInstanceState)
         line = if (savedInstanceState != null)
-            savedInstanceState.getString(bundleTrainLine) ?: StringUtils.EMPTY
+            savedInstanceState.getString(getString(R.string.bundle_train_line)) ?: StringUtils.EMPTY
         else
-            intent.getStringExtra(bundleTrainLine) ?: StringUtils.EMPTY
+            intent.getStringExtra(getString(R.string.bundle_train_line)) ?: StringUtils.EMPTY
 
         // Init data
         initData()
@@ -106,11 +102,11 @@ class TrainMapActivity : FragmentMapActivity() {
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        line = savedInstanceState.getString(bundleTrainLine) ?: StringUtils.EMPTY
+        line = savedInstanceState.getString(getString(R.string.bundle_train_line)) ?: StringUtils.EMPTY
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        if (::line.isInitialized) savedInstanceState.putString(bundleTrainLine, line)
+        if (::line.isInitialized) savedInstanceState.putString(getString(R.string.bundle_train_line), line)
         super.onSaveInstanceState(savedInstanceState)
     }
 
@@ -139,7 +135,7 @@ class TrainMapActivity : FragmentMapActivity() {
             val snippet = routeNumber.toString()
             googleMap.addMarker(MarkerOptions().position(point).title(title).snippet(snippet).icon(bitmapDesc).anchor(0.5f, 0.5f).rotation(heading.toFloat()).flat(true))
         }.onEach { marker ->
-            val view = layoutInflater.inflate(R.layout.marker, viewGroup, false)
+            val view = layoutInflater.inflate(R.layout.marker, mapContainerLayout, false)
             val title2 = view.findViewById<TextView>(R.id.title)
             title2.text = marker.title
             views[marker] = view

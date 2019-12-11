@@ -23,12 +23,6 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.ListView
-import android.widget.RelativeLayout
-import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.MainActivity
 import fr.cph.chicago.core.adapter.BikeAdapter
@@ -37,7 +31,11 @@ import fr.cph.chicago.redux.BikeStationAction
 import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
-import kotlinx.android.synthetic.main.toolbar.toolbar
+import kotlinx.android.synthetic.main.error.failureLayout
+import kotlinx.android.synthetic.main.error.retryButton
+import kotlinx.android.synthetic.main.fragment_filter_list.filter
+import kotlinx.android.synthetic.main.fragment_filter_list.listView
+import kotlinx.android.synthetic.main.fragment_filter_list.successLayout
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
@@ -56,21 +54,10 @@ class BikeFragment : RefreshFragment(R.layout.fragment_filter_list), StoreSubscr
         }
     }
 
-    @BindView(R.id.success)
-    lateinit var successLayout: LinearLayout
-    @BindView(R.id.failureLayout)
-    lateinit var failureLayout: RelativeLayout
-    @BindView(R.id.listView)
-    lateinit var listView: ListView
-    @BindView(R.id.filter)
-    lateinit var filter: EditText
-    @BindView(R.id.retryButton)
-    lateinit var retryButton: Button
-
     private lateinit var bikeAdapter: BikeAdapter
 
-    override fun onCreateView(savedInstanceState: Bundle?) {
-        super.onCreateView(savedInstanceState)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         bikeAdapter = BikeAdapter()
         listView.adapter = bikeAdapter
         swipeRefreshLayout.setOnRefreshListener { startRefreshing() }

@@ -26,12 +26,9 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
 import android.widget.LinearLayout
-import android.widget.ProgressBar
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
-import butterknife.BindView
 import com.mapbox.android.core.location.LocationEngine
 import com.mapbox.android.core.location.LocationEngineCallback
 import com.mapbox.android.core.location.LocationEngineProvider
@@ -45,13 +42,11 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.LocationComponentOptions
 import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.location.modes.RenderMode
-import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import fr.cph.chicago.Constants.GPS_ACCESS
 import fr.cph.chicago.R
-import fr.cph.chicago.core.activity.MainActivity
 import fr.cph.chicago.core.adapter.SlidingUpAdapter
 import fr.cph.chicago.core.listener.OnMarkerClickListener
 import fr.cph.chicago.core.model.BikeStation
@@ -74,6 +69,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.drawer
+import kotlinx.android.synthetic.main.fragment_nearby_mapbox.loadingLayoutContainer
+import kotlinx.android.synthetic.main.fragment_nearby_mapbox.mapView
+import kotlinx.android.synthetic.main.fragment_nearby_mapbox.progressBar
+import kotlinx.android.synthetic.main.fragment_nearby_mapbox.searchAreaButton
+import kotlinx.android.synthetic.main.fragment_nearby_mapbox.slidingLayout
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import timber.log.Timber
@@ -99,18 +99,8 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         }
     }
 
-    @BindView(R.id.activity_bar)
-    lateinit var progressBar: ProgressBar
-    @BindView(R.id.sliding_layout)
-    lateinit var slidingUpPanelLayout: SlidingUpPanelLayout
-    @BindView(R.id.loading_layout_container)
-    lateinit var layoutContainer: LinearLayout
-    @BindView(R.id.search_area)
-    lateinit var searchAreaButton: Button
-    @BindView(R.id.mapView)
-    @JvmField
-    var mapView: MapView? = null
-
+    lateinit var loadingLayout: LinearLayout
+    lateinit var slidingLayoutPanel: SlidingUpPanelLayout
     lateinit var slidingUpAdapter: SlidingUpAdapter
     private lateinit var markerDataHolder: MarkerDataHolder
     private lateinit var map: MapboxMap
@@ -122,16 +112,19 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         super.onCreate(savedInstanceState)
     }
 
-    override fun onCreateView(savedInstanceState: Bundle?) {
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        loadingLayout = loadingLayoutContainer
+        slidingLayoutPanel = slidingLayout
         slidingUpAdapter = SlidingUpAdapter(this)
         mapView?.getMapAsync(this)
         markerDataHolder = MarkerDataHolder()
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
-        this.map = setupMapbox(mapboxMap, resources.configuration)
-        this.map.addOnCameraMoveListener { searchAreaButton.visibility = View.VISIBLE }
-        this.map.setOnMarkerClickListener(OnMarkerClickListener(markerDataHolder, this@NearbyFragment))
+        map = setupMapbox(mapboxMap, resources.configuration)
+        map.addOnCameraMoveListener { searchAreaButton.visibility = View.VISIBLE }
+        map.setOnMarkerClickListener(OnMarkerClickListener(markerDataHolder, this@NearbyFragment))
 
         searchAreaButton.setOnClickListener { view ->
             view.visibility = View.INVISIBLE
@@ -297,7 +290,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
     override fun onResume() {
         super.onResume()
         mapView?.onResume()
-        slidingUpPanelLayout.panelState = SlidingUpPanelLayout.PanelState.HIDDEN
+        slidingLayout.panelState = SlidingUpPanelLayout.PanelState.HIDDEN
     }
 
     override fun onStop() {

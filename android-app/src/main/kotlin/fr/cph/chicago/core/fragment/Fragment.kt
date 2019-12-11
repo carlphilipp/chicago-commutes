@@ -24,8 +24,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import butterknife.ButterKnife
-import butterknife.Unbinder
 import fr.cph.chicago.util.Util
 
 abstract class Fragment(private val layout: Int) : Fragment() {
@@ -44,28 +42,14 @@ abstract class Fragment(private val layout: Int) : Fragment() {
         }
     }
 
-    private lateinit var rootView: View
-    private lateinit var unbinder: Unbinder
-
-    private fun setBinder(rootView: View) {
-        unbinder = ButterKnife.bind(this, rootView)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        unbinder.unbind()
-    }
+    protected lateinit var rootView: View
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         if (activity != null && !activity!!.isFinishing) {
             rootView = inflater.inflate(layout, container, false)
-            setBinder(rootView)
-            onCreateView(savedInstanceState)
         }
         return rootView
     }
-
-    abstract fun onCreateView(savedInstanceState: Bundle?)
 
     open fun hasActionBar(): Boolean {
         return false

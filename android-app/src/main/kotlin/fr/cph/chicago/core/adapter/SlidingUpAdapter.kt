@@ -66,7 +66,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
 
     private fun createStationHeaderView(title: String, @DrawableRes drawable: Int) {
         val vi = nearbyFragment.context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val convertView = vi.inflate(R.layout.nearby_station_main, nearbyFragment.slidingUpPanelLayout, false)
+        val convertView = vi.inflate(R.layout.nearby_station_main, nearbyFragment.slidingLayoutPanel, false)
 
         val stationNameView = convertView.findViewById<TextView>(R.id.station_name)
         val imageView = convertView.findViewById<ImageView>(R.id.icon)
@@ -76,7 +76,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
         stationNameView.ellipsize = TextUtils.TruncateAt.END
         imageView.setImageDrawable(ContextCompat.getDrawable(nearbyFragment.context!!, drawable))
 
-        nearbyFragment.layoutContainer.addView(convertView)
+        nearbyFragment.loadingLayout.addView(convertView)
     }
 
     fun addTrainStation(trainArrival: TrainArrival) {
@@ -108,7 +108,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
                 container.addView(trainLayout)
                 nbOfLine += etas.size
             }
-            nearbyFragment.slidingUpPanelLayout.panelHeight = getSlidingPanelHeight(nbOfLine)
+            nearbyFragment.slidingLayoutPanel.panelHeight = getSlidingPanelHeight(nbOfLine)
             updatePanelState()
         }
     }
@@ -142,7 +142,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
                 handleNoResults(linearLayout)
                 nbOfLine[0]++
             }
-            nearbyFragment.slidingUpPanelLayout.panelHeight = getSlidingPanelHeight(nbOfLine[0])
+            nearbyFragment.slidingLayoutPanel.panelHeight = getSlidingPanelHeight(nbOfLine[0])
             updatePanelState()
         }
     }
@@ -156,14 +156,14 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
         if (linearLayout.childCount == 0 || "error" == bikeStation.name) {
             val bikeResultLayout = layoutUtil.buildBikeFavoritesLayout(nearbyFragment.context!!, linearLayout, bikeStation)
             linearLayout.addView(bikeResultLayout)
-            nearbyFragment.slidingUpPanelLayout.panelHeight = getSlidingPanelHeight(2)
+            nearbyFragment.slidingLayoutPanel.panelHeight = getSlidingPanelHeight(2)
             updatePanelState()
         }
     }
 
     private val nearbyResultsView: LinearLayout
         get() {
-            val relativeLayout = nearbyFragment.layoutContainer.getChildAt(0) as RelativeLayout
+            val relativeLayout = nearbyFragment.loadingLayout.getChildAt(0) as RelativeLayout
             return relativeLayout.findViewById(R.id.nearby_results)
         }
 
@@ -178,8 +178,8 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
     }
 
     private fun updatePanelState() {
-        if (nearbyFragment.slidingUpPanelLayout.panelState == SlidingUpPanelLayout.PanelState.HIDDEN) {
-            nearbyFragment.slidingUpPanelLayout.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+        if (nearbyFragment.slidingLayoutPanel.panelState == SlidingUpPanelLayout.PanelState.HIDDEN) {
+            nearbyFragment.slidingLayoutPanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
         }
         nearbyFragment.showProgress(false)
     }

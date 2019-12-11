@@ -27,12 +27,9 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
 import android.widget.LinearLayout
-import android.widget.ProgressBar
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
-import butterknife.BindView
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -46,7 +43,6 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import fr.cph.chicago.Constants.GPS_ACCESS
 import fr.cph.chicago.R
-import fr.cph.chicago.core.activity.MainActivity
 import fr.cph.chicago.core.adapter.SlidingUpAdapter
 import fr.cph.chicago.core.listener.OnMarkerClickListener
 import fr.cph.chicago.core.model.BikeStation
@@ -63,6 +59,10 @@ import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.Util
 import io.reactivex.rxkotlin.Singles
 import kotlinx.android.synthetic.main.activity_main.drawer
+import kotlinx.android.synthetic.main.fragment_nearby.loadingLayoutContainer
+import kotlinx.android.synthetic.main.fragment_nearby.progressBar
+import kotlinx.android.synthetic.main.fragment_nearby.searchAreaButton
+import kotlinx.android.synthetic.main.fragment_nearby.slidingLayout
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import timber.log.Timber
@@ -87,23 +87,19 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
         }
     }
 
-    @BindView(R.id.activity_bar)
-    lateinit var progressBar: ProgressBar
-    @BindView(R.id.sliding_layout)
-    lateinit var slidingUpPanelLayout: SlidingUpPanelLayout
-    @BindView(R.id.loading_layout_container)
-    lateinit var layoutContainer: LinearLayout
-    @BindView(R.id.search_area)
-    lateinit var searchAreaButton: Button
-
     private lateinit var mapFragment: SupportMapFragment
     private lateinit var googleApiClient: GoogleApiClient
     lateinit var slidingUpAdapter: SlidingUpAdapter
+    lateinit var loadingLayout: LinearLayout
+    lateinit var slidingLayoutPanel: SlidingUpPanelLayout
 
     private lateinit var markerDataHolder: MarkerDataHolder
     private var fusedLocationClient: FusedLocationProviderClient? = null
 
-    override fun onCreateView(savedInstanceState: Bundle?) {
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        loadingLayout = loadingLayoutContainer
+        slidingLayoutPanel = slidingLayout
         slidingUpAdapter = SlidingUpAdapter(this)
         markerDataHolder = MarkerDataHolder()
         searchAreaButton.setOnClickListener { view ->
@@ -135,7 +131,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
 
     override fun onResume() {
         super.onResume()
-        slidingUpPanelLayout.panelState = SlidingUpPanelLayout.PanelState.HIDDEN
+        slidingLayoutPanel.panelState = SlidingUpPanelLayout.PanelState.HIDDEN
     }
 
     override fun onStop() {

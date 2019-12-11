@@ -22,16 +22,13 @@ package fr.cph.chicago.core.activity.map
 import android.annotation.SuppressLint
 import android.graphics.PointF
 import android.graphics.RectF
-import android.graphics.drawable.Drawable
 import android.os.Build
+import android.os.Bundle
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import androidx.appcompat.widget.Toolbar
-import butterknife.BindDrawable
-import butterknife.BindView
+import androidx.fragment.app.FragmentActivity
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
+import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
@@ -43,7 +40,6 @@ import com.mapbox.mapboxsdk.plugins.annotation.LineManager
 import com.mapbox.mapboxsdk.plugins.annotation.LineOptions
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import fr.cph.chicago.R
-import fr.cph.chicago.core.activity.butterknife.ButterKnifeFragmentMapActivity
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.utils.BitmapGenerator
 import fr.cph.chicago.core.utils.getCurrentStyle
@@ -52,25 +48,18 @@ import fr.cph.chicago.util.MapUtil
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.foss.activity_map_mapbox.mapView
+import kotlinx.android.synthetic.foss.activity_map_mapbox.progressBar
+import kotlinx.android.synthetic.main.toolbar.toolbar
 import timber.log.Timber
 
 @SuppressLint("Registered")
-abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapReadyCallback, OnMapClickListener {
+abstract class FragmentMapActivity : FragmentActivity(), OnMapReadyCallback, OnMapClickListener {
 
     companion object {
         protected const val DEFAULT_EXTRAPOLATION = 100
         private val mapUtil = MapUtil
     }
-
-    @BindView(R.id.activity_bar)
-    lateinit var progressBar: ProgressBar
-    @BindView(R.id.map_container)
-    protected lateinit var layout: LinearLayout
-    @BindView(R.id.toolbar)
-    protected lateinit var toolbar: Toolbar
-
-    @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
-    lateinit var arrowBackWhite: Drawable
 
     protected lateinit var map: MapboxMap
     private var lineManager: LineManager? = null
@@ -82,6 +71,15 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
     private var stationSource: GeoJsonSource? = null
     protected var stationFeatureCollection: FeatureCollection? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (!this.isFinishing) {
+            Mapbox.getInstance(this, getString(R.string.mapbox_token))
+            setContentView(R.layout.activity_map_mapbox)
+            mapView?.onCreate(savedInstanceState)
+        }
+    }
+
     protected open fun initMap() {
         mapView?.getMapAsync(this)
     }
@@ -92,7 +90,7 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
             toolbar.elevation = 4f
         }
 
-        toolbar.navigationIcon = arrowBackWhite
+        toolbar.navigationIcon = getDrawable(R.drawable.ic_arrow_back_white_24dp)
         toolbar.setOnClickListener { finish() }
     }
 

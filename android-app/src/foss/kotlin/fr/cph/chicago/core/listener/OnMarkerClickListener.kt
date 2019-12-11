@@ -33,7 +33,6 @@ import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
 @SuppressLint("CheckResult")
@@ -48,8 +47,8 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
     override fun onMarkerClick(marker: Marker): Boolean {
         nearbyFragment.showProgress(true)
         val station = markerDataHolder.getStation(marker)
-        if (nearbyFragment.layoutContainer.childCount != 0) {
-            nearbyFragment.layoutContainer.removeViewAt(0)
+        if (nearbyFragment.loadingLayout.childCount != 0) {
+            nearbyFragment.loadingLayout.removeViewAt(0)
         }
         if (station != null) {
             loadArrivals(station)

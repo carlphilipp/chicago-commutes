@@ -39,7 +39,7 @@
             android:textStyle="normal|bold" />
 
         <TextView
-            android:id="@+id/theme_name"
+            android:id="@+id/themeName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -54,7 +54,7 @@
         android:background="?android:attr/listDivider" />
 
     <LinearLayout
-        android:id="@+id/clear_cache"
+        android:id="@+id/clearCache"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
@@ -91,7 +91,7 @@
         android:background="?android:attr/listDivider" />
 
     <LinearLayout
-        android:id="@+id/developer"
+        android:id="@+id/developerLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
@@ -139,7 +139,7 @@
             android:textStyle="normal|bold" />
 
         <TextView
-            android:id="@+id/version_number"
+            android:id="@+id/versionNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"

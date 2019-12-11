@@ -11,7 +11,6 @@ object Version {
     const val android_tools_build =     "3.5.3"
     const val realm =                   "6.0.2"
 
-    const val butterknife =             "10.2.0"
     const val commons_collections4 =    "4.4"
     const val commons_text =            "1.7"
     const val easypermissions =         "1.3.0"
@@ -52,8 +51,6 @@ object Lib {
     const val gradle_kotlin =               "org.jetbrains.kotlin:kotlin-gradle-plugin:${Version.kotlin}"
 
     // Android app
-    const val butterknife =                 "com.jakewharton:butterknife:${Version.butterknife}"
-    const val butterknife_compiler =        "com.jakewharton:butterknife-compiler:${Version.butterknife}"
     const val commons_collections4 =        "org.apache.commons:commons-collections4:${Version.commons_collections4}"
     const val commons_text =                "org.apache.commons:commons-text:${Version.commons_text}"
     const val easypermissions =             "pub.devrel:easypermissions:${Version.easypermissions}"

@@ -26,7 +26,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
-import butterknife.BindString
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -48,6 +47,7 @@ import fr.cph.chicago.util.Util
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 
 /**
@@ -63,18 +63,10 @@ class BusMapActivity : FragmentMapActivity() {
         private val util = Util
     }
 
-    @BindString(R.string.bundle_bus_id)
-    lateinit var bundleBusId: String
-    @BindString(R.string.bundle_bus_route_id)
-    lateinit var bundleBusRouteId: String
-    @BindString(R.string.bundle_bus_bounds)
-    lateinit var bundleBusBounds: String
-
     private var busMarkers: List<Marker> = listOf()
     private val busStationMarkers: MutableList<Marker> = mutableListOf()
     private val views: MutableMap<Marker, View> = mutableMapOf()
     private val status: MutableMap<Marker, Boolean> = mutableMapOf()
-
     private var busId: Int = 0
     private lateinit var busRouteId: String
     private lateinit var bounds: Array<String>
@@ -83,14 +75,15 @@ class BusMapActivity : FragmentMapActivity() {
     private var loadPattern = true
 
     override fun create(savedInstanceState: Bundle?) {
+        super.create(savedInstanceState)
         if (savedInstanceState != null) {
-            busId = savedInstanceState.getInt(bundleBusId)
-            busRouteId = savedInstanceState.getString(bundleBusRouteId) ?: StringUtils.EMPTY
-            bounds = savedInstanceState.getStringArray(bundleBusBounds) ?: arrayOf()
+            busId = savedInstanceState.getInt(getString(R.string.bundle_bus_id))
+            busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
+            bounds = savedInstanceState.getStringArray(getString(R.string.bundle_bus_bounds)) ?: arrayOf()
         } else {
-            busId = intent.getIntExtra(bundleBusId, 0)
-            busRouteId = intent.getStringExtra(bundleBusRouteId) ?: StringUtils.EMPTY
-            bounds = intent.getStringArrayExtra(bundleBusBounds) ?: arrayOf()
+            busId = intent.getIntExtra(getString(R.string.bundle_bus_id), 0)
+            busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
+            bounds = intent.getStringArrayExtra(getString(R.string.bundle_bus_bounds)) ?: arrayOf()
         }
 
         // Init data
@@ -110,7 +103,7 @@ class BusMapActivity : FragmentMapActivity() {
         toolbar.setOnMenuItemClickListener {
             busService.busForRouteId(busRouteId)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(BusObserver(this@BusMapActivity, false, layout))
+                .subscribe(BusObserver(this@BusMapActivity, false, mapContainerLayout))
             false
         }
 
@@ -142,7 +135,7 @@ class BusMapActivity : FragmentMapActivity() {
             marker
         }.onEach { marker ->
             val layoutInflater = this@BusMapActivity.baseContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            val view = layoutInflater.inflate(R.layout.marker, viewGroup, false)
+            val view = layoutInflater.inflate(R.layout.marker, mapContainerLayout, false)
             val title = view.findViewById<TextView>(R.id.title)
             title.text = marker.title
             views[marker] = view
@@ -192,15 +185,15 @@ class BusMapActivity : FragmentMapActivity() {
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        busId = savedInstanceState.getInt(bundleBusId)
-        busRouteId = savedInstanceState.getString(bundleBusRouteId) ?: StringUtils.EMPTY
-        bounds = savedInstanceState.getStringArray(bundleBusBounds) ?: arrayOf()
+        busId = savedInstanceState.getInt(getString(R.string.bundle_bus_id))
+        busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
+        bounds = savedInstanceState.getStringArray(getString(R.string.bundle_bus_bounds)) ?: arrayOf()
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.putInt(bundleBusId, busId)
-        if (::busRouteId.isInitialized) savedInstanceState.putString(bundleBusRouteId, busRouteId)
-        if (::bounds.isInitialized) savedInstanceState.putStringArray(bundleBusBounds, bounds)
+        savedInstanceState.putInt(getString(R.string.bundle_bus_id), busId)
+        if (::busRouteId.isInitialized) savedInstanceState.putString(getString(R.string.bundle_bus_route_id), busRouteId)
+        if (::bounds.isInitialized) savedInstanceState.putStringArray(getString(R.string.bundle_bus_bounds), bounds)
         super.onSaveInstanceState(savedInstanceState)
     }
 
@@ -226,7 +219,7 @@ class BusMapActivity : FragmentMapActivity() {
                         val busId = marker.snippet
                         busService.loadFollowBus(busId)
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(BusFollowObserver(this@BusMapActivity, layout, view!!, false))
+                            .subscribe(BusFollowObserver(this@BusMapActivity, mapContainerLayout, view!!, false))
                         status[marker] = false
                     }
                     view
@@ -245,7 +238,7 @@ class BusMapActivity : FragmentMapActivity() {
                     val current = status[marker]
                     busService.loadFollowBus(runNumber)
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(BusFollowObserver(this@BusMapActivity, layout, view!!, !current!!))
+                        .subscribe(BusFollowObserver(this@BusMapActivity, mapContainerLayout, view!!, !current!!))
                     status[marker] = !current
                 }
             }
@@ -256,7 +249,7 @@ class BusMapActivity : FragmentMapActivity() {
     private fun loadActivityData() {
         busService.busForRouteId(busRouteId)
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(BusObserver(this@BusMapActivity, true, layout))
+            .subscribe(BusObserver(this@BusMapActivity, true, mapContainerLayout))
         if (loadPattern) {
             Observable.fromCallable {
                 val patterns: MutableList<BusPattern> = mutableListOf()
@@ -275,11 +268,11 @@ class BusMapActivity : FragmentMapActivity() {
                         if (result != null) {
                             drawPattern(result)
                         } else {
-                            util.showNetworkErrorMessage(layout)
+                            util.showNetworkErrorMessage(mapContainerLayout)
                         }
                     },
                     {
-                        util.showNetworkErrorMessage(layout)
+                        util.showNetworkErrorMessage(mapContainerLayout)
                     }
                 )
         }

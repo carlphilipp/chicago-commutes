@@ -24,7 +24,7 @@
     android:orientation="vertical">
 
     <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:sothree="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/sliding_layout"
+        android:id="@+id/slidingLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
@@ -49,7 +49,7 @@
                 android:layout_weight="1">
 
                 <Button
-                    android:id="@+id/search_area"
+                    android:id="@+id/searchAreaButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
@@ -60,7 +60,7 @@
         </com.mapbox.mapboxsdk.maps.MapView>
 
         <LinearLayout
-            android:id="@+id/loading_layout_container"
+            android:id="@+id/loadingLayoutContainer"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
@@ -72,7 +72,7 @@
 
     <!-- Progress bar put after the previous panel to insure it's on the top of it -->
     <ProgressBar
-        android:id="@+id/activity_bar"
+        android:id="@+id/progressBar"
         style="@android:style/Widget.DeviceDefault.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

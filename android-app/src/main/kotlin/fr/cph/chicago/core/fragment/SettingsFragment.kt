@@ -23,11 +23,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import butterknife.BindString
-import butterknife.BindView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import fr.cph.chicago.Constants.SELECTED_ID
 import fr.cph.chicago.R
@@ -39,6 +35,11 @@ import fr.cph.chicago.redux.ResetStateAction
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.RealmConfig
 import fr.cph.chicago.service.PreferenceService
+import kotlinx.android.synthetic.main.fragment_settings.clearCache
+import kotlinx.android.synthetic.main.fragment_settings.developerLayout
+import kotlinx.android.synthetic.main.fragment_settings.theme
+import kotlinx.android.synthetic.main.fragment_settings.themeName
+import kotlinx.android.synthetic.main.fragment_settings.versionNumber
 
 class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
@@ -51,23 +52,8 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         }
     }
 
-    @BindString(R.string.settings)
-    lateinit var settings: String
-    @BindString(R.string.bundle_title)
-    lateinit var bundleTitle: String
-
-    @BindView(R.id.clear_cache)
-    lateinit var clearCache: LinearLayout
-    @BindView(R.id.version_number)
-    lateinit var versionNumber: TextView
-    @BindView(R.id.theme)
-    lateinit var theme: LinearLayout
-    @BindView(R.id.theme_name)
-    lateinit var themeName: TextView
-    @BindView(R.id.developer)
-    lateinit var developerLayout: LinearLayout
-
-    override fun onCreateView(savedInstanceState: Bundle?) {
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         val version = "Version ${util.getCurrentVersion()}"
         versionNumber.text = version
         themeName.text = preferenceService.getTheme().description
@@ -122,7 +108,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         App.instance.themeSetup()
         val intent = activity?.intent
         intent?.putExtra(SELECTED_ID, R.id.navigation_settings)
-        intent?.putExtra(bundleTitle, settings)
+        intent?.putExtra(getString(R.string.bundle_title), getString(R.string.settings))
         activity?.finish()
         startActivity(activity?.intent)
     }
