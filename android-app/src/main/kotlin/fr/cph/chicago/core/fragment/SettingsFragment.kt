@@ -64,7 +64,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             val selected = choices.indexOf(preferenceService.getTheme().description)
             builder.setTitle("Theme change")
             builder.setSingleChoiceItems(choices, selected, null)
-            builder.setPositiveButton("Save & Reload") { dialog: DialogInterface, _ ->
+            builder.setPositiveButton("Save") { dialog: DialogInterface, _ ->
                 val list = (dialog as AlertDialog).listView
                 for (i in 0 until list.count) {
                     val checked = list.isItemChecked(i)

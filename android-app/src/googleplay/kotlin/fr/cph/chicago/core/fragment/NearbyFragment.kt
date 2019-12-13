@@ -58,7 +58,6 @@ import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.Util
 import io.reactivex.rxkotlin.Singles
-import kotlinx.android.synthetic.main.activity_main.drawer
 import kotlinx.android.synthetic.main.fragment_nearby.loadingLayoutContainer
 import kotlinx.android.synthetic.main.fragment_nearby.progressBar
 import kotlinx.android.synthetic.main.fragment_nearby.searchAreaButton
@@ -263,7 +262,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
         var finalPosition = position
         if (position.longitude == 0.0 && position.latitude == 0.0) {
             Timber.w("Could not get current user location")
-            util.showSnackBar(drawer, R.string.message_cant_find_location)
+            util.showSnackBar(loadingLayoutContainer, R.string.message_cant_find_location)
             finalPosition = chicagoPosition
         }
 
