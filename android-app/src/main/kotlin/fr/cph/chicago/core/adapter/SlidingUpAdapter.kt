@@ -22,6 +22,7 @@ package fr.cph.chicago.core.adapter
 import android.content.Context
 import android.text.TextUtils
 import android.view.LayoutInflater
+import android.view.View.MeasureSpec
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
@@ -43,14 +44,12 @@ import fr.cph.chicago.util.Util
 class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
 
     companion object {
-        private const val LINE_HEIGHT = 27
-        private const val HEADER_HEIGHT = 40
-
         private val util = Util
         private val layoutUtil = LayoutUtil
     }
 
     private var nbOfLine = intArrayOf(0)
+    private var headerHeight = 0
 
     fun updateTitleTrain(title: String) {
         createStationHeaderView(title, R.drawable.ic_train_white_24dp)
@@ -65,9 +64,10 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
     }
 
     private fun createStationHeaderView(title: String, @DrawableRes drawable: Int) {
-        val vi = nearbyFragment.context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val convertView = vi.inflate(R.layout.nearby_station_main, nearbyFragment.slidingLayoutPanel, false)
+        val inflater = nearbyFragment.context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val convertView = inflater.inflate(R.layout.nearby_station_main, nearbyFragment.slidingLayoutPanel, false)
 
+        val titleView = convertView.findViewById<RelativeLayout>(R.id.title)
         val stationNameView = convertView.findViewById<TextView>(R.id.station_name)
         val imageView = convertView.findViewById<ImageView>(R.id.icon)
 
@@ -75,6 +75,9 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
         stationNameView.maxLines = 1
         stationNameView.ellipsize = TextUtils.TruncateAt.END
         imageView.setImageDrawable(ContextCompat.getDrawable(nearbyFragment.context!!, drawable))
+
+        titleView.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
+        headerHeight = titleView.measuredHeight * 2
 
         nearbyFragment.loadingLayout.addView(convertView)
     }
@@ -108,7 +111,8 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
                 container.addView(trainLayout)
                 nbOfLine += etas.size
             }
-            nearbyFragment.slidingLayoutPanel.panelHeight = getSlidingPanelHeight(nbOfLine)
+            container.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
+            nearbyFragment.slidingLayoutPanel.panelHeight = getSlidingPanelHeight(container.measuredHeight)
             updatePanelState()
         }
     }
@@ -142,7 +146,8 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
                 handleNoResults(linearLayout)
                 nbOfLine[0]++
             }
-            nearbyFragment.slidingLayoutPanel.panelHeight = getSlidingPanelHeight(nbOfLine[0])
+            linearLayout.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
+            nearbyFragment.slidingLayoutPanel.panelHeight = getSlidingPanelHeight(linearLayout.measuredHeight)
             updatePanelState()
         }
     }
@@ -156,7 +161,8 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
         if (linearLayout.childCount == 0 || "error" == bikeStation.name) {
             val bikeResultLayout = layoutUtil.buildBikeFavoritesLayout(nearbyFragment.context!!, linearLayout, bikeStation)
             linearLayout.addView(bikeResultLayout)
-            nearbyFragment.slidingLayoutPanel.panelHeight = getSlidingPanelHeight(2)
+            linearLayout.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
+            nearbyFragment.slidingLayoutPanel.panelHeight = getSlidingPanelHeight(linearLayout.measuredHeight)
             updatePanelState()
         }
     }
@@ -171,10 +177,8 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
         linearLayout.addView(layoutUtil.createBusArrivalLineNoResults(nearbyFragment.context!!, linearLayout))
     }
 
-    private fun getSlidingPanelHeight(nbLine: Int): Int {
-        val line = util.convertDpToPixel(LINE_HEIGHT)
-        val header = util.convertDpToPixel(HEADER_HEIGHT)
-        return line * nbLine + header
+    private fun getSlidingPanelHeight(lineHeight: Int): Int {
+        return lineHeight + headerHeight
     }
 
     private fun updatePanelState() {
