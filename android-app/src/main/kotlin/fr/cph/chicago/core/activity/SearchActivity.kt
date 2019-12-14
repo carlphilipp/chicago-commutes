@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.activity
 
+import android.annotation.SuppressLint
 import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
@@ -138,6 +139,7 @@ class SearchActivity : AppCompatActivity() {
         actionBar.setDisplayHomeAsUpEnabled(true)
     }
 
+    @SuppressLint("CheckResult")
     private fun handleIntent(intent: Intent) {
         if (Intent.ACTION_SEARCH == intent.action) {
             query = ((intent.getStringExtra(SearchManager.QUERY))
