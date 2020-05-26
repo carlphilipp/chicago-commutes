@@ -4,9 +4,9 @@
 * Do the same thing for `app.properties.template`.
 * You are ready to build it!
 
-Bump version:
+Get current version:
 
-`./gradlew bumpVersion`
+`./gradlew currentVersion`
 
 Build debug APK:
 
