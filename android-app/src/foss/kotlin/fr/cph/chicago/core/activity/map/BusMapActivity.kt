@@ -52,6 +52,7 @@ import com.mapbox.mapboxsdk.utils.ColorUtils
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.exception.CantLoadBusException
 import fr.cph.chicago.exception.CtaException
 import fr.cph.chicago.rx.BusesFunction
 import fr.cph.chicago.service.BusService
@@ -305,6 +306,7 @@ class BusMapActivity : FragmentMapActivity() {
                 { error ->
                     Timber.e(error)
                     when (error) {
+                        is CantLoadBusException -> util.showSnackBar(this.mapContainer, R.string.message_error_bus_favorites)
                         is CtaException -> util.showSnackBar(this.mapContainer, R.string.message_error_could_not_load_path)
                         else -> util.handleConnectOrParserException(error, mapContainer)
                     }
