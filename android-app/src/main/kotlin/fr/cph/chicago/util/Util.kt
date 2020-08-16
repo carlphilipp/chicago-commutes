@@ -34,11 +34,12 @@ import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.dto.BusFavoriteDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.exception.CantLoadBusException
 import fr.cph.chicago.exception.ConnectException
 import java.io.Closeable
 import java.io.IOException
 import java.io.Reader
-import java.util.Random
+import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.regex.Pattern
 
@@ -205,10 +206,10 @@ object Util {
     }
 
     fun handleConnectOrParserException(throwable: Throwable, view: View) {
-        if (throwable is ConnectException) {
-            showNetworkErrorMessage(view)
-        } else {
-            showOopsSomethingWentWrong(view)
+        when (throwable) {
+            is ConnectException -> showNetworkErrorMessage(view)
+            is CantLoadBusException -> showSnackBar(view, throwable.messageToShow)
+            else -> showOopsSomethingWentWrong(view)
         }
     }
 
