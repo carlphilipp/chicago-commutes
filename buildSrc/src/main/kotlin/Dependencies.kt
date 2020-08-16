@@ -1,14 +1,14 @@
 // @formatter:off
 object Android {
     const val compile_sdk =             30
-    const val build_tools =             "30.0.0"
+    const val build_tools =             "30.0.2"
     const val min_sdk =                 21
     const val target_sdk =              30
 }
 
 object Version {
     const val kotlin =                  "1.3.72"
-    const val android_tools_build =     "4.0.0"
+    const val android_tools_build =     "4.0.1"
     const val realm =                   "6.0.2"
 
     const val commons_collections4 =    "4.4"
