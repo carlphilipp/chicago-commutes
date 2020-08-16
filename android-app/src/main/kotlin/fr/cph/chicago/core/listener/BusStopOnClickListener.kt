@@ -67,7 +67,7 @@ class BusStopOnClickListener(private val context: Context, private val parent: V
     private fun startBusStopActivity(busDetails: BusDetailsDTO) {
         val intent = Intent(context, BusStopActivity::class.java)
         val extras = Bundle()
-        extras.putInt(context.getString(R.string.bundle_bus_stop_id), busDetails.stopId)
+        extras.putString(context.getString(R.string.bundle_bus_stop_id), busDetails.stopId.toString())
         extras.putString(context.getString(R.string.bundle_bus_route_id), busDetails.busRouteId)
         extras.putString(context.getString(R.string.bundle_bus_route_name), busDetails.routeName)
         extras.putString(context.getString(R.string.bundle_bus_bound), busDetails.bound)

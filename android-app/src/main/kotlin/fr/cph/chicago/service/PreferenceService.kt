@@ -38,6 +38,7 @@ import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
+import java.math.BigInteger
 import java.util.Date
 
 object PreferenceService {
@@ -69,15 +70,15 @@ object PreferenceService {
         repo.saveTheme(theme.key)
     }
 
-    fun isTrainStationFavorite(trainStationId: Int): Boolean {
+    fun isTrainStationFavorite(trainStationId: BigInteger): Boolean {
         return store.state.trainFavorites.any { it == trainStationId }
     }
 
-    fun getTrainFilter(stationId: Int, line: TrainLine, direction: TrainDirection): Boolean {
+    fun getTrainFilter(stationId: BigInteger, line: TrainLine, direction: TrainDirection): Boolean {
         return repo.getTrainFilter(stationId, line, direction)
     }
 
-    fun saveTrainFilter(stationId: Int, line: TrainLine, direction: TrainDirection, isChecked: Boolean) {
+    fun saveTrainFilter(stationId: BigInteger, line: TrainLine, direction: TrainDirection, isChecked: Boolean) {
         if (isChecked) {
             repo.removeTrainFilter(stationId, line, direction)
         } else {
@@ -108,17 +109,17 @@ object PreferenceService {
     }
 
     // Favorites
-    fun isStopFavorite(busRouteId: String, busStopId: Int, boundTitle: String): Boolean {
+    fun isStopFavorite(busRouteId: String, busStopId: BigInteger, boundTitle: String): Boolean {
         return !repo.getBusFavorites()
             .firstOrNull { favorite -> favorite == busRouteId + "_" + busStopId + "_" + boundTitle }
             .isNullOrBlank()
     }
 
-    fun isBikeStationFavorite(bikeStationId: Int): Boolean {
+    fun isBikeStationFavorite(bikeStationId: BigInteger): Boolean {
         return repo.getBikeFavorites().any { id -> id == bikeStationId }
     }
 
-    fun addBikeToFavorites(stationId: Int, stationName: String): Single<List<Int>> {
+    fun addBikeToFavorites(stationId: BigInteger, stationName: String): Single<List<BigInteger>> {
         return Single.fromCallable { repo.getBikeFavorites().toMutableSet() }
             .map { favorites ->
                 favorites.add(stationId)
@@ -129,7 +130,7 @@ object PreferenceService {
             .subscribeOn(Schedulers.io())
     }
 
-    private fun addBikeRouteNameMapping(bikeId: Int, bikeName: String): Single<Unit> {
+    private fun addBikeRouteNameMapping(bikeId: BigInteger, bikeName: String): Single<Unit> {
         return Single.fromCallable { repo.addBikeRouteNameMapping(bikeId, bikeName) }.subscribeOn(Schedulers.io())
     }
 
@@ -154,7 +155,7 @@ object PreferenceService {
         return Single.fromCallable { repo.addBusStopNameMapping(busStopId, stopName) }.subscribeOn(Schedulers.io())
     }
 
-    fun addTrainToFavorites(stationId: Int): Single<List<Int>> {
+    fun addTrainStationToFavorites(stationId: BigInteger): Single<List<BigInteger>> {
         return Single.fromCallable { repo.getTrainFavorites().toMutableSet() }
             .map { favorites ->
                 if (!favorites.contains(stationId)) {
@@ -198,7 +199,7 @@ object PreferenceService {
             .subscribeOn(Schedulers.io())
     }
 
-    fun removeBikeFromFavorites(stationId: Int): Single<List<Int>> {
+    fun removeBikeFromFavorites(stationId: BigInteger): Single<List<BigInteger>> {
         return Single.fromCallable { repo.getBikeFavorites().toMutableSet() }
             .map { favorites ->
                 favorites.remove(stationId)
@@ -209,7 +210,7 @@ object PreferenceService {
             .subscribeOn(Schedulers.io())
     }
 
-    fun removeTrainFromFavorites(stationId: Int): Single<List<Int>> {
+    fun removeTrainFromFavorites(stationId: BigInteger): Single<List<BigInteger>> {
         return Single.fromCallable { repo.getTrainFavorites().toMutableSet() }
             .map { favorites ->
                 favorites.remove(stationId)
@@ -219,11 +220,11 @@ object PreferenceService {
             .subscribeOn(Schedulers.io())
     }
 
-    fun getBikeFavorites(): Single<List<Int>> {
+    fun getBikeFavorites(): Single<List<BigInteger>> {
         return Single.fromCallable { repo.getBikeFavorites().toList() }.subscribeOn(Schedulers.io())
     }
 
-    private fun getBikeMatchingFavorites(): Single<List<Int>> {
+    private fun getBikeMatchingFavorites(): Single<List<BigInteger>> {
         return Single.fromCallable { repo.getBikeFavorites() }
             .observeOn(Schedulers.computation())
             .map { favorites ->
@@ -235,7 +236,7 @@ object PreferenceService {
             .subscribeOn(Schedulers.io())
     }
 
-    fun getTrainFavorites(): Single<List<Int>> {
+    fun getTrainFavorites(): Single<List<BigInteger>> {
         return Single.fromCallable { repo.getTrainFavorites().toList() }.subscribeOn(Schedulers.io())
     }
 
@@ -247,7 +248,7 @@ object PreferenceService {
         return repo.getBusRouteNameMapping(busStopId)
     }
 
-    fun getBikeRouteNameMapping(bikeId: Int): String {
+    fun getBikeRouteNameMapping(bikeId: BigInteger): String {
         return repo.getBikeRouteNameMapping(bikeId)
     }
 

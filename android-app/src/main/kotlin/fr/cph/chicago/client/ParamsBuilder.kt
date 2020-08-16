@@ -21,6 +21,7 @@ package fr.cph.chicago.client
 
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
+import java.math.BigInteger
 
 const val REQUEST_ROUTE = "rt"
 private const val REQUEST_DIR = "dir"
@@ -39,14 +40,14 @@ fun busFollowParams(busId: String): MultiValuedMap<String, String> {
     return params
 }
 
-fun busArrivalsParams(busRouteId: String, busStopId: Int): MultiValuedMap<String, String> {
+fun busArrivalsParams(busRouteId: String, busStopId: BigInteger): MultiValuedMap<String, String> {
     val params = ArrayListValuedHashMap<String, String>(2, 1)
     params.put(REQUEST_ROUTE, busRouteId)
     params.put(REQUEST_STOP_ID, busStopId.toString())
     return params
 }
 
-fun busArrivalsStopIdParams(busStopId: Int): MultiValuedMap<String, String> {
+fun busArrivalsStopIdParams(busStopId: BigInteger): MultiValuedMap<String, String> {
     val params = ArrayListValuedHashMap<String, String>(1, 1)
     params.put(REQUEST_STOP_ID, busStopId.toString())
     return params
@@ -71,7 +72,7 @@ fun trainLocationParams(line: String): MultiValuedMap<String, String> {
     return params
 }
 
-fun stationTrainParams(stationId: Int): MultiValuedMap<String, String> {
+fun stationTrainParams(stationId: BigInteger): MultiValuedMap<String, String> {
     val params = ArrayListValuedHashMap<String, String>(1, 1)
     params.put(REQUEST_MAP_ID, stationId.toString())
     return params

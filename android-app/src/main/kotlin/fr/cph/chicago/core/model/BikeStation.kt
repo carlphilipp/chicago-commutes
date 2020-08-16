@@ -3,9 +3,10 @@ package fr.cph.chicago.core.model
 import android.os.Parcel
 import android.os.Parcelable
 import org.apache.commons.lang3.StringUtils
+import java.math.BigInteger
 
 class BikeStation(
-    id: Int,
+    id: BigInteger,
     name: String,
     val availableDocks: Int,
     val availableBikes: Int,
@@ -18,7 +19,7 @@ class BikeStation(
             return buildDefaultBikeStationWithName("Unknown")
         }
 
-        fun buildDefaultBikeStationWithName(name: String, id : Int = 0): BikeStation {
+        fun buildDefaultBikeStationWithName(name: String, id : BigInteger = BigInteger.ZERO): BikeStation {
             return BikeStation(id, name, -1, -1, 0.0, 0.0, StringUtils.EMPTY)
         }
 
@@ -35,7 +36,7 @@ class BikeStation(
     }
 
     private constructor(source: Parcel) : this(
-        id = source.readInt(),
+        id = BigInteger(source.readString()!!),
         name = source.readString() ?: StringUtils.EMPTY,
         availableDocks = source.readInt(),
         availableBikes = source.readInt(),
@@ -48,7 +49,7 @@ class BikeStation(
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeInt(id)
+        dest.writeString(id.toString())
         dest.writeString(name)
         dest.writeInt(availableDocks)
         dest.writeInt(availableBikes)

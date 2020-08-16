@@ -70,6 +70,7 @@ import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 import org.apache.commons.text.WordUtils
 import timber.log.Timber
+import java.math.BigInteger
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.Callable
@@ -107,7 +108,7 @@ object BusService {
                 }
                 busStopsResponse.bustimeResponse.stops!!.map { stop ->
                     BusStop(
-                        id = stop.stpid.toInt(),
+                        id = stop.stpid.toBigInteger(),
                         name = WordUtils.capitalizeFully(stop.stpnm),
                         description = stop.stpnm,
                         position = Position(stop.lat, stop.lon))
@@ -254,7 +255,7 @@ object BusService {
             .subscribeOn(Schedulers.computation())
     }
 
-    fun loadBusArrivals(busRouteId: String, busStopId: Int, bound: String, boundTitle: String): Single<BusArrivalStopDTO> {
+    fun loadBusArrivals(busRouteId: String, busStopId: BigInteger, bound: String, boundTitle: String): Single<BusArrivalStopDTO> {
         return getBusArrivals(busArrivalsParams(busRouteId, busStopId))
             .map { busArrivals ->
                 busArrivals

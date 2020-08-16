@@ -19,23 +19,14 @@
 
 package fr.cph.chicago.service
 
-import android.util.SparseArray
 import fr.cph.chicago.R
 import fr.cph.chicago.client.CtaClient
-import fr.cph.chicago.client.CtaRequestType.TRAIN_ARRIVALS
-import fr.cph.chicago.client.CtaRequestType.TRAIN_FOLLOW
-import fr.cph.chicago.client.CtaRequestType.TRAIN_LOCATION
+import fr.cph.chicago.client.CtaRequestType.*
 import fr.cph.chicago.client.stationTrainParams
 import fr.cph.chicago.client.trainEtasParams
 import fr.cph.chicago.client.trainLocationParams
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.core.model.Stop
-import fr.cph.chicago.core.model.Train
-import fr.cph.chicago.core.model.TrainArrival
-import fr.cph.chicago.core.model.TrainEta
-import fr.cph.chicago.core.model.TrainStation
-import fr.cph.chicago.core.model.TrainStationPattern
+import fr.cph.chicago.core.model.*
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.entity.TrainArrivalResponse
@@ -51,12 +42,32 @@ import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
+import java.math.BigInteger
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
+import java.util.*
 import java.util.concurrent.Callable
+import kotlin.collections.ArrayList
+import kotlin.collections.List
+import kotlin.collections.MutableList
+import kotlin.collections.MutableMap
+import kotlin.collections.any
 import kotlin.collections.component1
 import kotlin.collections.component2
+import kotlin.collections.distinct
+import kotlin.collections.filter
+import kotlin.collections.flatMap
+import kotlin.collections.forEach
+import kotlin.collections.getOrElse
+import kotlin.collections.iterator
+import kotlin.collections.listOf
+import kotlin.collections.map
+import kotlin.collections.mutableListOf
+import kotlin.collections.mutableMapOf
+import kotlin.collections.set
+import kotlin.collections.sort
+import kotlin.collections.sorted
+import kotlin.collections.toList
+import kotlin.collections.toMutableList
 
 object TrainService {
 
@@ -71,7 +82,7 @@ object TrainService {
         return singleFromCallable(
             Callable {
                 val trainParams = preferencesService.getFavoritesTrainParams()
-                var trainArrivals = SparseArray<TrainArrival>()
+                var trainArrivals = mutableMapOf<BigInteger, TrainArrival>()
                 for ((key, value) in trainParams.asMap()) {
                     if ("mapid" == key) {
                         val list = value as MutableList<String>
@@ -88,9 +99,7 @@ object TrainService {
                                     paramsTemp.put(key, sub)
                                 }
                                 val temp = getTrainArrivals(paramsTemp).blockingGet()
-                                for (j in 0..temp.size() - 1) {
-                                    trainArrivals.put(temp.keyAt(j), temp.valueAt(j))
-                                }
+                                trainArrivals.putAll(temp)
                                 start = end
                                 if (end + 3 >= size - 1 && end != size) {
                                     end = size
@@ -103,9 +112,8 @@ object TrainService {
                 }
 
                 // Apply filters
-                var index = 0
-                while (index < trainArrivals.size()) {
-                    val trainArrival = trainArrivals.valueAt(index++)
+                trainArrivals.forEach { entry ->
+                    val trainArrival = entry.value
                     val etas = trainArrival.trainEtas
                     trainArrival.trainEtas = etas
                         .filter { (station, stop, line) -> preferencesService.getTrainFilter(station.id, line, stop.direction) }
@@ -122,7 +130,7 @@ object TrainService {
         // Force loading train from CSV toi avoid doing it later
         return Single
             .fromCallable { trainRepository.stations }
-            .map { it.size() == 0 }
+            .map { it.isEmpty() }
             .subscribeOn(Schedulers.computation())
             .onErrorReturn { throwable ->
                 Timber.e(throwable, "Could not create local train data")
@@ -130,11 +138,10 @@ object TrainService {
             }
     }
 
-    fun loadStationTrainArrival(stationId: Int): Single<TrainArrival> {
+    fun loadStationTrainArrival(stationId: BigInteger): Single<TrainArrival> {
         return getTrainArrivals(stationTrainParams(stationId))
             .observeOn(Schedulers.computation())
-            .map { trainArrivals -> trainArrivals.get(stationId, TrainArrival.buildEmptyTrainArrival()) }
-            .subscribeOn(Schedulers.io())
+            .map { trainArrivals -> trainArrivals.getOrElse(stationId, { TrainArrival.buildEmptyTrainArrival() }) }
     }
 
     fun trainEtas(runNumber: String, loadAll: Boolean): Single<List<TrainEta>> {
@@ -143,9 +150,9 @@ object TrainService {
                 val arrivals = getTrainArrivalsInternal(trainArrivalResponse)
                 var trainEta = mutableListOf<TrainEta>()
                 var index = 0
-                while (index < arrivals.size()) {
-                    val (etas) = arrivals.valueAt(index++)
-                    if (etas.size != 0) {
+                arrivals.forEach { entry ->
+                    val etas = entry.value.trainEtas
+                    if (entry.value.trainEtas.size != 0) {
                         trainEta.add(etas[0])
                     }
                 }
@@ -154,7 +161,7 @@ object TrainService {
                 if (!loadAll && trainEta.size > 7) {
                     trainEta = trainEta.subList(0, 6)
                     val currentDate = Calendar.getInstance().time
-                    val fakeStation = TrainStation(0, App.instance.getString(R.string.bus_all_results), ArrayList())
+                    val fakeStation = TrainStation(BigInteger.ZERO, App.instance.getString(R.string.bus_all_results), ArrayList())
                     // Add a fake TrainEta cell to alert the user about the fact that only a part of the result is displayed
                     val eta = TrainEta.buildFakeEtaWith(fakeStation, currentDate, currentDate, false, false)
                     trainEta.add(eta)
@@ -180,7 +187,7 @@ object TrainService {
             }
     }
 
-    fun getStation(id: Int): TrainStation {
+    fun getStation(id: BigInteger): TrainStation {
         return trainRepository.getStation(id)
     }
 
@@ -209,8 +216,9 @@ object TrainService {
             val lonMax = position.longitude + DEFAULT_RANGE
             val lonMin = position.longitude - DEFAULT_RANGE
 
-            (0 until trainRepository.stations.size())
-                .map { trainRepository.stations.valueAt(it) }
+            listOf<TrainStation>()
+            trainRepository.stations
+                .map { entry -> entry.value }
                 .filter {
                     it.stopsPosition.any { stopPosition ->
                         val trainLatitude = stopPosition.latitude
@@ -244,13 +252,13 @@ object TrainService {
             .observeOn(Schedulers.computation())
     }
 
-    private fun getTrainArrivals(params: MultiValuedMap<String, String>): Single<SparseArray<TrainArrival>> {
+    private fun getTrainArrivals(params: MultiValuedMap<String, String>): Single<MutableMap<BigInteger, TrainArrival>> {
         return ctaClient.get(TRAIN_ARRIVALS, params, TrainArrivalResponse::class.java)
             .map { trainArrivalResponse -> getTrainArrivalsInternal(trainArrivalResponse) }
     }
 
-    private fun getTrainArrivalsInternal(trainArrivalResponse: TrainArrivalResponse): SparseArray<TrainArrival> {
-        val result = SparseArray<TrainArrival>()
+    private fun getTrainArrivalsInternal(trainArrivalResponse: TrainArrivalResponse): MutableMap<BigInteger, TrainArrival> {
+        val result = mutableMapOf<BigInteger, TrainArrival>()
         if (trainArrivalResponse.ctatt.eta == null) {
             val error = trainArrivalResponse.ctatt.errNm
             Timber.e("Error: %s", error)
@@ -260,7 +268,7 @@ object TrainService {
             .ctatt
             .eta
             .map { eta ->
-                val station = getStation(eta.staId.toInt())
+                val station = getStation(BigInteger(eta.staId))
                 val stop = getStop(eta.stpId.toInt())
                 stop.description = eta.stpDe
                 val routeName = TrainLine.fromXmlString(eta.rt)
@@ -285,10 +293,10 @@ object TrainService {
             }
             .filter { (station, stop, line) -> preferencesService.getTrainFilter(station.id, line, stop.direction) }
             .forEach {
-                if (result.indexOfKey(it.trainStation.id) < 0) {
-                    result.append(it.trainStation.id, TrainArrival.buildEmptyTrainArrival().addEta(it))
+                if (result.containsKey(it.trainStation.id)) {
+                    result[it.trainStation.id]!!.addEta(it)
                 } else {
-                    result.get(it.trainStation.id).addEta(it)
+                    result[it.trainStation.id] = TrainArrival.buildEmptyTrainArrival().addEta(it)
                 }
             }
         return result

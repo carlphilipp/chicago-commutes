@@ -33,6 +33,7 @@ import fr.cph.chicago.util.Util
 import timber.log.Timber
 import java.io.IOException
 import java.io.InputStreamReader
+import java.math.BigInteger
 import java.util.TreeMap
 
 /**
@@ -55,11 +56,11 @@ object TrainRepository {
         parser = CsvParser(settings)
     }
 
-    private val inMemoryData: Triple<SparseArray<TrainStation>, SparseArray<Stop>, Map<TrainLine, List<TrainStation>>> by lazy {
+    private val inMemoryData: Triple<Map<BigInteger, TrainStation>, SparseArray<Stop>, Map<TrainLine, List<TrainStation>>> by lazy {
         loadInMemoryStationsAndStops()
     }
 
-    val stations: SparseArray<TrainStation>
+    val stations: Map<BigInteger, TrainStation>
         get() = inMemoryData.first
 
     private val stops: SparseArray<Stop>
@@ -111,8 +112,8 @@ object TrainRepository {
      * @param id the id of the train station
      * @return the train station
      */
-    fun getStation(id: Int): TrainStation {
-        return stations.get(id) ?: TrainStation.buildEmptyStation()
+    fun getStation(id: BigInteger): TrainStation {
+        return stations[id] ?: TrainStation.buildEmptyStation()
     }
 
     /**
@@ -125,8 +126,8 @@ object TrainRepository {
         return stops.get(id, Stop.buildEmptyStop())
     }
 
-    private fun loadInMemoryStationsAndStops(): Triple<SparseArray<TrainStation>, SparseArray<Stop>, Map<TrainLine, List<TrainStation>>> {
-        val stations = SparseArray<TrainStation>()
+    private fun loadInMemoryStationsAndStops(): Triple<Map<BigInteger, TrainStation>, SparseArray<Stop>, Map<TrainLine, List<TrainStation>>> {
+        val stations = mutableMapOf<BigInteger, TrainStation>()
         val stops = SparseArray<Stop>()
         var stationsOrderByLine = TreeMap<TrainLine, List<TrainStation>>()
 
@@ -141,7 +142,7 @@ object TrainRepository {
                 val stopName = row[2] // STOP_NAME
                 val stationName = row[3]// STATION_NAME
                 // String stationDescription = row[4];//STATION_DESCRIPTIVE_NAME
-                val parentStopId = row[5].toInt()// MAP_ID (old PARENT_STOP_ID)
+                val parentStopId = BigInteger(row[5])// MAP_ID (old PARENT_STOP_ID)
                 val ada = row[6].toBoolean()// ADA
                 val red = row[7].toBoolean()// Red
                 val blue = row[8].toBoolean()// Blue
@@ -177,10 +178,10 @@ object TrainRepository {
                 val stop = Stop(stopId, stopName, direction, Position(latitude, longitude), ada, lines)
                 stops.append(stopId, stop)
 
-                val currentStation = stations.get(parentStopId, null)
+                val currentStation = stations[parentStopId]
                 if (currentStation == null) {
                     station.stops = mutableListOf(stop)
-                    stations.append(parentStopId, station)
+                    stations.put(parentStopId, station)
                 } else {
                     (currentStation.stops as MutableList).add(stop)
                 }
@@ -217,9 +218,9 @@ object TrainRepository {
         }
     }
 
-    private fun sortStation(trainStationNotSorted: SparseArray<TrainStation>): TreeMap<TrainLine, List<TrainStation>> {
-        return (0 until trainStationNotSorted.size())
-            .map { trainStationNotSorted.valueAt(it) }
+    private fun sortStation(trainStationNotSorted: Map<BigInteger, TrainStation>): TreeMap<TrainLine, List<TrainStation>> {
+        return trainStationNotSorted
+            .map { it.value }
             .fold(TreeMap()) { accumulator, station ->
                 // Accumulate train station in the map
                 station.lines.forEach { trainLine -> (accumulator.getOrPut(trainLine, { mutableListOf() }) as MutableList).add(station) }

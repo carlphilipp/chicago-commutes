@@ -33,7 +33,7 @@ open class BusStopDb(
     var position: PositionDb? = PositionDb()) : RealmObject() {
 
     constructor(busStop: BusStop) : this(
-        id = busStop.id,
+        id = busStop.id.toInt(),
         name = busStop.name,
         description = busStop.description,
         position = PositionDb(busStop.position.latitude, busStop.position.longitude)

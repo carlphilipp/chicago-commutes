@@ -55,6 +55,7 @@ import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
+import java.math.BigInteger
 import java.util.Random
 
 /**
@@ -67,15 +68,15 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
 
     private lateinit var trainStation: TrainStation
 
-    private var stationId: Int = 0
+    private var stationId: BigInteger = BigInteger.ZERO
     private var ids: MutableMap<String, Int> = mutableMapOf()
     private var randomTrainLine = TrainLine.NA
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Get train station id from bundle
-        stationId = intent.extras?.getInt(getString(R.string.bundle_train_stationId), 0) ?: 0
-        if (stationId != 0) {
+        stationId = BigInteger(intent.extras?.getString(getString(R.string.bundle_train_stationId), "0")!!)
+        if (stationId != BigInteger.ZERO) {
             // Get trainStation
             trainStation = TrainService.getStation(stationId)
             position = trainStation.stops[0].position
@@ -199,12 +200,12 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        stationId = savedInstanceState.getInt(getString(R.string.bundle_train_stationId))
+        stationId = BigInteger(savedInstanceState.getString(getString(R.string.bundle_train_stationId))!!)
         position = savedInstanceState.getParcelable(getString(R.string.bundle_position)) as Position? ?: Position()
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.putInt(getString(R.string.bundle_train_stationId), stationId)
+        savedInstanceState.putString(getString(R.string.bundle_train_stationId), stationId.toString())
         savedInstanceState.putParcelable(getString(R.string.bundle_position), position)
         super.onSaveInstanceState(savedInstanceState)
     }

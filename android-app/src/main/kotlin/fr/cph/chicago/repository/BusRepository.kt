@@ -78,7 +78,7 @@ object BusRepository {
                 .findAll()
                 .map { currentBusStop ->
                     BusStop(
-                        id = currentBusStop.id,
+                        id = currentBusStop.id.toBigInteger(),
                         name = currentBusStop.name,
                         description = currentBusStop.description,
                         position = Position(

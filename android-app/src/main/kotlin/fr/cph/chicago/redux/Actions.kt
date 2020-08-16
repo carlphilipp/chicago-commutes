@@ -12,6 +12,7 @@ import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.Action
+import java.math.BigInteger
 
 data class ResetStateAction(val unit: Unit = Unit) : Action
 
@@ -26,17 +27,17 @@ data class DefaultSettingsAction(
 
 data class BaseAction(
     val localError: Boolean = false,
-    val trainArrivalsDTO: TrainArrivalDTO = TrainArrivalDTO(SparseArray(), false),
+    val trainArrivalsDTO: TrainArrivalDTO = TrainArrivalDTO(mutableMapOf(), false),
     val busArrivalsDTO: BusArrivalDTO = BusArrivalDTO(listOf(), false),
-    val trainFavorites: List<Int> = listOf(),
+    val trainFavorites: List<BigInteger> = listOf(),
     val busFavorites: List<String> = listOf(),
     val busRouteFavorites: List<String> = listOf(),
-    val bikeFavorites: List<Int> = listOf()
+    val bikeFavorites: List<BigInteger> = listOf()
 ) : Action
 
 data class FavoritesAction(
     val favoritesDTO: FavoritesDTO = FavoritesDTO(
-        trainArrivalDTO = TrainArrivalDTO(SparseArray(), false),
+        trainArrivalDTO = TrainArrivalDTO(mutableMapOf(), false),
         busArrivalDTO = BusArrivalDTO(listOf(), false),
         bikeError = false,
         bikeStations = listOf())
@@ -59,7 +60,7 @@ data class BusRoutesAndBikeStationAction(
 
 // Train station activity
 data class TrainStationAction(
-    val trainStationId: Int = 0,
+    val trainStationId: BigInteger = BigInteger.ZERO,
     val trainArrival: TrainArrival = TrainArrival(),
     val error: Boolean = false,
     val errorMessage: Int = R.string.message_something_went_wrong
@@ -69,7 +70,7 @@ data class TrainStationAction(
 data class BusStopArrivalsAction(
     // input
     val busRouteId: String = StringUtils.EMPTY,
-    val busStopId: Int = 0,
+    val busStopId: BigInteger = BigInteger.ZERO,
     val bound: String = StringUtils.EMPTY,
     val boundTitle: String = StringUtils.EMPTY,
     // output
@@ -92,13 +93,13 @@ data class AlertAction(
 ) : Action
 
 data class AddTrainFavoriteAction(
-    val id: Int = 0,
-    val trainFavorites: List<Int> = listOf()
+    val id: BigInteger = BigInteger.ZERO,
+    val trainFavorites: List<BigInteger> = listOf()
 ) : Action
 
 data class RemoveTrainFavoriteAction(
-    val id: Int = 0,
-    val trainFavorites: List<Int> = listOf()
+    val id: BigInteger = BigInteger.ZERO,
+    val trainFavorites: List<BigInteger> = listOf()
 ) : Action
 
 data class AddBusFavoriteAction(
@@ -120,12 +121,12 @@ data class RemoveBusFavoriteAction(
 ) : Action
 
 data class AddBikeFavoriteAction(
-    val id: Int = 0,
+    val id: BigInteger = BigInteger.ZERO,
     val stationName: String = StringUtils.EMPTY,
-    val bikeFavorites: List<Int> = listOf()
+    val bikeFavorites: List<BigInteger> = listOf()
 ) : Action
 
 data class RemoveBikeFavoriteAction(
-    val id: Int = 0,
-    val bikeFavorites: List<Int> = listOf()
+    val id: BigInteger = BigInteger.ZERO,
+    val bikeFavorites: List<BigInteger> = listOf()
 ) : Action

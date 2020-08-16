@@ -23,6 +23,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import org.apache.commons.lang3.StringUtils
+import java.math.BigInteger
 import java.util.TreeMap
 import java.util.TreeSet
 
@@ -33,13 +34,13 @@ import java.util.TreeSet
  * @version 1
  */
 class TrainStation(
-    id: Int,
+    id: BigInteger,
     name: String,
     var stops: List<Stop>) : Comparable<TrainStation>, Parcelable, Station(id, name) {
 
     companion object {
         fun buildEmptyStation(): TrainStation {
-            return TrainStation(0, StringUtils.EMPTY, mutableListOf())
+            return TrainStation(BigInteger.ZERO, StringUtils.EMPTY, mutableListOf())
         }
 
         @JvmField
@@ -55,7 +56,7 @@ class TrainStation(
     }
 
     private constructor(source: Parcel) : this(
-        id = source.readInt(),
+        id = BigInteger(source.readString()!!),
         name = source.readString() ?: StringUtils.EMPTY,
         stops = source.createTypedArrayList(Stop.CREATOR) ?: listOf())
 
@@ -92,7 +93,7 @@ class TrainStation(
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeInt(id)
+        dest.writeString(id.toString())
         dest.writeString(name)
         dest.writeTypedList(stops)
     }

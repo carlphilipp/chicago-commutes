@@ -58,6 +58,7 @@ import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
+import java.math.BigInteger
 
 /**
  * Activity that represents the bus stop
@@ -74,14 +75,14 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
     private lateinit var busRouteId: String
     private lateinit var bound: String
     private lateinit var boundTitle: String
-    private var busStopId: Int = 0
+    private var busStopId: BigInteger = BigInteger.ZERO
     private lateinit var busStopName: String
     private lateinit var busRouteName: String
     private lateinit var action: BusStopArrivalsAction
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        busStopId = intent.getIntExtra(getString(R.string.bundle_bus_stop_id), 0)
+        busStopId = BigInteger(intent.getStringExtra(getString(R.string.bundle_bus_stop_id))?: "0")
         busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
         bound = intent.getStringExtra(getString(R.string.bundle_bus_bound)) ?: StringUtils.EMPTY
         boundTitle = intent.getStringExtra(getString(R.string.bundle_bus_bound_title)) ?: StringUtils.EMPTY
@@ -193,7 +194,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        busStopId = savedInstanceState.getInt(getString(R.string.bundle_bus_stop_id))
+        busStopId = BigInteger(savedInstanceState.getString(getString(R.string.bundle_bus_stop_id)) ?: "0")
         busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
         bound = savedInstanceState.getString(getString(R.string.bundle_bus_bound)) ?: StringUtils.EMPTY
         boundTitle = savedInstanceState.getString(getString(R.string.bundle_bus_bound_title)) ?: StringUtils.EMPTY
@@ -208,7 +209,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
     }
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.putInt(getString(R.string.bundle_bus_stop_id), busStopId)
+        savedInstanceState.putString(getString(R.string.bundle_bus_stop_id), busStopId.toString())
         if (::busRouteId.isInitialized) savedInstanceState.putString(getString(R.string.bundle_bus_route_id), busRouteId)
         if (::bound.isInitialized) savedInstanceState.putString(getString(R.string.bundle_bus_bound), bound)
         if (::boundTitle.isInitialized) savedInstanceState.putString(getString(R.string.bundle_bus_bound_title), boundTitle)

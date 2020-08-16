@@ -224,7 +224,7 @@ internal val addTrainFavorites: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->
             (action as? AddTrainFavoriteAction)?.let {
-                preferenceService.addTrainToFavorites(action.id)
+                preferenceService.addTrainStationToFavorites(action.id)
                     .map { favorites -> AddTrainFavoriteAction(id = action.id, trainFavorites = favorites) }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ newAction -> next(newAction) }, { error -> Timber.e(error) })

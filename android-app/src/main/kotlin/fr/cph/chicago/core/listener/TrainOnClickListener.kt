@@ -32,6 +32,7 @@ import fr.cph.chicago.core.activity.station.TrainStationActivity
 import fr.cph.chicago.core.adapter.PopupTrainAdapter
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.util.Color
+import java.math.BigInteger
 
 /**
  * Favorites train on click listener
@@ -40,7 +41,7 @@ import fr.cph.chicago.util.Color
  * @version 1
  */
 class TrainOnClickListener(private val parent: ViewGroup,
-                           private val stationId: Int,
+                           private val stationId: BigInteger,
                            private val trainLines: Set<TrainLine>) : OnClickListener {
 
     override fun onClick(view: View) {
@@ -62,7 +63,7 @@ class TrainOnClickListener(private val parent: ViewGroup,
             if (position == 0) {
                 // Start train station activity
                 intent = Intent(view.context, TrainStationActivity::class.java)
-                extras.putInt(view.context.getString(R.string.bundle_train_stationId), stationId)
+                extras.putString(view.context.getString(R.string.bundle_train_stationId), stationId.toString())
             } else {
                 // Follow all trains from given line on google map view
                 intent = Intent(view.context, TrainMapActivity::class.java)

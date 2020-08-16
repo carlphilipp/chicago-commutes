@@ -32,6 +32,7 @@ import io.reactivex.rxkotlin.Singles
 import io.reactivex.schedulers.Schedulers
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 import timber.log.Timber
+import java.math.BigInteger
 import java.util.concurrent.Callable
 
 object BikeService {
@@ -44,7 +45,7 @@ object BikeService {
         return loadAllBikeStations()
     }
 
-    fun findBikeStation(id: Int): Single<BikeStation> {
+    fun findBikeStation(id: BigInteger): Single<BikeStation> {
         return loadAllBikeStations()
             .toObservable()
             .flatMapIterable { station -> station }
@@ -67,7 +68,7 @@ object BikeService {
             .subscribeOn(Schedulers.computation())
     }
 
-    fun createEmptyBikeStation(bikeStationId: Int): BikeStation {
+    fun createEmptyBikeStation(bikeStationId: BigInteger): BikeStation {
         val stationName = preferenceService.getBikeRouteNameMapping(bikeStationId)
         return BikeStation.buildDefaultBikeStationWithName(stationName, bikeStationId)
     }
@@ -80,7 +81,7 @@ object BikeService {
             for ((key, stationInfo) in info) {
                 val stationStatus = stat[key] ?: DivvyStationStatus("", 0, 0)
                 res.add(BikeStation(
-                    id = stationInfo.id.toInt(),
+                    id = stationInfo.id.toBigInteger(),
                     name = stationInfo.name,
                     availableDocks = stationStatus.availableDocks,
                     availableBikes = stationStatus.availableBikes,

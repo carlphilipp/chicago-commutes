@@ -99,7 +99,7 @@ class BusBoundActivity : AppCompatActivity(), OnMapReadyCallback {
                 val intent = Intent(applicationContext, BusStopActivity::class.java)
 
                 val extras = with(Bundle()) {
-                    putInt(getString(R.string.bundle_bus_stop_id), busStop.id)
+                    putString(getString(R.string.bundle_bus_stop_id), busStop.id.toString())
                     putString(getString(R.string.bundle_bus_stop_name), busStop.name)
                     putString(getString(R.string.bundle_bus_route_id), busRouteId)
                     putString(getString(R.string.bundle_bus_route_name), busRouteName)

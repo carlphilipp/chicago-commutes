@@ -96,7 +96,7 @@ object MixedService {
         return trainService.loadFavoritesTrain()
             .onErrorReturn { throwable ->
                 Timber.e(throwable, "Could not load favorites trains")
-                TrainArrivalDTO(SparseArray(), true)
+                TrainArrivalDTO(mutableMapOf(), true)
             }
     }
 
