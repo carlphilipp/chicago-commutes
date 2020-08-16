@@ -1,6 +1,5 @@
 package fr.cph.chicago.redux
 
-import android.util.SparseArray
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute

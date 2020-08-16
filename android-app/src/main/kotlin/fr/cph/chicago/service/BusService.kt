@@ -191,8 +191,7 @@ object BusService {
     }
 
     fun busStopsAround(position: Position): Single<List<BusStop>> {
-        return singleFromCallable(
-            Callable { busRepository.getBusStopsAround(position) })
+        return singleFromCallable(Callable { busRepository.getBusStopsAround(position) })
             .onErrorReturn(handleListError())
     }
 

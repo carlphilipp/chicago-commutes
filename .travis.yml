@@ -1,5 +1,6 @@
 language: android
 before_install:
+    # Accept Android license
     - yes | sdkmanager "platforms;android-30"
 android:
   components:
@@ -9,7 +10,7 @@ android:
     - platform-tools
 
     # The BuildTools version used by your project
-    - build-tools-30.0.0
+    - build-tools-30.0.2
 
     # The SDK version used to compile your project
     - android-30

@@ -20,7 +20,6 @@
 package fr.cph.chicago.core.model.dto
 
 import android.util.ArrayMap
-import android.util.SparseArray
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusRoute

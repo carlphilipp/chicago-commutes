@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.activity.map
 
+import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
@@ -196,6 +197,7 @@ class BusMapActivity : FragmentMapActivity() {
         return true
     }
 
+    @SuppressLint("CheckResult")
     override fun selectVehicle(feature: Feature) {
         super.selectVehicle(feature)
         val id = feature.getStringProperty(PROPERTY_TITLE)
@@ -212,6 +214,7 @@ class BusMapActivity : FragmentMapActivity() {
                 })
     }
 
+    @SuppressLint("CheckResult")
     private fun clickOnVehicleInfo(feature: Feature) {
         showProgress(true)
         val id = feature.getStringProperty(PROPERTY_TITLE)
@@ -228,6 +231,7 @@ class BusMapActivity : FragmentMapActivity() {
                 })
     }
 
+    @SuppressLint("CheckResult")
     private fun loadActivityData() {
         loadBuses()
         if (drawLine) {

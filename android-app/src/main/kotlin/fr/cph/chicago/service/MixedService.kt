@@ -1,6 +1,5 @@
 package fr.cph.chicago.service
 
-import android.util.SparseArray
 import fr.cph.chicago.core.model.dto.BaseDTO
 import fr.cph.chicago.core.model.dto.BusArrivalDTO
 import fr.cph.chicago.core.model.dto.FavoritesDTO

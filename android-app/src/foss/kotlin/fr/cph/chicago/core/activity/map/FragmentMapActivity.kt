@@ -102,6 +102,7 @@ abstract class FragmentMapActivity : FragmentActivity(), OnMapReadyCallback, OnM
         stationSource?.setGeoJson(stationFeatureCollection)
     }
 
+    @SuppressLint("CheckResult")
     protected fun centerMap(points: List<LatLng>) {
         Single.defer { Single.just(points) }
             .map { latLngs -> mapUtil.getBounds(latLngs.map { latLng -> Position(latLng.latitude, latLng.longitude) }) }
@@ -176,6 +177,7 @@ abstract class FragmentMapActivity : FragmentActivity(), OnMapReadyCallback, OnM
         }
     }
 
+    @SuppressLint("CheckResult")
     protected fun update(feature: Feature, id: String, view: View) {
         Single.defer { Single.just(BitmapGenerator.generate(view)) }
             .subscribeOn(Schedulers.computation())

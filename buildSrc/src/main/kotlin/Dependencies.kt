@@ -18,7 +18,7 @@ object Version {
     const val google_play_location =    "17.0.0"
     const val jackson =                 "2.11.1"
     const val material =                "1.3.0-alpha01"
-    const val mapbox =                  "8.4.0"
+    const val mapbox =                  "8.5.0"
     const val mapbox_annotation =       "0.7.0"
     const val mapbox_marker_view =      "0.3.0"
     const val mapbox_location =         "0.11.0"
