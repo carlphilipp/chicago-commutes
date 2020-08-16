@@ -45,7 +45,7 @@ abstract class AFunction {
 
     protected fun createView(feature: Feature, activity: WeakReference<out Activity>): View {
         val inflater = LayoutInflater.from(activity.get())
-        val view = inflater.inflate(R.layout.marker_mapbox, null)
+        val view = inflater.inflate(R.layout.marker_mapbox, null) // FIXME: Should not pass null
         val destination = feature.getStringProperty(PROPERTY_DESTINATION)
         val title = view.findViewById<TextView>(R.id.title)
         title.text = destination

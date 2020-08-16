@@ -284,6 +284,7 @@ class BusMapActivity : FragmentMapActivity() {
         }
     }
 
+    @SuppressLint("CheckResult")
     private fun loadBuses() {
         busService.busForRouteId(busRouteId)
             .observeOn(Schedulers.computation())

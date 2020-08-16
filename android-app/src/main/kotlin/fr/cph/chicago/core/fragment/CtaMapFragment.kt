@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.fragment
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -44,6 +45,7 @@ class CtaMapFragment : Fragment(R.layout.fragment_cta_map) {
         loadBitmap()
     }
 
+    @SuppressLint("CheckResult")
     private fun loadBitmap() {
         Observable.fromCallable {
             if (bitmapCache != null) bitmapCache

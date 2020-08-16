@@ -53,7 +53,7 @@
     <string name="bundle_position">position</string>
 
     <string name="empty_string">&#160;</string>
-    <string name="app_name">Chicago Commutes</string>
+    <string name="current_app_name">Chicago Commutes</string>
     <string name="favorites">Favorites</string>
     <string name="train">Train</string>
     <string name="bus">Bus</string>
@@ -78,6 +78,7 @@
     <string name="favorites_view_trains">view trains</string>
     <string name="favorites_view_buses">view buses</string>
     <string name="favorites_view_station">view station</string>
+    <string name="favorites_no_result">No result</string>
 
     <!-- Train Station -->
     <string name="station_activity">Station</string>

@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.activity.station
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
@@ -149,6 +150,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
         }
     }
 
+    @SuppressLint("CheckResult")
     private fun loadStopDetailsAndStreetImage() {
         // Load bus stop details and google street image
         busService.loadAllBusStopsForRouteBound(busRouteId, boundTitle)

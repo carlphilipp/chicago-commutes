@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.activity.station
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -72,6 +73,7 @@ abstract class StationActivity(private val contentView: Int) : AppCompatActivity
         }
     }
 
+    @SuppressLint("CheckResult")
     fun loadGoogleStreetImage(position: Position) {
         if (streetViewImage.tag == TAG_DEFAULT || streetViewImage.tag == TAG_ERROR) {
             googleStreetClient.connect(position.latitude, position.longitude)

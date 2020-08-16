@@ -49,5 +49,5 @@
         android:gravity="end"
         android:layout_marginStart="5dp"
         android:singleLine="true"
-        android:text="No result" />
+        android:text="@string/favorites_no_result" />
 </RelativeLayout>

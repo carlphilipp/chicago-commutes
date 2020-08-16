@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.activity
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -80,6 +81,7 @@ class BusBoundActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var busBoundAdapter: BusBoundAdapter
     private var busStops: List<BusStop> = listOf()
 
+    @SuppressLint("CheckResult")
     public override fun onCreate(savedInstanceState: Bundle?) {
         Mapbox.getInstance(this, getString(R.string.mapbox_token))
         super.onCreate(savedInstanceState)

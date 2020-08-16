@@ -55,7 +55,8 @@
             android:hint="@string/bus_fragment_filter"
             android:inputType="text"
             android:paddingStart="16dp"
-            android:paddingEnd="@dimen/activity_train_line_padding_right" />
+            android:paddingEnd="@dimen/activity_train_line_padding_right"
+            android:importantForAutofill="no" />
 
         <ListView
             android:id="@+id/listView"

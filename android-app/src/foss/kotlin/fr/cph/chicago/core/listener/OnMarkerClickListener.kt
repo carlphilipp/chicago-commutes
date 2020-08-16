@@ -35,7 +35,6 @@ import fr.cph.chicago.service.TrainService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 
-@SuppressLint("CheckResult")
 class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, private val nearbyFragment: NearbyFragment) : com.mapbox.mapboxsdk.maps.MapboxMap.OnMarkerClickListener {
 
     companion object {
@@ -65,6 +64,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
         }
     }
 
+    @SuppressLint("CheckResult")
     private fun loadTrainArrivals(trainTrainStation: TrainStation) {
         nearbyFragment.slidingUpAdapter.updateTitleTrain(trainTrainStation.name)
         trainService.loadStationTrainArrival(trainTrainStation.id)
@@ -76,6 +76,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
             )
     }
 
+    @SuppressLint("CheckResult")
     private fun loadBusArrivals(busStop: BusStop) {
         nearbyFragment.slidingUpAdapter.updateTitleBus(busStop.name)
         busService.loadBusArrivals(busStop)
@@ -91,6 +92,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
             )
     }
 
+    @SuppressLint("CheckResult")
     private fun loadBikes(bikeStation: BikeStation) {
         nearbyFragment.slidingUpAdapter.updateTitleBike(bikeStation.name)
         bikeService.findBikeStation(bikeStation.id)

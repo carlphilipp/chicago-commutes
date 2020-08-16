@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.activity
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -42,9 +43,9 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.GoogleMapUtil
 import fr.cph.chicago.util.Util
 import io.reactivex.android.schedulers.AndroidSchedulers
-import kotlinx.android.synthetic.main.activity_bus_bound.bellowLayout
-import kotlinx.android.synthetic.main.activity_bus_bound.busFilter
-import kotlinx.android.synthetic.main.activity_bus_bound.listView
+import kotlinx.android.synthetic.googleplay.activity_bus_bound.bellowLayout
+import kotlinx.android.synthetic.googleplay.activity_bus_bound.busFilter
+import kotlinx.android.synthetic.googleplay.activity_bus_bound.listView
 import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
@@ -70,6 +71,7 @@ class BusBoundActivity : AppCompatActivity() {
     private lateinit var adapter: BusBoundAdapter
     private var busStops: List<BusStop> = listOf()
 
+    @SuppressLint("CheckResult")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!this.isFinishing) {

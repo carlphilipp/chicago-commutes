@@ -21,6 +21,7 @@ package fr.cph.chicago.core.fragment
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -68,11 +69,11 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_nearby_mapbox.loadingLayoutContainer
-import kotlinx.android.synthetic.main.fragment_nearby_mapbox.mapView
-import kotlinx.android.synthetic.main.fragment_nearby_mapbox.progressBar
-import kotlinx.android.synthetic.main.fragment_nearby_mapbox.searchAreaButton
-import kotlinx.android.synthetic.main.fragment_nearby_mapbox.slidingLayout
+import kotlinx.android.synthetic.foss.fragment_nearby_mapbox.loadingLayoutContainer
+import kotlinx.android.synthetic.foss.fragment_nearby_mapbox.mapView
+import kotlinx.android.synthetic.foss.fragment_nearby_mapbox.progressBar
+import kotlinx.android.synthetic.foss.fragment_nearby_mapbox.searchAreaButton
+import kotlinx.android.synthetic.foss.fragment_nearby_mapbox.slidingLayout
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import timber.log.Timber
@@ -147,6 +148,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         }
     }
 
+    @SuppressLint("CheckResult")
     private fun loadNearbyDataAroundPosition(position: Position, zoomIn: Boolean = false) {
         map.cameraPosition = CameraPosition.Builder()
             .zoom(if (zoomIn) 15.0 else map.cameraPosition.zoom)
@@ -184,6 +186,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
             )
     }
 
+    @SuppressLint("MissingPermission")
     private fun getCurrentPosition(): Position {
         if (locationEngine == null) {
             locationEngine = LocationEngineProvider.getBestLocationEngine(this.context!!)

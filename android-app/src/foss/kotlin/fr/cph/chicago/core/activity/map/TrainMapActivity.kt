@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.activity.map
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -248,6 +249,7 @@ class TrainMapActivity : FragmentMapActivity() {
         loadAndUpdateTrainArrivalFeature(feature, true)
     }
 
+    @SuppressLint("CheckResult")
     private fun loadAndUpdateTrainArrivalFeature(feature: Feature, loadAll: Boolean) {
         val runNumber = feature.getStringProperty(PROPERTY_TITLE)
         trainService.trainEtas(runNumber, loadAll)
@@ -263,6 +265,7 @@ class TrainMapActivity : FragmentMapActivity() {
                 })
     }
 
+    @SuppressLint("CheckResult")
     private fun loadActivityData() {
         // Load train location
         val featuresTrains = trainService.trainLocations(line)
@@ -336,11 +339,12 @@ class TrainMapActivity : FragmentMapActivity() {
         }
     }
 
+    @SuppressLint("CheckResult")
     private fun addStationOnMap(stationInfoFeatureCollection: FeatureCollection) {
         Single.defer {
             val bitmaps = stationInfoFeatureCollection.features()?.map { feature ->
                 val inflater = LayoutInflater.from(this@TrainMapActivity)
-                val bubbleLayout = inflater.inflate(R.layout.marker_mapbox, null) as BubbleLayout
+                val bubbleLayout = inflater.inflate(R.layout.marker_mapbox, null) as BubbleLayout // FIXME: Do not pass null
 
                 val title = feature.getStringProperty(PROPERTY_TITLE)
                 val titleTextView = bubbleLayout.findViewById<TextView>(R.id.title)

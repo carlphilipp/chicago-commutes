@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.listener
 
+import android.annotation.SuppressLint
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
 import fr.cph.chicago.core.fragment.NearbyFragment
@@ -60,6 +61,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
         }
     }
 
+    @SuppressLint("CheckResult")
     private fun loadTrainArrivals(trainTrainStation: TrainStation) {
         nearbyFragment.slidingUpAdapter.updateTitleTrain(trainTrainStation.name)
         trainService.loadStationTrainArrival(trainTrainStation.id)
@@ -69,6 +71,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
                 { onError -> Timber.e(onError, "Error while loading train arrivals") })
     }
 
+    @SuppressLint("CheckResult")
     private fun loadBusArrivals(busStop: BusStop) {
         nearbyFragment.slidingUpAdapter.updateTitleBus(busStop.name)
         busService.loadBusArrivals(busStop)
@@ -82,6 +85,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
                 { onError -> Timber.e(onError, "Error while loading bus arrivals") })
     }
 
+    @SuppressLint("CheckResult")
     private fun loadBikes(bikeStation: BikeStation) {
         nearbyFragment.slidingUpAdapter.updateTitleBike(bikeStation.name)
         bikeService.findBikeStation(bikeStation.id)

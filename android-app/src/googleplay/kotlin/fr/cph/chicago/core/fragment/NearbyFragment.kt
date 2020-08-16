@@ -258,6 +258,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
         }
     }
 
+    @SuppressLint("CheckResult")
     private fun handleNearbyData(position: Position, zoomIn: Boolean) {
         var finalPosition = position
         if (position.longitude == 0.0 && position.latitude == 0.0) {

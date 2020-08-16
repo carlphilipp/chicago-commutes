@@ -17,16 +17,14 @@
 
 -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="fr.cph.chicago">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="fr.cph.chicago">
 
     <application
         android:name=".core.App"
         android:allowBackup="true"
         android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:usesCleartextTraffic="true"
+        android:label="@string/current_app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true">
 

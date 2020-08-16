@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.activity
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -42,6 +43,7 @@ class DeveloperOptionsActivity : AppCompatActivity() {
         private val preferenceService = PreferenceService
     }
 
+    @SuppressLint("CheckResult")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!this.isFinishing) {

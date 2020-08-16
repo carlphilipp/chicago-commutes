@@ -36,7 +36,7 @@ import com.google.android.gms.maps.model.Marker
 import fr.cph.chicago.Constants.GPS_ACCESS
 import fr.cph.chicago.R
 import fr.cph.chicago.util.GoogleMapUtil
-import kotlinx.android.synthetic.main.activity_map.mapContainer
+import kotlinx.android.synthetic.googleplay.activity_map.mapContainer
 import kotlinx.android.synthetic.main.toolbar.toolbar
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions

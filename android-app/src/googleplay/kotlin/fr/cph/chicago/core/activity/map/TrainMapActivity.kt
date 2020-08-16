@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.activity.map
 
+import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.View
@@ -163,6 +164,7 @@ class TrainMapActivity : FragmentMapActivity() {
         refreshTrainMarkers.refreshTrainAndStation(googleMap.cameraPosition, trainsMarker, stationMarkers)
     }
 
+    @SuppressLint("CheckResult")
     override fun onMapReady(googleMap: GoogleMap) {
         super.onMapReady(googleMap)
 
@@ -227,6 +229,7 @@ class TrainMapActivity : FragmentMapActivity() {
         loadActivityData()
     }
 
+    @SuppressLint("CheckResult")
     private fun loadActivityData() {
         // Load train location
         val trainsSingle = trainService.trainLocations(line).observeOn(AndroidSchedulers.mainThread())

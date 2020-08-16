@@ -23,8 +23,6 @@
     <!-- Font activity train station -->
     <dimen name="activity_station_stops_0dp">0dp</dimen>
     <dimen name="activity_station_stops_line1_padding_color">4dp</dimen>
-    <dimen name="activity_station_stops_line3_padding_left">2dp</dimen>
-    <dimen name="activity_station_stops_line3_padding_top">2dp</dimen>
     <!-- Activity train station google street image size -->
     <dimen name="activity_station_street_map_height">150dp</dimen>
     <!-- Activity train station -->

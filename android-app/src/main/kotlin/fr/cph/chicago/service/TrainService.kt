@@ -149,7 +149,6 @@ object TrainService {
             .map { trainArrivalResponse ->
                 val arrivals = getTrainArrivalsInternal(trainArrivalResponse)
                 var trainEta = mutableListOf<TrainEta>()
-                var index = 0
                 arrivals.forEach { entry ->
                     val etas = entry.value.trainEtas
                     if (entry.value.trainEtas.size != 0) {

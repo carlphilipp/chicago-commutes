@@ -90,7 +90,7 @@ class SearchActivity : AppCompatActivity() {
         searchItem = menu.add(android.R.string.search_go)
         searchItem.setIcon(R.drawable.ic_search_white_24dp)
         searchItem.actionView = searchView
-        searchItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS or MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW)
+        searchItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM or MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW)
         searchItem.expandActionView()
 
         // Trigger search
