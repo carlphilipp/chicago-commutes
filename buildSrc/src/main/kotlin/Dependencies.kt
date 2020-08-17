@@ -1,9 +1,9 @@
 // @formatter:off
 object Android {
     const val compile_sdk =             30
-    const val build_tools =             "30.0.2"
     const val min_sdk =                 21
     const val target_sdk =              30
+    const val build_tools =             "30.0.2"
 }
 
 object Version {
@@ -16,20 +16,20 @@ object Version {
     const val easypermissions =         "1.3.0"
     const val google_play_maps =        "17.0.0"
     const val google_play_location =    "17.0.0"
-    const val jackson =                 "2.11.1"
-    const val material =                "1.3.0-alpha01"
+    const val jackson =                 "2.11.2"
+    const val material =                "1.3.0-alpha02"
     const val mapbox =                  "8.5.0"
     const val mapbox_annotation =       "0.7.0"
     const val mapbox_marker_view =      "0.3.0"
     const val mapbox_location =         "0.11.0"
-    const val photoview =               "v2.0.0"
+    const val photoview =               "2.3.0"
     const val rx =                      "2.2.19"
     const val rx_android =              "2.1.1"
     const val rx_kotlin =               "2.4.0"
     const val re_kotlin =               "1.0.4"
     const val sliding_up_panel =        "3.4.0"
     const val timber =                  "4.7.1"
-    const val univocity =               "2.8.4"
+    const val univocity =               "2.9.0"
 
     // Update
     const val commons_io =              "2.5"
