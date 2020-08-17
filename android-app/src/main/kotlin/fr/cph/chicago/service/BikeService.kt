@@ -32,6 +32,7 @@ import io.reactivex.rxjava3.kotlin.Singles
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 import timber.log.Timber
+import java.lang.RuntimeException
 import java.math.BigInteger
 
 object BikeService {
@@ -90,6 +91,5 @@ object BikeService {
             }
             res.sortedWith(compareBy(BikeStation::name))
         })
-            .onErrorReturn(handleListError())
     }
 }

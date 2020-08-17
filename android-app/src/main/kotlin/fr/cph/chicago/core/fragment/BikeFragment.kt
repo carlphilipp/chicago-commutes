@@ -86,10 +86,7 @@ class BikeFragment : RefreshFragment(R.layout.fragment_filter_list), StoreSubscr
                 util.showSnackBar(swipeRefreshLayout, state.bikeStationsErrorMessage)
                 showSuccessLayout()
             }
-            Status.FULL_FAILURE -> {
-                util.showSnackBar(swipeRefreshLayout, state.bikeStationsErrorMessage)
-                showFailureLayout()
-            }
+            Status.FULL_FAILURE -> showFailureLayout()
             else -> {
                 Timber.d("Unknown status on new state")
                 util.showSnackBar(swipeRefreshLayout, state.bikeStationsErrorMessage)

@@ -81,11 +81,9 @@ class BusFragment : RefreshFragment(R.layout.fragment_filter_list), StoreSubscri
         when (state.busRoutesStatus) {
             Status.SUCCESS -> showSuccessLayout()
             Status.FAILURE -> {
-                util.showSnackBar(swipeRefreshLayout, state.busRoutesErrorMessage)
                 showSuccessLayout()
             }
             Status.FULL_FAILURE -> {
-                util.showSnackBar(swipeRefreshLayout, state.busRoutesErrorMessage)
                 showFailureLayout()
             }
             else -> {

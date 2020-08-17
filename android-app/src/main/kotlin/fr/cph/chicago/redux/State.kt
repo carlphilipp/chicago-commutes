@@ -70,6 +70,7 @@ enum class Status {
     UNKNOWN,
     SUCCESS,
     FAILURE,
+    FAILURE_NO_SHOW,
     FULL_FAILURE,
     ADD_FAVORITES,
     REMOVE_FAVORITES

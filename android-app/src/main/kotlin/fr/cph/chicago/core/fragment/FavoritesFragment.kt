@@ -31,22 +31,12 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.MainActivity
 import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.adapter.FavoritesAdapter
-import fr.cph.chicago.redux.BusRoutesAction
-import fr.cph.chicago.redux.BusRoutesAndBikeStationAction
-import fr.cph.chicago.redux.FavoritesAction
-import fr.cph.chicago.redux.State
-import fr.cph.chicago.redux.Status.FAILURE
-import fr.cph.chicago.redux.Status.FULL_FAILURE
-import fr.cph.chicago.redux.Status.SUCCESS
-import fr.cph.chicago.redux.Status.UNKNOWN
-import fr.cph.chicago.redux.store
+import fr.cph.chicago.redux.*
+import fr.cph.chicago.redux.Status.*
 import fr.cph.chicago.task.RefreshTimingTask
 import fr.cph.chicago.util.RateUtil
-import kotlinx.android.synthetic.main.error.failureLayout
-import kotlinx.android.synthetic.main.error.retryButton
-import kotlinx.android.synthetic.main.fragment_main.favoritesListView
-import kotlinx.android.synthetic.main.fragment_main.floatingButton
-import kotlinx.android.synthetic.main.fragment_main.welcomeLayout
+import kotlinx.android.synthetic.main.error.*
+import kotlinx.android.synthetic.main.fragment_main.*
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
@@ -136,14 +126,21 @@ class FavoritesFragment : RefreshFragment(R.layout.fragment_main), StoreSubscrib
             }
             FAILURE -> {
                 showSuccessUi()
-                displayErrorSnackBar(R.string.message_something_went_wrong)
+                if (state.bikeStationsStatus == FULL_FAILURE) {
+                    displayErrorSnackBar(R.string.message_error_bike_favorites)
+                } else {
+                    displayErrorSnackBar(R.string.message_something_went_wrong)
+                }
                 stopRefreshing()
+                store.dispatch(UpdateStatus(FAILURE_NO_SHOW))
             }
             FULL_FAILURE -> {
                 showFullFailureUi()
                 displayErrorSnackBar(R.string.message_something_went_wrong)
                 stopRefreshing()
+                store.dispatch(UpdateStatus(FAILURE_NO_SHOW))
             }
+            FAILURE_NO_SHOW -> Timber.d("Something failed but it has been displayed to the user already")
             UNKNOWN -> Timber.d("Unknown status on new state")
             else -> Timber.d("Unknown status on new state")
         }

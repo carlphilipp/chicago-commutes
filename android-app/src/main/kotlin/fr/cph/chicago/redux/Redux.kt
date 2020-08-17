@@ -5,7 +5,7 @@ import org.apache.commons.lang3.StringUtils
 import org.rekotlin.Action
 import org.rekotlin.Store
 import timber.log.Timber
-import java.util.Date
+import java.util.*
 
 val store = Store(
     reducer = ::reducer,
@@ -35,6 +35,9 @@ fun reducer(action: Action, oldState: State?): State {
     when (action) {
         is ResetStateAction -> {
             state = state.copy(status = Status.UNKNOWN)
+        }
+        is UpdateStatus -> {
+            state = state.copy(status = action.status)
         }
         is DefaultSettingsAction -> {
             val trainBaseUrl = if (action.trainUrl == StringUtils.EMPTY) Constants.TRAINS_BASE else action.trainUrl
@@ -88,9 +91,14 @@ fun reducer(action: Action, oldState: State?): State {
                 action.bikeStationsError && bikeStations.isNotEmpty() -> Status.FAILURE
                 else -> Status.SUCCESS
             }
+            val newStatus = if (state.status == Status.FAILURE_NO_SHOW && (status == Status.FAILURE || status == Status.FULL_FAILURE)) {
+                Status.FAILURE_NO_SHOW
+            } else {
+                status
+            }
             state = state.copy(
                 lastStateChange = Date(),
-                status = status,
+                status = newStatus,
                 busRoutesStatus = busRoutesStatus,
                 bikeStationsStatus = bikeStationsStatus,
                 busRoutes = busRoutes,

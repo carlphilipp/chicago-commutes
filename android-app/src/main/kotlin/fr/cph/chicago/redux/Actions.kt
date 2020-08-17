@@ -15,6 +15,8 @@ import java.math.BigInteger
 
 data class ResetStateAction(val unit: Unit = Unit) : Action
 
+data class UpdateStatus(val status: Status): Action
+
 data class DefaultSettingsAction(
     val ctaTrainKey: String,
     val ctaBusKey: String,
