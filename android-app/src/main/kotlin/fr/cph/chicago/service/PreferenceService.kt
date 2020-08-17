@@ -25,8 +25,6 @@ import fr.cph.chicago.R
 import fr.cph.chicago.client.REQUEST_MAP_ID
 import fr.cph.chicago.client.REQUEST_ROUTE
 import fr.cph.chicago.client.REQUEST_STOP_ID
-import fr.cph.chicago.core.App
-import fr.cph.chicago.core.App.Companion
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.model.dto.PreferencesDTO
 import fr.cph.chicago.core.model.enumeration.TrainDirection
@@ -34,8 +32,8 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.PreferenceRepository
 import fr.cph.chicago.util.Util
-import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import java.math.BigInteger

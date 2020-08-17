@@ -28,7 +28,7 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.map.TrainMapActivity
 import fr.cph.chicago.core.adapter.TrainMapSnippetAdapter
 import fr.cph.chicago.core.model.TrainEta
-import io.reactivex.functions.Function
+import io.reactivex.rxjava3.functions.Function
 import java.lang.ref.WeakReference
 
 class TrainsFunction(trainMapActivity: TrainMapActivity, private val feature: Feature) : Function<List<TrainEta>, View>, AFunction() {

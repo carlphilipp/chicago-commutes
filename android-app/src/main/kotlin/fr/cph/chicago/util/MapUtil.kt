@@ -4,7 +4,7 @@ import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.rx.RxUtil.handleListError
 import fr.cph.chicago.rx.RxUtil.singleFromCallable
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 import java.util.concurrent.Callable
 
 object MapUtil {

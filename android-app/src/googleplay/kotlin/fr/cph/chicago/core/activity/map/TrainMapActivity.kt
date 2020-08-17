@@ -41,10 +41,10 @@ import fr.cph.chicago.rx.TrainEtaObserver
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.Util
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.Singles
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.kotlin.Singles
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber

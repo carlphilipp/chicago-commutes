@@ -20,8 +20,8 @@
 package fr.cph.chicago.client
 
 import fr.cph.chicago.exception.ConnectException
-import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
 import java.io.IOException
 import java.io.InputStream

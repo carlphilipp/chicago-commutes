@@ -36,8 +36,8 @@ import fr.cph.chicago.exception.BaseException
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.Singles
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.kotlin.Singles
 import kotlinx.android.synthetic.main.activity_search.searchListView
 import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils

@@ -26,8 +26,8 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.map.TrainMapActivity
 import fr.cph.chicago.core.adapter.TrainMapSnippetAdapter
 import fr.cph.chicago.core.model.TrainEta
-import io.reactivex.SingleObserver
-import io.reactivex.disposables.Disposable
+import io.reactivex.rxjava3.core.SingleObserver
+import io.reactivex.rxjava3.disposables.Disposable
 import timber.log.Timber
 
 class TrainEtaObserver(view: View, private val trainMapActivity: TrainMapActivity) : SingleObserver<List<TrainEta>> {

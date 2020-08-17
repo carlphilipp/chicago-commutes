@@ -28,7 +28,7 @@ import fr.cph.chicago.core.model.dto.RouteAlertsDTO
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.entity.AlertsRouteResponse
 import fr.cph.chicago.entity.AlertsRoutesResponse
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 import java.text.ParseException
@@ -44,7 +44,7 @@ object AlertService {
 
     fun alerts(): Single<List<RoutesAlertsDTO>> {
         return ctaClient.get(CtaRequestType.ALERTS_ROUTES, alertsParams(), AlertsRoutesResponse::class.java)
-            .map { alertRoutes ->
+            .map { alertRoutes: AlertsRoutesResponse ->
                 if (alertRoutes.ctaRoutes.routeInfo.isEmpty()) {
                     val errors = alertRoutes.ctaRoutes.errorMessage.joinToString()
                     Timber.e(errors)
@@ -68,7 +68,7 @@ object AlertService {
 
     fun routeAlertForId(id: String): Single<List<RouteAlertsDTO>> {
         return ctaClient.get(CtaRequestType.ALERTS_ROUTE, alertParams(id), AlertsRouteResponse::class.java)
-            .map { alertRoutes ->
+            .map { alertRoutes: AlertsRouteResponse ->
                 if (alertRoutes.ctaAlerts.errorMessage != null) {
                     Timber.e(alertRoutes.ctaAlerts.errorMessage.toString())
                     listOf()

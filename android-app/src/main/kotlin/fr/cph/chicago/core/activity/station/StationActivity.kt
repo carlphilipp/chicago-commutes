@@ -33,7 +33,7 @@ import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.Color
 import fr.cph.chicago.util.Util
-import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_header_fav_layout.favoritesImage
 import kotlinx.android.synthetic.main.activity_header_fav_layout.favoritesImageContainer
 import kotlinx.android.synthetic.main.activity_station_header_layout.streetViewImage

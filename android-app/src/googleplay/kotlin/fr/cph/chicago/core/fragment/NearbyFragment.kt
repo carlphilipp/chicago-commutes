@@ -57,7 +57,7 @@ import fr.cph.chicago.util.GoogleMapUtil
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.Util
-import io.reactivex.rxkotlin.Singles
+import io.reactivex.rxjava3.kotlin.Singles
 import kotlinx.android.synthetic.main.fragment_nearby.loadingLayoutContainer
 import kotlinx.android.synthetic.main.fragment_nearby.progressBar
 import kotlinx.android.synthetic.main.fragment_nearby.searchAreaButton

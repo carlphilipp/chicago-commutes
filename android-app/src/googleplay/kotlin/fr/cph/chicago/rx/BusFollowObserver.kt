@@ -27,8 +27,8 @@ import fr.cph.chicago.core.activity.map.BusMapActivity
 import fr.cph.chicago.core.adapter.BusMapSnippetAdapter
 import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.util.Util
-import io.reactivex.SingleObserver
-import io.reactivex.disposables.Disposable
+import io.reactivex.rxjava3.core.SingleObserver
+import io.reactivex.rxjava3.disposables.Disposable
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 import java.util.Date

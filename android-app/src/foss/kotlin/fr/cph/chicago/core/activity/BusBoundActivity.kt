@@ -48,8 +48,8 @@ import fr.cph.chicago.exception.CtaException
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.Util
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.foss.activity_bus_bound_mapbox.bellowLayout
 import kotlinx.android.synthetic.foss.activity_bus_bound_mapbox.busFilter
 import kotlinx.android.synthetic.foss.activity_bus_bound_mapbox.listView

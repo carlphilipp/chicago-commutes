@@ -40,8 +40,8 @@ import fr.cph.chicago.client.CtaRequestType.TRAIN_FOLLOW
 import fr.cph.chicago.client.CtaRequestType.TRAIN_LOCATION
 import fr.cph.chicago.parser.JsonParser
 import fr.cph.chicago.redux.store
-import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.lang3.StringUtils
 

@@ -21,19 +21,18 @@ package fr.cph.chicago.service
 
 import fr.cph.chicago.client.DivvyClient
 import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.entity.DivvyStationInformation
 import fr.cph.chicago.entity.DivvyStationStatus
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.rx.RxUtil.handleListError
 import fr.cph.chicago.rx.RxUtil.handleMapError
-import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import fr.cph.chicago.util.Util
-import io.reactivex.Single
-import io.reactivex.rxkotlin.Singles
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.kotlin.Singles
+import io.reactivex.rxjava3.schedulers.Schedulers
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 import timber.log.Timber
 import java.math.BigInteger
-import java.util.concurrent.Callable
 
 object BikeService {
 

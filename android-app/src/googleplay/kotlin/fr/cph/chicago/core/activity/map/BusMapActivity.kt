@@ -45,9 +45,9 @@ import fr.cph.chicago.rx.BusObserver
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.Util
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 

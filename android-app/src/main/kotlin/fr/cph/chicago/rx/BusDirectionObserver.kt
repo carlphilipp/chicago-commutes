@@ -36,8 +36,8 @@ import fr.cph.chicago.core.adapter.PopupBusAdapter
 import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.util.Util
-import io.reactivex.SingleObserver
-import io.reactivex.disposables.Disposable
+import io.reactivex.rxjava3.core.SingleObserver
+import io.reactivex.rxjava3.disposables.Disposable
 import timber.log.Timber
 
 class BusDirectionObserver(private val viewClickable: View,

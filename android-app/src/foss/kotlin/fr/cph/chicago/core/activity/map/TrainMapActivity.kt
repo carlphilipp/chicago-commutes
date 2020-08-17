@@ -53,16 +53,17 @@ import com.mapbox.mapboxsdk.utils.ColorUtils
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Train
+import fr.cph.chicago.core.model.TrainStationPattern
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.utils.BitmapGenerator
 import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import fr.cph.chicago.rx.TrainsFunction
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.Singles
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.kotlin.Singles
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.foss.activity_map_mapbox.mapContainer
 import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
@@ -286,7 +287,7 @@ class TrainMapActivity : FragmentMapActivity() {
             // Load pattern from local file
             val patterns = trainService.readPatterns(TrainLine.fromXmlString(line))
                 .observeOn(Schedulers.computation())
-                .map { trainStationPatterns ->
+                .map { trainStationPatterns: List<TrainStationPattern> ->
                     val latLngs = trainStationPatterns.map { stationPattern -> LatLng(stationPattern.position.latitude, stationPattern.position.longitude) }
                     val lineOptions = LineOptions()
                         .withLatLngs(latLngs)
@@ -306,7 +307,7 @@ class TrainMapActivity : FragmentMapActivity() {
             Singles.zip(
                 featuresTrains.observeOn(AndroidSchedulers.mainThread()),
                 patterns.observeOn(AndroidSchedulers.mainThread()),
-                zipper = { featuresTrain, pair ->
+                zipper = { featuresTrain: FeatureCollection, pair: Pair<LineOptions, FeatureCollection> ->
                     addVehicleFeatureCollection(featuresTrain)
                     addStationFeatureCollection(pair.second)
                     addStationOnMap(pair.second)

@@ -45,9 +45,9 @@ import fr.cph.chicago.core.utils.BitmapGenerator
 import fr.cph.chicago.core.utils.getCurrentStyle
 import fr.cph.chicago.core.utils.setupMapbox
 import fr.cph.chicago.util.MapUtil
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.foss.activity_map_mapbox.mapView
 import kotlinx.android.synthetic.foss.activity_map_mapbox.progressBar
 import kotlinx.android.synthetic.main.toolbar.toolbar

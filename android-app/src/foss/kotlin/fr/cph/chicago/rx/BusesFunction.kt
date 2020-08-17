@@ -28,10 +28,10 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.map.BusMapActivity
 import fr.cph.chicago.core.adapter.BusMapSnippetAdapter
 import fr.cph.chicago.core.model.BusArrival
-import io.reactivex.functions.Function
+import io.reactivex.rxjava3.functions.Function
 import org.apache.commons.lang3.StringUtils
 import java.lang.ref.WeakReference
-import java.util.Date
+import java.util.*
 
 class BusesFunction(busMapActivity: BusMapActivity, private val feature: Feature, private val loadAll: Boolean) : Function<List<BusArrival>, View>, AFunction() {
 

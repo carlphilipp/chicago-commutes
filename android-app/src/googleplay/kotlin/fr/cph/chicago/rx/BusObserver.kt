@@ -24,8 +24,8 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.map.BusMapActivity
 import fr.cph.chicago.core.model.Bus
 import fr.cph.chicago.util.Util
-import io.reactivex.SingleObserver
-import io.reactivex.disposables.Disposable
+import io.reactivex.rxjava3.core.SingleObserver
+import io.reactivex.rxjava3.disposables.Disposable
 import timber.log.Timber
 
 class BusObserver(private val activity: BusMapActivity, private val centerMap: Boolean, private val view: View) : SingleObserver<List<Bus>> {

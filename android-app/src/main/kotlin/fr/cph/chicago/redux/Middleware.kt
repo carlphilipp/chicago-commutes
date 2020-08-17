@@ -11,8 +11,8 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.MixedService
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.schedulers.Schedulers
 import org.rekotlin.Middleware
 import org.rekotlin.StateType
 import timber.log.Timber

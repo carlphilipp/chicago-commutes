@@ -8,9 +8,9 @@ import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import fr.cph.chicago.exception.BaseException
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.rx.RxUtil.handleListError
-import io.reactivex.Single
-import io.reactivex.rxkotlin.Singles
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.kotlin.Singles
+import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
 
 object MixedService {

@@ -64,11 +64,11 @@ import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.Util
 import fr.cph.chicago.util.merge
-import io.reactivex.Observable
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.Singles
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.kotlin.Singles
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.foss.fragment_nearby_mapbox.loadingLayoutContainer
 import kotlinx.android.synthetic.foss.fragment_nearby_mapbox.mapView
 import kotlinx.android.synthetic.foss.fragment_nearby_mapbox.progressBar

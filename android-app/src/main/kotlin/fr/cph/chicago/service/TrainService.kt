@@ -35,9 +35,9 @@ import fr.cph.chicago.parseNotNull
 import fr.cph.chicago.repository.TrainRepository
 import fr.cph.chicago.rx.RxUtil.handleListError
 import fr.cph.chicago.rx.RxUtil.singleFromCallable
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.lang3.StringUtils
@@ -146,7 +146,7 @@ object TrainService {
 
     fun trainEtas(runNumber: String, loadAll: Boolean): Single<List<TrainEta>> {
         return ctaClient.get(TRAIN_FOLLOW, trainEtasParams(runNumber), TrainArrivalResponse::class.java)
-            .map { trainArrivalResponse ->
+            .map { trainArrivalResponse: TrainArrivalResponse ->
                 val arrivals = getTrainArrivalsInternal(trainArrivalResponse)
                 var trainEta = mutableListOf<TrainEta>()
                 arrivals.forEach { entry ->
@@ -173,7 +173,7 @@ object TrainService {
 
     fun trainLocations(line: String): Single<List<Train>> {
         return ctaClient.get(TRAIN_LOCATION, trainLocationParams(line), TrainLocationResponse::class.java)
-            .map { trainLocationResponse ->
+            .map { trainLocationResponse: TrainLocationResponse ->
                 if (trainLocationResponse.ctatt.route == null) {
                     val error = trainLocationResponse.ctatt.errNm
                     Timber.e(error)
@@ -253,7 +253,7 @@ object TrainService {
 
     private fun getTrainArrivals(params: MultiValuedMap<String, String>): Single<MutableMap<BigInteger, TrainArrival>> {
         return ctaClient.get(TRAIN_ARRIVALS, params, TrainArrivalResponse::class.java)
-            .map { trainArrivalResponse -> getTrainArrivalsInternal(trainArrivalResponse) }
+            .map { trainArrivalResponse: TrainArrivalResponse -> getTrainArrivalsInternal(trainArrivalResponse) }
     }
 
     private fun getTrainArrivalsInternal(trainArrivalResponse: TrainArrivalResponse): MutableMap<BigInteger, TrainArrival> {

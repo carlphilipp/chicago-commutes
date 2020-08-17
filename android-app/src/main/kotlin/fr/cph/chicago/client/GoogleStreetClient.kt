@@ -23,8 +23,7 @@ import android.graphics.drawable.Drawable
 import fr.cph.chicago.Constants.GOOGLE_STREET_VIEW_URL
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.util.Util
-import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.core.Single
 
 /**
  * Class that access google street api. Singleton

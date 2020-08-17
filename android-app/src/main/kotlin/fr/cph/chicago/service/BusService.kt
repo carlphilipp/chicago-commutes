@@ -35,9 +35,9 @@ import fr.cph.chicago.repository.BusRepository
 import fr.cph.chicago.rx.RxUtil.handleListError
 import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import fr.cph.chicago.util.Util
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.lang3.StringUtils
@@ -76,7 +76,7 @@ object BusService {
 
     fun loadAllBusStopsForRouteBound(route: String, bound: String): Single<List<BusStop>> {
         return ctaClient.get(BUS_STOP_LIST, allStopsParams(route, bound), BusStopsResponse::class.java)
-            .map { busStopsResponse ->
+            .map { busStopsResponse: BusStopsResponse ->
                 if (busStopsResponse.bustimeResponse.stops == null) {
                     throw CtaException(busStopsResponse)
                 }
@@ -108,14 +108,14 @@ object BusService {
 
     fun loadBusDirectionsSingle(busRouteId: String): Single<BusDirections> {
         return ctaClient.get(BUS_DIRECTION, busDirectionParams(busRouteId), BusDirectionResponse::class.java)
-            .map { response ->
+            .map { response: BusDirectionResponse ->
                 if (response.bustimeResponse.directions == null) {
                     throw CtaException(response)
                 } else {
                     response
                 }
             }
-            .map { response ->
+            .map { response: BusDirectionResponse ->
                 val busDirections = BusDirections(busRouteId)
                 response
                     .bustimeResponse
@@ -149,7 +149,7 @@ object BusService {
 
     fun loadBusPattern(busRouteId: String, bounds: Array<String>): Single<List<BusPattern>> {
         return ctaClient.get(BUS_PATTERN, busPatternParams(busRouteId), BusPatternResponse::class.java)
-            .map { response ->
+            .map { response: BusPatternResponse ->
                 if (response.bustimeResponse.ptr == null) throw CtaException(response)
                 response
                     .bustimeResponse
@@ -173,7 +173,7 @@ object BusService {
 
     fun busForRouteId(busRouteId: String): Single<List<Bus>> {
         return ctaClient.get(BUS_VEHICLES, busVehiclesParams(busRouteId), BusPositionResponse::class.java)
-            .map { result ->
+            .map { result: BusPositionResponse ->
                 if (result.bustimeResponse.vehicle == null) throw CantLoadBusException(result)
                 result.bustimeResponse.vehicle!!
                     .map { vehicle ->
@@ -250,7 +250,7 @@ object BusService {
 
     private fun getBusArrivals(params: MultiValuedMap<String, String>): Single<List<BusArrival>> {
         return ctaClient.get(BUS_ARRIVALS, params, BusArrivalResponse::class.java)
-            .map { result ->
+            .map { result: BusArrivalResponse ->
                 when {
                     result.bustimeResponse.prd == null -> {
                         var res: List<BusArrival>? = null

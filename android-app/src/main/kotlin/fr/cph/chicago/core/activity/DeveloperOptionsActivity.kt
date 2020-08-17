@@ -29,9 +29,9 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import fr.cph.chicago.R
 import fr.cph.chicago.service.PreferenceService
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_developer_options.cacheDetailsLayout
 import kotlinx.android.synthetic.main.activity_developer_options.showCacheLayout
 import kotlinx.android.synthetic.main.toolbar.toolbar

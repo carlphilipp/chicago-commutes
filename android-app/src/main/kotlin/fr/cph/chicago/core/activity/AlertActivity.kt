@@ -27,7 +27,7 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.adapter.AlertRouteAdapter
 import fr.cph.chicago.service.AlertService
 import fr.cph.chicago.util.Util
-import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_alert.listView
 import kotlinx.android.synthetic.main.activity_alert.scrollView
 import kotlinx.android.synthetic.main.toolbar.toolbar

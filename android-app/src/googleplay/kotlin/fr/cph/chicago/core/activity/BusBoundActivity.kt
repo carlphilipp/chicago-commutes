@@ -42,7 +42,7 @@ import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.GoogleMapUtil
 import fr.cph.chicago.util.Util
-import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.googleplay.activity_bus_bound.bellowLayout
 import kotlinx.android.synthetic.googleplay.activity_bus_bound.busFilter
 import kotlinx.android.synthetic.googleplay.activity_bus_bound.listView

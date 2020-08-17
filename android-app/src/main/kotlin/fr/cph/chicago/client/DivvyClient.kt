@@ -26,7 +26,7 @@ import fr.cph.chicago.entity.StationStatusResponse
 import fr.cph.chicago.exception.ConnectException
 import fr.cph.chicago.parser.JsonParser
 import fr.cph.chicago.redux.store
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 
 /**
  * Class that build connect to the Divvy API.
