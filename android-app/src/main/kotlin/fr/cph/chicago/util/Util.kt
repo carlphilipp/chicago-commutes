@@ -39,7 +39,7 @@ import fr.cph.chicago.exception.ConnectException
 import java.io.Closeable
 import java.io.IOException
 import java.io.Reader
-import java.util.*
+import java.util.Random
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.regex.Pattern
 
@@ -58,7 +58,7 @@ object Util {
     private val nextGeneratedId = AtomicInteger(1)
     private val snackBarUtil = SnackBarUtil
 
-    val dpToPixel16: Int by lazy {
+    private val dpToPixel16: Int by lazy {
         convertDpToPixel(16)
     }
 

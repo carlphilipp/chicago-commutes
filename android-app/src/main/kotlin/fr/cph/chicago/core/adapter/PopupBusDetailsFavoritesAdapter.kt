@@ -27,7 +27,7 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
-import java.util.*
+import java.util.Locale
 
 /**
  * @author Carl-Philipp Harmant

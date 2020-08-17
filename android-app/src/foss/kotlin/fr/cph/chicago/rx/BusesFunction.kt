@@ -31,7 +31,7 @@ import fr.cph.chicago.core.model.BusArrival
 import io.reactivex.rxjava3.functions.Function
 import org.apache.commons.lang3.StringUtils
 import java.lang.ref.WeakReference
-import java.util.*
+import java.util.Date
 
 class BusesFunction(busMapActivity: BusMapActivity, private val feature: Feature, private val loadAll: Boolean) : Function<List<BusArrival>, View>, AFunction() {
 

@@ -21,12 +21,20 @@ package fr.cph.chicago.service
 
 import fr.cph.chicago.R
 import fr.cph.chicago.client.CtaClient
-import fr.cph.chicago.client.CtaRequestType.*
+import fr.cph.chicago.client.CtaRequestType.TRAIN_ARRIVALS
+import fr.cph.chicago.client.CtaRequestType.TRAIN_FOLLOW
+import fr.cph.chicago.client.CtaRequestType.TRAIN_LOCATION
 import fr.cph.chicago.client.stationTrainParams
 import fr.cph.chicago.client.trainEtasParams
 import fr.cph.chicago.client.trainLocationParams
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.model.*
+import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.model.Stop
+import fr.cph.chicago.core.model.Train
+import fr.cph.chicago.core.model.TrainArrival
+import fr.cph.chicago.core.model.TrainEta
+import fr.cph.chicago.core.model.TrainStation
+import fr.cph.chicago.core.model.TrainStationPattern
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.entity.TrainArrivalResponse
@@ -44,30 +52,12 @@ import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 import java.math.BigInteger
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 import java.util.concurrent.Callable
-import kotlin.collections.ArrayList
-import kotlin.collections.List
-import kotlin.collections.MutableList
-import kotlin.collections.MutableMap
-import kotlin.collections.any
 import kotlin.collections.component1
 import kotlin.collections.component2
-import kotlin.collections.distinct
-import kotlin.collections.filter
-import kotlin.collections.flatMap
-import kotlin.collections.forEach
-import kotlin.collections.getOrElse
-import kotlin.collections.iterator
-import kotlin.collections.listOf
-import kotlin.collections.map
-import kotlin.collections.mutableListOf
-import kotlin.collections.mutableMapOf
 import kotlin.collections.set
-import kotlin.collections.sort
-import kotlin.collections.sorted
-import kotlin.collections.toList
-import kotlin.collections.toMutableList
 
 object TrainService {
 
