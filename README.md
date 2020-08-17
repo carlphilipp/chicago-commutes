@@ -59,7 +59,7 @@ Error icon made by [pixelmeetup](https://www.flaticon.com/authors/pixelmeetup) f
 
 ## License
 ```
-Copyright 2019 Carl-Philipp Harmant
+Copyright 2020 Carl-Philipp Harmant
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

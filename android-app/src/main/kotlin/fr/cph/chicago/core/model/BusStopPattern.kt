@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Carl-Philipp Harmant
+ * Copyright 2020 Carl-Philipp Harmant
  *
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
