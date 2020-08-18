@@ -71,7 +71,6 @@ import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 import org.apache.commons.text.WordUtils
 import timber.log.Timber
-import java.lang.RuntimeException
 import java.math.BigInteger
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -279,8 +278,8 @@ object BusService {
     private fun getBusArrivals(params: MultiValuedMap<String, String>): Single<List<BusArrival>> {
         return ctaClient.get(BUS_ARRIVALS, params, BusArrivalResponse::class.java)
             .map { result ->
-                when {
-                    result.bustimeResponse.prd == null -> {
+                when (result.bustimeResponse.prd) {
+                    null -> {
                         var res: List<BusArrival>? = null
                         if (result.bustimeResponse.error != null && result.bustimeResponse.error!!.isNotEmpty()) {
                             if (result.bustimeResponse.error!![0].noServiceScheduled()) {
@@ -294,15 +293,15 @@ object BusService {
                             .prd!!
                             .map { prd ->
                                 BusArrival(
-                                    timeStamp = simpleDateFormatBus.parseNotNull(prd.tmstmp),
-                                    stopName = WordUtils.capitalizeFully(prd.stpnm),
-                                    stopId = prd.stpid.toInt(),
-                                    busId = prd.vid.toInt(),
-                                    routeId = prd.rt,
-                                    routeDirection = BusDirection.fromString(prd.rtdir).text,
-                                    busDestination = prd.des,
-                                    predictionTime = simpleDateFormatBus.parseNotNull(prd.prdtm),
-                                    isDelay = prd.dly)
+                                            timeStamp = simpleDateFormatBus.parseNotNull(prd.tmstmp),
+                                            stopName = WordUtils.capitalizeFully(prd.stpnm),
+                                            stopId = prd.stpid.toInt(),
+                                            busId = prd.vid.toInt(),
+                                            routeId = prd.rt,
+                                            routeDirection = BusDirection.fromString(prd.rtdir).text,
+                                            busDestination = prd.des,
+                                            predictionTime = simpleDateFormatBus.parseNotNull(prd.prdtm),
+                                            isDelay = prd.dly)
                             }
                             .sortedBy { it.timeLeftMilli }
                     }

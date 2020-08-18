@@ -18,7 +18,6 @@
 
 <resources>
 
-    <color name="grey">#808080</color>
     <color name="grey_light">#D8D8D8</color>
     <color name="black">#000000</color>
     <color name="grey_M_B">#5e5e5e</color>

@@ -86,12 +86,12 @@ class FavoritesAdapter(private val context: Context) : RecyclerView.Adapter<Favo
     }
 
     class FavoritesViewHolder(view: View, val parent: ViewGroup) : RecyclerView.ViewHolder(view) {
-        val mainLayout = view.findViewById<LinearLayout>(R.id.favorites_arrival_layout)
-        val lastUpdateTextView = view.findViewById<TextView>(R.id.last_update)
-        val stationNameTextView = view.findViewById<TextView>(R.id.favorites_station_name)
-        val favoriteImage = view.findViewById<ImageView>(R.id.favorites_icon)
-        val detailsButton = view.findViewById<Button>(R.id.details_button)
-        val mapButton = view.findViewById<Button>(R.id.view_map_button)
+        val mainLayout: LinearLayout = view.findViewById(R.id.favorites_arrival_layout)
+        val lastUpdateTextView: TextView = view.findViewById(R.id.last_update)
+        val stationNameTextView: TextView = view.findViewById(R.id.favorites_station_name)
+        val favoriteImage: ImageView = view.findViewById(R.id.favorites_icon)
+        val detailsButton: Button = view.findViewById(R.id.details_button)
+        val mapButton: Button = view.findViewById(R.id.view_map_button)
 
         init {
             this.stationNameTextView.setLines(1)

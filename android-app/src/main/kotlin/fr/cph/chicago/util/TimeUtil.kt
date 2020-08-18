@@ -4,6 +4,7 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import java.util.Calendar
 import java.util.Date
+import kotlin.math.abs
 
 object TimeUtil {
 
@@ -46,7 +47,7 @@ object TimeUtil {
         cal.time = date1
         val t1 = cal.timeInMillis
         cal.time = date2
-        var diff = Math.abs(cal.timeInMillis - t1)
+        var diff = abs(cal.timeInMillis - t1)
         val day = 1000 * 60 * 60 * 24
         val hour = day / 24
         val minute = hour / 60

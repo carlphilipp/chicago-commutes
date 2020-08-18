@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.rx
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.view.LayoutInflater
 import android.view.View
@@ -43,9 +44,10 @@ abstract class AFunction {
         container.layoutParams = params
     }
 
+    @SuppressLint("InflateParams")
     protected fun createView(feature: Feature, activity: WeakReference<out Activity>): View {
         val inflater = LayoutInflater.from(activity.get())
-        val view = inflater.inflate(R.layout.marker_mapbox, null) // FIXME: Should not pass null
+        val view = inflater.inflate(R.layout.marker_mapbox, null)
         val destination = feature.getStringProperty(PROPERTY_DESTINATION)
         val title = view.findViewById<TextView>(R.id.title)
         title.text = destination

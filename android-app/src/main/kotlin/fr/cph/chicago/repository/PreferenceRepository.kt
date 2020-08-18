@@ -174,7 +174,7 @@ object PreferenceRepository {
         val sharedPref = getPrivatePreferences()
         val setPref = sharedPref.getStringSet(BUS.value, LinkedHashSet()) ?: setOf()
         Timber.v("Read bus favorites : %s", setPref)
-        return setPref.sortedWith(Comparator { str1, str2 ->
+        return setPref.sortedWith { str1, str2 ->
             val str1Decoded = util.decodeBusFavorite(str1).routeId
             val str2Decoded = util.decodeBusFavorite(str2).routeId
             val matcher1 = PATTERN.matcher(str1Decoded)
@@ -186,7 +186,7 @@ object PreferenceRepository {
             } else {
                 str1Decoded.compareTo(str2Decoded)
             }
-        }).toSet()
+        }.toSet()
     }
 
     fun addBusRouteNameMapping(busStopId: String, routeName: String) {

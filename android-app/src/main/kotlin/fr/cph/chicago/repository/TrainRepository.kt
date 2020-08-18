@@ -181,7 +181,7 @@ object TrainRepository {
                 val currentStation = stations[parentStopId]
                 if (currentStation == null) {
                     station.stops = mutableListOf(stop)
-                    stations.put(parentStopId, station)
+                    stations[parentStopId] = station
                 } else {
                     (currentStation.stops as MutableList).add(stop)
                 }

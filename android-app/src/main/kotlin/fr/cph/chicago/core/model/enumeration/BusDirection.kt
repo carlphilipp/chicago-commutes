@@ -45,8 +45,6 @@ enum class BusDirection constructor(val text: String, val shortUpperCase: String
                     text.equals(busDirectionEnum.text, ignoreCase = true) -> return busDirectionEnum
                     text.equals(busDirectionEnum.shortUpperCase, ignoreCase = true) -> return busDirectionEnum
                     busDirectionEnum.text.toLowerCase(Locale.US).contains(text.toLowerCase(Locale.US)) -> return busDirectionEnum
-                    else -> {
-                    }
                 }
             }
             Timber.w("Bus direction enum not found: %s", text)

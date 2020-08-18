@@ -152,7 +152,7 @@ object TrainService {
                     val currentDate = Calendar.getInstance().time
                     val fakeStation = TrainStation(BigInteger.ZERO, App.instance.getString(R.string.bus_all_results), ArrayList())
                     // Add a fake TrainEta cell to alert the user about the fact that only a part of the result is displayed
-                    val eta = TrainEta.buildFakeEtaWith(fakeStation, currentDate, currentDate, false, false)
+                    val eta = TrainEta.buildFakeEtaWith(fakeStation, currentDate, currentDate, app = false, delay = false)
                     trainEta.add(eta)
                 }
                 trainEta.toList()
@@ -220,11 +220,11 @@ object TrainService {
 
     fun getStationsForLine(line: TrainLine): List<TrainStation> {
         return if (trainRepository.allStations.containsKey(line))
-            trainRepository.allStations[line]!!
+            trainRepository.allStations[line] ?: error("")
         else {
             Timber.e("%s not found", line)
             // Fallback to blue
-            trainRepository.allStations[TrainLine.BLUE]!!
+            trainRepository.allStations[TrainLine.BLUE] ?: error("")
         }
     }
 

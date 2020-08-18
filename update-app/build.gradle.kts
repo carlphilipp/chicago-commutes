@@ -24,6 +24,6 @@ val updateTrainStops by tasks.creating(JavaExec::class) {
     args("$buildDir/tmp/", "${parent!!.projectDir}/android-app/src/main/assets/")
 }
 
-val update by tasks.creating {
+val update: Task by tasks.creating {
     dependsOn(updateBusStops, updateTrainStops)
 }

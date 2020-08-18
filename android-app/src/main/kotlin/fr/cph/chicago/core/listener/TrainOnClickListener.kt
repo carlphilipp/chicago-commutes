@@ -45,7 +45,7 @@ class TrainOnClickListener(private val parent: ViewGroup,
                            private val trainLines: Set<TrainLine>) : OnClickListener {
 
     override fun onClick(view: View) {
-        val values = mutableListOf<String>(view.context.getString(R.string.message_open_details))
+        val values = mutableListOf(view.context.getString(R.string.message_open_details))
         val colors = mutableListOf<Int>()
         for (line in trainLines) {
             values.add("$line line - See trains")

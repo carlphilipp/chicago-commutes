@@ -340,12 +340,12 @@ class TrainMapActivity : FragmentMapActivity() {
         }
     }
 
-    @SuppressLint("CheckResult")
+    @SuppressLint(value = ["CheckResult", "InflateParams"])
     private fun addStationOnMap(stationInfoFeatureCollection: FeatureCollection) {
         Single.defer {
             val bitmaps = stationInfoFeatureCollection.features()?.map { feature ->
                 val inflater = LayoutInflater.from(this@TrainMapActivity)
-                val bubbleLayout = inflater.inflate(R.layout.marker_mapbox, null) as BubbleLayout // FIXME: Do not pass null
+                val bubbleLayout = inflater.inflate(R.layout.marker_mapbox, null) as BubbleLayout
 
                 val title = feature.getStringProperty(PROPERTY_TITLE)
                 val titleTextView = bubbleLayout.findViewById<TextView>(R.id.title)

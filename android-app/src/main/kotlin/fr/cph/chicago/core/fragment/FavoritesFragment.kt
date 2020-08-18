@@ -20,8 +20,6 @@
 package fr.cph.chicago.core.fragment
 
 import android.content.Intent
-import android.os.AsyncTask
-import android.os.AsyncTask.Status
 import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,12 +29,28 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.MainActivity
 import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.adapter.FavoritesAdapter
-import fr.cph.chicago.redux.*
-import fr.cph.chicago.redux.Status.*
-import fr.cph.chicago.task.RefreshTimingTask
+import fr.cph.chicago.redux.BusRoutesAction
+import fr.cph.chicago.redux.BusRoutesAndBikeStationAction
+import fr.cph.chicago.redux.FavoritesAction
+import fr.cph.chicago.redux.State
+import fr.cph.chicago.redux.Status.FAILURE
+import fr.cph.chicago.redux.Status.FAILURE_NO_SHOW
+import fr.cph.chicago.redux.Status.FULL_FAILURE
+import fr.cph.chicago.redux.Status.SUCCESS
+import fr.cph.chicago.redux.Status.UNKNOWN
+import fr.cph.chicago.redux.UpdateStatus
+import fr.cph.chicago.redux.store
+import fr.cph.chicago.task.refreshTask
 import fr.cph.chicago.util.RateUtil
-import kotlinx.android.synthetic.main.error.*
-import kotlinx.android.synthetic.main.fragment_main.*
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.observers.DisposableObserver
+import io.reactivex.rxjava3.schedulers.Timed
+import kotlinx.android.synthetic.main.error.failureLayout
+import kotlinx.android.synthetic.main.error.retryButton
+import kotlinx.android.synthetic.main.fragment_main.favoritesListView
+import kotlinx.android.synthetic.main.fragment_main.floatingButton
+import kotlinx.android.synthetic.main.fragment_main.welcomeLayout
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
@@ -57,7 +71,8 @@ class FavoritesFragment : RefreshFragment(R.layout.fragment_main), StoreSubscrib
     }
 
     private lateinit var adapter: FavoritesAdapter
-    private var refreshTimingTask: RefreshTimingTask? = null
+    private val refreshTask: Observable<Long> = refreshTask()
+    private var disposable: Disposable? = null
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -86,18 +101,18 @@ class FavoritesFragment : RefreshFragment(R.layout.fragment_main), StoreSubscrib
 
     override fun onPause() {
         super.onPause()
-        refreshTimingTask?.cancel(true)
+        disposable?.dispose()
         store.unsubscribe(this)
     }
 
     override fun onStop() {
         super.onStop()
-        refreshTimingTask?.cancel(true)
+        disposable?.dispose()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        refreshTimingTask?.cancel(true)
+        disposable?.dispose()
     }
 
     override fun onResume() {
@@ -112,8 +127,10 @@ class FavoritesFragment : RefreshFragment(R.layout.fragment_main), StoreSubscrib
         }
         adapter.refreshFavorites()
         adapter.notifyDataSetChanged()
-        if (refreshTimingTask?.status == Status.FINISHED) {
-            startRefreshTask()
+        disposable?.run {
+            if (this.isDisposed) {
+                startRefreshTask()
+            }
         }
     }
 
@@ -173,7 +190,20 @@ class FavoritesFragment : RefreshFragment(R.layout.fragment_main), StoreSubscrib
     }
 
     private fun startRefreshTask() {
-        refreshTimingTask = RefreshTimingTask(adapter).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR) as RefreshTimingTask
+        disposable = refreshTask.subscribeWith(object : DisposableObserver<Long>() {
+            override fun onNext(t: Long) {
+                Timber.v("Update time. Thread id: %s", Thread.currentThread().id)
+                adapter.update()
+            }
+
+            override fun onError(e: Throwable) {
+                Timber.v(e, "Error with refresh task: %s", e.message)
+            }
+
+            override fun onComplete() {
+                Timber.v("Refresh task complete")
+            }
+        })
         adapter.update()
     }
 }
