@@ -30,8 +30,7 @@ android {
 
         // Urls
         resValue "string", "train_url", (project.hasProperty("trainUrl")) ? project.trainUrl : ""
-        resValue "string", "divvy_information_url", (project.hasProperty("divvyInformationUrl")) ? project.divvyUrl : ""
-        resValue "string", "divvy_status_url", (project.hasProperty("divvyStatusUrl")) ? project.divvyUrl : ""
+        resValue "string", "divvy_url", (project.hasProperty("divvyUrl")) ? project.divvyUrl : ""
     }
 
     // Change output apk name
@@ -160,6 +159,9 @@ dependencies {
     implementation(Lib.photoview)
     implementation(Lib.re_kotlin)
     implementation(Lib.timber)
+    implementation('com.squareup.retrofit2:retrofit:2.9.0')
+    implementation('com.squareup.retrofit2:converter-jackson:2.9.0')
+    implementation('com.squareup.retrofit2:adapter-rxjava3:2.9.0')
 
     // Google play flavor
     googleplayImplementation(Lib.google_services_map)

@@ -23,10 +23,14 @@ import fr.cph.chicago.entity.DivvyStationInformation
 import fr.cph.chicago.entity.DivvyStationStatus
 import fr.cph.chicago.entity.StationInformationResponse
 import fr.cph.chicago.entity.StationStatusResponse
-import fr.cph.chicago.exception.ConnectException
 import fr.cph.chicago.parser.JsonParser
 import fr.cph.chicago.redux.store
 import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
+import retrofit2.Retrofit
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
+import retrofit2.converter.jackson.JacksonConverterFactory
+import retrofit2.http.GET
 
 /**
  * Class that build connect to the Divvy API.
@@ -36,20 +40,35 @@ import io.reactivex.rxjava3.core.Single
  */
 object DivvyClient {
 
-    private val httpClient = HttpClient
-    private val jsonParser = JsonParser
-
-    @Throws(ConnectException::class)
     fun getStationsInformation(): Single<Map<String, DivvyStationInformation>> {
-        return httpClient.connect(store.state.divvyStationInformationUrl)
-            .map { inputStream -> jsonParser.parse(inputStream, StationInformationResponse::class.java) }
+        return divvyHttpClient.stationInformation()
             .map { stationInfo -> stationInfo.data.stations.associateBy { it.id } }
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.computation())
     }
 
-    @Throws(ConnectException::class)
     fun getStationsStatus(): Single<Map<String, DivvyStationStatus>> {
-        return httpClient.connect(store.state.divvyStationStatusUrl)
-            .map { inputStream -> jsonParser.parse(inputStream, StationStatusResponse::class.java) }
+        return divvyHttpClient.stationStatus()
             .map { stationStatus -> stationStatus.data.stations.associateBy { it.id } }
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.computation())
     }
+}
+
+private interface DivvyClientRetrofit {
+    @GET("gbfs/en/station_information.json")
+    fun stationInformation(): Single<StationInformationResponse>
+
+    @GET("gbfs/en/station_status.json")
+    fun stationStatus(): Single<StationStatusResponse>
+}
+
+private val divvyHttpClient: DivvyClientRetrofit by lazy {
+    val retrofit = Retrofit.Builder()
+        .baseUrl(store.state.divvyUrl)
+        .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+        .addConverterFactory(JacksonConverterFactory.create(JsonParser.mapper))
+        .client(okHttpClient)
+        .build();
+    retrofit.create(DivvyClientRetrofit::class.java)
 }

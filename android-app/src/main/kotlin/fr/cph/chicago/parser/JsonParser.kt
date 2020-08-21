@@ -36,7 +36,7 @@ import java.io.InputStream
 object JsonParser {
 
     private val util = Util
-    private val mapper = jacksonObjectMapper()
+    val mapper = jacksonObjectMapper() // to expose somwhere else
 
     init {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)

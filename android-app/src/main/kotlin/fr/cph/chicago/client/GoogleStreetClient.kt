@@ -20,10 +20,15 @@
 package fr.cph.chicago.client
 
 import android.graphics.drawable.Drawable
-import fr.cph.chicago.Constants.GOOGLE_STREET_VIEW_URL
+import fr.cph.chicago.Constants.GOOGLE_STREET_VIEW_URL2
 import fr.cph.chicago.redux.store
-import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.core.Single
+import okhttp3.ResponseBody
+import retrofit2.Retrofit
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
+import retrofit2.http.GET
+import retrofit2.http.Query
+import java.io.ByteArrayInputStream
 
 /**
  * Class that access google street api. Singleton
@@ -37,28 +42,35 @@ object GoogleStreetClient {
     private const val HEIGHT = 300
     private const val FOV = 120
 
-    private val util = Util
-    private val httpClient = HttpClient
-
     fun connect(latitude: Double, longitude: Double): Single<Drawable> {
-        val address = "$GOOGLE_STREET_VIEW_URL?key=${store.state.googleStreetKey}&sensor=false&size=${WIDTH}x$HEIGHT&fov=$FOV&location=$latitude,$longitude&source=outdoor"
-        return connectUrl(address)
+        return googleStreetHttpClient.getStreetViewImage(
+            key = store.state.googleStreetKey,
+            sensor = false,
+            size = "${WIDTH}x${HEIGHT}",
+            fov = "$FOV",
+            location = "$latitude,$longitude",
+            source = "outdoor")
+            .map { response -> Drawable.createFromStream(ByteArrayInputStream(response.bytes()), "src name") }
     }
+}
 
-    /**
-     * HttpClient to the API and get the MAP
-     *
-     * @param address the address to connect to
-     * @return a drawable map
-     */
-    private fun connectUrl(address: String): Single<Drawable> {
-        return httpClient.connect(address)
-            .map { inputStream ->
-                try {
-                    Drawable.createFromStream(inputStream, "src name")
-                } finally {
-                    util.closeQuietly(inputStream)
-                }
-            }
-    }
+private interface GoogleStreetClientRetrofit {
+    @GET("/maps/api/streetview")
+    fun getStreetViewImage(
+        @Query("key") key: String,
+        @Query("sensor") sensor: Boolean,
+        @Query("size") size: String,
+        @Query("fov") fov: String,
+        @Query("location") location: String,
+        @Query("source") source: String,
+    ): Single<ResponseBody>
+}
+
+private val googleStreetHttpClient: GoogleStreetClientRetrofit by lazy {
+    val retrofit = Retrofit.Builder()
+        .baseUrl(GOOGLE_STREET_VIEW_URL2)
+        .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+        .client(okHttpClient)
+        .build();
+    retrofit.create(GoogleStreetClientRetrofit::class.java)
 }
