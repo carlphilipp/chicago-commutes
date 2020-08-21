@@ -23,6 +23,7 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.graphics.Point
+import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.WindowManager
@@ -58,10 +59,6 @@ class App : Application() {
     }
 
     var refresh: Boolean = false
-
-    val screenWidth: Int by lazy {
-        screenSize[0]
-    }
 
     val lineWidthGoogleMap: Float by lazy {
         if (screenWidth > 1080) 7f else if (screenWidth > 480) 4f else 2f
@@ -102,11 +99,20 @@ class App : Application() {
         }
     }
 
-    private val screenSize: IntArray by lazy {
-        val wm = applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val display = wm.defaultDisplay
-        val point = Point()
-        display.getSize(point)
-        intArrayOf(point.x, point.y)
+    val screenWidth: Int by lazy {
+        when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                val windowManager: WindowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+                val rect: Rect = windowManager.currentWindowMetrics.bounds
+                rect.width()
+            }
+            else -> {
+                val wm = applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+                val display = wm.defaultDisplay
+                val point = Point()
+                display.getSize(point)
+                point.x
+            }
+        }
     }
 }

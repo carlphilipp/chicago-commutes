@@ -170,6 +170,10 @@ dependencies {
     fossImplementation(Lib.mapbox_annotation)
     fossImplementation(Lib.mapbox_marker_view)
     fossImplementation(Lib.mapbox_location)
+    // Lib needed to patch an issue with SDK 30
+    // References: https://github.com/mapbox/mapbox-gl-native-android/issues/425 and https://github.com/mapbox/mapbox-events-android/issues/482
+    // TODO: This should not be needed once released in the mapbox android SDK.
+    fossImplementation(Lib.mapbox_telemetry)
 
     testImplementation(Lib.junit) { exclude group: "org.hamcrest", module: "hamcrest-core" }
     testImplementation(Lib.mockito) { exclude group: "org.hamcrest", module: "hamcrest-core" }
