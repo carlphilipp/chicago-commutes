@@ -4,12 +4,19 @@ import okhttp3.ConnectionPool
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
+import timber.log.Timber
 
-val pool = ConnectionPool(5, 10000, TimeUnit.MILLISECONDS);
-var logging: HttpLoggingInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY);
-val okHttpClient = OkHttpClient.Builder()
+private val connectionPool = ConnectionPool(5, 10000, TimeUnit.MILLISECONDS);
+
+private var loggingInterceptor: HttpLoggingInterceptor = HttpLoggingInterceptor(object: HttpLoggingInterceptor.Logger {
+    override fun log(message: String) {
+        Timber.tag("OkHttp").d(message);
+    }
+}).setLevel(HttpLoggingInterceptor.Level.BODY)
+
+val httpClient = OkHttpClient.Builder()
     .readTimeout(5, TimeUnit.SECONDS)
     .connectTimeout(5, TimeUnit.SECONDS)
-    .connectionPool(pool)
-    .addInterceptor(logging)
+    .connectionPool(connectionPool)
+    .addInterceptor(loggingInterceptor)
     .build()

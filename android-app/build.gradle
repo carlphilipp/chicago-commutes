@@ -27,10 +27,6 @@ android {
         resValue "string", "google_maps_api_key", (googleMapsApiKey != null) ? new String(Base64.getDecoder().decode(googleMapsApiKey)) : ""
         resValue "string", "cta_train_key", (ctaTrainKey != null) ? new String(Base64.getDecoder().decode(ctaTrainKey)) : ""
         resValue "string", "cta_bus_key", (ctaBusKey != null) ? new String(Base64.getDecoder().decode(ctaBusKey)) : ""
-
-        // Urls
-        resValue "string", "train_url", (project.hasProperty("trainUrl")) ? project.trainUrl : ""
-        resValue "string", "divvy_url", (project.hasProperty("divvyUrl")) ? project.divvyUrl : ""
     }
 
     // Change output apk name
@@ -159,11 +155,11 @@ dependencies {
     implementation(Lib.photoview)
     implementation(Lib.re_kotlin)
     implementation(Lib.timber)
-    implementation('com.squareup.retrofit2:retrofit:2.9.0')
-    implementation('com.squareup.retrofit2:converter-jackson:2.9.0')
-    implementation('com.squareup.okhttp3:okhttp:4.8.1')
-    implementation('com.squareup.okhttp3:logging-interceptor:4.8.1')
-    implementation('com.squareup.retrofit2:adapter-rxjava3:2.9.0')
+    implementation(Lib.retrofit2)
+    implementation(Lib.retrofit2_converter)
+    implementation(Lib.retrofit2_rxjava3)
+    implementation(Lib.okhttp3)
+    implementation(Lib.okhttp3_logging)
 
     // Google play flavor
     googleplayImplementation(Lib.google_services_map)

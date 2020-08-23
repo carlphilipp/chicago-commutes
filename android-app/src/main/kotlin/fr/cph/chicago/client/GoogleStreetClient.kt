@@ -64,7 +64,7 @@ private val googleStreetHttpClient: GoogleStreetClientRetrofit by lazy {
     val retrofit = Retrofit.Builder()
         .baseUrl(GOOGLE_STREET_VIEW_BASE)
         .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
-        .client(okHttpClient)
+        .client(httpClient)
         .build();
     retrofit.create(GoogleStreetClientRetrofit::class.java)
 }

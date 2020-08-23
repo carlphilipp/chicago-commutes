@@ -225,7 +225,7 @@ private val ctaTrainClient: CtaTrainClient by lazy {
         .baseUrl(TRAINS_BASE)
         .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
         .addConverterFactory(JacksonConverterFactory.create(JsonParser.mapper))
-        .client(okHttpClient)
+        .client(httpClient)
         .build();
     retrofit.create(CtaTrainClient::class.java)
 }
@@ -235,7 +235,7 @@ private val ctaBusClient: CtaBusClient by lazy {
         .baseUrl(BUSES_BASE)
         .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
         .addConverterFactory(JacksonConverterFactory.create(JsonParser.mapper))
-        .client(okHttpClient)
+        .client(httpClient)
         .build();
     retrofit.create(CtaBusClient::class.java)
 }
@@ -245,7 +245,7 @@ private val ctaAlertClient: CtaAlertClient by lazy {
         .baseUrl(ALERTS_BASE)
         .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
         .addConverterFactory(JacksonConverterFactory.create(JsonParser.mapper))
-        .client(okHttpClient)
+        .client(httpClient)
         .build();
     retrofit.create(CtaAlertClient::class.java)
 }

@@ -178,7 +178,7 @@ class BusMapActivity : FragmentMapActivity() {
                     marker!!.isVisible = false
                     marker
                 }
-                .forEach { busStationMarkers.add(it!!) }
+                .forEach { busStationMarkers.add(it) }
             googleMap.addPolyline(poly)
             index[0]++
         }

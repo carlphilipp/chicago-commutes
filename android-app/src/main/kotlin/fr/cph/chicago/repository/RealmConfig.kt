@@ -38,7 +38,7 @@ object RealmConfig {
     private fun getRealmConfiguration(): RealmConfiguration {
         val context = App.instance.applicationContext
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)!!
-        return if (Build.VERSION.SDK_INT >= 28) {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             RealmConfiguration.Builder()
                 .schemaVersion(packageInfo.longVersionCode)
                 .deleteRealmIfMigrationNeeded()

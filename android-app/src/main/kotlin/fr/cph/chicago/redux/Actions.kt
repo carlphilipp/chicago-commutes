@@ -20,9 +20,7 @@ data class UpdateStatus(val status: Status): Action
 data class DefaultSettingsAction(
     val ctaTrainKey: String,
     val ctaBusKey: String,
-    val googleStreetKey: String,
-    val trainUrl: String,
-    val divvyUrl: String
+    val googleStreetKey: String
 ) : Action
 
 data class BaseAction(

@@ -1,11 +1,9 @@
 package fr.cph.chicago.redux
 
-import fr.cph.chicago.Constants
-import org.apache.commons.lang3.StringUtils
+import java.util.Date
 import org.rekotlin.Action
 import org.rekotlin.Store
 import timber.log.Timber
-import java.util.*
 
 val store = Store(
     reducer = ::reducer,
@@ -40,18 +38,11 @@ fun reducer(action: Action, oldState: State?): State {
             state = state.copy(status = action.status)
         }
         is DefaultSettingsAction -> {
-            val trainBaseUrl = if (action.trainUrl == StringUtils.EMPTY) Constants.TRAINS_BASE else action.trainUrl
-            val divvyUrl = if (action.divvyUrl == StringUtils.EMPTY) Constants.DIVVY_BASE else action.divvyUrl
-
             state = state.copy(
                 lastStateChange = Date(),
                 ctaTrainKey = action.ctaTrainKey,
                 ctaBusKey = action.ctaBusKey,
-                googleStreetKey = action.googleStreetKey,
-                trainArrivalsUrl = trainBaseUrl + "ttarrivals.aspx",
-                trainFollowUrl = trainBaseUrl + "ttfollow.aspx",
-                trainLocationUrl = trainBaseUrl + "ttpositions.aspx",
-                divvyUrl = divvyUrl)
+                googleStreetKey = action.googleStreetKey)
         }
         is BaseAction -> {
             val status = when {

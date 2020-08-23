@@ -67,9 +67,7 @@ class BaseActivity : AppCompatActivity(), StoreSubscriber<State> {
         val defaultSettingsAction = DefaultSettingsAction(
             ctaTrainKey = applicationContext.getString(string.cta_train_key),
             ctaBusKey = applicationContext.getString(string.cta_bus_key),
-            googleStreetKey = applicationContext.getString(string.google_maps_api_key),
-            trainUrl = applicationContext.getString(string.train_url),
-            divvyUrl = applicationContext.getString(string.divvy_url)
+            googleStreetKey = applicationContext.getString(string.google_maps_api_key)
         )
         store.dispatch(defaultSettingsAction)
         store.dispatch(BaseAction())
