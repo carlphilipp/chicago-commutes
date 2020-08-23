@@ -36,6 +36,7 @@ import fr.cph.chicago.client.busFollowParams
 import fr.cph.chicago.client.busPatternParams
 import fr.cph.chicago.client.busVehiclesParams
 import fr.cph.chicago.client.emptyParams
+import fr.cph.chicago.client.paramsToArray
 import fr.cph.chicago.core.model.Bus
 import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusDirections
@@ -102,7 +103,7 @@ object BusService {
     }
 
     fun loadAllBusStopsForRouteBound(route: String, bound: String): Single<List<BusStop>> {
-        return ctaClient.get(BUS_STOP_LIST, allStopsParams(route, bound), BusStopsResponse::class.java)
+        return ctaClient.getBusStops(route, bound)
             .map { busStopsResponse ->
                 if (busStopsResponse.bustimeResponse.stops == null) {
                     throw CtaException(busStopsResponse)
@@ -134,7 +135,8 @@ object BusService {
     }
 
     fun loadBusDirectionsSingle(busRouteId: String): Single<BusDirections> {
-        return ctaClient.get(BUS_DIRECTION, busDirectionParams(busRouteId), BusDirectionResponse::class.java)
+        //return ctaClient.get(BUS_DIRECTION, BusDirectionResponse::class.java, busDirectionParams(busRouteId))
+        return ctaClient.getBusDirections(busRouteId)
             .map { response ->
                 if (response.bustimeResponse.directions == null) {
                     throw CtaException(response)
@@ -156,7 +158,7 @@ object BusService {
     }
 
     fun busRoutes(): Single<List<BusRoute>> {
-        return ctaClient.get(BUS_ROUTES, emptyParams(), BusRoutesResponse::class.java)
+        return ctaClient.getBusRoutes()
             .map { bustimeResponse ->
                 bustimeResponse.bustimeResponse
                     .routes
@@ -175,7 +177,7 @@ object BusService {
     }
 
     fun loadBusPattern(busRouteId: String, bounds: Array<String>): Single<List<BusPattern>> {
-        return ctaClient.get(BUS_PATTERN, busPatternParams(busRouteId), BusPatternResponse::class.java)
+        return ctaClient.get(BUS_PATTERN, BusPatternResponse::class.java, busPatternParams(busRouteId))
             .map { response ->
                 if (response.bustimeResponse.ptr == null) throw CtaException(response)
                 response
@@ -199,7 +201,7 @@ object BusService {
     }
 
     fun busForRouteId(busRouteId: String): Single<List<Bus>> {
-        return ctaClient.get(BUS_VEHICLES, busVehiclesParams(busRouteId), BusPositionResponse::class.java)
+        return ctaClient.getBusVehicles(busRouteId)
             .map { result ->
                 if (result.bustimeResponse.vehicle == null) throw CantLoadBusException(result)
                 result.bustimeResponse.vehicle!!
@@ -276,7 +278,7 @@ object BusService {
     }
 
     private fun getBusArrivals(params: MultiValuedMap<String, String>): Single<List<BusArrival>> {
-        return ctaClient.get(BUS_ARRIVALS, params, BusArrivalResponse::class.java)
+        return ctaClient.get(BUS_ARRIVALS, BusArrivalResponse::class.java, params)
             .map { result ->
                 when (result.bustimeResponse.prd) {
                     null -> {

@@ -24,11 +24,17 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import java.math.BigInteger
 
 const val REQUEST_ROUTE = "rt"
-private const val REQUEST_DIR = "dir"
+const val REQUEST_DIR = "dir"
 const val REQUEST_MAP_ID = "mapid"
-private const val REQUEST_RUN_NUMBER = "runnumber"
+const val REQUEST_RUN_NUMBER = "runnumber"
 const val REQUEST_STOP_ID = "stpid"
 private const val REQUEST_VID = "vid"
+
+fun paramsToArray(params: MultiValuedMap<String, String>): Array<String> {
+    return params.asMap()
+        .flatMap { entry -> entry.value.map<String?, String> { value -> "${entry.key}=$value" } }
+        .toTypedArray()
+}
 
 fun emptyParams(): MultiValuedMap<String, String> {
     return ArrayListValuedHashMap()
@@ -72,10 +78,8 @@ fun trainLocationParams(line: String): MultiValuedMap<String, String> {
     return params
 }
 
-fun stationTrainParams(stationId: BigInteger): MultiValuedMap<String, String> {
-    val params = ArrayListValuedHashMap<String, String>(1, 1)
-    params.put(REQUEST_MAP_ID, stationId.toString())
-    return params
+fun stationTrainParams(stationId: BigInteger): Set<BigInteger> {
+    return mutableSetOf(stationId)
 }
 
 fun busPatternParams(busRouteId: String): MultiValuedMap<String, String> {

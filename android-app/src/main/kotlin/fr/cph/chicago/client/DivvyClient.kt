@@ -33,7 +33,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory
 import retrofit2.http.GET
 
 /**
- * Class that build connect to the Divvy API.
+ * Class that connect to the Divvy API.
  *
  * @author Carl-Philipp Harmant
  * @version 1

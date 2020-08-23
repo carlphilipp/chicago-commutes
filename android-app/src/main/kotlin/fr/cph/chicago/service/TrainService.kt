@@ -21,12 +21,7 @@ package fr.cph.chicago.service
 
 import fr.cph.chicago.R
 import fr.cph.chicago.client.CtaClient
-import fr.cph.chicago.client.CtaRequestType.TRAIN_ARRIVALS
-import fr.cph.chicago.client.CtaRequestType.TRAIN_FOLLOW
-import fr.cph.chicago.client.CtaRequestType.TRAIN_LOCATION
 import fr.cph.chicago.client.stationTrainParams
-import fr.cph.chicago.client.trainEtasParams
-import fr.cph.chicago.client.trainLocationParams
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Stop
@@ -46,8 +41,6 @@ import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import org.apache.commons.collections4.MultiValuedMap
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 import java.math.BigInteger
@@ -55,8 +48,6 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.Callable
-import kotlin.collections.component1
-import kotlin.collections.component2
 import kotlin.collections.set
 
 object TrainService {
@@ -71,32 +62,28 @@ object TrainService {
     fun loadFavoritesTrain(): Single<TrainArrivalDTO> {
         return singleFromCallable(
             Callable {
-                val trainParams = preferencesService.getFavoritesTrainParams()
+                val trainParams: Set<BigInteger> = preferencesService.getFavoritesTrainParams()
                 var trainArrivals = mutableMapOf<BigInteger, TrainArrival>()
-                for ((key, value) in trainParams.asMap()) {
-                    if ("mapid" == key) {
-                        val list = value as MutableList<String>
-                        if (list.size < 5) {
-                            trainArrivals = getTrainArrivals(trainParams).blockingGet()
+                val list = trainParams.toList()
+                if (list.size < 5) {
+                    trainArrivals = getTrainArrivals(trainParams).blockingGet()
+                } else {
+                    val size = list.size
+                    var start = 0
+                    var end = 4
+                    while (end < size + 1) {
+                        val subList = list.subList(start, end)
+                        val paramsTemp = mutableSetOf<BigInteger>()
+                        for (sub in subList) {
+                            paramsTemp.add(sub)
+                        }
+                        val temp = getTrainArrivals(paramsTemp).blockingGet()
+                        trainArrivals.putAll(temp)
+                        start = end
+                        if (end + 3 >= size - 1 && end != size) {
+                            end = size
                         } else {
-                            val size = list.size
-                            var start = 0
-                            var end = 4
-                            while (end < size + 1) {
-                                val subList = list.subList(start, end)
-                                val paramsTemp = ArrayListValuedHashMap<String, String>()
-                                for (sub in subList) {
-                                    paramsTemp.put(key, sub)
-                                }
-                                val temp = getTrainArrivals(paramsTemp).blockingGet()
-                                trainArrivals.putAll(temp)
-                                start = end
-                                if (end + 3 >= size - 1 && end != size) {
-                                    end = size
-                                } else {
-                                    end += 3
-                                }
-                            }
+                            end += 3
                         }
                     }
                 }
@@ -135,7 +122,7 @@ object TrainService {
     }
 
     fun trainEtas(runNumber: String, loadAll: Boolean): Single<List<TrainEta>> {
-        return ctaClient.get(TRAIN_FOLLOW, trainEtasParams(runNumber), TrainArrivalResponse::class.java)
+        return ctaClient.getTrainFollow(runNumber)
             .map { trainArrivalResponse: TrainArrivalResponse ->
                 val arrivals = getTrainArrivalsInternal(trainArrivalResponse)
                 var trainEta = mutableListOf<TrainEta>()
@@ -162,7 +149,7 @@ object TrainService {
     }
 
     fun trainLocations(line: String): Single<List<Train>> {
-        return ctaClient.get(TRAIN_LOCATION, trainLocationParams(line), TrainLocationResponse::class.java)
+        return ctaClient.getTrainLocations(line)
             .map { trainLocationResponse: TrainLocationResponse ->
                 if (trainLocationResponse.ctatt.route == null) {
                     val error = trainLocationResponse.ctatt.errNm
@@ -241,9 +228,11 @@ object TrainService {
             .observeOn(Schedulers.computation())
     }
 
-    private fun getTrainArrivals(params: MultiValuedMap<String, String>): Single<MutableMap<BigInteger, TrainArrival>> {
-        return ctaClient.get(TRAIN_ARRIVALS, params, TrainArrivalResponse::class.java)
-            .map { trainArrivalResponse: TrainArrivalResponse -> getTrainArrivalsInternal(trainArrivalResponse) }
+    private fun getTrainArrivals(stationsIds: Set<BigInteger>): Single<MutableMap<BigInteger, TrainArrival>> {
+        /*return ctaClient.get(TRAIN_ARRIVALS, TrainArrivalResponse::class.java, params)
+            .map { trainArrivalResponse: TrainArrivalResponse -> getTrainArrivalsInternal(trainArrivalResponse) }*/
+        return ctaClient.getTrainArrivals(stationsIds.map { it.toString() })
+            .map { trainArrivalResponse -> getTrainArrivalsInternal(trainArrivalResponse) }
     }
 
     private fun getTrainArrivalsInternal(trainArrivalResponse: TrainArrivalResponse): MutableMap<BigInteger, TrainArrival> {

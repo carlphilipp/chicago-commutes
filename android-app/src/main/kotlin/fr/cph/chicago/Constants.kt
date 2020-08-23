@@ -28,17 +28,17 @@ package fr.cph.chicago
 object Constants {
     const val GPS_ACCESS = 1
 
-    const val TRAINS_BASE = "http://lapi.transitchicago.com/api/1.0/"
-    private const val BUSES_BASE = "http://www.ctabustracker.com/bustime/api/v2/"
-    private const val ALERTS_BASE = "http://www.transitchicago.com/api/1.0/"
+    const val TRAINS_BASE = "http://lapi.transitchicago.com"
+    const val BUSES_BASE = "http://www.ctabustracker.com"
+    const val ALERTS_BASE = "http://www.transitchicago.com"
 
     // CTA - Buses
-    const val BUSES_ROUTES_URL = BUSES_BASE + "getroutes"
-    const val BUSES_DIRECTION_URL = BUSES_BASE + "getdirections"
-    const val BUSES_STOP_URL = BUSES_BASE + "getstops"
-    const val BUSES_VEHICLES_URL = BUSES_BASE + "getvehicles"
-    const val BUSES_ARRIVAL_URL = BUSES_BASE + "getpredictions"
-    const val BUSES_PATTERN_URL = BUSES_BASE + "getpatterns"
+    const val BUSES_ROUTES_URL = BUSES_BASE + "/bustime/api/v2/getroutes"
+    const val BUSES_DIRECTION_URL = BUSES_BASE + "/bustime/api/v2/getdirections"
+    const val BUSES_STOP_URL = BUSES_BASE + "/bustime/api/v2/getstops"
+    const val BUSES_VEHICLES_URL = BUSES_BASE + "/bustime/api/v2/getvehicles"
+    const val BUSES_ARRIVAL_URL = BUSES_BASE + "/bustime/api/v2/getpredictions"
+    const val BUSES_PATTERN_URL = BUSES_BASE + "/bustime/api/v2/getpatterns"
 
     // CTA - Alerts
     const val ALERTS_ROUTES_URL = ALERTS_BASE + "routes.aspx"
@@ -48,8 +48,7 @@ object Constants {
     const val DIVVY_URL = "https://gbfs.divvybikes.com"
 
     // Google
-    const val GOOGLE_STREET_VIEW_URL = "http://maps.googleapis.com/maps/api/streetview"
-    const val GOOGLE_STREET_VIEW_URL2 = "http://maps.googleapis.com"
+    const val GOOGLE_STREET_VIEW_URL = "http://maps.googleapis.com"
 
     const val SELECTED_ID = "SELECTED_ID"
 }

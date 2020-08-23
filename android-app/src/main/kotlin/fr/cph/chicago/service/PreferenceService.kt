@@ -177,11 +177,8 @@ object PreferenceService {
         return paramsBus
     }
 
-    fun getFavoritesTrainParams(): MultiValuedMap<String, String> {
-        val favorites = repo.getTrainFavorites()
-        val paramsTrain = ArrayListValuedHashMap<String, String>(1, favorites.size)
-        favorites.forEach { favorite -> paramsTrain.put(REQUEST_MAP_ID, favorite.toString()) }
-        return paramsTrain
+    fun getFavoritesTrainParams(): Set<BigInteger> {
+        return repo.getTrainFavorites()
     }
 
     fun removeBusFromFavorites(busRouteId: String, busStopId: String, bound: String): Single<List<String>> {
