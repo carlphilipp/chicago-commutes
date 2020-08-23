@@ -36,6 +36,7 @@ import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_header_fav_layout.favoritesImage
 import kotlinx.android.synthetic.main.activity_header_fav_layout.favoritesImageContainer
+import kotlinx.android.synthetic.main.activity_header_fav_layout.mapImage
 import kotlinx.android.synthetic.main.activity_station_header_layout.streetViewImage
 import kotlinx.android.synthetic.main.activity_station_header_layout.streetViewProgressBar
 import kotlinx.android.synthetic.main.activity_station_header_layout.streetViewText
@@ -106,6 +107,8 @@ abstract class StationActivity(private val contentView: Int) : AppCompatActivity
     protected fun handleFavorite() {
         if (isFavorite()) {
             favoritesImage.setColorFilter(Color.yellowLineDark)
+        } else {
+            favoritesImage.colorFilter = mapImage.colorFilter
         }
     }
 
