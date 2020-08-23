@@ -41,7 +41,7 @@ fun reducer(action: Action, oldState: State?): State {
         }
         is DefaultSettingsAction -> {
             val trainBaseUrl = if (action.trainUrl == StringUtils.EMPTY) Constants.TRAINS_BASE else action.trainUrl
-            val divvyUrl = if (action.divvyUrl == StringUtils.EMPTY) Constants.DIVVY_URL else action.divvyUrl
+            val divvyUrl = if (action.divvyUrl == StringUtils.EMPTY) Constants.DIVVY_BASE else action.divvyUrl
 
             state = state.copy(
                 lastStateChange = Date(),

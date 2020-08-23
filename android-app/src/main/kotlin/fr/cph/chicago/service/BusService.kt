@@ -19,24 +19,9 @@
 
 package fr.cph.chicago.service
 
+import fr.cph.chicago.Constants.REQUEST_ROUTE
+import fr.cph.chicago.Constants.REQUEST_STOP_ID
 import fr.cph.chicago.client.CtaClient
-import fr.cph.chicago.client.CtaRequestType.BUS_STOP_LIST
-import fr.cph.chicago.client.CtaRequestType.BUS_DIRECTION
-import fr.cph.chicago.client.CtaRequestType.BUS_ARRIVALS
-import fr.cph.chicago.client.CtaRequestType.BUS_PATTERN
-import fr.cph.chicago.client.CtaRequestType.BUS_ROUTES
-import fr.cph.chicago.client.CtaRequestType.BUS_VEHICLES
-import fr.cph.chicago.client.REQUEST_ROUTE
-import fr.cph.chicago.client.REQUEST_STOP_ID
-import fr.cph.chicago.client.allStopsParams
-import fr.cph.chicago.client.busArrivalsParams
-import fr.cph.chicago.client.busArrivalsStopIdParams
-import fr.cph.chicago.client.busDirectionParams
-import fr.cph.chicago.client.busFollowParams
-import fr.cph.chicago.client.busPatternParams
-import fr.cph.chicago.client.busVehiclesParams
-import fr.cph.chicago.client.emptyParams
-import fr.cph.chicago.client.paramsToArray
 import fr.cph.chicago.core.model.Bus
 import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusDirections
@@ -48,12 +33,6 @@ import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.dto.BusArrivalDTO
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
-import fr.cph.chicago.entity.BusArrivalResponse
-import fr.cph.chicago.entity.BusDirectionResponse
-import fr.cph.chicago.entity.BusPatternResponse
-import fr.cph.chicago.entity.BusPositionResponse
-import fr.cph.chicago.entity.BusRoutesResponse
-import fr.cph.chicago.entity.BusStopsResponse
 import fr.cph.chicago.exception.CantLoadBusException
 import fr.cph.chicago.exception.CtaException
 import fr.cph.chicago.parseNotNull
@@ -66,16 +45,15 @@ import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import org.apache.commons.collections4.MultiValuedMap
+import java.math.BigInteger
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.concurrent.Callable
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 import org.apache.commons.text.WordUtils
 import timber.log.Timber
-import java.math.BigInteger
-import java.text.SimpleDateFormat
-import java.util.Locale
-import java.util.concurrent.Callable
 
 object BusService {
 
@@ -95,7 +73,10 @@ object BusService {
                     val params = ArrayListValuedHashMap<String, String>(2, 1)
                     params.put(REQUEST_ROUTE, favoritesBusParams.get(REQUEST_ROUTE).joinToString(separator = ","))
                     params.put(REQUEST_STOP_ID, favoritesBusParams.get(REQUEST_STOP_ID).joinToString(separator = ","))
-                    getBusArrivals(params)
+                    getBusArrivals(
+                        routes = favoritesBusParams.get(REQUEST_ROUTE).toList(),
+                        stopIds = favoritesBusParams.get(REQUEST_STOP_ID).map { it.toBigInteger() }.toList()
+                    )
                 }
             }
             .subscribeOn(Schedulers.computation())
@@ -167,7 +148,7 @@ object BusService {
     }
 
     fun loadFollowBus(busId: String): Single<List<BusArrival>> {
-        return getBusArrivals(busFollowParams(busId))
+        return getBusArrivals(busId = busId)
             .onErrorReturn(handleListError())
             .subscribeOn(Schedulers.computation())
     }
@@ -177,7 +158,7 @@ object BusService {
     }
 
     fun loadBusPattern(busRouteId: String, bounds: Array<String>): Single<List<BusPattern>> {
-        return ctaClient.get(BUS_PATTERN, BusPatternResponse::class.java, busPatternParams(busRouteId))
+        return ctaClient.getBusPatterns(busRouteId)
             .map { response ->
                 if (response.bustimeResponse.ptr == null) throw CtaException(response)
                 response
@@ -214,7 +195,7 @@ object BusService {
     }
 
     fun loadBusArrivals(busStop: BusStop): Single<List<BusArrival>> {
-        return getBusArrivals(busArrivalsStopIdParams(busStop.id))
+        return getBusArrivals(listOf(busStop.id))
             .onErrorReturn(handleListError())
             .subscribeOn(Schedulers.computation())
     }
@@ -258,7 +239,7 @@ object BusService {
     }
 
     fun loadBusArrivals(busRouteId: String, busStopId: BigInteger, bound: String, boundTitle: String): Single<BusArrivalStopDTO> {
-        return getBusArrivals(busArrivalsParams(busRouteId, busStopId))
+        return getBusArrivals(listOf(busStopId), listOf(busRouteId))
             .map { busArrivals ->
                 busArrivals
                     .filter { (_, _, _, _, _, _, routeDirection) -> routeDirection == bound || routeDirection == boundTitle }
@@ -277,8 +258,8 @@ object BusService {
             .distinct()
     }
 
-    private fun getBusArrivals(params: MultiValuedMap<String, String>): Single<List<BusArrival>> {
-        return ctaClient.get(BUS_ARRIVALS, BusArrivalResponse::class.java, params)
+    private fun getBusArrivals(stopIds: List<BigInteger>? = null, routes: List<String>? = null, busId: String? = null): Single<List<BusArrival>> {
+        return ctaClient.getBusArrivals(stopIds?.map { it.toString() }, routes, busId)
             .map { result ->
                 when (result.bustimeResponse.prd) {
                     null -> {
@@ -295,15 +276,15 @@ object BusService {
                             .prd!!
                             .map { prd ->
                                 BusArrival(
-                                            timeStamp = simpleDateFormatBus.parseNotNull(prd.tmstmp),
-                                            stopName = WordUtils.capitalizeFully(prd.stpnm),
-                                            stopId = prd.stpid.toInt(),
-                                            busId = prd.vid.toInt(),
-                                            routeId = prd.rt,
-                                            routeDirection = BusDirection.fromString(prd.rtdir).text,
-                                            busDestination = prd.des,
-                                            predictionTime = simpleDateFormatBus.parseNotNull(prd.prdtm),
-                                            isDelay = prd.dly)
+                                    timeStamp = simpleDateFormatBus.parseNotNull(prd.tmstmp),
+                                    stopName = WordUtils.capitalizeFully(prd.stpnm),
+                                    stopId = prd.stpid.toInt(),
+                                    busId = prd.vid.toInt(),
+                                    routeId = prd.rt,
+                                    routeDirection = BusDirection.fromString(prd.rtdir).text,
+                                    busDestination = prd.des,
+                                    predictionTime = simpleDateFormatBus.parseNotNull(prd.prdtm),
+                                    isDelay = prd.dly)
                             }
                             .sortedBy { it.timeLeftMilli }
                     }

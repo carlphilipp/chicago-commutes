@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.client
 
+import fr.cph.chicago.Constants.DIVVY_BASE_PATH
 import fr.cph.chicago.entity.DivvyStationInformation
 import fr.cph.chicago.entity.DivvyStationStatus
 import fr.cph.chicago.entity.StationInformationResponse
@@ -56,10 +57,10 @@ object DivvyClient {
 }
 
 private interface DivvyClientRetrofit {
-    @GET("gbfs/en/station_information.json")
+    @GET("${DIVVY_BASE_PATH}/station_information.json")
     fun stationInformation(): Single<StationInformationResponse>
 
-    @GET("gbfs/en/station_status.json")
+    @GET("${DIVVY_BASE_PATH}/station_status.json")
     fun stationStatus(): Single<StationStatusResponse>
 }
 

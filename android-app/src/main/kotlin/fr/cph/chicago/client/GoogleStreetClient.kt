@@ -20,7 +20,7 @@
 package fr.cph.chicago.client
 
 import android.graphics.drawable.Drawable
-import fr.cph.chicago.Constants.GOOGLE_STREET_VIEW_URL
+import fr.cph.chicago.Constants.GOOGLE_STREET_VIEW_BASE
 import fr.cph.chicago.redux.store
 import io.reactivex.rxjava3.core.Single
 import okhttp3.ResponseBody
@@ -38,37 +38,31 @@ import java.io.ByteArrayInputStream
  */
 object GoogleStreetClient {
 
-    private const val WIDTH = 1000
-    private const val HEIGHT = 300
-    private const val FOV = 120
-
-    fun connect(latitude: Double, longitude: Double): Single<Drawable> {
-        return googleStreetHttpClient.getStreetViewImage(
-            key = store.state.googleStreetKey,
-            sensor = false,
-            size = "${WIDTH}x${HEIGHT}",
-            fov = "$FOV",
-            location = "$latitude,$longitude",
-            source = "outdoor")
+    fun getImage(latitude: Double, longitude: Double): Single<Drawable> {
+        return googleStreetHttpClient.getStreetViewImage(location = "$latitude,$longitude")
             .map { response -> Drawable.createFromStream(ByteArrayInputStream(response.bytes()), "src name") }
     }
 }
 
+private const val WIDTH = 1000
+private const val HEIGHT = 300
+private const val FOV = 120
+
 private interface GoogleStreetClientRetrofit {
     @GET("/maps/api/streetview")
     fun getStreetViewImage(
-        @Query("key") key: String,
-        @Query("sensor") sensor: Boolean,
-        @Query("size") size: String,
-        @Query("fov") fov: String,
+        @Query("key") key: String = store.state.googleStreetKey,
+        @Query("sensor") sensor: Boolean = false,
+        @Query("size") size: String = "${WIDTH}x${HEIGHT}",
+        @Query("fov") fov: String = "$FOV",
         @Query("location") location: String,
-        @Query("source") source: String,
+        @Query("source") source: String = "outdoor",
     ): Single<ResponseBody>
 }
 
 private val googleStreetHttpClient: GoogleStreetClientRetrofit by lazy {
     val retrofit = Retrofit.Builder()
-        .baseUrl(GOOGLE_STREET_VIEW_URL)
+        .baseUrl(GOOGLE_STREET_VIEW_BASE)
         .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
         .client(okHttpClient)
         .build();

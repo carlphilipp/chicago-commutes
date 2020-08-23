@@ -20,21 +20,17 @@
 package fr.cph.chicago.service
 
 import fr.cph.chicago.client.CtaClient
-import fr.cph.chicago.client.CtaRequestType
-import fr.cph.chicago.client.alertParams
-import fr.cph.chicago.client.alertsParams
-import fr.cph.chicago.client.paramsToArray
 import fr.cph.chicago.core.model.dto.AlertType
 import fr.cph.chicago.core.model.dto.RouteAlertsDTO
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.entity.AlertsRouteResponse
 import fr.cph.chicago.entity.AlertsRoutesResponse
 import io.reactivex.rxjava3.core.Single
-import org.apache.commons.lang3.StringUtils
-import timber.log.Timber
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Locale
+import org.apache.commons.lang3.StringUtils
+import timber.log.Timber
 
 object AlertService {
 
@@ -44,7 +40,7 @@ object AlertService {
     private val displayFormat = SimpleDateFormat("MM/dd/yyyy h:mm a", Locale.US)
 
     fun alerts(): Single<List<RoutesAlertsDTO>> {
-        return ctaClient.get(CtaRequestType.ALERTS_ROUTES, AlertsRoutesResponse::class.java, alertsParams())
+        return ctaClient.getAlertRoutes()
             .map { alertRoutes: AlertsRoutesResponse ->
                 if (alertRoutes.ctaRoutes.routeInfo.isEmpty()) {
                     val errors = alertRoutes.ctaRoutes.errorMessage.joinToString()
@@ -68,7 +64,7 @@ object AlertService {
     }
 
     fun routeAlertForId(id: String): Single<List<RouteAlertsDTO>> {
-        return ctaClient.get(CtaRequestType.ALERTS_ROUTE, AlertsRouteResponse::class.java, alertParams(id))
+        return ctaClient.getAlertAlerts(id)
             .map { alertRoutes: AlertsRouteResponse ->
                 if (alertRoutes.ctaAlerts.errorMessage != null) {
                     Timber.e(alertRoutes.ctaAlerts.errorMessage.toString())

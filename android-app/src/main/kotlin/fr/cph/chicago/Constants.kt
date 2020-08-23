@@ -28,27 +28,32 @@ package fr.cph.chicago
 object Constants {
     const val GPS_ACCESS = 1
 
+    // Base URLs
     const val TRAINS_BASE = "http://lapi.transitchicago.com"
     const val BUSES_BASE = "http://www.ctabustracker.com"
     const val ALERTS_BASE = "http://www.transitchicago.com"
+    const val DIVVY_BASE = "https://gbfs.divvybikes.com"
+    const val GOOGLE_STREET_VIEW_BASE = "http://maps.googleapis.com"
 
-    // CTA - Buses
-    const val BUSES_ROUTES_URL = BUSES_BASE + "/bustime/api/v2/getroutes"
-    const val BUSES_DIRECTION_URL = BUSES_BASE + "/bustime/api/v2/getdirections"
-    const val BUSES_STOP_URL = BUSES_BASE + "/bustime/api/v2/getstops"
-    const val BUSES_VEHICLES_URL = BUSES_BASE + "/bustime/api/v2/getvehicles"
-    const val BUSES_ARRIVAL_URL = BUSES_BASE + "/bustime/api/v2/getpredictions"
-    const val BUSES_PATTERN_URL = BUSES_BASE + "/bustime/api/v2/getpatterns"
+    // Base paths
+    const val TRAINS_BASE_PATH = "api/1.0"
+    const val BUSES_BASE_PATH = "bustime/api/v2"
+    const val ALERTS_BASE_PATH = "api/1.0"
+    const val DIVVY_BASE_PATH = "gbfs/en"
 
-    // CTA - Alerts
-    const val ALERTS_ROUTES_URL = ALERTS_BASE + "routes.aspx"
-    const val ALERT_ROUTES_URL = ALERTS_BASE + "alerts.aspx"
+    // Requests param
+    const val REQUEST_ROUTE = "rt"
+    const val REQUEST_STOP_ID = "stpid"
+    const val REQUEST_DIR = "dir"
+    const val REQUEST_MAP_ID = "mapid"
+    const val REQUEST_RUN_NUMBER = "runnumber"
+    const val REQUEST_VID = "vid"
+    const val REQUEST_KEY = "key"
+    const val REQUEST_OUTPUT_TYPE = "outputType"
+    const val REQUEST_FORMAT = "format"
+    const val REQUEST_TYPE = "type"
+    const val REQUEST_ROUTE_ID = "routeid"
 
-    // Divvy
-    const val DIVVY_URL = "https://gbfs.divvybikes.com"
-
-    // Google
-    const val GOOGLE_STREET_VIEW_URL = "http://maps.googleapis.com"
-
+    // Fragment selection
     const val SELECTED_ID = "SELECTED_ID"
 }

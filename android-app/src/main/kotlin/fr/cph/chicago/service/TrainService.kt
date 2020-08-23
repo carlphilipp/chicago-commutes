@@ -21,7 +21,6 @@ package fr.cph.chicago.service
 
 import fr.cph.chicago.R
 import fr.cph.chicago.client.CtaClient
-import fr.cph.chicago.client.stationTrainParams
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Stop
@@ -41,14 +40,14 @@ import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import org.apache.commons.lang3.StringUtils
-import timber.log.Timber
 import java.math.BigInteger
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.Callable
 import kotlin.collections.set
+import org.apache.commons.lang3.StringUtils
+import timber.log.Timber
 
 object TrainService {
 
@@ -116,7 +115,7 @@ object TrainService {
     }
 
     fun loadStationTrainArrival(stationId: BigInteger): Single<TrainArrival> {
-        return getTrainArrivals(stationTrainParams(stationId))
+        return getTrainArrivals(mutableSetOf(stationId))
             .observeOn(Schedulers.computation())
             .map { trainArrivals -> trainArrivals.getOrElse(stationId, { TrainArrival.buildEmptyTrainArrival() }) }
     }

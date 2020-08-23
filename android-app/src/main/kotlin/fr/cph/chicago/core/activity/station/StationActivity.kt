@@ -76,7 +76,7 @@ abstract class StationActivity(private val contentView: Int) : AppCompatActivity
     @SuppressLint("CheckResult")
     fun loadGoogleStreetImage(position: Position) {
         if (streetViewImage.tag == TAG_DEFAULT || streetViewImage.tag == TAG_ERROR) {
-            googleStreetClient.connect(position.latitude, position.longitude)
+            googleStreetClient.getImage(position.latitude, position.longitude)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doFinally { streetViewProgressBar.visibility = View.GONE }
                 .subscribe(
