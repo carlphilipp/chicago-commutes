@@ -56,4 +56,6 @@ object Constants {
 
     // Fragment selection
     const val SELECTED_ID = "SELECTED_ID"
+
+    const val STOP_FILE_PATH = "bus_stops.txt"
 }

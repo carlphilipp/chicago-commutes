@@ -21,15 +21,14 @@ package fr.cph.chicago.parser
 
 import com.univocity.parsers.csv.CsvParser
 import com.univocity.parsers.csv.CsvParserSettings
+import fr.cph.chicago.Constants.STOP_FILE_PATH
 import fr.cph.chicago.core.App
 import fr.cph.chicago.util.Util
-import timber.log.Timber
 import java.io.IOException
 import java.io.InputStreamReader
+import timber.log.Timber
 
 object BusStopCsvParser {
-
-    private const val STOP_FILE_PATH = "bus_stops.txt"
 
     private val parser: CsvParser
     private val util = Util

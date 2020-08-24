@@ -21,6 +21,7 @@ package fr.cph.chicago.client
 
 import android.graphics.drawable.Drawable
 import fr.cph.chicago.Constants.GOOGLE_STREET_VIEW_BASE
+import fr.cph.chicago.config.httpClient
 import fr.cph.chicago.redux.store
 import io.reactivex.rxjava3.core.Single
 import okhttp3.ResponseBody
@@ -65,6 +66,6 @@ private val googleStreetHttpClient: GoogleStreetClientRetrofit by lazy {
         .baseUrl(GOOGLE_STREET_VIEW_BASE)
         .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
         .client(httpClient)
-        .build();
+        .build()
     retrofit.create(GoogleStreetClientRetrofit::class.java)
 }

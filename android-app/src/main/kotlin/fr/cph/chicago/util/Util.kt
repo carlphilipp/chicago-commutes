@@ -230,7 +230,7 @@ object Util {
         closeQuietly(inputStream as Closeable)
     }
 
-    fun closeQuietly(closable: Closeable?) {
+    private fun closeQuietly(closable: Closeable?) {
         try {
             closable?.close()
         } catch (ioe: IOException) {

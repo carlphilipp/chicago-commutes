@@ -36,6 +36,8 @@ import fr.cph.chicago.Constants.REQUEST_TYPE
 import fr.cph.chicago.Constants.REQUEST_VID
 import fr.cph.chicago.Constants.TRAINS_BASE
 import fr.cph.chicago.Constants.TRAINS_BASE_PATH
+import fr.cph.chicago.config.httpClient
+import fr.cph.chicago.config.objectMapper
 import fr.cph.chicago.entity.AlertsRouteResponse
 import fr.cph.chicago.entity.AlertsRoutesResponse
 import fr.cph.chicago.entity.BusArrivalResponse
@@ -46,7 +48,6 @@ import fr.cph.chicago.entity.BusRoutesResponse
 import fr.cph.chicago.entity.BusStopsResponse
 import fr.cph.chicago.entity.TrainArrivalResponse
 import fr.cph.chicago.entity.TrainLocationResponse
-import fr.cph.chicago.parser.JsonParser
 import fr.cph.chicago.redux.store
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -224,7 +225,7 @@ private val ctaTrainClient: CtaTrainClient by lazy {
     val retrofit = Retrofit.Builder()
         .baseUrl(TRAINS_BASE)
         .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
-        .addConverterFactory(JacksonConverterFactory.create(JsonParser.mapper))
+        .addConverterFactory(JacksonConverterFactory.create(objectMapper))
         .client(httpClient)
         .build();
     retrofit.create(CtaTrainClient::class.java)
@@ -234,7 +235,7 @@ private val ctaBusClient: CtaBusClient by lazy {
     val retrofit = Retrofit.Builder()
         .baseUrl(BUSES_BASE)
         .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
-        .addConverterFactory(JacksonConverterFactory.create(JsonParser.mapper))
+        .addConverterFactory(JacksonConverterFactory.create(objectMapper))
         .client(httpClient)
         .build();
     retrofit.create(CtaBusClient::class.java)
@@ -244,7 +245,7 @@ private val ctaAlertClient: CtaAlertClient by lazy {
     val retrofit = Retrofit.Builder()
         .baseUrl(ALERTS_BASE)
         .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
-        .addConverterFactory(JacksonConverterFactory.create(JsonParser.mapper))
+        .addConverterFactory(JacksonConverterFactory.create(objectMapper))
         .client(httpClient)
         .build();
     retrofit.create(CtaAlertClient::class.java)

@@ -8,10 +8,10 @@ import fr.cph.chicago.core.model.dto.BusArrivalDTO
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
-import org.apache.commons.lang3.StringUtils
-import org.rekotlin.StateType
 import java.math.BigInteger
 import java.util.Date
+import org.apache.commons.lang3.StringUtils
+import org.rekotlin.StateType
 
 data class State(
     // Api keys

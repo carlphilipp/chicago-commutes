@@ -21,11 +21,12 @@ package fr.cph.chicago.client
 
 import fr.cph.chicago.Constants.DIVVY_BASE
 import fr.cph.chicago.Constants.DIVVY_BASE_PATH
+import fr.cph.chicago.config.httpClient
+import fr.cph.chicago.config.objectMapper
 import fr.cph.chicago.entity.DivvyStationInformation
 import fr.cph.chicago.entity.DivvyStationStatus
 import fr.cph.chicago.entity.StationInformationResponse
 import fr.cph.chicago.entity.StationStatusResponse
-import fr.cph.chicago.parser.JsonParser
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import retrofit2.Retrofit
@@ -68,7 +69,7 @@ private val divvyHttpClient: DivvyClientRetrofit by lazy {
     val retrofit = Retrofit.Builder()
         .baseUrl(DIVVY_BASE)
         .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
-        .addConverterFactory(JacksonConverterFactory.create(JsonParser.mapper))
+        .addConverterFactory(JacksonConverterFactory.create(objectMapper))
         .client(httpClient)
         .build();
     retrofit.create(DivvyClientRetrofit::class.java)
