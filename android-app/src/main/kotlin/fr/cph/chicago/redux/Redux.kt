@@ -58,7 +58,6 @@ fun reducer(action: Action, oldState: State?): State {
         }
         is DefaultSettingsAction -> {
             state = state.copy(
-                lastStateChange = Date(),
                 ctaTrainKey = action.ctaTrainKey,
                 ctaBusKey = action.ctaBusKey,
                 googleStreetKey = action.googleStreetKey)
@@ -70,7 +69,6 @@ fun reducer(action: Action, oldState: State?): State {
                 else -> Status.SUCCESS
             }
             state = state.copy(
-                lastStateChange = Date(),
                 status = status,
                 lastFavoritesUpdate = Date(),
                 trainArrivalsDTO = action.trainArrivalsDTO,
@@ -105,7 +103,6 @@ fun reducer(action: Action, oldState: State?): State {
                 status
             }
             state = state.copy(
-                lastStateChange = Date(),
                 status = newStatus,
                 busRoutesStatus = busRoutesStatus,
                 bikeStationsStatus = bikeStationsStatus,
@@ -133,7 +130,6 @@ fun reducer(action: Action, oldState: State?): State {
                 else -> Status.SUCCESS
             }
             state = state.copy(
-                lastStateChange = Date(),
                 status = status,
                 lastFavoritesUpdate = Date(),
                 trainArrivalsDTO = action.favoritesDTO.trainArrivalDTO,
@@ -153,7 +149,6 @@ fun reducer(action: Action, oldState: State?): State {
             }
 
             state = state.copy(
-                lastStateChange = Date(),
                 trainArrivalsDTO = state.trainArrivalsDTO,
                 trainStationStatus = trainStationStatus,
                 trainStationArrival = action.trainArrival
@@ -165,7 +160,6 @@ fun reducer(action: Action, oldState: State?): State {
                 else -> Status.SUCCESS
             }
             state = state.copy(
-                lastStateChange = Date(),
                 busStopStatus = busStopStatus,
                 busStopErrorMessage = action.errorMessage,
                 busArrivalStopDTO = action.busArrivalStopDTO
@@ -179,7 +173,6 @@ fun reducer(action: Action, oldState: State?): State {
                 else -> Status.SUCCESS
             }
             state = state.copy(
-                lastStateChange = Date(),
                 bikeStationsStatus = bikeStationsStatus,
                 bikeStationsErrorMessage = action.errorMessage,
                 bikeStations = bikeStations
@@ -193,7 +186,6 @@ fun reducer(action: Action, oldState: State?): State {
                 else -> Status.SUCCESS
             }
             state = state.copy(
-                lastStateChange = Date(),
                 busRoutes = if (action.error) state.busRoutes else action.busRoutes,
                 busRoutesStatus = status,
                 busRoutesErrorMessage = action.errorMessage
@@ -207,7 +199,6 @@ fun reducer(action: Action, oldState: State?): State {
                 else -> Status.SUCCESS
             }
             state = state.copy(
-                lastStateChange = Date(),
                 alertStatus = status,
                 alertErrorMessage = action.errorMessage,
                 alertsDTO = alertsDTO
@@ -215,21 +206,18 @@ fun reducer(action: Action, oldState: State?): State {
         }
         is AddTrainFavoriteAction -> {
             state = state.copy(
-                lastStateChange = Date(),
                 trainFavorites = action.trainFavorites,
                 trainStationStatus = Status.ADD_FAVORITES
             )
         }
         is RemoveTrainFavoriteAction -> {
             state = state.copy(
-                lastStateChange = Date(),
                 trainFavorites = action.trainFavorites,
                 trainStationStatus = Status.REMOVE_FAVORITES
             )
         }
         is AddBusFavoriteAction -> {
             state = state.copy(
-                lastStateChange = Date(),
                 busFavorites = action.busFavorites,
                 busRouteFavorites = action.busRouteFavorites,
                 busStopStatus = Status.ADD_FAVORITES
@@ -237,7 +225,6 @@ fun reducer(action: Action, oldState: State?): State {
         }
         is RemoveBusFavoriteAction -> {
             state = state.copy(
-                lastStateChange = Date(),
                 busFavorites = action.busFavorites,
                 busRouteFavorites = action.busRouteFavorites,
                 busStopStatus = Status.REMOVE_FAVORITES
@@ -245,14 +232,12 @@ fun reducer(action: Action, oldState: State?): State {
         }
         is AddBikeFavoriteAction -> {
             state = state.copy(
-                lastStateChange = Date(),
                 bikeFavorites = action.bikeFavorites,
                 bikeStationsStatus = Status.ADD_FAVORITES
             )
         }
         is RemoveBikeFavoriteAction -> {
             state = state.copy(
-                lastStateChange = Date(),
                 bikeFavorites = action.bikeFavorites,
                 bikeStationsStatus = Status.REMOVE_FAVORITES
             )
