@@ -40,10 +40,7 @@ import io.reactivex.rxjava3.core.SingleObserver
 import io.reactivex.rxjava3.disposables.Disposable
 import timber.log.Timber
 
-class BusDirectionObserver(private val viewClickable: View,
-                           private val parent: ViewGroup,
-                           private val convertView: View,
-                           private val busRoute: BusRoute) : SingleObserver<BusDirections> {
+class BusDirectionObserver(private val viewClickable: View, private val parent: ViewGroup, private val convertView: View, private val busRoute: BusRoute) : SingleObserver<BusDirections> {
 
     companion object {
         private val util = Util

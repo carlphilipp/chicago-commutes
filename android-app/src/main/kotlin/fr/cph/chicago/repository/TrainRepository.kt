@@ -30,11 +30,11 @@ import fr.cph.chicago.core.model.TrainStationPattern
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.util.Util
-import timber.log.Timber
 import java.io.IOException
 import java.io.InputStreamReader
 import java.math.BigInteger
 import java.util.TreeMap
+import timber.log.Timber
 
 /**
  * Class that handle train data

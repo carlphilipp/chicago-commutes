@@ -28,10 +28,10 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
-import org.apache.commons.lang3.StringUtils
 import java.math.BigInteger
 import java.util.Date
 import java.util.TreeMap
+import org.apache.commons.lang3.StringUtils
 
 /**
  * Vehicle Arrival. Hold data for favorites adapter.

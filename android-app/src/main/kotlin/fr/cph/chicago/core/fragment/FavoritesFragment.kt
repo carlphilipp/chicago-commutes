@@ -45,7 +45,6 @@ import fr.cph.chicago.util.RateUtil
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.observers.DisposableObserver
-import io.reactivex.rxjava3.schedulers.Timed
 import kotlinx.android.synthetic.main.error.failureLayout
 import kotlinx.android.synthetic.main.error.retryButton
 import kotlinx.android.synthetic.main.fragment_main.favoritesListView

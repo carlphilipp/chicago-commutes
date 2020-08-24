@@ -44,6 +44,7 @@ import fr.cph.chicago.util.Color
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.math.BigInteger
 import kotlinx.android.synthetic.main.activity_bus.arrivalsTextView
 import kotlinx.android.synthetic.main.activity_bus.busRouteNameView
 import kotlinx.android.synthetic.main.activity_bus.destinationTextView
@@ -59,7 +60,6 @@ import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import java.math.BigInteger
 
 /**
  * Activity that represents the bus stop
@@ -83,7 +83,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        busStopId = BigInteger(intent.getStringExtra(getString(R.string.bundle_bus_stop_id))?: "0")
+        busStopId = BigInteger(intent.getStringExtra(getString(R.string.bundle_bus_stop_id)) ?: "0")
         busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
         bound = intent.getStringExtra(getString(R.string.bundle_bus_bound)) ?: StringUtils.EMPTY
         boundTitle = intent.getStringExtra(getString(R.string.bundle_bus_bound_title)) ?: StringUtils.EMPTY

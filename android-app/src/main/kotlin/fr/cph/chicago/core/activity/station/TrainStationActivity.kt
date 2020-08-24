@@ -45,6 +45,8 @@ import fr.cph.chicago.redux.TrainStationAction
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Color
+import java.math.BigInteger
+import java.util.Random
 import kotlinx.android.synthetic.main.activity_header_fav_layout.favoritesImage
 import kotlinx.android.synthetic.main.activity_header_fav_layout.mapContainer
 import kotlinx.android.synthetic.main.activity_header_fav_layout.mapImage
@@ -55,8 +57,6 @@ import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import java.math.BigInteger
-import java.util.Random
 
 /**
  * Activity that represents the train station

@@ -21,8 +21,8 @@ package fr.cph.chicago.core.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import org.apache.commons.lang3.StringUtils
 import java.math.BigInteger
+import org.apache.commons.lang3.StringUtils
 
 /**
  * Bus stop entity

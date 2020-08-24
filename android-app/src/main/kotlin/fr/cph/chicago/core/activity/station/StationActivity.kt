@@ -50,8 +50,10 @@ abstract class StationActivity(private val contentView: Int) : AppCompatActivity
         private const val TAG_DEFAULT = "default"
         private const val TAG_STREET_VIEW = "streetview"
         private val googleStreetClient = GoogleStreetClient
+
         @JvmStatic
         protected val preferenceService = PreferenceService
+
         @JvmStatic
         protected val util = Util
     }

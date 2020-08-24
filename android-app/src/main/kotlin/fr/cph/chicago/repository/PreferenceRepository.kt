@@ -38,14 +38,14 @@ import fr.cph.chicago.repository.PrefType.TRAIN
 import fr.cph.chicago.repository.PrefType.TRAIN_FILTER
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
-import org.apache.commons.lang3.StringUtils
-import timber.log.Timber
 import java.math.BigInteger
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.regex.Pattern
+import org.apache.commons.lang3.StringUtils
+import timber.log.Timber
 
 /**
  * Class that store user preferences into the device
@@ -78,7 +78,7 @@ object PreferenceRepository {
             if (prefType == null) {
                 Timber.w("Preference not found ${it.key}")
             } else {
-                if(it.value is String) {
+                if (it.value is String) {
                     preferencesDTO.addPreference(prefType, setOf(it.value))
                 } else {
                     preferencesDTO.addPreference(prefType, it.value as Set<String>)

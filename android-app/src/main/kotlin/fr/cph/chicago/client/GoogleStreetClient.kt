@@ -24,12 +24,12 @@ import fr.cph.chicago.Constants.GOOGLE_STREET_VIEW_BASE
 import fr.cph.chicago.config.httpClient
 import fr.cph.chicago.redux.store
 import io.reactivex.rxjava3.core.Single
+import java.io.ByteArrayInputStream
 import okhttp3.ResponseBody
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
-import java.io.ByteArrayInputStream
 
 /**
  * Class that access google street api. Singleton

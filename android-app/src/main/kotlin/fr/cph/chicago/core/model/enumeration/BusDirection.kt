@@ -19,8 +19,8 @@
 
 package fr.cph.chicago.core.model.enumeration
 
-import timber.log.Timber
 import java.util.Locale
+import timber.log.Timber
 
 /**
  * Enumeration, bus direction

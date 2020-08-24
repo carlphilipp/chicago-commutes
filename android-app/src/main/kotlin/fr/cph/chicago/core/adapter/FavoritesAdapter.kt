@@ -48,8 +48,8 @@ import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.LayoutUtil.createBusArrivalLine
 import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.Util
-import org.apache.commons.lang3.StringUtils
 import java.util.Calendar
+import org.apache.commons.lang3.StringUtils
 
 /**
  * Adapter that will handle favorites

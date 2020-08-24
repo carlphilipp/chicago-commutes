@@ -40,9 +40,7 @@ import java.math.BigInteger
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class TrainOnClickListener(private val parent: ViewGroup,
-                           private val stationId: BigInteger,
-                           private val trainLines: Set<TrainLine>) : OnClickListener {
+class TrainOnClickListener(private val parent: ViewGroup, private val stationId: BigInteger, private val trainLines: Set<TrainLine>) : OnClickListener {
 
     override fun onClick(view: View) {
         val values = mutableListOf(view.context.getString(R.string.message_open_details))

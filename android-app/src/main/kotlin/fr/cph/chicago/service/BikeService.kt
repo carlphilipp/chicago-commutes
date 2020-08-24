@@ -28,9 +28,9 @@ import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.kotlin.Singles
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.math.BigInteger
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 import timber.log.Timber
-import java.math.BigInteger
 
 object BikeService {
 

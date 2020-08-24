@@ -24,9 +24,9 @@ import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.TrainArrival
-import org.apache.commons.lang3.StringUtils
 import java.math.BigInteger
 import java.util.TreeMap
+import org.apache.commons.lang3.StringUtils
 
 data class BaseDTO(
     val trainArrivalsDTO: TrainArrivalDTO,
