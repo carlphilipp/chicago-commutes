@@ -17,6 +17,7 @@
 -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="4dp"
@@ -75,7 +76,7 @@
             android:src="@drawable/ic_action_alert_warning"
             android:textColor="@color/grey_M_B"
             android:textIsSelectable="false"
-            android:tint="@color/red"
+            app:tint="@color/red"
             android:visibility="invisible" />
     </RelativeLayout>
 
