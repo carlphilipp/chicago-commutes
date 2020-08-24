@@ -54,15 +54,31 @@ android {
             if (propsFile.exists() && gradle.startParameter.taskNames.any {
                 it.contains('Release') || it.contains('build')
             }) {
+                println("Building release app")
                 def props = new Properties()
                 props.load(new FileInputStream(propsFile))
-                File storeF = new File(props['storeFile'].toString())
-
-                storeFile = storeF
-                storePassword new String(System.console().readPassword("\n\$ Enter keystore password: "))
+                def storeFilePath = props['storeFile']
+                if(!storeFilePath?.trim()) {
+                    throw new GradleException('storeFile is null or empty')
+                }
+                storeFile = new File(storeFilePath)
+                if(!storeFile.exists()) {
+                    throw new GradleException(storeFilePath + ' does not exists')
+                }
+                storePassword = props['keyStorePassword']
+                if (!storePassword?.trim()) {
+                    throw new GradleException('keyStorePassword is null or empty')
+                }
                 keyAlias = props['keyAlias']
-                keyPassword new String(System.console().readPassword("\n\$ Enter alias password: "))
+                if (!keyAlias?.trim()) {
+                    throw new GradleException('keyAlias is null or empty')
+                }
+                keyPassword = props['aliasPassword']
+                if (!keyPassword?.trim()) {
+                    throw new GradleException('aliasPassword is null or empty')
+                }
             } else {
+                println("Building non-release app")
                 storeFile file('default')
                 storePassword 'default'
                 keyAlias 'default'
