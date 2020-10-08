@@ -7,8 +7,8 @@ object Android {
 }
 
 object Version {
-    const val kotlin =                  "1.4.0"
-    const val android_tools_build =     "4.0.1"
+    const val kotlin =                  "1.4.10"
+    const val android_tools_build =     "4.0.2"
     const val realm =                   "7.0.2"
 
     const val commons_collections4 =    "4.4"
@@ -17,7 +17,7 @@ object Version {
     const val google_play_maps =        "17.0.0"
     const val google_play_location =    "17.0.0"
     const val jackson =                 "2.11.2"
-    const val material =                "1.3.0-alpha02"
+    const val material =                "1.3.0-alpha03"
     const val mapbox =                  "8.5.0"
     const val mapbox_annotation =       "0.7.0"
     const val mapbox_marker_view =      "0.3.0"
