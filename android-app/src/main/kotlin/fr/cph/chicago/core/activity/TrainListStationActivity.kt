@@ -21,6 +21,7 @@ package fr.cph.chicago.core.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
 import fr.cph.chicago.R
 import fr.cph.chicago.core.adapter.TrainAdapter
 import fr.cph.chicago.core.model.enumeration.TrainLine
@@ -58,7 +59,7 @@ class TrainListStationActivity : AppCompatActivity() {
             util.setWindowsColor(this, toolbar, trainLine)
             toolbar.title = trainLine.toStringWithLine()
 
-            toolbar.navigationIcon = getDrawable(R.drawable.ic_arrow_back_white_24dp)
+            toolbar.navigationIcon = ResourcesCompat.getDrawable(resources, R.drawable.ic_arrow_back_white_24dp, theme)
             toolbar.setOnClickListener { finish() }
 
             listView.adapter = TrainAdapter(trainLine)

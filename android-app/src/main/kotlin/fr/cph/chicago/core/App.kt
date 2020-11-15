@@ -28,6 +28,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.res.ResourcesCompat
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.ErrorActivity
 import fr.cph.chicago.core.model.Theme
@@ -69,7 +70,7 @@ class App : Application() {
     }
 
     val streetViewPlaceHolder: Drawable by lazy {
-        resources.getDrawable(R.drawable.placeholder_street_view, this.theme)
+        ResourcesCompat.getDrawable(resources, R.drawable.placeholder_street_view, this.theme)!!
     }
 
     override fun onCreate() {

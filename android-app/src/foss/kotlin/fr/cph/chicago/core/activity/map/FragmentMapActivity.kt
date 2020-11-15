@@ -25,6 +25,7 @@ import android.graphics.RectF
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.FragmentActivity
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
@@ -90,7 +91,7 @@ abstract class FragmentMapActivity : FragmentActivity(), OnMapReadyCallback, OnM
             toolbar.elevation = 4f
         }
 
-        toolbar.navigationIcon = getDrawable(R.drawable.ic_arrow_back_white_24dp)
+        toolbar.navigationIcon = ResourcesCompat.getDrawable(resources, R.drawable.ic_arrow_back_white_24dp, theme)
         toolbar.setOnClickListener { finish() }
     }
 

@@ -27,6 +27,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -139,7 +140,7 @@ class BusBoundActivity : AppCompatActivity(), OnMapReadyCallback {
 
             toolbar.title = "$busRouteId - $boundTitle"
 
-            toolbar.navigationIcon = getDrawable(R.drawable.ic_arrow_back_white_24dp)
+            toolbar.navigationIcon = ResourcesCompat.getDrawable(resources, R.drawable.ic_arrow_back_white_24dp, theme)
             toolbar.setOnClickListener { finish() }
 
             busService.loadAllBusStopsForRouteBound(busRouteId, bound)
