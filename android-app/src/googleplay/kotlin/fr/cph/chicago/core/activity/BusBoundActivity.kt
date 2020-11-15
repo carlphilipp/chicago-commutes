@@ -27,6 +27,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
@@ -127,7 +128,7 @@ class BusBoundActivity : AppCompatActivity() {
 
             toolbar.title = "$busRouteId - $boundTitle"
 
-            toolbar.navigationIcon = getDrawable(R.drawable.ic_arrow_back_white_24dp)
+            toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_arrow_back_white_24dp)
             toolbar.setOnClickListener { finish() }
 
             busService.loadAllBusStopsForRouteBound(busRouteId, bound)

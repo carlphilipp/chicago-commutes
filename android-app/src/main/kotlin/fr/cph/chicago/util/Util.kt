@@ -62,10 +62,6 @@ object Util {
         convertDpToPixel(16)
     }
 
-    val dpToPixel16d: Int by lazy {
-        dpToPixel16 / 2
-    }
-
     fun generateViewId(): Int {
         while (true) {
             val result = nextGeneratedId.get()

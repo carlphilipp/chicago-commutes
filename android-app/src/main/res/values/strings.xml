@@ -30,8 +30,6 @@
     <string name="menu_settings">Settings</string>
 
     <!-- Bundle -->
-    <string name="bundle_train_arrivals">trainArrivals</string>
-    <string name="bundle_bus_arrivals">busArrivals</string>
     <string name="bundle_error">error</string>
     <string name="bundle_bike_station">station</string>
     <string name="bundle_bus_stop_id">busStopId</string>
@@ -45,11 +43,8 @@
     <string name="bundle_bus_id">busId</string>
     <string name="bundle_bus_bounds">bounds</string>
     <string name="bundle_train_line">line</string>
-    <string name="bundle_bike_stations">divvyStations</string>
     <string name="bundle_train_stationId">stationId</string>
     <string name="bundle_title">title</string>
-    <string name="bundle_train_error">trainError</string>
-    <string name="bundle_bus_error">busError</string>
     <string name="bundle_position">position</string>
 
     <string name="empty_string">&#160;</string>
@@ -66,9 +61,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_refresh">Refresh</string>
-    <string name="progress_error">Error, try to refresh</string>
     <string name="progress_message">Loading&#8230;</string>
-    <string name="progress_wait">Please wait</string>
 
     <!-- Favorites -->
     <string name="no_fav">Welcome to Chicago Commutes!</string>
@@ -92,7 +85,6 @@
     <string name="station_activity_walk_icon">Walk</string>
 
     <!-- Bus -->
-    <string name="bus_activity_google_map_link_desc">Link to google map</string>
     <string name="bus_activity_no_service">No service</string>
     <string name="bus_fragment_filter">Filter</string>
     <string name="bus_all_results">Display all results</string>
@@ -106,10 +98,6 @@
 
     <!-- Nearby -->
     <string name="search_area">Search this area</string>
-
-    <!-- BusArrivalError -->
-    <string name="error_desc">Error</string>
-    <string name="error_retry">Retry</string>
 
     <!-- Search -->
     <string name="search_title">Search</string>
@@ -136,7 +124,6 @@
 
     <!-- Message -->
     <string name="message_no_data">Could not load data!</string>
-    <string name="message_no_pattern_found">No pattern found!</string>
     <string name="message_no_bus_found">No bus found!</string>
     <string name="message_no_train_found">No trains found!</string>
     <string name="message_error_while_loading_data">Error while loading data!</string>
@@ -145,12 +132,9 @@
     <string name="message_connect_error">Sorry, network connection issues</string>
     <string name="message_add_fav">Added to favorites!</string>
     <string name="message_remove_fav">Removed from favorites!</string>
-    <string name="message_too_fast">You are a bit fast! Try again in a second!</string>
-    <string name="message_not_ready">Not ready yet. Please try again in few seconds!</string>
     <string name="message_something_went_wrong">Oops, something went wrong!</string>
     <string name="message_cant_find_location">Sorry, your location could not be determined</string>
     <string name="message_error_could_not_load_path">Sorry, could not load the path!</string>
-    <string name="message_error_train_favorites">Sorry, could not load trains</string>
     <string name="message_error_bus_favorites">Sorry, could not load buses</string>
     <string name="message_error_bike_favorites">Sorry, could not load bikes</string>
     <string name="message_open_details">Open details</string>

@@ -43,8 +43,8 @@ internal class BusStopCsvProcessor : RowProcessor {
      * @param row     the data extracted by the parser for an individual record. Note that:
      *
      *  it will never by null.
-     *  it will never be empty unless explicitly configured using [CommonSettings.setSkipEmptyLines]
-     *  it won't contain lines identified by the parser as comments. To disable comment processing set [Format.setComment] to '\0'
+     *  it will never be empty unless explicitly configured using [com.univocity.parsers.common.CommonSettings.setSkipEmptyLines]
+     *  it won't contain lines identified by the parser as comments. To disable comment processing set [com.univocity.parsers.common.Format.setComment] to '\0'
      *
      * @param context A contextual object with information and controls over the current state of the parsing process
      */

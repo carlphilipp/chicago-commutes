@@ -25,6 +25,7 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -73,7 +74,7 @@ abstract class FragmentMapActivity : FragmentActivity(), EasyPermissions.Permiss
             toolbar.elevation = 4f
         }
 
-        toolbar.navigationIcon = getDrawable(R.drawable.ic_arrow_back_white_24dp)
+        toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_arrow_back_white_24dp)
         toolbar.setOnClickListener { finish() }
     }
 

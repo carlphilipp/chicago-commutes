@@ -18,7 +18,6 @@
 
 <resources>
 
-    <color name="grey_light">#D8D8D8</color>
     <color name="black">#000000</color>
     <color name="grey_M_B">#5e5e5e</color>
     <color name="grey_5">#555555</color>
@@ -62,7 +61,6 @@
     <color name="darkColorAccent">#4a5670</color>
     <color name="darkFloatingButton">#333B4E</color>
     <color name="favoriteCardBackground">#212129</color>
-    <color name="darkDialogColorAccent">#586583</color>
     <color name="darkColorTextPrimary">#fff</color>
     <color name="darkColorTextSecondary">#BEFFFFFF</color>
     <color name="darkBackgroundColorStart">#131317</color>
@@ -71,5 +69,4 @@
     <!-- Map stops/stations icons -->
     <color name="trainStations">@color/red</color>
     <color name="busStops">#084179</color>
-    <color name="bikeStations">@color/greenLineDark</color>
 </resources>

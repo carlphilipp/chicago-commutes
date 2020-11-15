@@ -71,6 +71,6 @@ private val divvyHttpClient: DivvyClientRetrofit by lazy {
         .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
         .addConverterFactory(JacksonConverterFactory.create(objectMapper))
         .client(httpClient)
-        .build();
+        .build()
     retrofit.create(DivvyClientRetrofit::class.java)
 }

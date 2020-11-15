@@ -23,20 +23,13 @@ open class TrackerException constructor(message: String, e: Exception) : Excepti
 
 class ConnectException(message: String, e: Exception) : TrackerException(message, e) {
     companion object {
-
         private const val ERROR = "Please check your connection"
-
-        fun defaultException(e: Exception): ConnectException {
-            return ConnectException(ERROR, e)
-        }
     }
 }
 
 open class CtaException(response: Any) : Exception("CTA error response [$response]")
 
 class CantLoadBusException(response: Any, val messageToShow: String = "No buses found") : CtaException(response)
-
-class ParserException(e: Exception) : TrackerException("Parse exception", e)
 
 class BaseException : RuntimeException()
 
