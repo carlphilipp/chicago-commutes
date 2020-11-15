@@ -132,7 +132,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<
                 if (applyFavorite) {
                     util.showSnackBar(swipeRefreshLayout, R.string.message_remove_fav, true)
                     applyFavorite = false
-                    favoritesImage.colorFilter = mapImage.colorFilter
+                    favoritesImage.drawable.colorFilter = mapImage.drawable.colorFilter
                 }
             }
             else -> Timber.d("Status not handled")

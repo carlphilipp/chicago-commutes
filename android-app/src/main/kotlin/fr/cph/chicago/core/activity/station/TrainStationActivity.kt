@@ -128,7 +128,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
                 if (applyFavorite) {
                     util.showSnackBar(swipeRefreshLayout, R.string.message_remove_fav, true)
                     applyFavorite = false
-                    favoritesImage.colorFilter = mapImage.colorFilter
+                    favoritesImage.drawable.colorFilter = mapImage.drawable.colorFilter
                 }
             }
             else -> Timber.d("Status not handled")

@@ -110,7 +110,7 @@ abstract class StationActivity(private val contentView: Int) : AppCompatActivity
         if (isFavorite()) {
             favoritesImage.setColorFilter(Color.yellowLineDark)
         } else {
-            favoritesImage.colorFilter = mapImage.colorFilter
+            favoritesImage.drawable.colorFilter = mapImage.drawable.colorFilter
         }
     }
 

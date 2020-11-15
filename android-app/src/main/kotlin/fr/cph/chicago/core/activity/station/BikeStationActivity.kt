@@ -99,7 +99,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
                 if (applyFavorite) {
                     util.showSnackBar(swipeRefreshLayout, R.string.message_remove_fav, true)
                     applyFavorite = false
-                    favoritesImage.colorFilter = mapImage.colorFilter
+                    favoritesImage.drawable.colorFilter = mapImage.drawable.colorFilter
                 }
             }
             else -> {
