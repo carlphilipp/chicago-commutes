@@ -28,7 +28,8 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/fragment_train_bus_error_padding_top"
-        android:src="@drawable/error"/>
+        android:contentDescription="@string/description"
+        android:src="@drawable/error" />
 
     <TextView
         android:id="@+id/error_message"
@@ -45,5 +46,5 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/error_message"
         android:layout_centerHorizontal="true"
-        android:text="@string/bus_bike_retry_button"/>
+        android:text="@string/bus_bike_retry_button" />
 </RelativeLayout>

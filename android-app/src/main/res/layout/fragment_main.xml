@@ -91,11 +91,12 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:clickable="true"
+            android:contentDescription="@string/description"
             android:focusable="true"
             android:src="@drawable/ic_search_white_24dp"
-            app:tint="@color/white"
             app:layout_anchor="@id/favoritesListView"
-            app:layout_anchorGravity="bottom|right|end" />
+            app:layout_anchorGravity="bottom|right|end"
+            app:tint="@color/white" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
