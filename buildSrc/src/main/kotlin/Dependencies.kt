@@ -7,40 +7,41 @@ object Android {
 }
 
 object Version {
-    const val kotlin =                  "1.4.10"
+    const val kotlin =                  "1.4.30-RC"
     const val android_tools_build =     "4.0.2"
     const val realm =                   "7.0.2"
+    const val gradle_version =          "0.36.0"
 
     const val commons_collections4 =    "4.4"
-    const val commons_text =            "1.7"
+    const val commons_text =            "1.9"
     const val easypermissions =         "1.3.0"
     const val google_play_maps =        "17.0.0"
-    const val google_play_location =    "17.0.0"
-    const val jackson =                 "2.11.2"
-    const val material =                "1.3.0-alpha03"
+    const val google_play_location =    "17.1.0"
+    const val jackson =                 "2.12.1"
+    const val material =                "1.3.0-rc01"
     const val mapbox =                  "8.5.0"
     const val mapbox_annotation =       "0.7.0"
     const val mapbox_marker_view =      "0.3.0"
     const val mapbox_location =         "0.11.0"
     const val mapbox_telemetry =        "6.1.0"
-    const val okhttp3 =                 "4.8.1"
+    const val okhttp3 =                 "4.10.0-RC1"
     const val photoview =               "2.3.0"
-    const val rx =                      "3.0.5"
+    const val rx =                      "3.0.9"
     const val rx_android =              "3.0.0"
-    const val rx_kotlin =               "3.0.0"
+    const val rx_kotlin =               "3.0.1"
     const val re_kotlin =               "1.0.4"
     const val retrofit2 =               "2.9.0"
     const val sliding_up_panel =        "3.4.0"
     const val timber =                  "4.7.1"
-    const val univocity =               "2.9.0"
+    const val univocity =               "2.9.1"
 
     // Update
     const val commons_io =              "2.5"
     const val annimon =                 "1.1.9"
 
     // Test
-    const val junit =                   "4.12"
-    const val mockito =                 "2.10.0"
+    const val junit =                   "4.13.1"
+    const val mockito =                 "3.7.7"
     const val hamcrest =                "1.3"
 
     // Debug
@@ -52,6 +53,7 @@ object Lib {
     const val gradle_android =              "com.android.tools.build:gradle:${Version.android_tools_build}"
     const val gradle_realm =                "io.realm:realm-gradle-plugin:${Version.realm}"
     const val gradle_kotlin =               "org.jetbrains.kotlin:kotlin-gradle-plugin:${Version.kotlin}"
+    const val gradle_versions =             "com.github.ben-manes:gradle-versions-plugin:${Version.gradle_version}"
 
     // Android app
     const val commons_collections4 =        "org.apache.commons:commons-collections4:${Version.commons_collections4}"

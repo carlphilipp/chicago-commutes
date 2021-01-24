@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'realm-android'
+apply plugin: "com.github.ben-manes.versions"
 
 android {
     compileSdkVersion Android.compile_sdk
@@ -209,6 +210,10 @@ task currentVersion {
         println("FDroid tag: " + fdroidVersionName)
         println("Git tag cmd: git tag " + fdroidVersionName + " && git push origin " + fdroidVersionName)
     }
+}
+repositories {
+    maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
+    mavenCentral()
 }
 
 def properties() {
