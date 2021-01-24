@@ -45,9 +45,8 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="15dp"
             android:contentDescription="@string/station_activity_favorite_icon"
-            android:src="@drawable/ic_favorite_white_24dp" />
-        <!-- Removed this attributes as it was causing issues on SDK 21 -->
-        <!--android:tint="?attr/iconStationTint"-->
+            android:src="@drawable/ic_favorite_white_24dp"
+            />
 
         <TextView
             android:layout_width="wrap_content"
