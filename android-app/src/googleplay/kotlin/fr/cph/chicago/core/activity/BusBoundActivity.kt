@@ -40,14 +40,11 @@ import fr.cph.chicago.core.activity.station.BusStopActivity
 import fr.cph.chicago.core.adapter.BusBoundAdapter
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.BusStop
+import fr.cph.chicago.databinding.ActivityBusBoundBinding
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.GoogleMapUtil
 import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import kotlinx.android.synthetic.googleplay.activity_bus_bound.bellowLayout
-import kotlinx.android.synthetic.googleplay.activity_bus_bound.busFilter
-import kotlinx.android.synthetic.googleplay.activity_bus_bound.listView
-import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
@@ -70,13 +67,16 @@ class BusBoundActivity : AppCompatActivity() {
     private lateinit var bound: String
     private lateinit var boundTitle: String
     private lateinit var adapter: BusBoundAdapter
+    private lateinit var binding: ActivityBusBoundBinding
     private var busStops: List<BusStop> = listOf()
 
     @SuppressLint("CheckResult")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityBusBoundBinding.inflate(layoutInflater)
+
         if (!this.isFinishing) {
-            setContentView(R.layout.activity_bus_bound)
+            setContentView(binding.root)
             busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
             busRouteName = intent.getStringExtra(getString(R.string.bundle_bus_route_name)) ?: StringUtils.EMPTY
             bound = intent.getStringExtra(getString(R.string.bundle_bus_bound)) ?: StringUtils.EMPTY
@@ -85,7 +85,7 @@ class BusBoundActivity : AppCompatActivity() {
             mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
 
             adapter = BusBoundAdapter()
-            listView.setOnItemClickListener { _, _, position, _ ->
+            binding.listView.setOnItemClickListener { _, _, position, _ ->
                 val busStop = adapter.getItem(position) as BusStop
                 val intent = Intent(applicationContext, BusStopActivity::class.java)
 
@@ -105,9 +105,9 @@ class BusBoundActivity : AppCompatActivity() {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
             }
-            listView.adapter = adapter
+            binding.listView.adapter = adapter
 
-            busFilter.addTextChangedListener(object : TextWatcher {
+            binding.busFilter.addTextChangedListener(object : TextWatcher {
                 private var busStopsFiltered: MutableList<BusStop> = mutableListOf()
 
                 override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
@@ -125,7 +125,7 @@ class BusBoundActivity : AppCompatActivity() {
                     adapter.notifyDataSetChanged()
                 }
             })
-
+            val toolbar = binding.included.toolbar
             toolbar.title = "$busRouteId - $boundTitle"
 
             toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_arrow_back_white_24dp)
@@ -141,7 +141,7 @@ class BusBoundActivity : AppCompatActivity() {
                     },
                     { throwable ->
                         Timber.e(throwable, "Error while getting bus stops for route bound")
-                        util.showOopsSomethingWentWrong(listView)
+                        util.showOopsSomethingWentWrong(binding.listView)
                     })
 
             // Preventing keyboard from moving background when showing up
@@ -174,11 +174,11 @@ class BusBoundActivity : AppCompatActivity() {
                             }
                             drawPattern(googleMap, result)
                         } else {
-                            util.showSnackBar(bellowLayout, R.string.message_error_could_not_load_path)
+                            util.showSnackBar(binding.bellowLayout, R.string.message_error_could_not_load_path)
                         }
                     },
                     { throwable ->
-                        util.handleConnectOrParserException(throwable, bellowLayout)
+                        util.handleConnectOrParserException(throwable, binding.bellowLayout)
                         Timber.e(throwable, "Error while getting bus patterns")
                     })
         }
