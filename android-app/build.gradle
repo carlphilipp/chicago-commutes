@@ -30,6 +30,11 @@ android {
         resValue "string", "cta_bus_key", (ctaBusKey != null) ? new String(Base64.getDecoder().decode(ctaBusKey)) : ""
     }
 
+    // TODO: replace kotlin-android-extensions with view binding https://developer.android.com/topic/libraries/view-binding/migration
+    //buildFeatures {
+    //    viewBinding true
+    //}
+
     // Change output apk name
     applicationVariants.all { variant ->
         variant.outputs.all { output ->

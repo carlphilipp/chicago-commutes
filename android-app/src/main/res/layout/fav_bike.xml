@@ -62,7 +62,7 @@
         android:layout_marginBottom="4dp">
 
         <include
-            android:id="@+id/square"
+            android:id="@+id/square2"
             layout="@layout/fav_square" />
 
         <TextView
@@ -70,7 +70,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toEndOf="@id/square"
+            android:layout_toEndOf="@id/square2"
             android:paddingStart="10dp"
             android:text="@string/bike_available_docks"
             tools:ignore="RtlSymmetry" />
@@ -81,7 +81,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="150dp"
-            android:layout_toEndOf="@+id/square"
+            android:layout_toEndOf="@+id/square2"
             android:text="@string/bike_default_value"
             android:textColor="@color/orange" />
     </RelativeLayout>

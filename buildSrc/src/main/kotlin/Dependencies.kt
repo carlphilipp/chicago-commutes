@@ -9,7 +9,7 @@ object Android {
 object Version {
     const val kotlin =                  "1.4.30-RC"
     const val android_tools_build =     "4.0.2"
-    const val realm =                   "7.0.2"
+    const val realm =                   "10.3.0"
     const val gradle_version =          "0.36.0"
 
     const val commons_collections4 =    "4.4"
@@ -45,7 +45,7 @@ object Version {
     const val hamcrest =                "1.3"
 
     // Debug
-    const val leakcanary =              "2.4"
+    const val leakcanary =              "2.6"
 }
 
 object Lib {

@@ -8,6 +8,10 @@ Get current version:
 
 `./gradlew currentVersion`
 
+Get report on dependencies
+
+`./gradlew dependencyUpdates`
+
 Build debug APK:
 
 `./gradlew clean assembleDebug`
