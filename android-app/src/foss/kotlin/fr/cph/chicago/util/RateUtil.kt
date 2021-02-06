@@ -16,7 +16,7 @@ object RateUtil {
         } catch (ex: Exception) {
             AlertDialog.Builder(activity)
                 .setMessage("F-Droid Store not found on your device")
-                .setPositiveButton(android.R.string.yes) { _, _ -> }
+                .setPositiveButton(android.R.string.ok) { _, _ -> }
                 .show()
         }
     }

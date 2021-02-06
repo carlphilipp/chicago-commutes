@@ -21,6 +21,9 @@ package fr.cph.chicago.core.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Resources
+import android.os.Build
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,6 +31,7 @@ import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 import fr.cph.chicago.R
 import fr.cph.chicago.core.listener.BikeStationOnClickListener
@@ -39,7 +43,9 @@ import fr.cph.chicago.rx.BusDirectionObserver
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.Util
+import java.lang.reflect.Field
 import timber.log.Timber
+
 
 /**
  * Adapter that will handle search
@@ -81,6 +87,7 @@ class SearchAdapter(private val context: Context) : BaseAdapter() {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val vi = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val view = vi.inflate(R.layout.list_search, parent, false)
+        val icon = view.findViewById<ImageView>(R.id.icon)
 
         val routeName = view.findViewById<TextView>(R.id.station_name)
 
@@ -99,8 +106,6 @@ class SearchAdapter(private val context: Context) : BaseAdapter() {
             }
             position < trains.size + busRoutes.size -> {
                 val busRoute = getItem(position) as BusRoute
-
-                val icon = view.findViewById<ImageView>(R.id.icon)
                 icon.setImageDrawable(ContextCompat.getDrawable(parent.context, R.drawable.ic_directions_bus_white_24dp))
 
                 val name = "${busRoute.id} ${busRoute.name}"
@@ -118,12 +123,8 @@ class SearchAdapter(private val context: Context) : BaseAdapter() {
             }
             else -> {
                 val bikeStation = getItem(position) as BikeStation
-
-                val icon = view.findViewById<ImageView>(R.id.icon)
                 icon.setImageDrawable(ContextCompat.getDrawable(parent.context, R.drawable.ic_directions_bike_white_24dp))
-
                 routeName.text = bikeStation.name
-
                 view.setOnClickListener(BikeStationOnClickListener(bikeStation))
             }
         }

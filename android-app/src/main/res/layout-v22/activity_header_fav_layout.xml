@@ -46,8 +46,7 @@
             android:layout_marginTop="15dp"
             android:contentDescription="@string/station_activity_favorite_icon"
             android:src="@drawable/ic_favorite_white_24dp"
-            app:tint="?attr/iconStationTint"
-            />
+            app:tint="?attr/iconStationTint" />
 
         <TextView
             android:layout_width="wrap_content"

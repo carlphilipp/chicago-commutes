@@ -37,7 +37,7 @@ import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.kotlin.Singles
+import io.reactivex.rxjava3.core.Single
 import kotlinx.android.synthetic.main.activity_search.searchListView
 import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
@@ -66,7 +66,7 @@ class SearchActivity : AppCompatActivity() {
             setContentView(R.layout.activity_search)
             setupToolbar()
 
-            searchAdapter = SearchAdapter(this.baseContext)
+            searchAdapter = SearchAdapter(this)
             handleIntent(intent)
 
             searchListView.adapter = searchAdapter
@@ -142,15 +142,11 @@ class SearchActivity : AppCompatActivity() {
     @SuppressLint("CheckResult")
     private fun handleIntent(intent: Intent) {
         if (Intent.ACTION_SEARCH == intent.action) {
-            query = ((intent.getStringExtra(SearchManager.QUERY))
-                ?: StringUtils.EMPTY).trim { it <= ' ' }
+            query = ((intent.getStringExtra(SearchManager.QUERY)) ?: StringUtils.EMPTY).trim { it <= ' ' }
             val foundStations = trainService.searchStations(query)
             val foundBusRoutes = busService.searchBusRoutes(query)
             val foundBikeStations = bikeService.searchBikeStations(query)
-            Singles.zip(foundStations,
-                foundBusRoutes,
-                foundBikeStations,
-                zipper = { trains, buses, bikes -> Triple(trains, buses, bikes) })
+            Single.zip(foundStations, foundBusRoutes, foundBikeStations, { trains, buses, bikes -> Triple(trains, buses, bikes) })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { result ->

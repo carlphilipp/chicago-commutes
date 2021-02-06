@@ -61,7 +61,7 @@ class BusFragment : RefreshFragment(R.layout.fragment_filter_list), StoreSubscri
         busAdapter = BusAdapter()
         listView.adapter = busAdapter
         swipeRefreshLayout.setOnRefreshListener { startRefreshing() }
-        (activity as MainActivity).tb.setOnMenuItemClickListener { startRefreshing(); true }
+        (activity as MainActivity).toolBar.setOnMenuItemClickListener { startRefreshing(); true }
         retryButton.setOnClickListener { startRefreshing() }
     }
 

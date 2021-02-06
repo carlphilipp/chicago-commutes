@@ -61,7 +61,7 @@ class BikeFragment : RefreshFragment(R.layout.fragment_filter_list), StoreSubscr
         bikeAdapter = BikeAdapter()
         listView.adapter = bikeAdapter
         swipeRefreshLayout.setOnRefreshListener { startRefreshing() }
-        (activity as MainActivity).tb.setOnMenuItemClickListener { startRefreshing(); true }
+        (activity as MainActivity).toolBar.setOnMenuItemClickListener { startRefreshing(); true }
         retryButton.setOnClickListener { startRefreshing() }
     }
 

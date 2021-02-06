@@ -64,7 +64,7 @@ class AlertFragment : RefreshFragment(R.layout.fragment_filter_list), StoreSubsc
         adapter = AlertAdapter()
         listView.adapter = adapter
         swipeRefreshLayout.setOnRefreshListener { startRefreshing() }
-        (activity as MainActivity).tb.setOnMenuItemClickListener { startRefreshing(); true }
+        (activity as MainActivity).toolBar.setOnMenuItemClickListener { startRefreshing(); true }
         retryButton.setOnClickListener { startRefreshing() }
     }
 

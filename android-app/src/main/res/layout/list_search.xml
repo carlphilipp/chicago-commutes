@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/description"
         android:src="@drawable/ic_train_white_24dp"
-        app:tint="?attr/iconTint"/>
+        app:tint="?attr/iconStationTint" />
 
     <TextView
         android:id="@+id/station_name"

@@ -43,6 +43,7 @@ import kotlinx.android.synthetic.main.activity_main.drawerLayout
 import kotlinx.android.synthetic.main.activity_main.searchContainer
 import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -55,7 +56,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var drawerToggle: ActionBarDrawerToggle
     private lateinit var favoriteMenuItem: MenuItem
     private lateinit var inputMethodManager: InputMethodManager
-    lateinit var tb: Toolbar
+    lateinit var toolBar: Toolbar
 
     private var title: String? = null
 
@@ -63,7 +64,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onCreate(savedInstanceState)
         if (!this.isFinishing) {
             setContentView(R.layout.activity_main)
-            this.tb = toolbar
+            this.toolBar = toolbar
             if (store.state.ctaTrainKey == StringUtils.EMPTY) {
                 // Start error activity when state is empty (usually when android restart the activity on error)
                 App.startErrorActivity()
