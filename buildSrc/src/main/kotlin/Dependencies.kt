@@ -7,8 +7,8 @@ object Android {
 }
 
 object Version {
-    const val kotlin =                  "1.4.30-RC"
-    const val android_tools_build =     "4.0.2"
+    const val kotlin =                  "1.4.30"
+    const val android_tools_build =     "4.1.2"
     const val realm =                   "10.3.0"
     const val gradle_version =          "0.36.0"
 
@@ -18,7 +18,7 @@ object Version {
     const val google_play_maps =        "17.0.0"
     const val google_play_location =    "17.1.0"
     const val jackson =                 "2.12.1"
-    const val material =                "1.3.0-rc01"
+    const val material =                "1.3.0"
     const val mapbox =                  "8.5.0"
     const val mapbox_annotation =       "0.7.0"
     const val mapbox_marker_view =      "0.3.0"
@@ -49,7 +49,7 @@ object Version {
 }
 
 object Lib {
-    // Build https://dl.google.com/dl/android/maven2/index.html
+    // Build4
     const val gradle_android =              "com.android.tools.build:gradle:${Version.android_tools_build}"
     const val gradle_realm =                "io.realm:realm-gradle-plugin:${Version.realm}"
     const val gradle_kotlin =               "org.jetbrains.kotlin:kotlin-gradle-plugin:${Version.kotlin}"

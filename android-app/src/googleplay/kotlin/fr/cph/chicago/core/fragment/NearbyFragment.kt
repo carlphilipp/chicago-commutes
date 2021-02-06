@@ -57,7 +57,7 @@ import fr.cph.chicago.util.GoogleMapUtil
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.Util
-import io.reactivex.rxjava3.kotlin.Singles
+import io.reactivex.rxjava3.core.Single
 import kotlinx.android.synthetic.main.fragment_nearby.loadingLayoutContainer
 import kotlinx.android.synthetic.main.fragment_nearby.progressBar
 import kotlinx.android.synthetic.main.fragment_nearby.searchAreaButton
@@ -270,7 +270,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
         val trainStationAround = trainService.readNearbyStation(finalPosition)
         val busStopsAround = busService.busStopsAround(finalPosition)
         val bikeStationsAround = mapUtil.readNearbyStation(finalPosition, store.state.bikeStations)
-        Singles.zip(trainStationAround, busStopsAround, bikeStationsAround, zipper = { trains, buses, bikeStations ->
+        Single.zip(trainStationAround, busStopsAround, bikeStationsAround, { trains, buses, bikeStations ->
             googleMapUtil.centerMap(mapFragment, zoomIn, finalPosition)
             updateMarkersAndModel(buses, trains, bikeStations)
             Any()

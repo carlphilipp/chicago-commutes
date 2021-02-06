@@ -43,7 +43,7 @@ import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.kotlin.Singles
+import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
@@ -237,7 +237,7 @@ class TrainMapActivity : FragmentMapActivity() {
         val positionsSingle = trainService.readPatterns(TrainLine.fromXmlString(line)).observeOn(AndroidSchedulers.mainThread())
 
         if (drawLine) {
-            Singles.zip(trainsSingle, positionsSingle, zipper = { trains, positions ->
+            Single.zip(trainsSingle, positionsSingle, { trains, positions ->
                 drawTrains(trains)
                 drawLine(positions.map { it.position })
                 if (trains.isNotEmpty()) {

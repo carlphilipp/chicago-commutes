@@ -17,11 +17,10 @@ val objectMapper: ObjectMapper = jacksonObjectMapper()
 
 private val connectionPool = ConnectionPool(5, 10000, TimeUnit.MILLISECONDS)
 
-private var loggingInterceptor: HttpLoggingInterceptor = HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
-    override fun log(message: String) {
-        Timber.tag("OkHttp").d(message)
-    }
-}).setLevel(HttpLoggingInterceptor.Level.BODY)
+private var loggingInterceptor: HttpLoggingInterceptor = HttpLoggingInterceptor { message ->
+    Timber.tag("OkHttp").d(message)
+}
+    .setLevel(HttpLoggingInterceptor.Level.BODY)
 
 val httpClient = OkHttpClient.Builder()
     .readTimeout(5, TimeUnit.SECONDS)

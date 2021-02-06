@@ -35,8 +35,7 @@ class PopupBusAdapter(context: Context, private val values: List<String>) : Arra
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val view: View
-        view = if (position != values.size - 1) {
+        val view: View = if (position != values.size - 1) {
             vi.inflate(R.layout.popup_bus_cell_0, parent, false)
         } else {
             vi.inflate(R.layout.popup_bus_cell, parent, false)

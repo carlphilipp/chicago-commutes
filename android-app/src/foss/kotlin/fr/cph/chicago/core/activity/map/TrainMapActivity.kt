@@ -62,7 +62,6 @@ import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.kotlin.Singles
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.foss.activity_map_mapbox.mapContainer
 import kotlinx.android.synthetic.main.toolbar.toolbar
@@ -128,7 +127,7 @@ class TrainMapActivity : FragmentMapActivity() {
         val imageTrain = singleFromCallable(Callable { BitmapFactory.decodeResource(resources, R.drawable.train) }, Schedulers.computation())
         val stationMarker = singleFromCallable(Callable { BitmapFactory.decodeResource(resources, colorDrawable()) }, Schedulers.computation())
 
-        Singles.zip(imageTrain, stationMarker, zipper = { bitmapTrain, bitmapStation ->
+        Single.zip(imageTrain, stationMarker, { bitmapTrain, bitmapStation ->
             style.addImage(IMAGE_TRAIN, bitmapTrain)
             style.addImage(IMAGE_STATION, bitmapStation)
         }).subscribe()
@@ -304,10 +303,10 @@ class TrainMapActivity : FragmentMapActivity() {
                     Pair(lineOptions, featureCollection)
                 }
 
-            Singles.zip(
+            Single.zip(
                 featuresTrains.observeOn(AndroidSchedulers.mainThread()),
                 patterns.observeOn(AndroidSchedulers.mainThread()),
-                zipper = { featuresTrain: FeatureCollection, pair: Pair<LineOptions, FeatureCollection> ->
+                { featuresTrain: FeatureCollection, pair: Pair<LineOptions, FeatureCollection> ->
                     addVehicleFeatureCollection(featuresTrain)
                     addStationFeatureCollection(pair.second)
                     addStationOnMap(pair.second)

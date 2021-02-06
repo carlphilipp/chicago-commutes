@@ -26,7 +26,6 @@ import fr.cph.chicago.redux.store
 import fr.cph.chicago.rx.RxUtil.handleMapError
 import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.kotlin.Singles
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.math.BigInteger
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
@@ -73,7 +72,7 @@ object BikeService {
     private fun loadAllBikeStations(): Single<List<BikeStation>> {
         val informationSingle = client.getStationsInformation().onErrorReturn(handleMapError())
         val statusSingle = client.getStationsStatus().onErrorReturn(handleMapError())
-        return Singles.zip(informationSingle, statusSingle, zipper = { info, stat ->
+        return Single.zip(informationSingle, statusSingle, { info, stat ->
             val res = mutableListOf<BikeStation>()
             for ((key, stationInfo) in info) {
                 val stationStatus = stat[key] ?: DivvyStationStatus("", 0, 0)

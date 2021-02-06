@@ -28,7 +28,6 @@ import fr.cph.chicago.exception.BaseException
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.rx.RxUtil.handleListError
 import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.kotlin.Singles
 import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
 
@@ -40,20 +39,20 @@ object MixedService {
     private val preferenceService = PreferenceService
 
     fun baseData(): Single<BaseDTO> {
-        return Singles.zip(
+        return Single.zip(
             trainService.loadLocalTrainData(),
             busService.loadLocalBusData(),
-            zipper = { trainError, busError ->
+            { trainError, busError ->
                 if (trainError || busError) throw BaseException()
                 true
             })
             .flatMap {
-                Singles.zip(
+                Single.zip(
                     baseArrivals().observeOn(Schedulers.computation()),
                     preferenceService.getTrainFavorites().observeOn(Schedulers.computation()),
                     preferenceService.getBusFavorites().observeOn(Schedulers.computation()),
                     preferenceService.getBikeFavorites().observeOn(Schedulers.computation()),
-                    zipper = { favoritesDTO, favoritesTrains, favoritesBuses, favoritesBikes ->
+                    { favoritesDTO, favoritesTrains, favoritesBuses, favoritesBikes ->
                         val trainArrivals = if (favoritesDTO.trainArrivalDTO.error)
                             TrainArrivalDTO(store.state.trainArrivalsDTO.trainsArrivals, true)
                         else
@@ -81,10 +80,10 @@ object MixedService {
         // Bus online favorites
         val favoritesBusArrivals = favoritesBusArrivalDTO().observeOn(Schedulers.computation())
 
-        return Singles.zip(
+        return Single.zip(
             favoritesTrainArrivals,
             favoritesBusArrivals,
-            zipper = { trainArrivalsDTO, busArrivalsDTO -> FavoritesDTO(trainArrivalsDTO, busArrivalsDTO, false, listOf()) })
+            { trainArrivalsDTO, busArrivalsDTO -> FavoritesDTO(trainArrivalsDTO, busArrivalsDTO, false, listOf()) })
     }
 
     fun favorites(): Single<FavoritesDTO> {
@@ -94,8 +93,8 @@ object MixedService {
         val busArrivals = favoritesBusArrivalDTO().observeOn(Schedulers.computation())
         // Bikes online all stations
         val bikeStationsObservable = bikeService.allBikeStations().observeOn(Schedulers.computation()).onErrorReturn(handleListError())
-        return Singles.zip(busArrivals, trainArrivals, bikeStationsObservable,
-            zipper = { busArrivalDTO, trainArrivalsDTO, bikeStations ->
+        return Single.zip(busArrivals, trainArrivals, bikeStationsObservable,
+             { busArrivalDTO, trainArrivalsDTO, bikeStations ->
                 FavoritesDTO(trainArrivalsDTO, busArrivalDTO, bikeStations.isEmpty(), bikeStations)
             })
     }
@@ -103,10 +102,10 @@ object MixedService {
     fun busRoutesAndBikeStation(): Single<FirstLoadDTO> {
         val busRoutesSingle = busService.busRoutes().onErrorReturn(handleListError()).observeOn(Schedulers.computation())
         val bikeStationsSingle = bikeService.allBikeStations().onErrorReturn(handleListError()).observeOn(Schedulers.computation())
-        return Singles.zip(
+        return Single.zip(
             busRoutesSingle,
             bikeStationsSingle,
-            zipper = { busRoutes, bikeStations -> FirstLoadDTO(busRoutes.isEmpty(), bikeStations.isEmpty(), busRoutes, bikeStations) }
+            { busRoutes, bikeStations -> FirstLoadDTO(busRoutes.isEmpty(), bikeStations.isEmpty(), busRoutes, bikeStations) }
         )
     }
 

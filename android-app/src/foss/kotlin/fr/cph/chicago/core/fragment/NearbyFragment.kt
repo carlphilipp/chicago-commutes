@@ -67,7 +67,6 @@ import fr.cph.chicago.util.merge
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.kotlin.Singles
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.foss.fragment_nearby_mapbox.loadingLayoutContainer
 import kotlinx.android.synthetic.foss.fragment_nearby_mapbox.mapView
@@ -158,11 +157,11 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         val trainStations = trainService.readNearbyStation(position)
         val busStops = busService.busStopsAround(position)
         val bikeStations = mapUtil.readNearbyStation(position, store.state.bikeStations)
-        Singles.zip(
+        Single.zip(
             trainStations.observeOn(Schedulers.computation()),
             busStops.observeOn(Schedulers.computation()),
             bikeStations.observeOn(Schedulers.computation()),
-            zipper = { trains: List<Station>, buses, bikes -> merge(trains, buses, bikes) })
+            { trains: List<Station>, buses, bikes -> merge(trains, buses, bikes) })
             .toObservable()
             .switchMap { stations -> generateMarkers(stations) }
             .observeOn(AndroidSchedulers.mainThread())
