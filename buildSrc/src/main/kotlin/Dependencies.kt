@@ -9,7 +9,7 @@ object Android {
 object Version {
     const val kotlin =                  "1.4.30"
     const val android_tools_build =     "4.1.2"
-    const val realm =                   "10.3.0"
+    const val realm =                   "10.3.1"
     const val gradle_version =          "0.36.0"
 
     const val commons_collections4 =    "4.4"
