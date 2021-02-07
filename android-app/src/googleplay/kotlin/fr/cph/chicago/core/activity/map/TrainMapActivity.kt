@@ -45,7 +45,6 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
@@ -85,6 +84,7 @@ class TrainMapActivity : FragmentMapActivity() {
 
     override fun setToolbar() {
         super.setToolbar()
+        val toolbar = binding.included.toolbar
         toolbar.setOnMenuItemClickListener {
             centerMap = false
             loadActivityData()

@@ -36,9 +36,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import fr.cph.chicago.Constants.GPS_ACCESS
 import fr.cph.chicago.R
+import fr.cph.chicago.databinding.ActivityMapBinding
 import fr.cph.chicago.util.GoogleMapUtil
-import kotlinx.android.synthetic.googleplay.activity_map.mapContainer
-import kotlinx.android.synthetic.main.toolbar.toolbar
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 
@@ -49,18 +48,20 @@ abstract class FragmentMapActivity : FragmentActivity(), EasyPermissions.Permiss
     protected lateinit var selectedMarker: Marker
     protected lateinit var googleMap: GoogleMap
     protected var refreshingInfoWindow = false
+    protected lateinit var binding: ActivityMapBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!this.isFinishing) {
+            binding = ActivityMapBinding.inflate(layoutInflater)
             MapsInitializer.initialize(applicationContext)
-            setContentView(R.layout.activity_map)
+            setContentView(binding.root)
             create(savedInstanceState)
         }
     }
 
     open fun create(savedInstanceState: Bundle?) {
-        mapContainerLayout = mapContainer
+        mapContainerLayout = binding.mapContainer
     }
 
     protected open fun initData() {
@@ -69,6 +70,7 @@ abstract class FragmentMapActivity : FragmentActivity(), EasyPermissions.Permiss
     }
 
     protected open fun setToolbar() {
+        val toolbar = binding.included.toolbar
         toolbar.inflateMenu(R.menu.main)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.elevation = 4f

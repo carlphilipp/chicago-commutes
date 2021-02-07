@@ -48,7 +48,6 @@ import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 
 /**
@@ -101,6 +100,7 @@ class BusMapActivity : FragmentMapActivity() {
 
     override fun setToolbar() {
         super.setToolbar()
+        val toolbar = binding.included.toolbar
         toolbar.setOnMenuItemClickListener {
             busService.busForRouteId(busRouteId)
                 .observeOn(AndroidSchedulers.mainThread())
