@@ -57,7 +57,7 @@ import timber.log.Timber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<State> {
+class BusStopActivity : StationActivity(), StoreSubscriber<State> {
 
     companion object {
         private val busService = BusService

@@ -40,7 +40,7 @@ import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 
-abstract class StationActivity() : AppCompatActivity() {
+abstract class StationActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG_ERROR = "error"

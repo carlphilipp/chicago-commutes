@@ -49,10 +49,6 @@ import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Color
 import java.math.BigInteger
 import java.util.Random
-import kotlinx.android.synthetic.main.activity_header_fav_layout.mapContainer
-import kotlinx.android.synthetic.main.activity_header_fav_layout.walkContainer
-import kotlinx.android.synthetic.main.activity_station.stopsView
-import kotlinx.android.synthetic.main.activity_station_header_layout.streetViewImage
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
@@ -63,7 +59,7 @@ import timber.log.Timber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSubscriber<State> {
+class TrainStationActivity : StationActivity(), StoreSubscriber<State> {
 
     private lateinit var trainStation: TrainStation
     private lateinit var binding: ActivityStationBinding
@@ -102,8 +98,8 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
 
                 handleFavorite()
 
-                mapContainer.setOnClickListener(OpenMapOnClickListener(position.latitude, position.longitude))
-                walkContainer.setOnClickListener(OpenMapDirectionOnClickListener(position.latitude, position.longitude))
+                binding.header.favorites.mapContainer.setOnClickListener(OpenMapOnClickListener(position.latitude, position.longitude))
+                binding.header.favorites.walkContainer.setOnClickListener(OpenMapDirectionOnClickListener(position.latitude, position.longitude))
 
                 val stopByLines = trainStation.stopByLines
                 randomTrainLine = getRandomLine(stopByLines)
@@ -162,7 +158,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
         stopByLines.entries.forEach { entry ->
             val line = entry.key
             val stops = entry.value
-            val lineTitleView = layoutInflater.inflate(R.layout.activity_station_line_title, stopsView, false)
+            val lineTitleView = layoutInflater.inflate(R.layout.activity_station_line_title, binding.stopsView, false)
 
             val testView = lineTitleView.findViewById<TextView>(R.id.train_line_title)
             testView.text = line.toStringWithLine()
@@ -171,7 +167,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
                 testView.setBackgroundColor(Color.yellowLine)
             }
 
-            stopsView.addView(lineTitleView)
+            binding.stopsView.addView(lineTitleView)
 
             stops.sorted().forEach { stop ->
                 val view = View.inflate(this, R.layout.activity_train_station_direction, null)
@@ -203,7 +199,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
                 val id = util.generateViewId()
                 arrivalTrainsLayout.id = id
                 ids[line.toString() + "_" + stop.direction.toString()] = id
-                stopsView.addView(view)
+                binding.stopsView.addView(view)
             }
         }
     }
