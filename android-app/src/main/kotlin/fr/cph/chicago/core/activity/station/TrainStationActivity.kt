@@ -27,6 +27,7 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatCheckBox
+import androidx.appcompat.widget.Toolbar
 import fr.cph.chicago.R
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.listener.OpenMapDirectionOnClickListener
@@ -37,6 +38,7 @@ import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.databinding.ActivityStationBinding
 import fr.cph.chicago.redux.AddTrainFavoriteAction
 import fr.cph.chicago.redux.RemoveTrainFavoriteAction
 import fr.cph.chicago.redux.State
@@ -47,13 +49,10 @@ import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Color
 import java.math.BigInteger
 import java.util.Random
-import kotlinx.android.synthetic.main.activity_header_fav_layout.favoritesImage
 import kotlinx.android.synthetic.main.activity_header_fav_layout.mapContainer
-import kotlinx.android.synthetic.main.activity_header_fav_layout.mapImage
 import kotlinx.android.synthetic.main.activity_header_fav_layout.walkContainer
 import kotlinx.android.synthetic.main.activity_station.stopsView
 import kotlinx.android.synthetic.main.activity_station_header_layout.streetViewImage
-import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
@@ -67,6 +66,7 @@ import timber.log.Timber
 class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSubscriber<State> {
 
     private lateinit var trainStation: TrainStation
+    private lateinit var binding: ActivityStationBinding
 
     private var stationId: BigInteger = BigInteger.ZERO
     private var ids: MutableMap<String, Int> = mutableMapOf()
@@ -74,27 +74,43 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Get train station id from bundle
-        stationId = BigInteger(intent.extras?.getString(getString(R.string.bundle_train_stationId), "0")!!)
-        if (stationId != BigInteger.ZERO) {
-            // Get trainStation
-            trainStation = TrainService.getStation(stationId)
-            position = trainStation.stops[0].position
+        if (!this.isFinishing) {
+            binding = ActivityStationBinding.inflate(layoutInflater)
+            setContentView(binding.root)
 
-            loadGoogleStreetImage(position)
+            setupView(
+                swipeRefreshLayout = binding.activityStationSwipeRefreshLayout,
+                streetViewImage = binding.header.streetViewImage,
+                streetViewProgressBar = binding.header.streetViewProgressBar,
+                streetViewText = binding.header.streetViewText,
+                favoritesImage = binding.header.favorites.favoritesImage,
+                mapImage = binding.header.favorites.mapImage,
+                favoritesImageContainer = binding.header.favorites.favoritesImageContainer
+            )
 
-            streetViewImage.setOnClickListener(GoogleStreetOnClickListener(position.latitude, position.longitude))
+            // Get train station id from bundle
+            stationId = BigInteger(intent.extras?.getString(getString(R.string.bundle_train_stationId), "0")!!)
 
-            handleFavorite()
+            if (stationId != BigInteger.ZERO) {
+                // Get trainStation
+                trainStation = TrainService.getStation(stationId)
+                position = trainStation.stops[0].position
 
-            mapContainer.setOnClickListener(OpenMapOnClickListener(position.latitude, position.longitude))
-            walkContainer.setOnClickListener(OpenMapDirectionOnClickListener(position.latitude, position.longitude))
+                loadGoogleStreetImage(position)
 
-            val stopByLines = trainStation.stopByLines
-            randomTrainLine = getRandomLine(stopByLines)
-            setUpStopLayouts(stopByLines)
-            swipeRefreshLayout.setColorSchemeColors(randomTrainLine.color)
-            setToolbar()
+                streetViewImage.setOnClickListener(GoogleStreetOnClickListener(position.latitude, position.longitude))
+
+                handleFavorite()
+
+                mapContainer.setOnClickListener(OpenMapOnClickListener(position.latitude, position.longitude))
+                walkContainer.setOnClickListener(OpenMapDirectionOnClickListener(position.latitude, position.longitude))
+
+                val stopByLines = trainStation.stopByLines
+                randomTrainLine = getRandomLine(stopByLines)
+                setUpStopLayouts(stopByLines)
+                swipeRefreshLayout.setColorSchemeColors(randomTrainLine.color)
+                buildToolbar(binding.included.toolbar)
+            }
         }
     }
 
@@ -192,8 +208,8 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
         }
     }
 
-    override fun setToolbar() {
-        super.setToolbar()
+    override fun buildToolbar(toolbar: Toolbar) {
+        super.buildToolbar(toolbar)
         toolbar.title = trainStation.name
         util.setWindowsColor(this, toolbar, randomTrainLine)
     }

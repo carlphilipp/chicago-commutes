@@ -20,12 +20,14 @@
 package fr.cph.chicago.core.activity.station
 
 import android.os.Bundle
+import androidx.appcompat.widget.Toolbar
 import fr.cph.chicago.R
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.listener.OpenMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.OpenMapOnClickListener
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.databinding.ActivityBikeStationBinding
 import fr.cph.chicago.redux.AddBikeFavoriteAction
 import fr.cph.chicago.redux.BikeStationAction
 import fr.cph.chicago.redux.RemoveBikeFavoriteAction
@@ -33,15 +35,6 @@ import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.util.Color
-import kotlinx.android.synthetic.main.activity_bike_station.availableBikes
-import kotlinx.android.synthetic.main.activity_bike_station.availableDocks
-import kotlinx.android.synthetic.main.activity_bike_station.bikeStationValue
-import kotlinx.android.synthetic.main.activity_header_fav_layout.favoritesImage
-import kotlinx.android.synthetic.main.activity_header_fav_layout.mapContainer
-import kotlinx.android.synthetic.main.activity_header_fav_layout.mapImage
-import kotlinx.android.synthetic.main.activity_header_fav_layout.walkContainer
-import kotlinx.android.synthetic.main.activity_station_header_layout.streetViewImage
-import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
@@ -51,12 +44,26 @@ import timber.log.Timber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BikeStationActivity : StationActivity(R.layout.activity_bike_station), StoreSubscriber<State> {
+class BikeStationActivity : StationActivity(), StoreSubscriber<State> {
 
     private lateinit var bikeStation: BikeStation
+    private lateinit var binding: ActivityBikeStationBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityBikeStationBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        setupView(
+            swipeRefreshLayout = binding.activityStationSwipeRefreshLayout,
+            streetViewImage = binding.header.streetViewImage,
+            streetViewProgressBar = binding.header.streetViewProgressBar,
+            streetViewText = binding.header.streetViewText,
+            favoritesImage = binding.header.favorites.favoritesImage,
+            mapImage = binding.header.favorites.mapImage,
+            favoritesImageContainer = binding.header.favorites.favoritesImageContainer
+        )
+
         bikeStation = intent.extras?.getParcelable(getString(R.string.bundle_bike_station))
             ?: BikeStation.buildUnknownStation()
         position = Position(bikeStation.latitude, bikeStation.longitude)
@@ -65,13 +72,13 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
 
         handleFavorite()
 
-        bikeStationValue.text = bikeStation.address
+        binding.bikeStationValue.text = bikeStation.address
         streetViewImage.setOnClickListener(GoogleStreetOnClickListener(position.latitude, position.longitude))
-        mapContainer.setOnClickListener(OpenMapOnClickListener(position.latitude, position.longitude))
-        walkContainer.setOnClickListener(OpenMapDirectionOnClickListener(position.latitude, position.longitude))
+        binding.header.favorites.mapContainer.setOnClickListener(OpenMapOnClickListener(position.latitude, position.longitude))
+        binding.header.favorites.walkContainer.setOnClickListener(OpenMapDirectionOnClickListener(position.latitude, position.longitude))
 
         drawData()
-        setToolbar()
+        buildToolbar(binding.included.toolbar)
     }
 
     override fun onPause() {
@@ -126,27 +133,27 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station), Sto
         loadGoogleStreetImage(position)
     }
 
-    override fun setToolbar() {
-        super.setToolbar()
+    override fun buildToolbar(toolbar: Toolbar) {
+        super.buildToolbar(toolbar)
         toolbar.title = bikeStation.name
     }
 
     private fun drawData() {
         if (bikeStation.availableBikes == -1) {
-            availableBikes.text = "?"
-            availableBikes.setTextColor(Color.orange)
+            binding.availableBikes.text = "?"
+            binding.availableBikes.setTextColor(Color.orange)
         } else {
-            availableBikes.text = util.formatBikesDocksValues(bikeStation.availableBikes)
+            binding.availableBikes.text = util.formatBikesDocksValues(bikeStation.availableBikes)
             val color = if (bikeStation.availableBikes == 0) Color.red else Color.green
-            availableBikes.setTextColor(color)
+            binding.availableBikes.setTextColor(color)
         }
         if (bikeStation.availableDocks == -1) {
-            availableDocks.text = "?"
-            availableDocks.setTextColor(Color.orange)
+            binding.availableDocks.text = "?"
+            binding.availableDocks.setTextColor(Color.orange)
         } else {
-            availableDocks.text = util.formatBikesDocksValues(bikeStation.availableDocks)
+            binding.availableDocks.text = util.formatBikesDocksValues(bikeStation.availableDocks)
             val color = if (bikeStation.availableDocks == 0) Color.red else Color.green
-            availableDocks.setTextColor(color)
+            binding.availableDocks.setTextColor(color)
         }
     }
 

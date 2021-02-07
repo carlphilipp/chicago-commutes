@@ -43,6 +43,7 @@
     </RelativeLayout>
 
     <include
+        android:id="@+id/favorites"
         layout="@layout/activity_header_fav_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

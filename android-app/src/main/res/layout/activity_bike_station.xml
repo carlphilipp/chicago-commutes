@@ -24,6 +24,7 @@
     android:orientation="vertical">
 
     <include
+        android:id="@+id/included"
         layout="@layout/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -55,6 +56,7 @@
                 android:paddingBottom="@dimen/activity_train_line_padding_bottom">
 
                 <include
+                    android:id="@+id/header"
                     layout="@layout/activity_station_header_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />

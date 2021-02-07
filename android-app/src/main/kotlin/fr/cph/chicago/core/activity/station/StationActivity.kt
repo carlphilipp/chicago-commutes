@@ -24,6 +24,10 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ProgressBar
+import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import fr.cph.chicago.R
@@ -34,16 +38,9 @@ import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.Color
 import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import kotlinx.android.synthetic.main.activity_header_fav_layout.favoritesImage
-import kotlinx.android.synthetic.main.activity_header_fav_layout.favoritesImageContainer
-import kotlinx.android.synthetic.main.activity_header_fav_layout.mapImage
-import kotlinx.android.synthetic.main.activity_station_header_layout.streetViewImage
-import kotlinx.android.synthetic.main.activity_station_header_layout.streetViewProgressBar
-import kotlinx.android.synthetic.main.activity_station_header_layout.streetViewText
-import kotlinx.android.synthetic.main.toolbar.toolbar
 import timber.log.Timber
 
-abstract class StationActivity(private val contentView: Int) : AppCompatActivity() {
+abstract class StationActivity() : AppCompatActivity() {
 
     companion object {
         private const val TAG_ERROR = "error"
@@ -58,22 +55,35 @@ abstract class StationActivity(private val contentView: Int) : AppCompatActivity
         protected val util = Util
     }
 
-    lateinit var swipeRefreshLayout: SwipeRefreshLayout
-
+    protected lateinit var swipeRefreshLayout: SwipeRefreshLayout
     protected var position: Position = Position()
     protected var applyFavorite: Boolean = false
+    protected lateinit var streetViewImage: ImageView
+    protected lateinit var streetViewProgressBar: ProgressBar
+    private lateinit var streetViewText: TextView
+    protected lateinit var favoritesImage: ImageView
+    protected lateinit var mapImage: ImageView
+    protected lateinit var toolbar: Toolbar
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (!this.isFinishing) {
-            setContentView(contentView)
-            swipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.activity_station_swipe_refresh_layout).apply {
-                setOnRefreshListener { refresh() }
-                setColorSchemeColors(preferenceService.getColorSchemeColors(resources.configuration))
-                setProgressBackgroundColorSchemeResource(preferenceService.getProgressBackgroundColorSchemeResource(resources.configuration))
-            }
-            favoritesImageContainer.setOnClickListener { switchFavorite() }
+    fun setupView(
+        swipeRefreshLayout: SwipeRefreshLayout,
+        streetViewImage: ImageView,
+        streetViewProgressBar: ProgressBar,
+        streetViewText: TextView,
+        favoritesImage: ImageView,
+        mapImage: ImageView,
+        favoritesImageContainer: LinearLayout) {
+        this.swipeRefreshLayout = swipeRefreshLayout.apply {
+            setOnRefreshListener { refresh() }
+            setColorSchemeColors(preferenceService.getColorSchemeColors(resources.configuration))
+            setProgressBackgroundColorSchemeResource(preferenceService.getProgressBackgroundColorSchemeResource(resources.configuration))
         }
+        this.streetViewImage = streetViewImage
+        this.streetViewProgressBar = streetViewProgressBar
+        this.streetViewText = streetViewText
+        this.favoritesImage = favoritesImage
+        this.mapImage = mapImage
+        favoritesImageContainer.setOnClickListener{ switchFavorite() }
     }
 
     @SuppressLint("CheckResult")
@@ -129,7 +139,8 @@ abstract class StationActivity(private val contentView: Int) : AppCompatActivity
         applyFavorite = true
     }
 
-    protected open fun setToolbar() {
+    protected open fun buildToolbar(toolbar: Toolbar) {
+        this.toolbar = toolbar
         toolbar.inflateMenu(R.menu.main)
         toolbar.setOnMenuItemClickListener { refresh(); false }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
