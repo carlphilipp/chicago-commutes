@@ -23,9 +23,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import fr.cph.chicago.R
-import kotlinx.android.synthetic.main.error.failureLayout
-import kotlinx.android.synthetic.main.error.retryButton
+import fr.cph.chicago.databinding.ErrorBinding
 
 /**
  * BusArrivalError activity that can be thrown from anywhere in the app
@@ -35,11 +33,14 @@ import kotlinx.android.synthetic.main.error.retryButton
  */
 class ErrorActivity : Activity() {
 
+    private lateinit var binding: ErrorBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.error)
-        failureLayout.visibility = View.VISIBLE
-        retryButton.setOnClickListener {
+        binding = ErrorBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.failureLayout.visibility = View.VISIBLE
+        binding.retryButton.setOnClickListener {
             val intent = Intent(this@ErrorActivity, BaseActivity::class.java)
             finish()
             startActivity(intent)

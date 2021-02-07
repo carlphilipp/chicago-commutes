@@ -27,19 +27,19 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
+import android.view.ViewGroup
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.adapter.SearchAdapter
+import fr.cph.chicago.databinding.ActivitySearchBinding
 import fr.cph.chicago.exception.BaseException
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
-import kotlinx.android.synthetic.main.activity_search.searchListView
-import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
@@ -54,6 +54,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var searchView: SearchView
     private lateinit var searchAdapter: SearchAdapter
     private lateinit var searchItem: MenuItem
+    private lateinit var binding: ActivitySearchBinding
     private var query: String = StringUtils.EMPTY
     private var clearFocus: Boolean = false
 
@@ -63,13 +64,14 @@ class SearchActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!this.isFinishing) {
-            setContentView(R.layout.activity_search)
+            binding = ActivitySearchBinding.inflate(layoutInflater)
+            setContentView(binding.root)
             setupToolbar()
 
             searchAdapter = SearchAdapter(this)
             handleIntent(intent)
 
-            searchListView.adapter = searchAdapter
+            binding.searchListView.adapter = searchAdapter
 
             // Associate searchable configuration with the SearchView
             val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
@@ -133,7 +135,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun setupToolbar() {
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.included.toolbar)
         val actionBar = supportActionBarNotNull
         actionBar.setDisplayShowHomeEnabled(true)
         actionBar.setDisplayHomeAsUpEnabled(true)

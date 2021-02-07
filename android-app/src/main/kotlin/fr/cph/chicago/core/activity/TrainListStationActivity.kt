@@ -25,9 +25,8 @@ import androidx.core.content.res.ResourcesCompat
 import fr.cph.chicago.R
 import fr.cph.chicago.core.adapter.TrainAdapter
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.databinding.ActivityTrainStationBinding
 import fr.cph.chicago.util.Util
-import kotlinx.android.synthetic.main.activity_train_station.listView
-import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 
 /**
@@ -44,11 +43,13 @@ class TrainListStationActivity : AppCompatActivity() {
 
     private lateinit var trainLine: TrainLine
     private lateinit var lineParam: String
+    private lateinit var binding: ActivityTrainStationBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!this.isFinishing) {
-            setContentView(R.layout.activity_train_station)
+            binding = ActivityTrainStationBinding.inflate(layoutInflater)
+            setContentView(binding.root)
             // Load data
             lineParam = if (savedInstanceState != null) savedInstanceState.getString(getString(R.string.bundle_train_line))
                 ?: StringUtils.EMPTY else intent.getStringExtra(getString(R.string.bundle_train_line)) ?: StringUtils.EMPTY
@@ -56,13 +57,14 @@ class TrainListStationActivity : AppCompatActivity() {
             trainLine = TrainLine.fromString(lineParam)
             title = trainLine.toStringWithLine()
 
+            val toolbar = binding.included.toolbar
             util.setWindowsColor(this, toolbar, trainLine)
             toolbar.title = trainLine.toStringWithLine()
 
             toolbar.navigationIcon = ResourcesCompat.getDrawable(resources, R.drawable.ic_arrow_back_white_24dp, theme)
             toolbar.setOnClickListener { finish() }
 
-            listView.adapter = TrainAdapter(trainLine)
+            binding.listView.adapter = TrainAdapter(trainLine)
         }
     }
 

@@ -45,17 +45,13 @@ import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.utils.getCurrentStyle
 import fr.cph.chicago.core.utils.setupMapbox
+import fr.cph.chicago.databinding.ActivityBusBoundMapboxBinding
 import fr.cph.chicago.exception.CtaException
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.android.synthetic.foss.activity_bus_bound_mapbox.bellowLayout
-import kotlinx.android.synthetic.foss.activity_bus_bound_mapbox.busFilter
-import kotlinx.android.synthetic.foss.activity_bus_bound_mapbox.listView
-import kotlinx.android.synthetic.foss.activity_bus_bound_mapbox.mapView
-import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
@@ -75,6 +71,7 @@ class BusBoundActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private var lineManager: LineManager? = null
 
+    private lateinit var binding: ActivityBusBoundMapboxBinding
     private lateinit var busRouteId: String
     private lateinit var busRouteName: String
     private lateinit var bound: String
@@ -87,17 +84,18 @@ class BusBoundActivity : AppCompatActivity(), OnMapReadyCallback {
         Mapbox.getInstance(this, getString(R.string.mapbox_token))
         super.onCreate(savedInstanceState)
         if (!this.isFinishing) {
-            setContentView(R.layout.activity_bus_bound_mapbox)
-            mapView?.onCreate(savedInstanceState)
+            binding = ActivityBusBoundMapboxBinding.inflate(layoutInflater)
+            setContentView(binding.root)
+            binding.mapView.onCreate(savedInstanceState)
             busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
             busRouteName = intent.getStringExtra(getString(R.string.bundle_bus_route_name)) ?: StringUtils.EMPTY
             bound = intent.getStringExtra(getString(R.string.bundle_bus_bound)) ?: StringUtils.EMPTY
             boundTitle = intent.getStringExtra(getString(R.string.bundle_bus_bound_title)) ?: StringUtils.EMPTY
 
-            mapView?.getMapAsync(this)
+            binding.mapView.getMapAsync(this)
 
             busBoundAdapter = BusBoundAdapter()
-            listView.setOnItemClickListener { _, _, position, _ ->
+            binding.listView.setOnItemClickListener { _, _, position, _ ->
                 val busStop = busBoundAdapter.getItem(position) as BusStop
                 val intent = Intent(applicationContext, BusStopActivity::class.java)
 
@@ -117,9 +115,9 @@ class BusBoundActivity : AppCompatActivity(), OnMapReadyCallback {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
             }
-            listView.adapter = busBoundAdapter
+            binding.listView.adapter = busBoundAdapter
 
-            busFilter.addTextChangedListener(object : TextWatcher {
+            binding.busFilter.addTextChangedListener(object : TextWatcher {
                 private var busStopsFiltered: MutableList<BusStop> = mutableListOf()
 
                 override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
@@ -138,10 +136,10 @@ class BusBoundActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             })
 
-            toolbar.title = "$busRouteId - $boundTitle"
+            binding.included.toolbar.title = "$busRouteId - $boundTitle"
 
-            toolbar.navigationIcon = ResourcesCompat.getDrawable(resources, R.drawable.ic_arrow_back_white_24dp, theme)
-            toolbar.setOnClickListener { finish() }
+            binding.included.toolbar.navigationIcon = ResourcesCompat.getDrawable(resources, R.drawable.ic_arrow_back_white_24dp, theme)
+            binding.included.toolbar.setOnClickListener { finish() }
 
             busService.loadAllBusStopsForRouteBound(busRouteId, bound)
                 .doOnSuccess { busStops ->
@@ -153,7 +151,7 @@ class BusBoundActivity : AppCompatActivity(), OnMapReadyCallback {
                     { busBoundAdapter.notifyDataSetChanged() },
                     { error ->
                         Timber.e(error)
-                        util.showOopsSomethingWentWrong(listView)
+                        util.showOopsSomethingWentWrong(binding.listView)
                     })
             // Preventing keyboard from moving background when showing up
             window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
@@ -163,7 +161,7 @@ class BusBoundActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(mapBox: MapboxMap) {
         setupMapbox(mapBox, resources.configuration)
         mapBox.setStyle(getCurrentStyle(resources.configuration)) { style ->
-            lineManager = LineManager(this.mapView!!, mapBox, style)
+            lineManager = LineManager(binding.mapView, mapBox, style)
 
             busService.loadBusPattern(busRouteId, bound)
                 .observeOn(Schedulers.computation())
@@ -188,8 +186,8 @@ class BusBoundActivity : AppCompatActivity(), OnMapReadyCallback {
                     { error ->
                         Timber.e(error)
                         when (error) {
-                            is CtaException -> util.showSnackBar(bellowLayout, R.string.message_error_could_not_load_path)
-                            else -> util.handleConnectOrParserException(error, bellowLayout)
+                            is CtaException -> util.showSnackBar(binding.bellowLayout, R.string.message_error_could_not_load_path)
+                            else -> util.handleConnectOrParserException(error, binding.bellowLayout)
                         }
                     })
         }
@@ -197,7 +195,7 @@ class BusBoundActivity : AppCompatActivity(), OnMapReadyCallback {
 
     public override fun onResume() {
         super.onResume()
-        mapView?.onResume()
+        binding.mapView.onResume()
     }
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -213,28 +211,28 @@ class BusBoundActivity : AppCompatActivity(), OnMapReadyCallback {
         savedInstanceState.putString(getString(R.string.bundle_bus_route_name), busRouteName)
         savedInstanceState.putString(getString(R.string.bundle_bus_bound), bound)
         savedInstanceState.putString(getString(R.string.bundle_bus_bound_title), boundTitle)
-        mapView?.onSaveInstanceState(savedInstanceState)
+        binding.mapView.onSaveInstanceState(savedInstanceState)
         super.onSaveInstanceState(savedInstanceState)
     }
 
     override fun onStart() {
         super.onStart()
-        mapView?.onStart()
+        binding.mapView.onStart()
     }
 
     override fun onStop() {
         super.onStop()
-        mapView?.onStop()
+        binding.mapView.onStop()
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        mapView?.onLowMemory()
+        binding.mapView.onLowMemory()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        mapView?.onDestroy()
+        binding.mapView.onDestroy()
         lineManager?.onDestroy()
     }
 }

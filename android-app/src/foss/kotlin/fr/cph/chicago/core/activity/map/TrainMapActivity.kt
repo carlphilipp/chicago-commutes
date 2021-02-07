@@ -63,8 +63,6 @@ import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.android.synthetic.foss.activity_map_mapbox.mapContainer
-import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 import java.util.concurrent.Callable
@@ -100,6 +98,7 @@ class TrainMapActivity : FragmentMapActivity() {
 
     override fun setToolbar() {
         super.setToolbar()
+        val toolbar = binding.included.toolbar
         toolbar.setOnMenuItemClickListener {
             loadActivityData()
             false
@@ -260,7 +259,7 @@ class TrainMapActivity : FragmentMapActivity() {
                 { view -> update(feature, runNumber, view) },
                 { error ->
                     Timber.e(error)
-                    util.showSnackBar(mapContainer, R.string.message_no_data)
+                    util.showSnackBar(binding.mapContainer, R.string.message_no_data)
                     showProgress(false)
                 })
     }
@@ -312,7 +311,7 @@ class TrainMapActivity : FragmentMapActivity() {
                     addStationOnMap(pair.second)
                     drawPolyline(pair.first)
                     if (featuresTrain.features() != null && featuresTrain.features()!!.isEmpty()) {
-                        util.showSnackBar(mapContainer, R.string.message_no_train_found)
+                        util.showSnackBar(binding.mapContainer, R.string.message_no_train_found)
                     }
                     pair.first.latLngs
                 })
@@ -320,7 +319,7 @@ class TrainMapActivity : FragmentMapActivity() {
                     { points -> centerMap(points) },
                     { error ->
                         Timber.e(error)
-                        util.showSnackBar(mapContainer, R.string.message_error_while_loading_data)
+                        util.showSnackBar(binding.mapContainer, R.string.message_error_while_loading_data)
                     })
         } else {
             featuresTrains
@@ -329,12 +328,12 @@ class TrainMapActivity : FragmentMapActivity() {
                     { featureCollection ->
                         addVehicleFeatureCollection(featureCollection)
                         if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
-                            util.showSnackBar(mapContainer, R.string.message_no_train_found)
+                            util.showSnackBar(binding.mapContainer, R.string.message_no_train_found)
                         }
                     },
                     { error ->
                         Timber.e(error)
-                        util.showSnackBar(mapContainer, R.string.message_error_while_loading_data)
+                        util.showSnackBar(binding.mapContainer, R.string.message_error_while_loading_data)
                     })
         }
     }

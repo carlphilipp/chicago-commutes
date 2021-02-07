@@ -28,13 +28,11 @@ import android.widget.TextView
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import fr.cph.chicago.R
+import fr.cph.chicago.databinding.ActivityDeveloperOptionsBinding
 import fr.cph.chicago.service.PreferenceService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_developer_options.cacheDetailsLayout
-import kotlinx.android.synthetic.main.activity_developer_options.showCacheLayout
-import kotlinx.android.synthetic.main.toolbar.toolbar
 import timber.log.Timber
 
 class DeveloperOptionsActivity : AppCompatActivity() {
@@ -43,11 +41,14 @@ class DeveloperOptionsActivity : AppCompatActivity() {
         private val preferenceService = PreferenceService
     }
 
+    private lateinit var binding: ActivityDeveloperOptionsBinding
+
     @SuppressLint("CheckResult")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!this.isFinishing) {
-            setContentView(R.layout.activity_developer_options)
+            binding = ActivityDeveloperOptionsBinding.inflate(layoutInflater)
+            setContentView(binding.root)
             preferenceService.getAllFavorites()
                 .observeOn(Schedulers.computation())
                 .map { favorites -> favorites.preferences }
@@ -64,8 +65,8 @@ class DeveloperOptionsActivity : AppCompatActivity() {
                         Timber.e(throwable)
                     })
 
-            showCacheLayout.setOnClickListener {
-                cacheDetailsLayout.visibility = if (cacheDetailsLayout.visibility == View.GONE) {
+            binding.showCacheLayout.setOnClickListener {
+                binding.cacheDetailsLayout.visibility = if (binding.cacheDetailsLayout.visibility == View.GONE) {
                     View.VISIBLE
                 } else {
                     View.GONE
@@ -80,10 +81,11 @@ class DeveloperOptionsActivity : AppCompatActivity() {
         val titleLinearLayout = row.findViewById<LinearLayout>(R.id.row)
         val dataView = row.findViewById<TextView>(R.id.data)
         dataView.text = text
-        cacheDetailsLayout.addView(titleLinearLayout)
+        binding.cacheDetailsLayout.addView(titleLinearLayout)
     }
 
     private fun setToolBar() {
+        val toolbar = binding.included.toolbar
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.elevation = 4f
         }

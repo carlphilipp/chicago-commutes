@@ -25,12 +25,10 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import fr.cph.chicago.R
 import fr.cph.chicago.core.adapter.AlertRouteAdapter
+import fr.cph.chicago.databinding.ActivityAlertBinding
 import fr.cph.chicago.service.AlertService
 import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import kotlinx.android.synthetic.main.activity_alert.listView
-import kotlinx.android.synthetic.main.activity_alert.scrollView
-import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
@@ -41,16 +39,18 @@ class AlertActivity : AppCompatActivity() {
         private val util = Util
     }
 
+    private lateinit var binding: ActivityAlertBinding
     private lateinit var routeId: String
     private lateinit var title: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!this.isFinishing) {
-            setContentView(R.layout.activity_alert)
+            binding = ActivityAlertBinding.inflate(layoutInflater)
+            setContentView(binding.root)
             routeId = intent.getStringExtra("routeId") ?: StringUtils.EMPTY
             title = intent.getStringExtra("title") ?: StringUtils.EMPTY
-            scrollView.setOnRefreshListener { this.refreshData() }
+            binding.scrollView.setOnRefreshListener { this.refreshData() }
             setToolBar()
             refreshData()
         }
@@ -69,9 +69,10 @@ class AlertActivity : AppCompatActivity() {
     }
 
     private fun setToolBar() {
+        val toolbar = binding.included.toolbar
         toolbar.inflateMenu(R.menu.main)
         toolbar.setOnMenuItemClickListener {
-            scrollView.isRefreshing = true
+            binding.scrollView.isRefreshing = true
             refreshData()
             false
         }
@@ -90,22 +91,22 @@ class AlertActivity : AppCompatActivity() {
             .subscribe(
                 { routeAlertsDTOS ->
                     val ada = AlertRouteAdapter(routeAlertsDTOS)
-                    listView.adapter = ada
+                    binding.listView.adapter = ada
                     if (routeAlertsDTOS.isEmpty()) {
-                        util.showSnackBar(view = listView, text = this@AlertActivity.getString(R.string.message_no_alerts))
+                        util.showSnackBar(view = binding.listView, text = this@AlertActivity.getString(R.string.message_no_alerts))
                     }
                     hideAnimation()
                 },
                 { error ->
                     Timber.e(error, "Error while refreshing data")
-                    util.showOopsSomethingWentWrong(listView)
+                    util.showOopsSomethingWentWrong(binding.listView)
                     hideAnimation()
                 })
     }
 
     private fun hideAnimation() {
-        if (scrollView.isRefreshing) {
-            scrollView.isRefreshing = false
+        if (binding.scrollView.isRefreshing) {
+            binding.scrollView.isRefreshing = false
         }
     }
 }

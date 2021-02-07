@@ -45,13 +45,11 @@ import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.utils.BitmapGenerator
 import fr.cph.chicago.core.utils.getCurrentStyle
 import fr.cph.chicago.core.utils.setupMapbox
+import fr.cph.chicago.databinding.ActivityMapMapboxBinding
 import fr.cph.chicago.util.MapUtil
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.android.synthetic.foss.activity_map_mapbox.mapView
-import kotlinx.android.synthetic.foss.activity_map_mapbox.progressBar
-import kotlinx.android.synthetic.main.toolbar.toolbar
 import timber.log.Timber
 
 @SuppressLint("Registered")
@@ -62,6 +60,7 @@ abstract class FragmentMapActivity : FragmentActivity(), OnMapReadyCallback, OnM
         private val mapUtil = MapUtil
     }
 
+    protected lateinit var binding: ActivityMapMapboxBinding
     protected lateinit var map: MapboxMap
     private var lineManager: LineManager? = null
     protected var drawLine = true
@@ -76,16 +75,18 @@ abstract class FragmentMapActivity : FragmentActivity(), OnMapReadyCallback, OnM
         super.onCreate(savedInstanceState)
         if (!this.isFinishing) {
             Mapbox.getInstance(this, getString(R.string.mapbox_token))
-            setContentView(R.layout.activity_map_mapbox)
-            mapView?.onCreate(savedInstanceState)
+            binding = ActivityMapMapboxBinding.inflate(layoutInflater)
+            setContentView(binding.root)
+            binding.mapView.onCreate(savedInstanceState)
         }
     }
 
     protected open fun initMap() {
-        mapView?.getMapAsync(this)
+        binding.mapView.getMapAsync(this)
     }
 
     protected open fun setToolbar() {
+        val toolbar = binding.included.toolbar
         toolbar.inflateMenu(R.menu.main)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.elevation = 4f
@@ -171,10 +172,10 @@ abstract class FragmentMapActivity : FragmentActivity(), OnMapReadyCallback, OnM
 
     protected fun showProgress(show: Boolean) {
         if (show) {
-            progressBar.visibility = View.VISIBLE
-            progressBar.progress = 50
+            binding.progressBar.visibility = View.VISIBLE
+            binding.progressBar.progress = 50
         } else {
-            progressBar.visibility = View.GONE
+            binding.progressBar.visibility = View.GONE
         }
     }
 
@@ -197,7 +198,7 @@ abstract class FragmentMapActivity : FragmentActivity(), OnMapReadyCallback, OnM
     override fun onMapReady(map: MapboxMap) {
         this.map = setupMapbox(map, resources.configuration)
         this.map.setStyle(getCurrentStyle(resources.configuration)) { style ->
-            lineManager = LineManager(this.mapView!!, this.map, style)
+            lineManager = LineManager(this.binding.mapView, this.map, style)
             onMapStyleReady(style)
         }
     }
@@ -206,22 +207,22 @@ abstract class FragmentMapActivity : FragmentActivity(), OnMapReadyCallback, OnM
 
     override fun onStart() {
         super.onStart()
-        mapView?.onStart()
+        binding.mapView.onStart()
     }
 
     override fun onStop() {
         super.onStop()
-        mapView?.onStop()
+        binding.mapView.onStop()
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        mapView?.onLowMemory()
+        binding.mapView.onLowMemory()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        mapView?.onDestroy()
+        binding.mapView.onDestroy()
         lineManager?.onDestroy()
     }
 }

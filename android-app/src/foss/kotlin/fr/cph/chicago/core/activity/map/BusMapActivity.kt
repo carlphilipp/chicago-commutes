@@ -61,8 +61,6 @@ import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.android.synthetic.foss.activity_map_mapbox.mapContainer
-import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
@@ -101,6 +99,7 @@ class BusMapActivity : FragmentMapActivity() {
 
     override fun setToolbar() {
         super.setToolbar()
+        val toolbar = binding.included.toolbar
         toolbar.setOnMenuItemClickListener {
             loadBuses()
             false
@@ -209,7 +208,7 @@ class BusMapActivity : FragmentMapActivity() {
                 { view -> update(feature, id, view) },
                 { error ->
                     Timber.e(error)
-                    util.showSnackBar(mapContainer, R.string.message_no_data)
+                    util.showSnackBar(binding.mapContainer, R.string.message_no_data)
                     showProgress(false)
                 })
     }
@@ -226,7 +225,7 @@ class BusMapActivity : FragmentMapActivity() {
                 { view -> update(feature, id, view) },
                 { error ->
                     Timber.e(error)
-                    util.showSnackBar(mapContainer, R.string.message_no_data)
+                    util.showSnackBar(binding.mapContainer, R.string.message_no_data)
                     showProgress(false)
                 })
     }
@@ -279,7 +278,7 @@ class BusMapActivity : FragmentMapActivity() {
                     },
                     { error ->
                         Timber.e(error)
-                        util.handleConnectOrParserException(error, mapContainer)
+                        util.handleConnectOrParserException(error, binding.mapContainer)
                     })
         }
     }
@@ -305,15 +304,15 @@ class BusMapActivity : FragmentMapActivity() {
                 { featureCollection: FeatureCollection ->
                     addVehicleFeatureCollection(featureCollection)
                     if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
-                        util.showSnackBar(mapContainer, R.string.message_no_bus_found)
+                        util.showSnackBar(binding.mapContainer, R.string.message_no_bus_found)
                     }
                 },
                 { error ->
                     Timber.e(error)
                     when (error) {
-                        is CantLoadBusException -> util.showSnackBar(this.mapContainer, R.string.message_error_bus_favorites)
-                        is CtaException -> util.showSnackBar(this.mapContainer, R.string.message_error_could_not_load_path)
-                        else -> util.handleConnectOrParserException(error, mapContainer)
+                        is CantLoadBusException -> util.showSnackBar(binding.mapContainer, R.string.message_error_bus_favorites)
+                        is CtaException -> util.showSnackBar(binding.mapContainer, R.string.message_error_could_not_load_path)
+                        else -> util.handleConnectOrParserException(error, binding.mapContainer)
                     }
                 })
     }
