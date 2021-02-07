@@ -21,11 +21,14 @@ package fr.cph.chicago.core.fragment
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.TrainListStationActivity
 import fr.cph.chicago.core.adapter.TrainStationAdapter
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import kotlinx.android.synthetic.main.fragment_train.trainListView
+import fr.cph.chicago.databinding.FragmentTrainBinding
 
 /**
  * Train Fragment
@@ -41,11 +44,19 @@ class TrainFragment : Fragment(R.layout.fragment_train) {
         }
     }
 
+    private var _binding: FragmentTrainBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        _binding = FragmentTrainBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val ada = TrainStationAdapter()
-        trainListView.adapter = ada
-        trainListView.setOnItemClickListener { _, _, position, _ ->
+        binding.trainListView.adapter = ada
+        binding.trainListView.setOnItemClickListener { _, _, position, _ ->
             val intent = Intent(context, TrainListStationActivity::class.java)
             val extras = Bundle()
             val line = TrainLine.values()[position].toString()

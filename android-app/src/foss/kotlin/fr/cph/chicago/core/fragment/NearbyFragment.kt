@@ -26,7 +26,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
@@ -57,6 +59,7 @@ import fr.cph.chicago.core.model.Station
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.marker.MarkerDataHolder
 import fr.cph.chicago.core.utils.setupMapbox
+import fr.cph.chicago.databinding.FragmentNearbyMapboxBinding
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
@@ -68,15 +71,10 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.android.synthetic.foss.fragment_nearby_mapbox.loadingLayoutContainer
-import kotlinx.android.synthetic.foss.fragment_nearby_mapbox.mapView
-import kotlinx.android.synthetic.foss.fragment_nearby_mapbox.progressBar
-import kotlinx.android.synthetic.foss.fragment_nearby_mapbox.searchAreaButton
-import kotlinx.android.synthetic.foss.fragment_nearby_mapbox.slidingLayout
+import java.util.UUID
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import timber.log.Timber
-import java.util.UUID
 
 /**
  * Foss Nearby Fragment
@@ -98,6 +96,9 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         }
     }
 
+    private var _binding: FragmentNearbyMapboxBinding? = null
+    private val binding get() = _binding!!
+
     lateinit var loadingLayout: LinearLayout
     lateinit var slidingLayoutPanel: SlidingUpPanelLayout
     lateinit var slidingUpAdapter: SlidingUpAdapter
@@ -111,21 +112,26 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         super.onCreate(savedInstanceState)
     }
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        _binding = FragmentNearbyMapboxBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        loadingLayout = loadingLayoutContainer
-        slidingLayoutPanel = slidingLayout
+        loadingLayout = binding.loadingLayoutContainer
+        slidingLayoutPanel = binding.slidingLayout
         slidingUpAdapter = SlidingUpAdapter(this)
-        mapView?.getMapAsync(this)
+        binding.mapView.getMapAsync(this)
         markerDataHolder = MarkerDataHolder()
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
         map = setupMapbox(mapboxMap, resources.configuration)
-        map.addOnCameraMoveListener { searchAreaButton.visibility = View.VISIBLE }
+        map.addOnCameraMoveListener { binding.searchAreaButton.visibility = View.VISIBLE }
         map.setOnMarkerClickListener(OnMarkerClickListener(markerDataHolder, this@NearbyFragment))
 
-        searchAreaButton.setOnClickListener { view ->
+        binding.searchAreaButton.setOnClickListener { view ->
             view.visibility = View.INVISIBLE
             markerDataHolder.clear()
             this.map.removeAnnotations()
@@ -267,16 +273,16 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
     fun showProgress(show: Boolean) {
         if (isAdded) {
             if (show) {
-                progressBar.visibility = View.VISIBLE
-                progressBar.progress = 50
+                binding.progressBar.visibility = View.VISIBLE
+                binding.progressBar.progress = 50
             } else {
-                progressBar.visibility = View.GONE
+                binding.progressBar.visibility = View.GONE
             }
         }
     }
 
     private fun displayErrorMessage() {
-        util.showSnackBar(loadingLayoutContainer, R.string.message_cant_find_location)
+        util.showSnackBar(binding.loadingLayoutContainer, R.string.message_cant_find_location)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -285,28 +291,28 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
 
     override fun onStart() {
         super.onStart()
-        mapView?.onStart()
+        binding.mapView.onStart()
     }
 
     override fun onResume() {
         super.onResume()
-        mapView?.onResume()
-        slidingLayout.panelState = SlidingUpPanelLayout.PanelState.HIDDEN
+        binding.mapView.onResume()
+        binding.slidingLayout.panelState = SlidingUpPanelLayout.PanelState.HIDDEN
     }
 
     override fun onStop() {
         super.onStop()
-        mapView?.onStop()
+        binding.mapView.onStop()
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        mapView?.onLowMemory()
+        binding.mapView.onLowMemory()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        mapView?.onDestroy()
+        binding.mapView.onDestroy()
     }
 
     private fun createStop(context: Context, @DrawableRes icon: Int): Bitmap {

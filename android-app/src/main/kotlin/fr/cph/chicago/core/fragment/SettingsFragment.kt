@@ -23,6 +23,9 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import fr.cph.chicago.Constants.SELECTED_ID
@@ -31,15 +34,11 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.BaseActivity
 import fr.cph.chicago.core.activity.DeveloperOptionsActivity
 import fr.cph.chicago.core.model.Theme
+import fr.cph.chicago.databinding.FragmentSettingsBinding
 import fr.cph.chicago.redux.ResetStateAction
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.RealmConfig
 import fr.cph.chicago.service.PreferenceService
-import kotlinx.android.synthetic.main.fragment_settings.clearCache
-import kotlinx.android.synthetic.main.fragment_settings.developerLayout
-import kotlinx.android.synthetic.main.fragment_settings.theme
-import kotlinx.android.synthetic.main.fragment_settings.themeName
-import kotlinx.android.synthetic.main.fragment_settings.versionNumber
 
 class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
@@ -52,13 +51,21 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         }
     }
 
+    private var _binding: FragmentSettingsBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        _binding = FragmentSettingsBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val version = "Version ${util.getCurrentVersion()}"
-        versionNumber.text = version
-        themeName.text = preferenceService.getTheme().description
+        binding.versionNumber.text = version
+        binding.themeName.text = preferenceService.getTheme().description
 
-        theme.setOnClickListener {
+        binding.theme.setOnClickListener {
             val builder = MaterialAlertDialogBuilder(context!!, R.style.AlertDialog)
             val choices = Theme.values().map { it.description }.toTypedArray()
             val selected = choices.indexOf(preferenceService.getTheme().description)
@@ -78,7 +85,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             builder.show()
         }
 
-        clearCache.setOnClickListener {
+        binding.clearCache.setOnClickListener {
             val dialogClickListener = { _: Any, which: Any ->
                 when (which) {
                     DialogInterface.BUTTON_POSITIVE -> {
@@ -97,7 +104,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 .show()
         }
 
-        developerLayout.setOnClickListener {
+        binding.developerLayout.setOnClickListener {
             // start new developer activity
             val intent = Intent(context, DeveloperOptionsActivity::class.java)
             context?.startActivity(intent)

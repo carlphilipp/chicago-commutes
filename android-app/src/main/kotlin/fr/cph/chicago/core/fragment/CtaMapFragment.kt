@@ -23,11 +23,14 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import fr.cph.chicago.R
+import fr.cph.chicago.databinding.FragmentCtaMapBinding
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_cta_map.ctaMap
 import timber.log.Timber
 
 class CtaMapFragment : Fragment(R.layout.fragment_cta_map) {
@@ -39,6 +42,14 @@ class CtaMapFragment : Fragment(R.layout.fragment_cta_map) {
     }
 
     private var bitmapCache: Bitmap? = null
+
+    private var _binding: FragmentCtaMapBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        _binding = FragmentCtaMapBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -56,7 +67,7 @@ class CtaMapFragment : Fragment(R.layout.fragment_cta_map) {
             .subscribe(
                 { bitmap ->
                     this@CtaMapFragment.bitmapCache = bitmap
-                    ctaMap.setImageBitmap(bitmap)
+                    binding.ctaMap.setImageBitmap(bitmap)
                 },
                 { error -> Timber.e(error) })
     }
