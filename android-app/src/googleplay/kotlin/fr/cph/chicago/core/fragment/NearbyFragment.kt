@@ -30,7 +30,6 @@ import android.view.View
 import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
-import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.GoogleMapOptions
@@ -87,7 +86,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
     }
 
     private lateinit var mapFragment: SupportMapFragment
-    private lateinit var googleApiClient: GoogleApiClient
     lateinit var slidingUpAdapter: SlidingUpAdapter
     lateinit var loadingLayout: LinearLayout
     lateinit var slidingLayoutPanel: SlidingUpPanelLayout
@@ -115,9 +113,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
 
     override fun onStart() {
         super.onStart()
-        googleApiClient = GoogleApiClient.Builder(activity!!)
-            .addApi(LocationServices.API)
-            .build()
         val options = GoogleMapOptions()
         val camera = CameraPosition(GoogleMapUtil.chicago, 7f, 0f, 0f)
         options.camera(camera)
@@ -131,13 +126,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
     override fun onResume() {
         super.onResume()
         slidingLayoutPanel.panelState = SlidingUpPanelLayout.PanelState.HIDDEN
-    }
-
-    override fun onStop() {
-        super.onStop()
-        if (googleApiClient.isConnected) {
-            googleApiClient.disconnect()
-        }
     }
 
     private fun updateMarkersAndModel(

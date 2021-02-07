@@ -88,9 +88,9 @@ object AlertService {
     private fun formatDate(str: String?): String {
         if (str == null) return StringUtils.EMPTY
         return try {
-            displayFormat.format(formatWithSeconds.parse(str))
+            displayFormat.format(formatWithSeconds.parse(str)!!)
         } catch (p: ParseException) {
-            displayFormat.format(format.parse(str))
+            displayFormat.format(format.parse(str)!!)
         }
     }
 }
