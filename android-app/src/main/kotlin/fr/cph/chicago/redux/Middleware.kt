@@ -207,9 +207,7 @@ internal val bikeStationMiddleware: Middleware<StateType> = { _, _ ->
                         { newAction -> next(newAction) },
                         { throwable ->
                             Timber.e(throwable)
-                            next(BikeStationAction(
-                                error = true,
-                                errorMessage = buildErrorMessage(throwable)))
+                            next(BikeStationAction(error = true, errorMessage = buildErrorMessage(throwable)))
                         }
                     )
             } ?: next(action)

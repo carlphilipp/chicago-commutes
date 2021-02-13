@@ -40,7 +40,7 @@ import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.RealmConfig
 import fr.cph.chicago.service.PreferenceService
 
-class SettingsFragment : Fragment(R.layout.fragment_settings) {
+class SettingsFragment : Fragment() {
 
     companion object {
         private val preferenceService = PreferenceService

@@ -36,7 +36,7 @@ import fr.cph.chicago.databinding.FragmentTrainBinding
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class TrainFragment : Fragment(R.layout.fragment_train) {
+class TrainFragment : Fragment() {
 
     companion object {
         fun newInstance(sectionNumber: Int): TrainFragment {

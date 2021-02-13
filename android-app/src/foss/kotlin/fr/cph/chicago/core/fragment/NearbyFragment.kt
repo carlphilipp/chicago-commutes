@@ -83,7 +83,7 @@ import timber.log.Timber
  * @version 1
  */
 //FIXME: to remove deprecated API, need https://github.com/mapbox/mapbox-plugins-android/issues/649
-class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCallback {
+class NearbyFragment : Fragment(), OnMapReadyCallback {
 
     companion object {
         private val util = Util

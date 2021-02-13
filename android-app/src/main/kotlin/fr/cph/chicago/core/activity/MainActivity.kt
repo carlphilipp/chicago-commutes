@@ -36,12 +36,9 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.fragment.Fragment
 import fr.cph.chicago.core.fragment.buildFragment
+import fr.cph.chicago.databinding.ActivityMainBinding
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.util.RateUtil
-import kotlinx.android.synthetic.main.activity_main.drawer
-import kotlinx.android.synthetic.main.activity_main.drawerLayout
-import kotlinx.android.synthetic.main.activity_main.searchContainer
-import kotlinx.android.synthetic.main.toolbar.toolbar
 import org.apache.commons.lang3.StringUtils
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -58,12 +55,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var toolBar: Toolbar
 
     private var title: String? = null
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!this.isFinishing) {
-            setContentView(R.layout.activity_main)
-            this.toolBar = toolbar
+            binding = ActivityMainBinding.inflate(layoutInflater)
+            setContentView(binding.root)
+            this.toolBar = binding.included.toolbar
             if (store.state.ctaTrainKey == StringUtils.EMPTY) {
                 // Start error activity when state is empty (usually when android restart the activity on error)
                 App.startErrorActivity()
@@ -79,25 +78,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 intent.extras != null -> intent.extras!!.getString(getString(R.string.bundle_title), getString(R.string.favorites))
                 else -> getString(R.string.favorites)
             }
-            drawer.setNavigationItemSelectedListener(this)
-            favoriteMenuItem = drawer.menu.getItem(0)
+            binding.drawer.setNavigationItemSelectedListener(this)
+            favoriteMenuItem = binding.drawer.menu.getItem(0)
             if (currentPosition == R.id.navigation_favorites) {
                 favoriteMenuItem.isChecked = true
             }
-            toolbar.inflateMenu(R.menu.main)
+            this.toolBar.inflateMenu(R.menu.main)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                toolbar.elevation = 4f
+                this.toolBar.elevation = 4f
             }
 
             inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-            drawerToggle = object : ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+            drawerToggle = object : ActionBarDrawerToggle(this, binding.drawerLayout, this.toolBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
                 override fun onDrawerClosed(drawerView: View) {
                     super.onDrawerClosed(drawerView)
                     updateFragment(currentPosition)
                 }
             }
 
-            drawerLayout.addDrawerListener(drawerToggle)
+            binding.drawerLayout.addDrawerListener(drawerToggle)
             drawerToggle.syncState()
 
             setBarTitle(title!!)
@@ -123,7 +122,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun setBarTitle(title: String) {
         this.title = title
-        toolbar.title = title
+        this.toolBar.title = title
     }
 
     private fun updateFragment(position: Int) {
@@ -148,19 +147,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         transaction.replace(R.id.searchContainer, fragment).commit()
         showHideActionBarMenu((fragment as Fragment).hasActionBar())
-        searchContainer.animate().alpha(1.0f)
+        binding.searchContainer.animate().alpha(1.0f)
     }
 
     private fun itemSelected(title: String) {
-        searchContainer.animate().alpha(0.0f)
+        binding.searchContainer.animate().alpha(0.0f)
         setBarTitle(title)
         closeDrawerAndUpdateActionBar()
     }
 
     private fun closeDrawerAndUpdateActionBar() {
-        drawerLayout.closeDrawer(GravityCompat.START)
+        binding.drawerLayout.closeDrawer(GravityCompat.START)
         // Force keyboard to hide if present
-        inputMethodManager.hideSoftInputFromWindow(drawerLayout.windowToken, 0)
+        inputMethodManager.hideSoftInputFromWindow(binding.drawerLayout.windowToken, 0)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -186,7 +185,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             } else {
                 currentPosition = menuItem.itemId
-                drawerLayout.closeDrawer(GravityCompat.START)
+                binding.drawerLayout.closeDrawer(GravityCompat.START)
             }
         }
         return true
@@ -205,6 +204,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun showHideActionBarMenu(show: Boolean) {
-        toolbar.menu.getItem(0).isVisible = show
+        this.toolBar.menu.getItem(0).isVisible = show
     }
 }

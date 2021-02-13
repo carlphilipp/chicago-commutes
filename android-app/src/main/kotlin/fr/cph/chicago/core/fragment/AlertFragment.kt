@@ -23,22 +23,19 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
-import fr.cph.chicago.R
+import android.view.ViewGroup
 import fr.cph.chicago.core.activity.AlertActivity
 import fr.cph.chicago.core.activity.MainActivity
 import fr.cph.chicago.core.adapter.AlertAdapter
 import fr.cph.chicago.core.model.dto.AlertType
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
+import fr.cph.chicago.databinding.FragmentFilterListBinding
 import fr.cph.chicago.redux.AlertAction
 import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
-import kotlinx.android.synthetic.main.error.failureLayout
-import kotlinx.android.synthetic.main.error.retryButton
-import kotlinx.android.synthetic.main.fragment_filter_list.filter
-import kotlinx.android.synthetic.main.fragment_filter_list.listView
-import kotlinx.android.synthetic.main.fragment_filter_list.successLayout
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
@@ -49,7 +46,7 @@ import timber.log.Timber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class AlertFragment : RefreshFragment(R.layout.fragment_filter_list), StoreSubscriber<State> {
+class AlertFragment : RefreshFragment(), StoreSubscriber<State> {
 
     companion object {
         fun newInstance(sectionNumber: Int): AlertFragment {
@@ -58,14 +55,21 @@ class AlertFragment : RefreshFragment(R.layout.fragment_filter_list), StoreSubsc
     }
 
     private lateinit var adapter: AlertAdapter
+    private var _binding: FragmentFilterListBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        _binding = FragmentFilterListBinding.inflate(inflater, container, false)
+        setUpSwipeRefreshLayout(binding.swipeRefreshLayout)
+        return binding.root
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         adapter = AlertAdapter()
-        listView.adapter = adapter
-        swipeRefreshLayout.setOnRefreshListener { startRefreshing() }
+        binding.listView.adapter = adapter
         (activity as MainActivity).toolBar.setOnMenuItemClickListener { startRefreshing(); true }
-        retryButton.setOnClickListener { startRefreshing() }
+        binding.error.retryButton.setOnClickListener { startRefreshing() }
     }
 
     override fun onResume() {
@@ -105,7 +109,7 @@ class AlertFragment : RefreshFragment(R.layout.fragment_filter_list), StoreSubsc
     private fun updateData(alertDTO: List<RoutesAlertsDTO>) {
         adapter.setAlerts(alertDTO)
         adapter.notifyDataSetChanged()
-        listView.setOnItemClickListener { _, _, position, _ ->
+        binding.listView.setOnItemClickListener { _, _, position, _ ->
             val (id1, routeName, _, _, _, _, alertType) = adapter.getItem(position)
             val intent = Intent(context, AlertActivity::class.java)
             val extras = Bundle()
@@ -117,7 +121,7 @@ class AlertFragment : RefreshFragment(R.layout.fragment_filter_list), StoreSubsc
             intent.putExtras(extras)
             startActivity(intent)
         }
-        filter.addTextChangedListener(object : TextWatcher {
+        binding.filter.addTextChangedListener(object : TextWatcher {
 
             var routesAlertsDTOS: List<RoutesAlertsDTO> = listOf()
 
@@ -140,12 +144,12 @@ class AlertFragment : RefreshFragment(R.layout.fragment_filter_list), StoreSubsc
     }
 
     private fun showSuccessLayout() {
-        successLayout.visibility = View.VISIBLE
-        failureLayout.visibility = View.GONE
+        binding.successLayout.visibility = View.VISIBLE
+        binding.error.failureLayout.visibility = View.GONE
     }
 
     private fun showFailureLayout() {
-        successLayout.visibility = View.GONE
-        failureLayout.visibility = View.VISIBLE
+        binding.successLayout.visibility = View.GONE
+        binding.error.failureLayout.visibility = View.VISIBLE
     }
 }

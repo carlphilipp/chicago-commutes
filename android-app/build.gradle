@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'realm-android'
 apply plugin: "com.github.ben-manes.versions"
 
@@ -30,7 +29,6 @@ android {
         resValue "string", "cta_bus_key", (ctaBusKey != null) ? new String(Base64.getDecoder().decode(ctaBusKey)) : ""
     }
 
-    // TODO (WIP): replace kotlin-android-extensions with view binding https://developer.android.com/topic/libraries/view-binding/migration
     buildFeatures {
         viewBinding true
     }

@@ -21,7 +21,9 @@ package fr.cph.chicago.core.fragment
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import fr.cph.chicago.R
@@ -29,6 +31,7 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.MainActivity
 import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.adapter.FavoritesAdapter
+import fr.cph.chicago.databinding.FragmentMainBinding
 import fr.cph.chicago.redux.BusRoutesAction
 import fr.cph.chicago.redux.BusRoutesAndBikeStationAction
 import fr.cph.chicago.redux.FavoritesAction
@@ -45,11 +48,6 @@ import fr.cph.chicago.util.RateUtil
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.observers.DisposableObserver
-import kotlinx.android.synthetic.main.error.failureLayout
-import kotlinx.android.synthetic.main.error.retryButton
-import kotlinx.android.synthetic.main.fragment_main.favoritesListView
-import kotlinx.android.synthetic.main.fragment_main.floatingButton
-import kotlinx.android.synthetic.main.fragment_main.welcomeLayout
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
@@ -59,7 +57,7 @@ import timber.log.Timber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class FavoritesFragment : RefreshFragment(R.layout.fragment_main), StoreSubscriber<State> {
+class FavoritesFragment : RefreshFragment(), StoreSubscriber<State> {
 
     companion object {
         private val rateUtil = RateUtil
@@ -69,30 +67,37 @@ class FavoritesFragment : RefreshFragment(R.layout.fragment_main), StoreSubscrib
         }
     }
 
+    private var _binding: FragmentMainBinding? = null
+    private val binding get() = _binding!!
     private lateinit var adapter: FavoritesAdapter
     private val refreshTask: Observable<Long> = refreshTask()
     private var disposable: Disposable? = null
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        _binding = FragmentMainBinding.inflate(inflater, container, false)
+        setUpSwipeRefreshLayout(binding.swipeRefreshLayout)
+        return binding.root
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         adapter = FavoritesAdapter(context!!)
 
-        favoritesListView.adapter = adapter
-        favoritesListView.layoutManager = LinearLayoutManager(context!!)
-        floatingButton.setOnClickListener { activity?.startActivity(Intent(context!!, SearchActivity::class.java)) }
+        binding.favoritesListView.adapter = adapter
+        binding.favoritesListView.layoutManager = LinearLayoutManager(context!!)
+        binding.floatingButton.setOnClickListener { activity?.startActivity(Intent(context!!, SearchActivity::class.java)) }
 
-        favoritesListView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        binding.favoritesListView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (dy > 0 && floatingButton.isShown) {
-                    floatingButton.hide()
-                } else if (dy < 0 && !floatingButton.isShown) {
-                    floatingButton.show()
+                if (dy > 0 && binding.floatingButton.isShown) {
+                    binding.floatingButton.hide()
+                } else if (dy < 0 && !binding.floatingButton.isShown) {
+                    binding.floatingButton.show()
                 }
             }
         })
-        swipeRefreshLayout.setOnRefreshListener { reloadData() }
-        retryButton.setOnClickListener { reloadData() }
-        (activity as MainActivity).toolBar.setOnMenuItemClickListener { reloadData(); true }
+        binding.error.retryButton.setOnClickListener { startRefreshing() }
+        (activity as MainActivity).toolBar.setOnMenuItemClickListener { startRefreshing(); true }
 
         startRefreshTask()
         rateUtil.displayRateSnackBarIfNeeded(swipeRefreshLayout, activity!!)
@@ -164,19 +169,19 @@ class FavoritesFragment : RefreshFragment(R.layout.fragment_main), StoreSubscrib
     }
 
     private fun showSuccessUi() {
-        if (failureLayout.visibility != View.GONE) failureLayout.visibility = View.GONE
-        welcomeLayout.visibility = if (preferenceService.hasFavorites()) View.GONE else View.VISIBLE
-        if (favoritesListView.visibility != View.VISIBLE) favoritesListView.visibility = View.VISIBLE
+        if (binding.error.failureLayout.visibility != View.GONE) binding.error.failureLayout.visibility = View.GONE
+        binding.welcomeLayout.visibility = if (preferenceService.hasFavorites()) View.GONE else View.VISIBLE
+        if (binding.favoritesListView.visibility != View.VISIBLE) binding.favoritesListView.visibility = View.VISIBLE
     }
 
     private fun showFullFailureUi() {
-        if (failureLayout.visibility != View.VISIBLE) failureLayout.visibility = View.VISIBLE
-        if (welcomeLayout.visibility != View.GONE) welcomeLayout.visibility = View.GONE
-        if (favoritesListView.visibility != View.GONE) favoritesListView.visibility = View.GONE
+        if (binding.error.failureLayout.visibility != View.VISIBLE) binding.error.failureLayout.visibility = View.VISIBLE
+        if (binding.welcomeLayout.visibility != View.GONE) binding.welcomeLayout.visibility = View.GONE
+        if (binding.favoritesListView.visibility != View.GONE) binding.favoritesListView.visibility = View.GONE
     }
 
-    private fun reloadData() {
-        startRefreshing()
+    override fun startRefreshing() {
+        super.startRefreshing()
         store.dispatch(FavoritesAction())
         if (store.state.busRoutes.isEmpty()) { // Bike station is done already in the previous action
             store.dispatch(BusRoutesAction())

@@ -22,20 +22,17 @@ package fr.cph.chicago.core.fragment
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
-import fr.cph.chicago.R
+import android.view.ViewGroup
 import fr.cph.chicago.core.activity.MainActivity
 import fr.cph.chicago.core.adapter.BusAdapter
 import fr.cph.chicago.core.model.BusRoute
+import fr.cph.chicago.databinding.FragmentFilterListBinding
 import fr.cph.chicago.redux.BusRoutesAction
 import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
-import kotlinx.android.synthetic.main.error.failureLayout
-import kotlinx.android.synthetic.main.error.retryButton
-import kotlinx.android.synthetic.main.fragment_filter_list.filter
-import kotlinx.android.synthetic.main.fragment_filter_list.listView
-import kotlinx.android.synthetic.main.fragment_filter_list.successLayout
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
@@ -46,7 +43,7 @@ import timber.log.Timber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusFragment : RefreshFragment(R.layout.fragment_filter_list), StoreSubscriber<State> {
+class BusFragment : RefreshFragment(), StoreSubscriber<State> {
 
     companion object {
         fun newInstance(sectionNumber: Int): BusFragment {
@@ -54,17 +51,23 @@ class BusFragment : RefreshFragment(R.layout.fragment_filter_list), StoreSubscri
         }
     }
 
+    private var _binding: FragmentFilterListBinding? = null
+    private val binding get() = _binding!!
     private lateinit var busAdapter: BusAdapter
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        _binding = FragmentFilterListBinding.inflate(inflater, container, false)
+        setUpSwipeRefreshLayout(binding.swipeRefreshLayout)
+        return binding.root
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         busAdapter = BusAdapter()
-        listView.adapter = busAdapter
-        swipeRefreshLayout.setOnRefreshListener { startRefreshing() }
+        binding.listView.adapter = busAdapter
         (activity as MainActivity).toolBar.setOnMenuItemClickListener { startRefreshing(); true }
-        retryButton.setOnClickListener { startRefreshing() }
+        binding.error.retryButton.setOnClickListener { startRefreshing() }
     }
-
 
     override fun onResume() {
         super.onResume()
@@ -97,13 +100,13 @@ class BusFragment : RefreshFragment(R.layout.fragment_filter_list), StoreSubscri
     }
 
     private fun showSuccessLayout() {
-        successLayout.visibility = View.VISIBLE
-        failureLayout.visibility = View.GONE
+        binding.successLayout.visibility = View.VISIBLE
+        binding.error.failureLayout.visibility = View.GONE
     }
 
     private fun showFailureLayout() {
-        successLayout.visibility = View.GONE
-        failureLayout.visibility = View.VISIBLE
+        binding.successLayout.visibility = View.GONE
+        binding.error.failureLayout.visibility = View.VISIBLE
     }
 
     override fun startRefreshing() {
@@ -114,7 +117,7 @@ class BusFragment : RefreshFragment(R.layout.fragment_filter_list), StoreSubscri
     private fun updateData(busRoutes: List<BusRoute>) {
         busAdapter.updateBusRoutes(busRoutes)
         busAdapter.notifyDataSetChanged()
-        filter.addTextChangedListener(object : TextWatcher {
+        binding.filter.addTextChangedListener(object : TextWatcher {
 
             private var busRoutesLocal: List<BusRoute> = listOf()
 
@@ -132,6 +135,6 @@ class BusFragment : RefreshFragment(R.layout.fragment_filter_list), StoreSubscri
                 busAdapter.notifyDataSetChanged()
             }
         })
-        filter.text = filter.text
+        binding.filter.text = binding.filter.text
     }
 }

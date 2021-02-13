@@ -20,6 +20,7 @@
 package fr.cph.chicago.redux
 
 import java.util.Date
+import java.util.UUID
 import org.rekotlin.Action
 import org.rekotlin.Store
 import timber.log.Timber
@@ -188,7 +189,8 @@ fun reducer(action: Action, oldState: State?): State {
             state = state.copy(
                 busRoutes = if (action.error) state.busRoutes else action.busRoutes,
                 busRoutesStatus = status,
-                busRoutesErrorMessage = action.errorMessage
+                busRoutesErrorMessage = action.errorMessage,
+                random = UUID.randomUUID().toString()
             )
         }
         is AlertAction -> {

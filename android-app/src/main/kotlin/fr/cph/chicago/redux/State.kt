@@ -33,6 +33,8 @@ import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StateType
 
 data class State(
+    // Can be useful to force an update
+    val random: String = StringUtils.EMPTY,
     // Api keys
     val ctaTrainKey: String = StringUtils.EMPTY,
     val ctaBusKey: String = StringUtils.EMPTY,

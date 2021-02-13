@@ -26,7 +26,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
@@ -49,6 +51,7 @@ import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.marker.MarkerDataHolder
+import fr.cph.chicago.databinding.FragmentNearbyBinding
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
@@ -57,10 +60,6 @@ import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.core.Single
-import kotlinx.android.synthetic.main.fragment_nearby.loadingLayoutContainer
-import kotlinx.android.synthetic.main.fragment_nearby.progressBar
-import kotlinx.android.synthetic.main.fragment_nearby.searchAreaButton
-import kotlinx.android.synthetic.main.fragment_nearby.slidingLayout
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import timber.log.Timber
@@ -71,7 +70,7 @@ import timber.log.Timber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.PermissionCallbacks {
+class NearbyFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     companion object {
         private val util: Util = Util
@@ -84,7 +83,8 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
             return fragmentWithBundle(NearbyFragment(), sectionNumber) as NearbyFragment
         }
     }
-
+    private var _binding: FragmentNearbyBinding? = null
+    private val binding get() = _binding!!
     private lateinit var mapFragment: SupportMapFragment
     lateinit var slidingUpAdapter: SlidingUpAdapter
     lateinit var loadingLayout: LinearLayout
@@ -93,13 +93,18 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
     private lateinit var markerDataHolder: MarkerDataHolder
     private var fusedLocationClient: FusedLocationProviderClient? = null
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        _binding = FragmentNearbyBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        loadingLayout = loadingLayoutContainer
-        slidingLayoutPanel = slidingLayout
+        loadingLayout = binding.loadingLayoutContainer
+        slidingLayoutPanel = binding.slidingLayout
         slidingUpAdapter = SlidingUpAdapter(this)
         markerDataHolder = MarkerDataHolder()
-        searchAreaButton.setOnClickListener { view ->
+        binding.searchAreaButton.setOnClickListener { view ->
             view.visibility = View.INVISIBLE
             mapFragment.getMapAsync { googleMap ->
                 googleMap.clear()
@@ -180,7 +185,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
 
                 showProgress(false)
                 googleMap.setOnMarkerClickListener(OnMarkerClickListener(markerDataHolder, this@NearbyFragment))
-                googleMap.setOnCameraMoveListener { searchAreaButton.visibility = View.VISIBLE }
+                googleMap.setOnCameraMoveListener { binding.searchAreaButton.visibility = View.VISIBLE }
             }
         }
     }
@@ -202,10 +207,10 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
     fun showProgress(show: Boolean) {
         if (isAdded) {
             if (show) {
-                progressBar.visibility = View.VISIBLE
-                progressBar.progress = 50
+                binding.progressBar.visibility = View.VISIBLE
+                binding.progressBar.progress = 50
             } else {
-                progressBar.visibility = View.GONE
+                binding.progressBar.visibility = View.GONE
             }
         }
     }
@@ -251,7 +256,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
         var finalPosition = position
         if (position.longitude == 0.0 && position.latitude == 0.0) {
             Timber.w("Could not get current user location")
-            util.showSnackBar(loadingLayoutContainer, R.string.message_cant_find_location)
+            util.showSnackBar(binding.loadingLayoutContainer, R.string.message_cant_find_location)
             finalPosition = chicagoPosition
         }
 

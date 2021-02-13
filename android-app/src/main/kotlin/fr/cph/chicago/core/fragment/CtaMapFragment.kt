@@ -33,7 +33,7 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
 
-class CtaMapFragment : Fragment(R.layout.fragment_cta_map) {
+class CtaMapFragment : Fragment() {
 
     companion object {
         fun newInstance(sectionNumber: Int): CtaMapFragment {

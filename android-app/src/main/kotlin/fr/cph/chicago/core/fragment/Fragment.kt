@@ -20,13 +20,10 @@
 package fr.cph.chicago.core.fragment
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import fr.cph.chicago.util.Util
 
-abstract class Fragment(private val layout: Int) : Fragment() {
+abstract class Fragment : Fragment() {
 
     companion object {
         private const val ARG_SECTION_NUMBER = "section_number"
@@ -40,15 +37,6 @@ abstract class Fragment(private val layout: Int) : Fragment() {
             fragment.arguments = args
             return fragment
         }
-    }
-
-    protected lateinit var rootView: View
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        if (activity != null && !activity!!.isFinishing) {
-            rootView = inflater.inflate(layout, container, false)
-        }
-        return rootView
     }
 
     open fun hasActionBar(): Boolean {
