@@ -97,8 +97,8 @@ class BaseActivity : AppCompatActivity(), StoreSubscriber<State> {
 
     private fun startMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
-        finish()
         startActivity(intent)
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+        finish()
     }
 }
