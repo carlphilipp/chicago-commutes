@@ -77,7 +77,8 @@ fun reducer(action: Action, oldState: State?): State {
                 trainFavorites = action.trainFavorites,
                 busFavorites = action.busFavorites,
                 busRouteFavorites = action.busRouteFavorites,
-                bikeFavorites = action.bikeFavorites
+                bikeFavorites = action.bikeFavorites,
+                random = UUID.randomUUID().toString()
             )
         }
         is BusRoutesAndBikeStationAction -> {
@@ -108,7 +109,8 @@ fun reducer(action: Action, oldState: State?): State {
                 busRoutesStatus = busRoutesStatus,
                 bikeStationsStatus = bikeStationsStatus,
                 busRoutes = busRoutes,
-                bikeStations = bikeStations
+                bikeStations = bikeStations,
+                random = UUID.randomUUID().toString()
             )
         }
         is FavoritesAction -> {
@@ -136,7 +138,8 @@ fun reducer(action: Action, oldState: State?): State {
                 trainArrivalsDTO = action.favoritesDTO.trainArrivalDTO,
                 busArrivalsDTO = action.favoritesDTO.busArrivalDTO,
                 bikeStations = bikeStations,
-                bikeStationsStatus = bikeStationsStatus
+                bikeStationsStatus = bikeStationsStatus,
+                random = UUID.randomUUID().toString()
             )
         }
         is TrainStationAction -> {
@@ -152,7 +155,8 @@ fun reducer(action: Action, oldState: State?): State {
             state = state.copy(
                 trainArrivalsDTO = state.trainArrivalsDTO,
                 trainStationStatus = trainStationStatus,
-                trainStationArrival = action.trainArrival
+                trainStationArrival = action.trainArrival,
+                random = UUID.randomUUID().toString()
             )
         }
         is BusStopArrivalsAction -> {
@@ -163,7 +167,8 @@ fun reducer(action: Action, oldState: State?): State {
             state = state.copy(
                 busStopStatus = busStopStatus,
                 busStopErrorMessage = action.errorMessage,
-                busArrivalStopDTO = action.busArrivalStopDTO
+                busArrivalStopDTO = action.busArrivalStopDTO,
+                random = UUID.randomUUID().toString()
             )
         }
         is BikeStationAction -> {
@@ -176,7 +181,8 @@ fun reducer(action: Action, oldState: State?): State {
             state = state.copy(
                 bikeStationsStatus = bikeStationsStatus,
                 bikeStationsErrorMessage = action.errorMessage,
-                bikeStations = bikeStations
+                bikeStations = bikeStations,
+                random = UUID.randomUUID().toString()
             )
         }
         is BusRoutesAction -> {
@@ -203,45 +209,52 @@ fun reducer(action: Action, oldState: State?): State {
             state = state.copy(
                 alertStatus = status,
                 alertErrorMessage = action.errorMessage,
-                alertsDTO = alertsDTO
+                alertsDTO = alertsDTO,
+                random = UUID.randomUUID().toString()
             )
         }
         is AddTrainFavoriteAction -> {
             state = state.copy(
                 trainFavorites = action.trainFavorites,
-                trainStationStatus = Status.ADD_FAVORITES
+                trainStationStatus = Status.ADD_FAVORITES,
+                random = UUID.randomUUID().toString()
             )
         }
         is RemoveTrainFavoriteAction -> {
             state = state.copy(
                 trainFavorites = action.trainFavorites,
-                trainStationStatus = Status.REMOVE_FAVORITES
+                trainStationStatus = Status.REMOVE_FAVORITES,
+                random = UUID.randomUUID().toString()
             )
         }
         is AddBusFavoriteAction -> {
             state = state.copy(
                 busFavorites = action.busFavorites,
                 busRouteFavorites = action.busRouteFavorites,
-                busStopStatus = Status.ADD_FAVORITES
+                busStopStatus = Status.ADD_FAVORITES,
+                random = UUID.randomUUID().toString()
             )
         }
         is RemoveBusFavoriteAction -> {
             state = state.copy(
                 busFavorites = action.busFavorites,
                 busRouteFavorites = action.busRouteFavorites,
-                busStopStatus = Status.REMOVE_FAVORITES
+                busStopStatus = Status.REMOVE_FAVORITES,
+                random = UUID.randomUUID().toString()
             )
         }
         is AddBikeFavoriteAction -> {
             state = state.copy(
                 bikeFavorites = action.bikeFavorites,
-                bikeStationsStatus = Status.ADD_FAVORITES
+                bikeStationsStatus = Status.ADD_FAVORITES,
+                random = UUID.randomUUID().toString()
             )
         }
         is RemoveBikeFavoriteAction -> {
             state = state.copy(
                 bikeFavorites = action.bikeFavorites,
-                bikeStationsStatus = Status.REMOVE_FAVORITES
+                bikeStationsStatus = Status.REMOVE_FAVORITES,
+                random = UUID.randomUUID().toString()
             )
         }
         else -> Timber.w("Action %s unknown", action)
