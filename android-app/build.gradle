@@ -10,8 +10,8 @@ android {
 
     defaultConfig {
         applicationId 'fr.cph.chicago'
-        versionCode 205
-        versionName '5.14.8'
+        versionCode 206
+        versionName '5.14.9'
 
         minSdkVersion Android.min_sdk
         targetSdkVersion Android.target_sdk
@@ -41,7 +41,7 @@ android {
     }
 
     compileOptions {
-        def javaVersion = JavaVersion.VERSION_1_8
+        def javaVersion = JavaVersion.VERSION_11
         sourceCompatibility = javaVersion
         targetCompatibility = javaVersion
     }

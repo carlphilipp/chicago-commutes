@@ -8,7 +8,7 @@ object Android {
 
 object Version {
     const val kotlin =                  "1.4.30"
-    const val android_tools_build =     "4.1.2"
+    const val android_tools_build =     "7.0.3"
     const val realm =                   "10.8.1"
     const val gradle_version =          "0.36.0"
 
@@ -49,7 +49,7 @@ object Version {
 }
 
 object Lib {
-    // Build4
+    // Build
     const val gradle_android =              "com.android.tools.build:gradle:${Version.android_tools_build}"
     const val gradle_realm =                "io.realm:realm-gradle-plugin:${Version.realm}"
     const val gradle_kotlin =               "org.jetbrains.kotlin:kotlin-gradle-plugin:${Version.kotlin}"
