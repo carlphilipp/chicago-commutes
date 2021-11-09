@@ -4,7 +4,7 @@ plugins {
 
 dependencies {
     repositories {
-        jcenter()
+        mavenCentral()
     }
 
     implementation(Lib.commons_io)

@@ -9,12 +9,12 @@ object Android {
 object Version {
     const val kotlin =                  "1.4.30"
     const val android_tools_build =     "4.1.2"
-    const val realm =                   "10.3.1"
+    const val realm =                   "10.8.1"
     const val gradle_version =          "0.36.0"
 
     const val commons_collections4 =    "4.4"
     const val commons_text =            "1.9"
-    const val easypermissions =         "1.3.0"
+    const val easypermissions =         "3.0.0"
     const val google_play_maps =        "17.0.0"
     const val google_play_location =    "17.1.0"
     const val jackson =                 "2.12.1"

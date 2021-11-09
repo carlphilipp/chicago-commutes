@@ -1,8 +1,8 @@
 buildscript {
     repositories {
-        jcenter()
         mavenCentral()
         google()
+        gradlePluginPortal()
     }
     dependencies {
         classpath(Lib.gradle_android)
@@ -17,7 +17,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        jcenter()
+        jcenter() // Need to migrate to new version of Mapbox to remove that
         // Needed for PhotoView
         maven(url = "https://jitpack.io")
     }
