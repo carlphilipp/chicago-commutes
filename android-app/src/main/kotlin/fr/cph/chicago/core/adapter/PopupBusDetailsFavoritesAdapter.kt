@@ -46,7 +46,7 @@ class PopupBusDetailsFavoritesAdapter(context: Context, private val values: List
         } else {
             holder = view.tag as ViewHolder
         }
-        val label = values[position].stopName + " (" + values[position].bound.toLowerCase(Locale.getDefault()) + ")"
+        val label = values[position].stopName + " (" + values[position].bound.lowercase() + ")"
         holder.label.text = label
         return view!!
     }

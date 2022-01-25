@@ -135,7 +135,7 @@ class TrainMapActivity : FragmentMapActivity() {
             val title = "To $destName"
             val snippet = routeNumber.toString()
             googleMap.addMarker(MarkerOptions().position(point).title(title).snippet(snippet).icon(bitmapDesc).anchor(0.5f, 0.5f).rotation(heading.toFloat()).flat(true))
-        }.onEach { marker ->
+        }.filterNotNull().onEach { marker ->
             val view = layoutInflater.inflate(R.layout.marker, mapContainerLayout, false)
             val title2 = view.findViewById<TextView>(R.id.title)
             title2.text = marker.title
@@ -185,8 +185,10 @@ class TrainMapActivity : FragmentMapActivity() {
             .subscribe(
                 { markerOptions ->
                     val marker = googleMap.addMarker(markerOptions)
-                    marker.isVisible = false
-                    stationMarkers.add(marker)
+                    marker?.run {
+                        marker.isVisible = false
+                        stationMarkers.add(marker)
+                    }
                 },
                 { error -> Timber.e(error) })
 
@@ -203,8 +205,10 @@ class TrainMapActivity : FragmentMapActivity() {
                         if (!refreshingInfoWindow) {
                             selectedMarker = marker
                             val runNumber = marker.snippet
-                            trainService.trainEtas(runNumber, false)
-                                .subscribe(TrainEtaObserver(view!!, this@TrainMapActivity))
+                            runNumber?.run {
+                                trainService.trainEtas(runNumber, false)
+                                    .subscribe(TrainEtaObserver(view!!, this@TrainMapActivity))
+                            }
                             status[marker] = false
                         }
                         view
@@ -220,8 +224,10 @@ class TrainMapActivity : FragmentMapActivity() {
                     selectedMarker = marker
                     val runNumber = marker.snippet
                     val current = status[marker] ?: false
-                    trainService.trainEtas(runNumber, !current)
-                        .subscribe(TrainEtaObserver(view!!, this@TrainMapActivity))
+                    runNumber?.run {
+                        trainService.trainEtas(runNumber, !current)
+                            .subscribe(TrainEtaObserver(view!!, this@TrainMapActivity))
+                    }
                     status[marker] = !current
                 }
             }
@@ -258,13 +264,9 @@ class TrainMapActivity : FragmentMapActivity() {
         } else {
             trainsSingle.subscribe(
                 { trains ->
-                    if (trains != null) {
-                        drawTrains(trains)
-                        if (trains.isEmpty()) {
-                            util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_no_train_found)
-                        }
-                    } else {
-                        util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_error_while_loading_data)
+                    drawTrains(trains)
+                    if (trains.isEmpty()) {
+                        util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_no_train_found)
                     }
                 },
                 { error -> Timber.e(error) })

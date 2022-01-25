@@ -40,6 +40,7 @@ import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import fr.cph.chicago.Constants.GPS_ACCESS
@@ -157,7 +158,9 @@ class NearbyFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                             .title(busStop.name)
                             .icon(bitmapDescriptorBus)
                         val marker = googleMap.addMarker(markerOptions)
-                        markerDataHolder.addData(marker, busStop)
+                        marker?.run {
+                            markerDataHolder.addData(marker, busStop)
+                        }
                     }
 
                 trainTrainStation
@@ -169,7 +172,9 @@ class NearbyFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                                 .title(station.name)
                                 .icon(bitmapDescriptorTrain)
                             val marker = googleMap.addMarker(markerOptions)
-                            markerDataHolder.addData(marker, station)
+                            marker?.run {
+                                markerDataHolder.addData(marker, station)
+                            }
                         }
                     }
 
@@ -180,7 +185,9 @@ class NearbyFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                             .title(station.name)
                             .icon(bitmapDescriptorBike)
                         val marker = googleMap.addMarker(markerOptions)
-                        markerDataHolder.addData(marker, station)
+                        marker?.run {
+                            markerDataHolder.addData(marker, station)
+                        }
                     }
 
                 showProgress(false)

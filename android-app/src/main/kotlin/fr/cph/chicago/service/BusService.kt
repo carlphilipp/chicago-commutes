@@ -172,8 +172,8 @@ object BusService {
                                 .toMutableList())
                     }
                     .filter { pattern ->
-                        val directionIgnoreCase = pattern.direction.toLowerCase(Locale.US)
-                        val boundIgnoreCase = bounds.map { bound -> bound.toLowerCase(Locale.US) }
+                        val directionIgnoreCase = pattern.direction.lowercase()
+                        val boundIgnoreCase = bounds.map { bound -> bound.lowercase() }
                         boundIgnoreCase.contains(directionIgnoreCase)
                     }
             }

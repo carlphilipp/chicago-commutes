@@ -134,7 +134,7 @@ class BusMapActivity : FragmentMapActivity() {
                     .rotation(bus.heading.toFloat())
                     .flat(true))
             marker
-        }.onEach { marker ->
+        }.filterNotNull().onEach { marker ->
             val layoutInflater = this@BusMapActivity.baseContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val view = layoutInflater.inflate(R.layout.marker, mapContainerLayout, false)
             val title = view.findViewById<TextView>(R.id.title)
@@ -213,14 +213,17 @@ class BusMapActivity : FragmentMapActivity() {
             }
 
             override fun getInfoContents(marker: Marker): View? {
-                return if (marker.title.startsWith("To ")) {
+                val title = marker.title
+                return if (title != null && title.startsWith("To ")) {
                     val view = views[marker]
                     if (!refreshingInfoWindow) {
                         selectedMarker = marker
                         val busId = marker.snippet
-                        busService.loadFollowBus(busId)
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(BusFollowObserver(this@BusMapActivity, mapContainerLayout, view!!, false))
+                        busId?.run {
+                            busService.loadFollowBus(busId)
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(BusFollowObserver(this@BusMapActivity, mapContainerLayout, view!!, false))
+                        }
                         status[marker] = false
                     }
                     view
@@ -231,16 +234,19 @@ class BusMapActivity : FragmentMapActivity() {
         })
 
         googleMap.setOnInfoWindowClickListener { marker ->
-            if (marker.title.startsWith("To ")) {
+            val title = marker.title
+            if (title != null && title.startsWith("To ")) {
                 val view = views[marker]
                 if (!refreshingInfoWindow) {
                     selectedMarker = marker
                     val runNumber = marker.snippet
                     val current = status[marker]
-                    busService.loadFollowBus(runNumber)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(BusFollowObserver(this@BusMapActivity, mapContainerLayout, view!!, !current!!))
-                    status[marker] = !current
+                    if (current != null && runNumber != null) {
+                        busService.loadFollowBus(runNumber)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(BusFollowObserver(this@BusMapActivity, mapContainerLayout, view!!, !current))
+                        status[marker] = !current
+                    }
                 }
             }
         }
@@ -266,16 +272,8 @@ class BusMapActivity : FragmentMapActivity() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    { result ->
-                        if (result != null) {
-                            drawPattern(result)
-                        } else {
-                            util.showNetworkErrorMessage(mapContainerLayout)
-                        }
-                    },
-                    {
-                        util.showNetworkErrorMessage(mapContainerLayout)
-                    }
+                    { result -> drawPattern(result) },
+                    { util.showNetworkErrorMessage(mapContainerLayout) }
                 )
         }
     }
