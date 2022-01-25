@@ -7,17 +7,17 @@ object Android {
 }
 
 object Version {
-    const val kotlin =                  "+"
+    const val kotlin =                  "1.+"
     const val android_tools_build =     "7.0.3"
-    const val realm =                   "+"
+    const val realm =                   "10.+"
     const val gradle_version =          "0.36.0"
 
-    const val commons_collections4 =    "4.4"
-    const val commons_text =            "1.9"
+    const val commons_collections4 =    "4.+"
+    const val commons_text =            "1.+"
     const val easypermissions =         "3.0.0"
     const val google_play_maps =        "17.0.0"
     const val google_play_location =    "17.1.0"
-    const val jackson =                 "2.12.1"
+    const val jackson =                 "2.+"
     const val material =                "1.3.0"
     const val mapbox =                  "9.2.1"
     const val mapbox_annotation =       "0.7.0"
@@ -26,18 +26,18 @@ object Version {
     const val mapbox_telemetry =        "6.2.2"
     const val okhttp3 =                 "4.10.0-RC1"
     const val photoview =               "2.3.0"
-    const val rx =                      "3.0.9"
-    const val rx_android =              "3.0.0"
-    const val rx_kotlin =               "3.0.1"
-    const val re_kotlin =               "1.0.4"
-    const val retrofit2 =               "2.9.0"
+    const val rx =                      "3.+"
+    const val rx_android =              "3.+"
+    const val rx_kotlin =               "3.+"
+    const val re_kotlin =               "1.+"
+    const val retrofit2 =               "2.+"
     const val sliding_up_panel =        "3.4.0"
-    const val timber =                  "4.7.1"
-    const val univocity =               "2.9.1"
+    const val timber =                  "4.+"
+    const val univocity =               "2.+"
 
     // Update
-    const val commons_io =              "2.5"
-    const val annimon =                 "1.1.9"
+    const val commons_io =              "2.+"
+    const val annimon =                 "1.+"
 
     // Test
     const val junit =                   "4.13.1"
