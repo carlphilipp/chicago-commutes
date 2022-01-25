@@ -20,6 +20,10 @@ Build prod APK:
 
 `./gradlew clean build`
 
+Lock dependencies:
+
+`./gradlew android-app:dependencies --write-locks`
+
 ## F-Droid
 
 Build F-Droid APK:
