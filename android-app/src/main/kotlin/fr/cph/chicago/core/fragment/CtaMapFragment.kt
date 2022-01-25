@@ -59,7 +59,7 @@ class CtaMapFragment : Fragment() {
     @SuppressLint("CheckResult")
     private fun loadBitmap() {
         Observable.fromCallable {
-            if (bitmapCache != null) bitmapCache
+            if (bitmapCache != null) bitmapCache!!
             else BitmapFactory.decodeResource(resources, R.drawable.ctamap)
         }
             .subscribeOn(Schedulers.io())
