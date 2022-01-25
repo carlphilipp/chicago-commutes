@@ -110,6 +110,10 @@ android {
         googleplay {
             dimension "env"
             resValue "string", "app_flavor", "gplay"
+
+            /*dependencyLocking {
+                lockFile = file("$projectDir/gradle-gplay.lockfile")
+            }*/
         }
         foss {
             dimension "env"
@@ -200,6 +204,10 @@ dependencies {
     testImplementation(Lib.hamcrest)
 
     debugImplementation(Lib.leakcanary)
+}
+
+dependencyLocking {
+    lockAllConfigurations()
 }
 
 task currentVersion {
