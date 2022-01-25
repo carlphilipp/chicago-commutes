@@ -44,7 +44,8 @@
             android:name=".core.activity.BaseActivity"
             android:alwaysRetainTaskState="true"
             android:label="@string/current_app_name"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -60,7 +61,8 @@
             android:configChanges="uiMode"
             android:hardwareAccelerated="true"
             android:label="@string/current_app_name"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:exported="false">
             <meta-data
                 android:name="android.app.default_searchable"
                 android:value="fr.cph.chicago.activity.SearchActivity" />
@@ -69,33 +71,39 @@
             android:name=".core.activity.station.TrainStationActivity"
             android:configChanges="uiMode"
             android:label="@string/station_activity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:exported="false"/>
         <activity
             android:name=".core.activity.TrainListStationActivity"
             android:configChanges="uiMode"
             android:label="@string/train_station_activity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:exported="false"/>
         <activity
             android:name=".core.activity.BusBoundActivity"
             android:configChanges="uiMode"
             android:label="@string/train_station_activity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:exported="false"/>
         <activity
             android:name=".core.activity.station.BusStopActivity"
             android:configChanges="uiMode"
             android:label="@string/bus_bound_activity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:exported="false"/>
         <activity
             android:name=".core.activity.ErrorActivity"
             android:configChanges="uiMode"
             android:label="@string/bus_bound_activity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:exported="false"/>
         <activity
             android:name=".core.activity.SearchActivity"
             android:configChanges="uiMode"
             android:label="@string/search_title"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -108,27 +116,32 @@
             android:name=".core.activity.station.BikeStationActivity"
             android:configChanges="uiMode"
             android:label="@string/bike_activity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:exported="false"/>
         <activity
             android:name=".core.activity.map.BusMapActivity"
             android:configChanges="uiMode"
             android:label="@string/map_activity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:exported="false"/>
         <activity
             android:name=".core.activity.map.TrainMapActivity"
             android:configChanges="uiMode"
             android:label="@string/map_activity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:exported="false"/>
         <activity
             android:name=".core.activity.AlertActivity"
             android:configChanges="uiMode"
             android:label="@string/cta_alert"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:exported="false"/>
         <activity
             android:name=".core.activity.DeveloperOptionsActivity"
             android:configChanges="uiMode"
             android:label="@string/developer_options"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:exported="false"/>
 
         <uses-library
             android:name="org.apache.http.legacy"
