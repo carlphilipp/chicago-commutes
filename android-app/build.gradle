@@ -1,8 +1,12 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.kapt")
+    id("com.github.ben-manes.versions")
+}
+
+// TODO migrate to room https://developer.android.com/jetpack/androidx/releases/room
 apply plugin: 'realm-android'
-apply plugin: "com.github.ben-manes.versions"
 
 android {
     compileSdkVersion Android.compile_sdk
@@ -199,10 +203,6 @@ dependencies {
     testImplementation(Lib.hamcrest)
 
     debugImplementation(Lib.leakcanary)
-}
-
-repositories {
-    mavenCentral()
 }
 
 dependencyLocking {

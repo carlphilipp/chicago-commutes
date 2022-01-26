@@ -50,10 +50,7 @@ object Version {
 
 object Lib {
     // Build
-    const val gradle_android =              "com.android.tools.build:gradle:${Version.android_tools_build}"
     const val gradle_realm =                "io.realm:realm-gradle-plugin:${Version.realm}"
-    const val gradle_kotlin =               "org.jetbrains.kotlin:kotlin-gradle-plugin:${Version.kotlin}"
-    const val gradle_versions =             "com.github.ben-manes:gradle-versions-plugin:${Version.gradle_version}"
 
     // Android app
     const val commons_collections4 =        "org.apache.commons:commons-collections4:${Version.commons_collections4}"

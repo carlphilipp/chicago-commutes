@@ -1,16 +1,21 @@
 buildscript {
     repositories {
         mavenCentral()
-        google()
-        gradlePluginPortal()
     }
     dependencies {
-        classpath(Lib.gradle_android)
+        // TODO migrate to room https://developer.android.com/jetpack/androidx/releases/room
         classpath(Lib.gradle_realm)
-        classpath(Lib.gradle_kotlin)
-        classpath(Lib.gradle_versions)
     }
 }
+
+// @formatter:off
+plugins {
+    id("com.android.application")       version Version.android_tools_build     apply false
+    id("org.jetbrains.kotlin.android")  version Version.kotlin                  apply false
+    id("org.jetbrains.kotlin.kapt")     version Version.kotlin                  apply false
+    id("com.github.ben-manes.versions") version Version.gradle_version          apply false
+}
+// @formatter:on
 
 allprojects {
     repositories {
@@ -21,3 +26,4 @@ allprojects {
         maven(url = "https://jitpack.io")
     }
 }
+
