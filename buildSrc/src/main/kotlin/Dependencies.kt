@@ -48,6 +48,13 @@ object Version {
     const val leakcanary =              "2.6"
 }
 
+object Plugin {
+    const val android_application =     "com.android.application"
+    const val kotlin_android =          "org.jetbrains.kotlin.android"
+    const val kotlin_apt =              "org.jetbrains.kotlin.kapt"
+    const val versions =                "com.github.ben-manes.versions"
+}
+
 object Lib {
     // Build
     const val gradle_realm =                "io.realm:realm-gradle-plugin:${Version.realm}"

@@ -10,10 +10,10 @@ buildscript {
 
 // @formatter:off
 plugins {
-    id("com.android.application")       version Version.android_tools_build     apply false
-    id("org.jetbrains.kotlin.android")  version Version.kotlin                  apply false
-    id("org.jetbrains.kotlin.kapt")     version Version.kotlin                  apply false
-    id("com.github.ben-manes.versions") version Version.gradle_version          apply false
+    id(Plugin.android_application)  version Version.android_tools_build     apply false
+    id(Plugin.kotlin_android)       version Version.kotlin                  apply false
+    id(Plugin.kotlin_apt)           version Version.kotlin                  apply false
+    id(Plugin.versions)             version Version.gradle_version          apply false
 }
 // @formatter:on
 
