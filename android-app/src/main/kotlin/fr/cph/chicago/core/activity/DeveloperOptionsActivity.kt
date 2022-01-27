@@ -86,9 +86,7 @@ class DeveloperOptionsActivity : AppCompatActivity() {
 
     private fun setToolBar() {
         val toolbar = binding.included.toolbar
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            toolbar.elevation = 4f
-        }
+        toolbar.elevation = 4f
         toolbar.title = title
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
         toolbar.setOnClickListener { finish() }

@@ -88,9 +88,7 @@ abstract class FragmentMapActivity : FragmentActivity(), OnMapReadyCallback, OnM
     protected open fun setToolbar() {
         val toolbar = binding.included.toolbar
         toolbar.inflateMenu(R.menu.main)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            toolbar.elevation = 4f
-        }
+        toolbar.elevation = 4f
 
         toolbar.navigationIcon = ResourcesCompat.getDrawable(resources, R.drawable.ic_arrow_back_white_24dp, theme)
         toolbar.setOnClickListener { finish() }

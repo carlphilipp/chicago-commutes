@@ -143,9 +143,7 @@ abstract class StationActivity : AppCompatActivity() {
         this.toolbar = toolbar
         toolbar.inflateMenu(R.menu.main)
         toolbar.setOnMenuItemClickListener { refresh(); false }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            toolbar.elevation = 4f
-        }
+        toolbar.elevation = 4f
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
         toolbar.setOnClickListener { finish() }
     }

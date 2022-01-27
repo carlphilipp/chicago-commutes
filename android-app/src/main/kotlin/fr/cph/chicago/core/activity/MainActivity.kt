@@ -84,9 +84,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 favoriteMenuItem.isChecked = true
             }
             this.toolBar.inflateMenu(R.menu.main)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                this.toolBar.elevation = 4f
-            }
+            this.toolBar.elevation = 4f
 
             inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
             drawerToggle = object : ActionBarDrawerToggle(this, binding.drawerLayout, this.toolBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {

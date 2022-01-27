@@ -180,13 +180,11 @@ class TrainStationActivity : StationActivity(), StoreSubscriber<State> {
                 }
                 checkBox.isChecked = preferenceService.getTrainFilter(stationId, line, stop.direction)
                 checkBox.text = stop.direction.toString()
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    checkBox.backgroundTintList = ColorStateList.valueOf(line.color)
-                    checkBox.buttonTintList = ColorStateList.valueOf(line.color)
-                    if (line === TrainLine.YELLOW) {
-                        checkBox.backgroundTintList = ColorStateList.valueOf(Color.yellowLine)
-                        checkBox.buttonTintList = ColorStateList.valueOf(Color.yellowLine)
-                    }
+                checkBox.backgroundTintList = ColorStateList.valueOf(line.color)
+                checkBox.buttonTintList = ColorStateList.valueOf(line.color)
+                if (line === TrainLine.YELLOW) {
+                    checkBox.backgroundTintList = ColorStateList.valueOf(Color.yellowLine)
+                    checkBox.buttonTintList = ColorStateList.valueOf(Color.yellowLine)
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     checkBox.foregroundTintList = ColorStateList.valueOf(line.color)

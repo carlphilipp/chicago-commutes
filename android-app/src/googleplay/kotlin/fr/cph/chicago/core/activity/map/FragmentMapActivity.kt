@@ -72,9 +72,7 @@ abstract class FragmentMapActivity : FragmentActivity(), EasyPermissions.Permiss
     protected open fun setToolbar() {
         val toolbar = binding.included.toolbar
         toolbar.inflateMenu(R.menu.main)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            toolbar.elevation = 4f
-        }
+        toolbar.elevation = 4f
 
         toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_arrow_back_white_24dp)
         toolbar.setOnClickListener { finish() }

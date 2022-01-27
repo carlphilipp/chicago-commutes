@@ -159,9 +159,7 @@ object Util {
         }
         toolbar.setBackgroundColor(ContextCompat.getColor(App.instance, backgroundColor))
         toolbar.setTitleTextColor(ContextCompat.getColor(App.instance, textTitleColor))
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            activity.window.statusBarColor = ContextCompat.getColor(activity, statusBarColor)
-        }
+        activity.window.statusBarColor = ContextCompat.getColor(activity, statusBarColor)
     }
 
     val randomColor: Int
