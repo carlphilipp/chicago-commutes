@@ -101,11 +101,6 @@ class FavoritesAdapter(private val context: Context) : RecyclerView.Adapter<Favo
         val favoriteImage: ImageView = view.findViewById(R.id.favorites_icon)
         val detailsButton: Button = view.findViewById(R.id.details_button)
         val mapButton: Button = view.findViewById(R.id.view_map_button)
-
-        init {
-            this.stationNameTextView.setLines(1)
-            this.stationNameTextView.ellipsize = TextUtils.TruncateAt.END
-        }
     }
 
     private fun handleTrainStation(holder: FavoritesViewHolder, trainStation: TrainStation) {

@@ -72,8 +72,6 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
         val imageView = convertView.findViewById<ImageView>(R.id.icon)
 
         stationNameView.text = title
-        stationNameView.maxLines = 1
-        stationNameView.ellipsize = TextUtils.TruncateAt.END
         imageView.setImageDrawable(ContextCompat.getDrawable(nearbyFragment.context!!, drawable))
 
         titleView.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
