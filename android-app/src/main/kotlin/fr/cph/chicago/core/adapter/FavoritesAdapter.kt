@@ -198,7 +198,7 @@ class FavoritesAdapter(private val context: Context) : RecyclerView.Adapter<Favo
 
     fun updateTime() {
         lastUpdate = timeUtil.formatTimeDifference(store.state.lastFavoritesUpdate, Calendar.getInstance().time)
-        for (i in 0..this.itemCount) {
+        for (i in 0 until this.itemCount) {
             notifyItemChanged(i, Object())
         }
     }
