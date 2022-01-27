@@ -3,7 +3,6 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        // TODO migrate to room https://developer.android.com/jetpack/androidx/releases/room
         classpath(Lib.gradle_realm)
     }
 }

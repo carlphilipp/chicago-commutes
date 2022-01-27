@@ -5,7 +5,7 @@ plugins {
     id("com.github.ben-manes.versions")
 }
 
-// TODO migrate to room https://developer.android.com/jetpack/androidx/releases/room
+// Waiting for https://github.com/realm/realm-java/issues/7062 to be implemented to remove that line
 apply plugin: 'realm-android'
 
 android {
