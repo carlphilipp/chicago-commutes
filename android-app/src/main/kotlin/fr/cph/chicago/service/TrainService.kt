@@ -228,8 +228,6 @@ object TrainService {
     }
 
     private fun getTrainArrivals(stationsIds: Set<BigInteger>): Single<MutableMap<BigInteger, TrainArrival>> {
-        /*return ctaClient.get(TRAIN_ARRIVALS, TrainArrivalResponse::class.java, params)
-            .map { trainArrivalResponse: TrainArrivalResponse -> getTrainArrivalsInternal(trainArrivalResponse) }*/
         return ctaClient.getTrainArrivals(stationsIds.map { it.toString() })
             .map { trainArrivalResponse -> getTrainArrivalsInternal(trainArrivalResponse) }
     }
