@@ -197,7 +197,7 @@ class FavoritesFragment : RefreshFragment(), StoreSubscriber<State> {
         disposable = refreshTask.subscribeWith(object : DisposableObserver<Long>() {
             override fun onNext(t: Long) {
                 Timber.v("Update time. Thread id: %s", Thread.currentThread().id)
-                adapter.update()
+                adapter.updateTime()
             }
 
             override fun onError(e: Throwable) {
@@ -208,6 +208,6 @@ class FavoritesFragment : RefreshFragment(), StoreSubscriber<State> {
                 Timber.v("Refresh task complete")
             }
         })
-        adapter.update()
+        adapter.updateTime()
     }
 }

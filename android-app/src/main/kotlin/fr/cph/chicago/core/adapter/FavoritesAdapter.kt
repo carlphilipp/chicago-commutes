@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.text.TextUtils
 import android.view.LayoutInflater
@@ -82,6 +83,14 @@ class FavoritesAdapter(private val context: Context) : RecyclerView.Adapter<Favo
             is TrainStation -> handleTrainStation(holder, model)
             is BusRoute -> handleBusRoute(holder, model)
             is BikeStation -> handleBikeStation(holder, model)
+        }
+    }
+
+    override fun onBindViewHolder(holder: FavoritesViewHolder, position: Int, payloads: List<Any>) {
+        if(payloads.isEmpty()) {
+            onBindViewHolder(holder, position)
+        } else {
+            holder.lastUpdateTextView.text = lastUpdate
         }
     }
 
@@ -181,8 +190,16 @@ class FavoritesAdapter(private val context: Context) : RecyclerView.Adapter<Favo
         favorites.refreshFavorites()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun update() {
         lastUpdate = timeUtil.formatTimeDifference(store.state.lastFavoritesUpdate, Calendar.getInstance().time)
         notifyDataSetChanged()
+    }
+
+    fun updateTime() {
+        lastUpdate = timeUtil.formatTimeDifference(store.state.lastFavoritesUpdate, Calendar.getInstance().time)
+        for (i in 0..this.itemCount) {
+            notifyItemChanged(i, Object())
+        }
     }
 }

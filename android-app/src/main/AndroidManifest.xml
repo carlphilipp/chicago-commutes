@@ -43,7 +43,6 @@
         <activity
             android:name=".core.activity.BaseActivity"
             android:alwaysRetainTaskState="true"
-            android:label="@string/current_app_name"
             android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
@@ -60,7 +59,6 @@
             android:alwaysRetainTaskState="true"
             android:configChanges="uiMode"
             android:hardwareAccelerated="true"
-            android:label="@string/current_app_name"
             android:screenOrientation="portrait"
             android:exported="false">
             <meta-data
