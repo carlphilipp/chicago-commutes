@@ -141,6 +141,13 @@
             android:screenOrientation="portrait"
             android:exported="false"/>
 
+        <activity
+            android:name=".core.activity.station.ComposableActivity"
+            android:configChanges="uiMode"
+            android:label="@string/developer_options"
+            android:screenOrientation="portrait"
+            android:exported="false"/>
+
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />

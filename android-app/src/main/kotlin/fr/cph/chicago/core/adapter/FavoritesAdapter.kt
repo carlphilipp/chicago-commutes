@@ -21,6 +21,8 @@ package fr.cph.chicago.core.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.os.Bundle
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -32,6 +34,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
+import fr.cph.chicago.core.activity.station.BusStopActivity
+import fr.cph.chicago.core.activity.station.ComposableActivity
 import fr.cph.chicago.core.listener.BikeDetailsButtonOnClickListener
 import fr.cph.chicago.core.listener.BusMapButtonOnClickListener
 import fr.cph.chicago.core.listener.BusStopOnClickListener
@@ -100,6 +104,7 @@ class FavoritesAdapter(private val context: Context) : RecyclerView.Adapter<Favo
         val stationNameTextView: TextView = view.findViewById(R.id.favorites_station_name)
         val favoriteImage: ImageView = view.findViewById(R.id.favorites_icon)
         val detailsButton: Button = view.findViewById(R.id.details_button)
+        val composableButton: Button = view.findViewById(R.id.composable)
         val mapButton: Button = view.findViewById(R.id.view_map_button)
     }
 
@@ -110,6 +115,17 @@ class FavoritesAdapter(private val context: Context) : RecyclerView.Adapter<Favo
         holder.detailsButton.isEnabled = true
         holder.mapButton.text = App.instance.getString(R.string.favorites_view_trains)
         holder.mapButton.setOnClickListener(TrainMapButtonOnClickListener(context, trainStation.lines))
+
+        holder.composableButton.isEnabled = true
+        holder.composableButton.setOnClickListener {
+            val intent = Intent(context, ComposableActivity::class.java)
+            val extras = Bundle()
+            extras.putString("stuff","stuff")
+
+            intent.putExtras(extras)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
+        }
 
 
         trainStation.lines.forEach { trainLine ->

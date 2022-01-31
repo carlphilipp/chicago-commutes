@@ -172,7 +172,7 @@ class BikeStationActivity : StationActivity(), StoreSubscriber<State> {
     /**
      * Is favorite or not ?
      *
-     * @return if the train station is favorite
+     * @return if the bike station is favorite
      */
     override fun isFavorite(): Boolean {
         return preferenceService.isBikeStationFavorite(bikeStation.id)
