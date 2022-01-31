@@ -5,8 +5,8 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.view.View
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
@@ -29,7 +29,7 @@ object RateUtil {
             intent.data = Uri.parse("market://details?id=fr.cph.chicago")
             activity.startActivity(intent)
         } catch (ex: Exception) {
-            AlertDialog.Builder(activity)
+            MaterialAlertDialogBuilder(activity)
                 .setMessage("Play Store not found on your device")
                 .setPositiveButton(android.R.string.ok) { _, _ -> }
                 .show()

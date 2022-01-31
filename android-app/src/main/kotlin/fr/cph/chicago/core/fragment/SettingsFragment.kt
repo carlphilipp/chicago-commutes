@@ -60,13 +60,14 @@ class SettingsFragment : Fragment() {
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
+        // TODO: fix depreciation
         super.onActivityCreated(savedInstanceState)
         val version = "Version ${util.getCurrentVersion()}"
         binding.versionNumber.text = version
         binding.themeName.text = preferenceService.getTheme().description
 
         binding.theme.setOnClickListener {
-            val builder = MaterialAlertDialogBuilder(context!!, R.style.AlertDialog)
+            val builder = MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialog)
             val choices = Theme.values().map { it.description }.toTypedArray()
             val selected = choices.indexOf(preferenceService.getTheme().description)
             builder.setTitle("Theme change")
@@ -97,7 +98,7 @@ class SettingsFragment : Fragment() {
                 }
             }
 
-            MaterialAlertDialogBuilder(context!!, R.style.AlertDialog)
+            MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialog)
                 .setMessage("This is going to:\n\n- Delete all your favorites\n- Clear application cache\n- Reload the application")
                 .setPositiveButton("Yes", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener)

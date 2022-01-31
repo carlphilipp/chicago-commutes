@@ -26,8 +26,8 @@ import android.text.TextUtils.TruncateAt
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatCheckBox
-import androidx.appcompat.widget.Toolbar
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.checkbox.MaterialCheckBox
 import fr.cph.chicago.R
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.listener.OpenMapDirectionOnClickListener
@@ -171,7 +171,7 @@ class TrainStationActivity : StationActivity(), StoreSubscriber<State> {
 
             stops.sorted().forEach { stop ->
                 val view = View.inflate(this, R.layout.activity_train_station_direction, null)
-                val checkBox = view.findViewById<AppCompatCheckBox>(R.id.checkbox)
+                val checkBox = view.findViewById<MaterialCheckBox>(R.id.checkbox)
                 checkBox.setOnCheckedChangeListener { _, isChecked -> preferenceService.saveTrainFilter(stationId, line, stop.direction, isChecked) }
                 checkBox.setOnClickListener {
                     if (checkBox.isChecked) {
@@ -202,7 +202,7 @@ class TrainStationActivity : StationActivity(), StoreSubscriber<State> {
         }
     }
 
-    override fun buildToolbar(toolbar: Toolbar) {
+    override fun buildToolbar(toolbar: MaterialToolbar) {
         super.buildToolbar(toolbar)
         toolbar.title = trainStation.name
         util.setWindowsColor(this, toolbar, randomTrainLine)

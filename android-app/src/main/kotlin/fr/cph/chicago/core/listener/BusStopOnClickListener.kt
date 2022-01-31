@@ -26,7 +26,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
-import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.station.BusStopActivity
@@ -54,7 +54,7 @@ class BusStopOnClickListener(private val context: Context, private val parent: V
         val popupView = view.inflate(R.layout.popup_bus, parent, false)
         val listView = popupView.findViewById<ListView>(R.id.details)
         listView.adapter = ada
-        val builder = AlertDialog.Builder(context)
+        val builder = MaterialAlertDialogBuilder(context)
         builder.setAdapter(ada) { _, position ->
             val busDetails = busDetailsDTOs[position]
             startBusStopActivity(busDetails)

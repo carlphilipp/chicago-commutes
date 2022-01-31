@@ -27,7 +27,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.ListView
-import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.BusBoundActivity
@@ -61,7 +61,7 @@ class BusDirectionObserver(private val viewClickable: View, private val parent: 
         val ada = PopupBusAdapter(parent.context.applicationContext, data)
         listView.adapter = ada
 
-        val alertDialog = AlertDialog.Builder(parent.context)
+        val alertDialog = MaterialAlertDialogBuilder(parent.context)
         alertDialog.setAdapter(ada) { _, pos ->
             val extras = Bundle()
             if (pos != data.size - 1) {

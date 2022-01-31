@@ -21,15 +21,14 @@ package fr.cph.chicago.core.activity
 
 import android.app.Activity
 import android.content.res.Configuration
-import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
 import fr.cph.chicago.Constants.SELECTED_ID
 import fr.cph.chicago.R
@@ -52,7 +51,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var drawerToggle: ActionBarDrawerToggle
     private lateinit var favoriteMenuItem: MenuItem
     private lateinit var inputMethodManager: InputMethodManager
-    lateinit var toolBar: Toolbar
+    lateinit var toolBar: MaterialToolbar
 
     private var title: String? = null
     private lateinit var binding: ActivityMainBinding

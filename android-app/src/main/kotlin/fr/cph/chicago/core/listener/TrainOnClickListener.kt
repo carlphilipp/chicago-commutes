@@ -24,7 +24,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.map.TrainMapActivity
@@ -54,7 +54,7 @@ class TrainOnClickListener(private val parent: ViewGroup, private val stationId:
         val lines = mutableListOf<TrainLine>()
         lines.addAll(trainLines)
 
-        val alertDialog = AlertDialog.Builder(parent.context)
+        val alertDialog = MaterialAlertDialogBuilder(parent.context)
         alertDialog.setAdapter(ada) { _, position ->
             val extras = Bundle()
             val intent: Intent

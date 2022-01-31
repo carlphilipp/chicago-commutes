@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.map.TrainMapActivity
@@ -31,7 +31,7 @@ class TrainMapButtonOnClickListener(private val context: Context, private val tr
 
             val lines = trainLines.toList()
 
-            val dialog = AlertDialog.Builder(context)
+            val dialog = MaterialAlertDialogBuilder(context)
                 .setAdapter(ada) { _, position -> startTrainMapActivity(lines[position]) }
                 .create()
             dialog.show()

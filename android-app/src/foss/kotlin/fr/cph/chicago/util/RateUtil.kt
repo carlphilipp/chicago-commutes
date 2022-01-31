@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.view.View
-import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 object RateUtil {
 
@@ -14,7 +14,7 @@ object RateUtil {
             intent.data = Uri.parse("market://details?id=fr.cph.chicago.foss")
             activity.startActivity(intent)
         } catch (ex: Exception) {
-            AlertDialog.Builder(activity)
+            MaterialAlertDialogBuilder(activity)
                 .setMessage("F-Droid Store not found on your device")
                 .setPositiveButton(android.R.string.ok) { _, _ -> }
                 .show()

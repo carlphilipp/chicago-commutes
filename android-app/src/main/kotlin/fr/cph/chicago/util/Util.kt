@@ -21,11 +21,10 @@ package fr.cph.chicago.util
 
 import android.app.Activity
 import android.content.Context
-import android.os.Build
 import android.util.TypedValue
 import android.view.View
-import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
@@ -115,7 +114,7 @@ object Util {
         return BusFavoriteDTO(routeId, stopId, bound)
     }
 
-    fun setWindowsColor(activity: Activity, toolbar: Toolbar, trainLine: TrainLine) {
+    fun setWindowsColor(activity: Activity, toolbar: MaterialToolbar, trainLine: TrainLine) {
         var backgroundColor = 0
         var statusBarColor = 0
         val textTitleColor = R.color.white
