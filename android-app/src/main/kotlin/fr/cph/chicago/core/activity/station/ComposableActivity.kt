@@ -15,28 +15,23 @@ import androidx.compose.material.Button
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Green
 import androidx.compose.ui.graphics.Color.Companion.Red
-import androidx.compose.ui.graphics.Color.Companion.Yellow
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.appcompattheme.createAppCompatTheme
 import fr.cph.chicago.R
 
 class ComposableActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ChicagoCommutesTheme {
-                StationTitle(Header("Belmont", "2min"))
-            }
+            StationTitle(Header("Belmont", "2min"))
         }
     }
 }
@@ -49,7 +44,7 @@ fun StationTitle(msg: Header) {
         Column {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(all = 8.dp)/*.background(Green)*/) {
+                modifier = Modifier.padding(all = 0.dp)) {
                 Image(
                     painter = painterResource(R.drawable.ic_train_white_24dp),
                     contentDescription = "Train",
@@ -58,10 +53,6 @@ fun StationTitle(msg: Header) {
                         .size(30.dp),
                     /*.background(Black)*/
                 )
-
-                //Spacer(modifier = Modifier.width(8.dp))
-
-                //Column(verticalArrangement = Arrangement.Center) {
                 Text(
                     text = msg.name,
                     maxLines = 1,
@@ -69,14 +60,11 @@ fun StationTitle(msg: Header) {
                         /*.background(Blue)*/
                         .weight(1f),
                 )
-                //}
-                //Column(horizontalAlignment = Alignment.End) {
                 Text(
                     text = msg.time,
                     maxLines = 1,
                     modifier = Modifier,/*.background(Yellow)*/
                 )
-                //}
             }
 
             Divider(thickness = 1.dp)
@@ -96,7 +84,7 @@ fun StationTitle(msg: Header) {
             Row(
                 horizontalArrangement = Arrangement.End,
                 modifier = Modifier
-                    .padding(all = 8.dp)
+                    .padding(all = 0.dp)
                     .fillMaxWidth()) {
                 Button(
                     onClick = { /* ... */ }
@@ -113,7 +101,11 @@ fun StationTitle(msg: Header) {
     }
 }
 
-@Preview(name = "Light Mode")
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    showBackground = true,
+    name = "Light Mode"
+)
 @Preview(
     uiMode = Configuration.UI_MODE_NIGHT_YES,
     showBackground = true,
@@ -128,20 +120,26 @@ fun PreviewMessageCard() {
 
 @Composable
 fun ChicagoCommutesTheme(content: @Composable () -> Unit) {
+    // https://developer.android.com/jetpack/compose/themes/material
+    // https://google.github.io/accompanist/appcompat-theme/
+    //AppCompatTheme(content = content)
+
+    val context = LocalContext.current
+    val (colors, type) = context.createAppCompatTheme()
     MaterialTheme(
-        //colors = if (darkTheme) DarkColors else LightColors,
-        colors = LightColors,
+        colors = colors!!,
+        typography = type!!,
         content = content
     )
 }
-private val DarkColors = darkColors(
-    primary = Red,
-    secondary = Green,
-    // ...
-)
-private val LightColors = lightColors(
-    primary = Yellow,
-    primaryVariant = Color.DarkGray,
-    secondary = Color.LightGray,
-    // ...
-)
+
+
+@Preview
+@Composable
+fun Derp() {
+    Button(
+        onClick = { /* ... */ }
+    ) {
+        Text("View Trains")
+    }
+}
