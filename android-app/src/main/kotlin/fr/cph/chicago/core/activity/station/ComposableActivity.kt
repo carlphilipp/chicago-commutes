@@ -1,25 +1,32 @@
 package fr.cph.chicago.core.activity.station
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Button
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Shapes
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.material.darkColors
+import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -59,11 +66,13 @@ fun StationTitle(msg: Header) {
                     modifier = Modifier
                         /*.background(Blue)*/
                         .weight(1f),
+                    //color = MaterialTheme.colors.primary,
                 )
                 Text(
                     text = msg.time,
                     maxLines = 1,
                     modifier = Modifier,/*.background(Yellow)*/
+                    //color = MaterialTheme.colors.primary,
                 )
             }
 
@@ -76,6 +85,7 @@ fun StationTitle(msg: Header) {
                     modifier = Modifier
                         /*.background(Blue)*/
                         .weight(1f),
+                    //color = MaterialTheme.colors.primary,
                 )
             }
 
@@ -86,15 +96,18 @@ fun StationTitle(msg: Header) {
                 modifier = Modifier
                     .padding(all = 0.dp)
                     .fillMaxWidth()) {
-                Button(
+                TextButton(
                     onClick = { /* ... */ }
                 ) {
-                    Text("Details")
+                    Text(
+                        text = "Details".uppercase(),
+                        //color = MaterialTheme.colors.primary
+                    )
                 }
-                Button(
+                TextButton(
                     onClick = { /* ... */ }
                 ) {
-                    Text("View Trains")
+                    Text("View Trains".uppercase())
                 }
             }
         }
@@ -119,27 +132,40 @@ fun PreviewMessageCard() {
 }
 
 @Composable
-fun ChicagoCommutesTheme(content: @Composable () -> Unit) {
+fun ChicagoCommutesTheme(isDarkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
     // https://developer.android.com/jetpack/compose/themes/material
     // https://google.github.io/accompanist/appcompat-theme/
     //AppCompatTheme(content = content)
-
-    val context = LocalContext.current
-    val (colors, type) = context.createAppCompatTheme()
+    val colors = if (isDarkTheme) {
+        DarkColors
+    } else {
+        LightColors
+    }
     MaterialTheme(
-        colors = colors!!,
-        typography = type!!,
+        colors = colors,
+        typography = MaterialTheme.typography,
+        shapes = MaterialTheme.shapes,
         content = content
     )
 }
 
-
-@Preview
-@Composable
-fun Derp() {
-    Button(
-        onClick = { /* ... */ }
-    ) {
-        Text("View Trains")
-    }
-}
+private val DarkColors = darkColors(
+    primary = Color.Green,
+    primaryVariant = Color.Green,
+    secondary = Color.Green,
+    secondaryVariant = Color.Green,
+    background = Color.Green,
+    onPrimary = Color(0xFFFFFFFF),
+    onSecondary = Color(0xFFFFFFFF),
+    onBackground = Color(0xFFB00020),
+    surface = Color.Green,
+    onSurface = Color(0xFFB00020),
+    error = Color.Green,
+    onError = Color(0xFFB00020),
+)
+private val LightColors = lightColors(
+    primary = Color.Yellow,
+    primaryVariant = Color.Yellow,
+    //secondary = Color.Black,
+    //secondaryVariant = Color.Black,
+)
