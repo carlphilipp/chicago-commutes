@@ -22,9 +22,10 @@ package fr.cph.chicago.core.activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
 import fr.cph.chicago.R
 import fr.cph.chicago.R.string
+import fr.cph.chicago.core.activity.station.MainActivityComposable
 import fr.cph.chicago.databinding.LoadingBinding
 import fr.cph.chicago.redux.BaseAction
 import fr.cph.chicago.redux.DefaultSettingsAction
@@ -42,7 +43,7 @@ import timber.log.Timber
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BaseActivity : AppCompatActivity(), StoreSubscriber<State> {
+class BaseActivity : ComponentActivity(), StoreSubscriber<State> {
 
     private val realmConfig = RealmConfig
     private lateinit var binding: LoadingBinding
@@ -96,7 +97,7 @@ class BaseActivity : AppCompatActivity(), StoreSubscriber<State> {
     }
 
     private fun startMainActivity() {
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(this, MainActivityComposable::class.java)
         startActivity(intent)
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         finish()
