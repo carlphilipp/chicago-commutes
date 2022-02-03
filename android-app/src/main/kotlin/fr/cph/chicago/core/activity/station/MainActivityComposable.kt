@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
@@ -31,7 +32,7 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.darkColors
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Palette
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.lightColors
 import androidx.compose.material.primarySurface
 import androidx.compose.runtime.Composable
@@ -116,6 +117,11 @@ private fun startRefreshTask() {
     })
 }
 
+@Composable
+fun OptionMenu() {
+
+}
+
 
 @Composable
 fun Home() {
@@ -135,15 +141,28 @@ private fun AppBar() {
     TopAppBar(
         navigationIcon = {
             Icon(
-                imageVector = Icons.Rounded.Palette,
+                imageVector = Icons.Filled.Menu,
                 contentDescription = null,
-                modifier = Modifier.padding(horizontal = 12.dp)
+                modifier = Modifier.padding(horizontal = 12.dp),
             )
         },
         title = {
-            Text(text = stringResource(R.string.app_flavor))
+            Text(text = stringResource(R.string.menu_favorites))
         },
-        backgroundColor = MaterialTheme.colors.primarySurface
+        backgroundColor = MaterialTheme.colors.primarySurface,
+        elevation = 12.dp,
+        actions = {
+            IconButton(onClick = {
+                isRefreshing.value = true
+                Timber.i("Start Refreshing")
+                store.dispatch(FavoritesAction())
+            }) {
+                Image(
+                    painter = painterResource(R.drawable.ic_refresh_white_24dp),
+                    contentDescription = "",
+                )
+            }
+        }
     )
 }
 
