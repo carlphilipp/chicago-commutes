@@ -12,6 +12,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,8 +35,6 @@ import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.lightColors
 import androidx.compose.material.primarySurface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,21 +47,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import fr.cph.chicago.R
-import fr.cph.chicago.core.adapter.FavoritesAdapter
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.Favorites
 import fr.cph.chicago.core.model.TrainStation
+import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.redux.BusRoutesAndBikeStationAction
 import fr.cph.chicago.redux.FavoritesAction
 import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.task.refreshTask
-import fr.cph.chicago.util.TimeUtil
+import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.observers.DisposableObserver
-import java.util.Calendar
 import kotlin.random.Random
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
@@ -75,28 +74,31 @@ class MainActivityComposable : ComponentActivity(), StoreSubscriber<State> {
                 Home()
             }
         }
-        //startRefreshTask()
+        startRefreshTask()
         store.subscribe(this)
+        // not a fan of that
+        if (store.state.busRoutes.isEmpty() || store.state.bikeStations.isEmpty()) {
+            store.dispatch(BusRoutesAndBikeStationAction())
+        }
     }
 
     override fun newState(state: State) {
         Timber.i("new state")
         Favorites.refreshFavorites()
-        Timber.i("set time")
-        //Favorites.time.value = Random.nextDouble().toString()
     }
 }
 
+data class LastUpdate(val value: String, private val random: Int = Random.nextInt())
+
 private var disposable: Disposable? = null
 private val refreshTask: Observable<Long> = refreshTask()
+private val util = Util
 
 private fun startRefreshTask() {
     disposable = refreshTask.subscribeWith(object : DisposableObserver<Long>() {
         override fun onNext(t: Long) {
-            //val t = timeUtil.formatTimeDifference(store.state.lastFavoritesUpdate, Calendar.getInstance().time)
             Timber.v("Update time. Thread id: %s", Thread.currentThread().id)
             Favorites.refreshTime()
-            //Favorites.time.value = t
         }
 
         override fun onError(e: Throwable) {
@@ -109,9 +111,6 @@ private fun startRefreshTask() {
     })
 }
 
-data class StationInfo(val name: String, val time: String)
-private val timeUtil = TimeUtil
-
 
 @Composable
 fun Home() {
@@ -119,9 +118,8 @@ fun Home() {
         Scaffold(
             topBar = { AppBar() }
         ) { innerPadding ->
-            StationArrival(
+            StationCard(
                 modifier = Modifier.padding(horizontal = 7.dp, vertical = 7.dp),
-                /*fav = favorites.value*/
             )
         }
     }
@@ -145,78 +143,72 @@ private fun AppBar() {
 }
 
 @Composable
-fun StationArrival(modifier: Modifier = Modifier) {
+fun StationCard(modifier: Modifier = Modifier) {
     val time = Favorites.time.value
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(Favorites.size()) { index ->
-            val model = Favorites.getObject(index)
-            when (model) {
-                is TrainStation -> {
-                    val trainStation: TrainStation = model as TrainStation
-                    Card(
-                        modifier = modifier,
-                        elevation = 2.dp
-                    ) {
-                        Column {
-                            HeaderArrivals(
+            Card(
+                modifier = modifier,
+                elevation = 2.dp,
+            ) {
+                Column {
+                    val model = Favorites.getObject(index)
+                    when (model) {
+                        is TrainStation -> {
+                            HeaderCard(
                                 image = R.drawable.ic_train_white_24dp,
-                                title = trainStation.name,
-                                lastUpdate = time
+                                title = model.name,
+                                lastUpdate = time.value,
                             )
 
                             Divider(thickness = 1.dp)
 
-                            Row {
-                                Column(Modifier.padding(10.dp),) {
-                                    trainStation.lines.forEach { trainLine ->
-                                        Timber.i("${model.name} $trainLine")
-                                        Arrivals(Favorites.getTrainArrivalByLine(trainStation.id, trainLine), trainLine)
-                                    }
-                                }
-                            }
+                            TrainArrivals(model)
 
                             Divider(thickness = 1.dp)
 
-                            Row(
-                                horizontalArrangement = Arrangement.End,
-                                modifier = Modifier
-                                    .padding(all = 0.dp)
-                                    .fillMaxWidth()
-                            ) {
-                                TextButton(
-                                    onClick = {
-                                        store.dispatch(FavoritesAction())
-                                    },
-                                    modifier = Modifier.padding(3.dp),
-                                ) {
-                                    Text(
-                                        text = "Details".uppercase(),
+                            FooterCard()
+                        }
 
-                                        //color = MaterialTheme.colors.primary
-                                    )
-                                }
-                                TextButton(
-                                    onClick = {
-                                    },
-                                    modifier = Modifier.padding(3.dp),
-                                ) {
-                                    Text(
-                                        text = "View Trains".uppercase(),
-                                    )
-                                }
-                            }
+                        is BusRoute -> {
+                            HeaderCard(
+                                image = R.drawable.ic_directions_bus_white_24dp,
+                                title = model.id,
+                                lastUpdate = time.value,
+                            )
+
+                            Divider(thickness = 1.dp)
+
+                            BusArrivals(model)
+
+                            Divider(thickness = 1.dp)
+
+                            FooterCard()
+                        }
+                        is BikeStation -> {
+                            HeaderCard(
+                                image = R.drawable.ic_directions_bike_white_24dp,
+                                title = model.name,
+                                lastUpdate = time.value,
+                            )
+
+                            Divider(thickness = 1.dp)
+
+                            BikeData(model)
+
+                            Divider(thickness = 1.dp)
+
+                            FooterCard()
                         }
                     }
                 }
-                is BusRoute -> TODO()
-                is BikeStation -> TODO()
             }
         }
     }
 }
 
 @Composable
-fun HeaderArrivals(@DrawableRes image: Int, title: String, lastUpdate: String) {
+fun HeaderCard(@DrawableRes image: Int, title: String, lastUpdate: String) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(all = 0.dp)
@@ -245,24 +237,108 @@ fun HeaderArrivals(@DrawableRes image: Int, title: String, lastUpdate: String) {
 }
 
 @Composable
-fun Arrivals(arrivals: Map<String, String>, trainLine: TrainLine) {
+fun FooterCard() {
+    Row(
+        horizontalArrangement = Arrangement.End,
+        modifier = Modifier
+            .padding(all = 0.dp)
+            .fillMaxWidth()
+    ) {
+        TextButton(
+            onClick = {
+                store.dispatch(FavoritesAction())
+            },
+            modifier = Modifier.padding(3.dp),
+        ) {
+            Text(
+                text = "Details".uppercase(),
+            )
+        }
+        TextButton(
+            onClick = {
+            },
+            modifier = Modifier.padding(3.dp),
+        ) {
+            Text(
+                text = "View Trains".uppercase(),
+            )
+        }
+    }
+}
+
+@Composable
+fun TrainArrivals(trainStation: TrainStation) {
+    ArrivalWrapper {
+        trainStation.lines.forEach { trainLine ->
+            TrainArrivalLine(Favorites.getTrainArrivalByLine(trainStation.id, trainLine), trainLine)
+        }
+    }
+}
+
+@Composable
+fun TrainArrivalLine(arrivals: Map<String, String>, trainLine: TrainLine) {
     for (e in arrivals.entries) {
         val text = e.key
         val arrival = e.value
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier.size(15.dp).clip(RoundedCornerShape(3.dp)).background(Color(trainLine.color))
-            )
-            Text(
-                text = text,
-                maxLines = 1,
-                modifier = Modifier.weight(1f).padding(horizontal = 10.dp),
-            )
-            Text(
-                text = arrival,
-                maxLines = 1,
-            )
+        ArrivalLine(boxColor = Color(trainLine.color), text, arrival)
+    }
+}
+
+@Composable
+fun BusArrivals(busRoute: BusRoute) {
+    ArrivalWrapper {
+        val busArrivalDTO = Favorites.getBusArrivalsMapped(busRoute.id)
+        for ((stopName, boundMap) in busArrivalDTO.entries) {
+            val stopNameTrimmed = util.trimBusStopNameIfNeeded(stopName)
+            for ((key, value) in boundMap) {
+                val (_, _, _, stopId, _, routeId, boundTitle) = value.iterator().next()
+                val busDirection = BusDirection.fromString(key)
+                val stopNameDisplay = if (busDirection == null) stopNameTrimmed else "$stopNameTrimmed ${busDirection.shortLowerCase}"
+                ArrivalLine(
+                    title = stopNameDisplay,
+                    value = value.joinToString(separator = " ") { busArrival -> busArrival.timeLeftDueDelay }
+                )
+
+            }
         }
+    }
+}
+
+@Composable
+fun BikeData(bikeStation: BikeStation) {
+    ArrivalWrapper {
+        ArrivalLine(title = "Available bikes", value = bikeStation.availableBikes.toString())
+        ArrivalLine(title = "Available docks", value = bikeStation.availableDocks.toString())
+    }
+}
+
+@Composable
+fun ArrivalWrapper(content: @Composable ColumnScope.() -> Unit) {
+    Row {
+        Column(Modifier.padding(10.dp), content = content)
+    }
+}
+
+@Composable
+fun ArrivalLine(boxColor: Color = Color.Black, title: String, value: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            modifier = Modifier
+                .size(15.dp)
+                .clip(RoundedCornerShape(3.dp))
+                .background(boxColor)
+        )
+        Text(
+            text = title,
+            maxLines = 1,
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 10.dp),
+        )
+        Text(
+            text = value,
+            maxLines = 1,
+        )
     }
 }
 
@@ -279,7 +355,7 @@ fun Arrivals(arrivals: Map<String, String>, trainLine: TrainLine) {
 @Composable
 fun PreviewMessageCard() {
     ChicagoCommutesTheme {
-        StationArrival(
+        StationCard(
             /*stationsInfo = mutableListOf(
                 StationInfo("Belmont", "2 min"),
             )*/

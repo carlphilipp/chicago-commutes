@@ -21,6 +21,7 @@ package fr.cph.chicago.core.model
 
 import android.os.Parcelable
 import androidx.compose.runtime.mutableStateOf
+import fr.cph.chicago.core.activity.station.LastUpdate
 import fr.cph.chicago.core.model.dto.BusArrivalStopMappedDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.redux.store
@@ -57,7 +58,7 @@ object Favorites {
     private var busRouteFavorites = listOf<String>()
     private var bikeFavorites = listOf<BigInteger>()
 
-    val time = mutableStateOf(timeUtil.formatTimeDifference(store.state.lastFavoritesUpdate, Calendar.getInstance().time))
+    val time = mutableStateOf(LastUpdate(timeUtil.formatTimeDifference(store.state.lastFavoritesUpdate, Calendar.getInstance().time)))
 
     /**
      * Get the size of the current model
@@ -131,9 +132,9 @@ object Favorites {
     }
 
     fun refreshTime() {
-        Timber.i("Hash %s", System.identityHashCode(time.value))
-        time.value = timeUtil.formatTimeDifference(store.state.lastFavoritesUpdate, Calendar.getInstance().time) + time.value
-        Timber.i("Hash %s", System.identityHashCode(time.value))
+        //Timber.i("Hash %s", System.identityHashCode(time.value))
+        time.value = LastUpdate(timeUtil.formatTimeDifference(store.state.lastFavoritesUpdate, Calendar.getInstance().time))
+        //Timber.i("Hash %s", System.identityHashCode(time.value))
     }
 
     private fun isBusInFavorites(routeId: String, stopId: Int, bound: String): Boolean {
