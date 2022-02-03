@@ -175,6 +175,7 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.4.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0")
     implementation("com.google.accompanist:accompanist-appcompat-theme:0.20.3")
+    implementation "com.google.accompanist:accompanist-swiperefresh:0.20.3"
 
 
 

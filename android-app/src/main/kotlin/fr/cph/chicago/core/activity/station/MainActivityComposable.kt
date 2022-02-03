@@ -35,6 +35,7 @@ import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.lightColors
 import androidx.compose.material.primarySurface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,13 +47,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.Favorites
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.BusDirection
-import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.redux.BusRoutesAndBikeStationAction
 import fr.cph.chicago.redux.FavoritesAction
 import fr.cph.chicago.redux.State
@@ -85,6 +87,7 @@ class MainActivityComposable : ComponentActivity(), StoreSubscriber<State> {
     override fun newState(state: State) {
         Timber.i("new state")
         Favorites.refreshFavorites()
+        isRefreshing.value = false
     }
 }
 
@@ -93,6 +96,8 @@ data class LastUpdate(val value: String, private val random: Int = Random.nextIn
 private var disposable: Disposable? = null
 private val refreshTask: Observable<Long> = refreshTask()
 private val util = Util
+
+val isRefreshing = mutableStateOf(false)
 
 private fun startRefreshTask() {
     disposable = refreshTask.subscribeWith(object : DisposableObserver<Long>() {
@@ -145,60 +150,71 @@ private fun AppBar() {
 @Composable
 fun StationCard(modifier: Modifier = Modifier) {
     val time = Favorites.time.value
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(Favorites.size()) { index ->
-            Card(
-                modifier = modifier,
-                elevation = 2.dp,
-            ) {
-                Column {
-                    val model = Favorites.getObject(index)
-                    when (model) {
-                        is TrainStation -> {
-                            HeaderCard(
-                                image = R.drawable.ic_train_white_24dp,
-                                title = model.name,
-                                lastUpdate = time.value,
-                            )
 
-                            Divider(thickness = 1.dp)
+    SwipeRefresh(
+        state = rememberSwipeRefreshState(isRefreshing.value),
+        onRefresh = {
+            isRefreshing.value = true
+            Timber.i("Start Refreshing")
+            store.dispatch(FavoritesAction())
+        },
+    ) {
 
-                            TrainArrivals(model)
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(Favorites.size()) { index ->
+                Card(
+                    modifier = modifier,
+                    elevation = 2.dp,
+                ) {
+                    Column {
+                        val model = Favorites.getObject(index)
+                        when (model) {
+                            is TrainStation -> {
+                                HeaderCard(
+                                    image = R.drawable.ic_train_white_24dp,
+                                    title = model.name,
+                                    lastUpdate = time.value,
+                                )
 
-                            Divider(thickness = 1.dp)
+                                Divider(thickness = 1.dp)
 
-                            FooterCard()
-                        }
+                                TrainArrivals(model)
 
-                        is BusRoute -> {
-                            HeaderCard(
-                                image = R.drawable.ic_directions_bus_white_24dp,
-                                title = model.id,
-                                lastUpdate = time.value,
-                            )
+                                Divider(thickness = 1.dp)
 
-                            Divider(thickness = 1.dp)
+                                FooterCard()
+                            }
 
-                            BusArrivals(model)
+                            is BusRoute -> {
+                                HeaderCard(
+                                    image = R.drawable.ic_directions_bus_white_24dp,
+                                    title = model.id,
+                                    lastUpdate = time.value,
+                                )
 
-                            Divider(thickness = 1.dp)
+                                Divider(thickness = 1.dp)
 
-                            FooterCard()
-                        }
-                        is BikeStation -> {
-                            HeaderCard(
-                                image = R.drawable.ic_directions_bike_white_24dp,
-                                title = model.name,
-                                lastUpdate = time.value,
-                            )
+                                BusArrivals(model)
 
-                            Divider(thickness = 1.dp)
+                                Divider(thickness = 1.dp)
 
-                            BikeData(model)
+                                FooterCard()
+                            }
+                            is BikeStation -> {
+                                HeaderCard(
+                                    image = R.drawable.ic_directions_bike_white_24dp,
+                                    title = model.name,
+                                    lastUpdate = time.value,
+                                )
 
-                            Divider(thickness = 1.dp)
+                                Divider(thickness = 1.dp)
 
-                            FooterCard()
+                                BikeData(model)
+
+                                Divider(thickness = 1.dp)
+
+                                FooterCard()
+                            }
                         }
                     }
                 }
