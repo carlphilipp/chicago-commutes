@@ -20,6 +20,7 @@
 package fr.cph.chicago.core.model
 
 import android.os.Parcelable
+import androidx.compose.runtime.mutableStateOf
 import fr.cph.chicago.core.model.dto.BusArrivalStopMappedDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.redux.store
@@ -27,11 +28,14 @@ import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
+import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.Util
 import java.math.BigInteger
 import java.util.Date
 import java.util.TreeMap
 import org.apache.commons.lang3.StringUtils
+import timber.log.Timber
+import java.util.Calendar
 
 /**
  * Vehicle Arrival. Hold data for favorites adapter.
@@ -46,11 +50,14 @@ object Favorites {
     private val bikeService = BikeService
     private val preferenceService = PreferenceService
     private val util = Util
+    private val timeUtil = TimeUtil
 
     private var trainFavorites = listOf<BigInteger>()
     private var busFavorites = listOf<String>()
     private var busRouteFavorites = listOf<String>()
     private var bikeFavorites = listOf<BigInteger>()
+
+    val time = mutableStateOf(timeUtil.formatTimeDifference(store.state.lastFavoritesUpdate, Calendar.getInstance().time))
 
     /**
      * Get the size of the current model
@@ -120,6 +127,13 @@ object Favorites {
             .map { id -> bikeService.createEmptyBikeStation(id) }
             .sortedBy { it.name }
             .map { it.id }
+        refreshTime()
+    }
+
+    fun refreshTime() {
+        Timber.i("Hash %s", System.identityHashCode(time.value))
+        time.value = timeUtil.formatTimeDifference(store.state.lastFavoritesUpdate, Calendar.getInstance().time) + time.value
+        Timber.i("Hash %s", System.identityHashCode(time.value))
     }
 
     private fun isBusInFavorites(routeId: String, stopId: Int, bound: String): Boolean {
