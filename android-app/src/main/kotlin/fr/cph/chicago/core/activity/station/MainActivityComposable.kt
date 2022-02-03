@@ -270,17 +270,13 @@ fun FooterCard() {
 fun TrainArrivals(trainStation: TrainStation) {
     ArrivalWrapper {
         trainStation.lines.forEach { trainLine ->
-            TrainArrivalLine(Favorites.getTrainArrivalByLine(trainStation.id, trainLine), trainLine)
+            val arrivals = Favorites.getTrainArrivalByLine(trainStation.id, trainLine)
+            for (entry in arrivals.entries) {
+                val text = entry.key
+                val arrival = entry.value
+                ArrivalLine(boxColor = Color(trainLine.color), text, arrival)
+            }
         }
-    }
-}
-
-@Composable
-fun TrainArrivalLine(arrivals: Map<String, String>, trainLine: TrainLine) {
-    for (e in arrivals.entries) {
-        val text = e.key
-        val arrival = e.value
-        ArrivalLine(boxColor = Color(trainLine.color), text, arrival)
     }
 }
 
@@ -293,12 +289,11 @@ fun BusArrivals(busRoute: BusRoute) {
             for ((key, value) in boundMap) {
                 val (_, _, _, stopId, _, routeId, boundTitle) = value.iterator().next()
                 val busDirection = BusDirection.fromString(key)
-                val stopNameDisplay = if (busDirection == null) stopNameTrimmed else "$stopNameTrimmed ${busDirection.shortLowerCase}"
+                val stopNameDisplay = if (busDirection == BusDirection.UNKNOWN) stopNameTrimmed else "$stopNameTrimmed ${busDirection.shortLowerCase}"
                 ArrivalLine(
                     title = stopNameDisplay,
                     value = value.joinToString(separator = " ") { busArrival -> busArrival.timeLeftDueDelay }
                 )
-
             }
         }
     }
