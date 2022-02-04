@@ -11,12 +11,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -32,6 +35,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.StarRate
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
@@ -86,10 +90,10 @@ import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.observers.DisposableObserver
-import kotlin.random.Random
 import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
+import kotlin.random.Random
 
 class MainActivityComposable : ComponentActivity(), StoreSubscriber<State> {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -149,20 +153,22 @@ fun Home() {
             val openDrawer = { scope.launch { drawerState.open() } }
             val navController = rememberNavController()
             val title = remember { mutableStateOf("Favorites") }
+            val currentScreen = remember { mutableStateOf(DrawerScreens.Favorites) }
 
             NavigationDrawer(
                 drawerState = drawerState,
                 drawerContent = {
                     Drawer(
-                        //enabled = navController.graph.startDestinationId,
-                        onDestinationClicked = { route ->
+                        currentScreen = currentScreen.value,
+                        onDestinationClicked = { screen ->
                             scope.launch {
                                 drawerState.close()
                             }
-                            navController.navigate(route) {
+                            navController.navigate(screen.route) {
                                 popUpTo(navController.graph.startDestinationId)
                                 launchSingleTop = true
                             }
+                            currentScreen.value = screen
                         }
                     )
                 },
@@ -494,7 +500,7 @@ private val screens = listOf(
 )
 
 @Composable
-fun Drawer(modifier: Modifier = Modifier, enabled: Int = 0, onDestinationClicked: (route: String) -> Unit) {
+fun Drawer(modifier: Modifier = Modifier, currentScreen: DrawerScreens, onDestinationClicked: (route: DrawerScreens) -> Unit) {
     Column(modifier = modifier) {
         Box {
             Image(
@@ -516,23 +522,73 @@ fun Drawer(modifier: Modifier = Modifier, enabled: Int = 0, onDestinationClicked
         }
 
         screens.forEach { screen ->
-            FilledTonalButton(
+            //if(screen.route == currentScreen.route) {
+            val colors = MaterialTheme.colorScheme
+            val backgroundColor = if (screen.route == currentScreen.route) {
+                colors.primary.copy(alpha = 0.12f)
+            } else {
+                Color.Transparent
+            }
+            val surfaceModifier = modifier
+                .padding(start = 8.dp, top = 8.dp, end = 8.dp)
+                .fillMaxWidth()
+            Surface(
+                modifier = surfaceModifier,
+                color = backgroundColor,
+                //shape = MaterialTheme.shapes.small
+            ) {
+                TextButton(
+                    onClick = { onDestinationClicked(screen) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Image(
+                            imageVector = screen.icon,
+                            contentDescription = "Icon",
+                            modifier = Modifier,
+                            //colorFilter = ColorFilter.tint(MaterialTheme.colors.secondary),
+                        )
+                        Spacer(Modifier.width(16.dp))
+                        Text(
+                            text = screen.title,
+                            //style = MaterialTheme.typography.body2,
+                            //color = textIconColor
+                        )
+                    }
+                }
+            }
+/*            FilledTonalButton(
                 onClick = { onDestinationClicked(screen.route) },
+                colors = if (screen.route == currentScreen.route) ButtonDefaults.filledTonalButtonColors() else ButtonDefaults.textButtonColors(),
+                contentPadding = PaddingValues(
+                    start = 0.dp,
+                    top = 0.dp,
+                    end = 0.dp,
+                    bottom = 0.dp,
+                ),
                 modifier = Modifier
-                    .align(Alignment.Start)
-                    .fillMaxWidth()
+                    //.align(Alignment.Start)
+                    .width(300.dp)
                     .padding(start = 20.dp, end = 20.dp),
             ) {
-                Image(
+                Text(
+                    text = screen.title,
+                )*/
+                /*Image(
                     imageVector = screen.icon,
                     contentDescription = "Icon",
+                    modifier = Modifier,
                     //colorFilter = ColorFilter.tint(MaterialTheme.colors.secondary),
                 )
                 Text(
                     text = screen.title,
                     style = MaterialTheme.typography.headlineSmall,
-                )
-            }
+                )*/
+            //}
         }
     }
 }
@@ -647,7 +703,7 @@ fun ChicagoCommutesTheme(isDarkTheme: Boolean = isSystemInDarkTheme(), content: 
     }
     MaterialTheme(
         colorScheme = colors,
-        typography = MaterialTheme.typography,
+        typography = AppTypography,
         content = content
     )
 }
