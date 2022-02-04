@@ -1,4 +1,4 @@
-package fr.cph.chicago.core.activity.station
+package fr.cph.chicago.core.composable
 
 import android.content.res.Configuration
 import android.os.Bundle
@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,12 +34,10 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.StarRate
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -90,10 +87,10 @@ import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.observers.DisposableObserver
+import kotlin.random.Random
 import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import kotlin.random.Random
 
 class MainActivityComposable : ComponentActivity(), StoreSubscriber<State> {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -153,7 +150,7 @@ fun Home() {
             val openDrawer = { scope.launch { drawerState.open() } }
             val navController = rememberNavController()
             val title = remember { mutableStateOf("Favorites") }
-            val currentScreen = remember { mutableStateOf(DrawerScreens.Favorites) }
+            val currentScreen = remember { mutableStateOf<DrawerScreens>(DrawerScreens.Favorites) }
 
             NavigationDrawer(
                 drawerState = drawerState,
@@ -239,7 +236,7 @@ fun AppBar(title: String, openDrawer: () -> Unit) {
             }
         },
         actions = {
-            IconButton(onClick = {
+            /*IconButton(onClick = {
                 isRefreshing.value = true
                 Timber.i("Start Refreshing")
                 store.dispatch(FavoritesAction())
@@ -248,7 +245,7 @@ fun AppBar(title: String, openDrawer: () -> Unit) {
                     imageVector = Icons.Filled.Refresh,
                     contentDescription = "Refresh"
                 )
-            }
+            }*/
         }
     )
 }
@@ -522,7 +519,6 @@ fun Drawer(modifier: Modifier = Modifier, currentScreen: DrawerScreens, onDestin
         }
 
         screens.forEach { screen ->
-            //if(screen.route == currentScreen.route) {
             val colors = MaterialTheme.colorScheme
             val backgroundColor = if (screen.route == currentScreen.route) {
                 colors.primary.copy(alpha = 0.12f)
@@ -535,7 +531,7 @@ fun Drawer(modifier: Modifier = Modifier, currentScreen: DrawerScreens, onDestin
             Surface(
                 modifier = surfaceModifier,
                 color = backgroundColor,
-                //shape = MaterialTheme.shapes.small
+                shape = RoundedCornerShape(20.0.dp),
             ) {
                 TextButton(
                     onClick = { onDestinationClicked(screen) },
@@ -561,34 +557,6 @@ fun Drawer(modifier: Modifier = Modifier, currentScreen: DrawerScreens, onDestin
                     }
                 }
             }
-/*            FilledTonalButton(
-                onClick = { onDestinationClicked(screen.route) },
-                colors = if (screen.route == currentScreen.route) ButtonDefaults.filledTonalButtonColors() else ButtonDefaults.textButtonColors(),
-                contentPadding = PaddingValues(
-                    start = 0.dp,
-                    top = 0.dp,
-                    end = 0.dp,
-                    bottom = 0.dp,
-                ),
-                modifier = Modifier
-                    //.align(Alignment.Start)
-                    .width(300.dp)
-                    .padding(start = 20.dp, end = 20.dp),
-            ) {
-                Text(
-                    text = screen.title,
-                )*/
-                /*Image(
-                    imageVector = screen.icon,
-                    contentDescription = "Icon",
-                    modifier = Modifier,
-                    //colorFilter = ColorFilter.tint(MaterialTheme.colors.secondary),
-                )
-                Text(
-                    text = screen.title,
-                    style = MaterialTheme.typography.headlineSmall,
-                )*/
-            //}
         }
     }
 }

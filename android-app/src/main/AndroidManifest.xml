@@ -155,7 +155,7 @@
             android:theme="@style/Theme.ComposeTheming"/>
 
         <activity
-            android:name=".core.activity.station.MainActivityComposable"
+            android:name=".core.composable.MainActivityComposable"
             android:configChanges="uiMode"
             android:label="@string/developer_options"
             android:screenOrientation="portrait"

@@ -33,7 +33,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.activity.station.MainActivityComposable
+import fr.cph.chicago.core.composable.MainActivityComposable
 import fr.cph.chicago.core.listener.BikeDetailsButtonOnClickListener
 import fr.cph.chicago.core.listener.BusMapButtonOnClickListener
 import fr.cph.chicago.core.listener.BusStopOnClickListener

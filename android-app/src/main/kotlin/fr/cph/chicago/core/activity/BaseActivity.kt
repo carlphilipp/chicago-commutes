@@ -25,7 +25,7 @@ import android.view.View
 import androidx.activity.ComponentActivity
 import fr.cph.chicago.R
 import fr.cph.chicago.R.string
-import fr.cph.chicago.core.activity.station.MainActivityComposable
+import fr.cph.chicago.core.composable.MainActivityComposable
 import fr.cph.chicago.databinding.LoadingBinding
 import fr.cph.chicago.redux.BaseAction
 import fr.cph.chicago.redux.DefaultSettingsAction

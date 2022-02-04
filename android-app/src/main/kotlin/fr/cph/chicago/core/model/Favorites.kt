@@ -21,7 +21,7 @@ package fr.cph.chicago.core.model
 
 import android.os.Parcelable
 import androidx.compose.runtime.mutableStateOf
-import fr.cph.chicago.core.activity.station.LastUpdate
+import fr.cph.chicago.core.composable.LastUpdate
 import fr.cph.chicago.core.model.dto.BusArrivalStopMappedDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.redux.store
@@ -35,7 +35,6 @@ import java.math.BigInteger
 import java.util.Date
 import java.util.TreeMap
 import org.apache.commons.lang3.StringUtils
-import timber.log.Timber
 import java.util.Calendar
 
 /**
