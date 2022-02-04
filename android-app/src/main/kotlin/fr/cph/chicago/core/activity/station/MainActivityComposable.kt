@@ -1,6 +1,5 @@
 package fr.cph.chicago.core.activity.station
 
-import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,24 +7,28 @@ import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
+import androidx.compose.material.DrawerValue
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
+import androidx.compose.material.ModalDrawer
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -35,19 +38,25 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.lightColors
 import androidx.compose.material.primarySurface
+import androidx.compose.material.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
@@ -65,9 +74,10 @@ import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.observers.DisposableObserver
-import kotlin.random.Random
+import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
+import kotlin.random.Random
 
 class MainActivityComposable : ComponentActivity(), StoreSubscriber<State> {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -118,41 +128,129 @@ private fun startRefreshTask() {
 }
 
 @Composable
-fun OptionMenu() {
-
-}
-
-
-@Composable
 fun Home() {
     ChicagoCommutesTheme {
-        Scaffold(
+        /*Scaffold(
             topBar = { AppBar() }
         ) { innerPadding ->
             StationCard(
                 modifier = Modifier.padding(horizontal = 7.dp, vertical = 7.dp),
             )
+        }*/
+        val navController = rememberNavController()
+        Surface(color = MaterialTheme.colors.background) {
+            val drawerState = rememberDrawerState(DrawerValue.Closed)
+            val scope = rememberCoroutineScope()
+            val openDrawer = { scope.launch { drawerState.open() } }
+            ModalDrawer(
+                drawerState = drawerState,
+                gesturesEnabled = drawerState.isOpen,
+                drawerContent = {
+                    Drawer(
+                        onDestinationClicked = { route ->
+                            scope.launch {
+                                drawerState.close()
+                            }
+                            navController.navigate(route) {
+                                popUpTo(navController.graph.startDestinationId)
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
+            ) {
+                NavHost(
+                    navController = navController,
+                    startDestination = DrawerScreens.Favorites.route
+                ) {
+                    composable(DrawerScreens.Favorites.route) {
+                        Favorites(
+                            openDrawer = {
+                                openDrawer()
+                            }
+                        )
+                    }
+                    composable(DrawerScreens.Train.route) {
+                        Train(
+                            openDrawer = {
+                                openDrawer()
+                            }
+                        )
+                    }
+                    composable(DrawerScreens.Bus.route) {
+                        Bus(
+                            openDrawer = {
+                                openDrawer()
+                            }
+                        )
+                    }
+                    composable(DrawerScreens.Divvy.route) {
+                        Divvy(
+                            openDrawer = {
+                                openDrawer()
+                            }
+                        )
+                    }
+                    composable(DrawerScreens.Nearby.route) {
+                        Nearby(
+                            openDrawer = {
+                                openDrawer()
+                            }
+                        )
+                    }
+                    composable(DrawerScreens.Map.route) {
+                        Map(
+                            openDrawer = {
+                                openDrawer()
+                            }
+                        )
+                    }
+                    composable(DrawerScreens.Alerts.route) {
+                        Alerts(
+                            openDrawer = {
+                                openDrawer()
+                            }
+                        )
+                    }
+                    composable(DrawerScreens.Rate.route) {
+                        Rate(
+                            openDrawer = {
+                                openDrawer()
+                            }
+                        )
+                    }
+                    composable(DrawerScreens.Settings.route) {
+                        Settings(
+                            openDrawer = {
+                                openDrawer()
+                            }
+                        )
+                    }
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun AppBar() {
+fun AppBar(title: String = "", buttonIcon: ImageVector, onButtonClicked: () -> Unit, actions: @Composable RowScope.() -> Unit = {}) {
     TopAppBar(
         navigationIcon = {
-            Icon(
-                imageVector = Icons.Filled.Menu,
-                contentDescription = null,
-                modifier = Modifier.padding(horizontal = 12.dp),
-            )
+            IconButton(onClick = { onButtonClicked() }) {
+                Icon(
+                    imageVector = buttonIcon,
+                    contentDescription = null,
+                    modifier = Modifier.padding(horizontal = 12.dp),
+                )
+            }
         },
         title = {
-            Text(text = stringResource(R.string.menu_favorites))
+            Text(text = title)
         },
         backgroundColor = MaterialTheme.colors.primarySurface,
         elevation = 12.dp,
-        actions = {
-            IconButton(onClick = {
+        actions = actions
+/*            IconButton(onClick = {
                 isRefreshing.value = true
                 Timber.i("Start Refreshing")
                 store.dispatch(FavoritesAction())
@@ -161,13 +259,13 @@ private fun AppBar() {
                     painter = painterResource(R.drawable.ic_refresh_white_24dp),
                     contentDescription = "",
                 )
-            }
-        }
+            }*/
+
     )
 }
 
 @Composable
-fun StationCard(modifier: Modifier = Modifier) {
+fun StationCard() {
     val time = Favorites.time.value
 
     SwipeRefresh(
@@ -182,12 +280,11 @@ fun StationCard(modifier: Modifier = Modifier) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(Favorites.size()) { index ->
                 Card(
-                    modifier = modifier,
+                    modifier = Modifier.padding(horizontal = 7.dp, vertical = 7.dp),
                     elevation = 2.dp,
                 ) {
                     Column {
-                        val model = Favorites.getObject(index)
-                        when (model) {
+                        when (val model = Favorites.getObject(index)) {
                             is TrainStation -> {
                                 HeaderCard(
                                     image = R.drawable.ic_train_white_24dp,
@@ -385,32 +482,241 @@ fun ArrivalLine(boxColor: Color = Color.Black, title: String, value: String) {
 @Composable
 fun PreviewMessageCard() {
     ChicagoCommutesTheme {
-        StationCard(
-            /*stationsInfo = mutableListOf(
-                StationInfo("Belmont", "2 min"),
-            )*/
-            /*fav = favorites.value*/
-        )
+        Drawer {
+
+        }
+    }
+}
+
+sealed class DrawerScreens(val title: String, val route: String, @DrawableRes val icon: Int) {
+    object Favorites : DrawerScreens("Favorites", "fav", R.drawable.ic_favorite_white_24dp)
+    object Train : DrawerScreens("Train", "train", R.drawable.ic_train_white_24dp)
+    object Bus : DrawerScreens("Bus", "bus", R.drawable.ic_directions_bus_white_24dp)
+    object Divvy : DrawerScreens("Divvy", "divvy", R.drawable.ic_directions_bike_white_24dp)
+    object Nearby : DrawerScreens("Nearby", "nearby", R.drawable.ic_near_me_white_24dp)
+    object Map : DrawerScreens("CTA map", "map", R.drawable.ic_map_white_24dp)
+    object Alerts : DrawerScreens("CTA alerts", "alerts", R.drawable.ic_action_alert_warning)
+    object Rate : DrawerScreens("Rate this app", "rate", R.drawable.ic_star_white_24dp)
+    object Settings : DrawerScreens("Settings", "settings", R.drawable.ic_settings_white_24dp)
+}
+
+private val screens = listOf(
+    DrawerScreens.Favorites,
+    DrawerScreens.Train,
+    DrawerScreens.Bus,
+    DrawerScreens.Divvy,
+    DrawerScreens.Nearby,
+    DrawerScreens.Map,
+    DrawerScreens.Alerts,
+    DrawerScreens.Rate,
+    DrawerScreens.Settings
+)
+
+@Composable
+fun Drawer(modifier: Modifier = Modifier, onDestinationClicked: (route: String) -> Unit) {
+    Column(modifier = modifier) {
+        Box {
+            Image(
+                painter = painterResource(R.drawable.header),
+                contentDescription = "Chicago Skyline",
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(170.dp),
+            )
+            Text(
+                text = "Chicago Commutes",
+                color = Color.White,
+                style = MaterialTheme.typography.h5,
+                modifier = Modifier.align(Alignment.BottomStart)
+                    .padding(20.dp),
+            )
+        }
+
+        screens.forEach { screen ->
+            Row {
+                Image(
+                    painter = painterResource(screen.icon),
+                    contentDescription = "Icon",
+                    colorFilter = ColorFilter.tint(MaterialTheme.colors.secondary),
+                )
+                Text(
+                    text = screen.title,
+                    style = MaterialTheme.typography.h6,
+                    modifier = Modifier.clickable {
+                        onDestinationClicked(screen.route)
+                    }
+                )
+            }
+
+        }
     }
 }
 
 @Composable
-fun ChicagoCommutesTheme(isDarkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    // https://developer.android.com/jetpack/compose/themes/material
-    // https://google.github.io/accompanist/appcompat-theme/
-    //AppCompatTheme(content = content)
+fun Favorites(openDrawer: () -> Unit) {
 
-    val context: Context = LocalContext.current
-
-/*
-    val themeParams = remember(context.theme) {
-        context.createAppCompatTheme(
-            readColors = true,
-            readTypography = false
+    Column(modifier = Modifier.fillMaxSize()) {
+        AppBar(
+            title = "Favorites",
+            buttonIcon = Icons.Filled.Menu,
+            onButtonClicked = { openDrawer() },
+            actions = {
+                IconButton(onClick = {
+                    isRefreshing.value = true
+                    Timber.i("Start Refreshing")
+                    store.dispatch(FavoritesAction())
+                }) {
+                    Image(
+                        painter = painterResource(R.drawable.ic_refresh_white_24dp),
+                        contentDescription = "",
+                    )
+                }
+            }
         )
+        StationCard()
     }
-*/
+}
 
+@Composable
+fun Train(openDrawer: () -> Unit) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        AppBar(
+            title = "Train",
+            buttonIcon = Icons.Filled.Menu,
+            onButtonClicked = { openDrawer() }
+        )
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = "Train Page content here.")
+        }
+    }
+}
+
+@Composable
+fun Bus(openDrawer: () -> Unit) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        AppBar(
+            title = "Bus",
+            buttonIcon = Icons.Filled.Menu,
+            onButtonClicked = { openDrawer() }
+        )
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = "Bus Page content here.")
+        }
+    }
+}
+
+@Composable
+fun Divvy(openDrawer: () -> Unit) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        AppBar(
+            title = "Divvy",
+            buttonIcon = Icons.Filled.Menu,
+            onButtonClicked = { openDrawer() }
+        )
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = "Divvy Page content here.")
+        }
+    }
+}
+
+@Composable
+fun Nearby(openDrawer: () -> Unit) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        AppBar(
+            title = "Nearby",
+            buttonIcon = Icons.Filled.Menu,
+            onButtonClicked = { openDrawer() }
+        )
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = "Nearby Page content here.")
+        }
+    }
+}
+
+@Composable
+fun Map(openDrawer: () -> Unit) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        AppBar(
+            title = "Map",
+            buttonIcon = Icons.Filled.Menu,
+            onButtonClicked = { openDrawer() }
+        )
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = "Map Page content here.")
+        }
+    }
+}
+
+@Composable
+fun Alerts(openDrawer: () -> Unit) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        AppBar(
+            title = "Alerts",
+            buttonIcon = Icons.Filled.Menu,
+            onButtonClicked = { openDrawer() }
+        )
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = "Alerts Page content here.")
+        }
+    }
+}
+
+@Composable
+fun Rate(openDrawer: () -> Unit) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        AppBar(
+            title = "Rate",
+            buttonIcon = Icons.Filled.Menu,
+            onButtonClicked = { openDrawer() }
+        )
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = "Rate Page content here.")
+        }
+    }
+}
+
+@Composable
+fun Settings(openDrawer: () -> Unit) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        AppBar(
+            title = "Settings",
+            buttonIcon = Icons.Filled.Menu,
+            onButtonClicked = { openDrawer() }
+        )
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = "Settings Page content here.")
+        }
+    }
+}
+
+
+@Composable
+fun ChicagoCommutesTheme(isDarkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
     val colors = if (isDarkTheme) {
         DarkColors
     } else {
@@ -422,12 +728,6 @@ fun ChicagoCommutesTheme(isDarkTheme: Boolean = isSystemInDarkTheme(), content: 
         shapes = MaterialTheme.shapes,
         content = content
     )
-}
-
-@Preview("Home")
-@Composable
-private fun HomePreview() {
-    Home()
 }
 
 private val LightColors = lightColors(
