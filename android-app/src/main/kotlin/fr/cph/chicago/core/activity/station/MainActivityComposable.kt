@@ -7,14 +7,12 @@ import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,34 +22,36 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
-import androidx.compose.material.DrawerValue
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ModalDrawer
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.darkColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.lightColors
-import androidx.compose.material.primarySurface
-import androidx.compose.material.rememberDrawerState
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.NavigationDrawer
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
@@ -74,10 +74,10 @@ import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.observers.DisposableObserver
+import kotlin.random.Random
 import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import kotlin.random.Random
 
 class MainActivityComposable : ComponentActivity(), StoreSubscriber<State> {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -127,25 +127,50 @@ private fun startRefreshTask() {
     })
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Home() {
     ChicagoCommutesTheme {
-        /*Scaffold(
-            topBar = { AppBar() }
-        ) { innerPadding ->
-            StationCard(
-                modifier = Modifier.padding(horizontal = 7.dp, vertical = 7.dp),
-            )
-        }*/
-        val navController = rememberNavController()
-        Surface(color = MaterialTheme.colors.background) {
+        Surface {
             val drawerState = rememberDrawerState(DrawerValue.Closed)
             val scope = rememberCoroutineScope()
             val openDrawer = { scope.launch { drawerState.open() } }
-            ModalDrawer(
+            val navController = rememberNavController()
+            val title = remember { mutableStateOf("Favorites") }
+
+            NavigationDrawer(
                 drawerState = drawerState,
-                gesturesEnabled = drawerState.isOpen,
                 drawerContent = {
+/*                    Column {
+                        FilledTonalButton(
+                            onClick = {},
+                            modifier = Modifier
+                                .align(Alignment.Start)
+                                .fillMaxWidth()
+                                .padding(start = 20.dp, end = 20.dp)
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.ic_favorite_white_24dp),
+                                contentDescription = "Icon",
+                                colorFilter = ColorFilter.tint(MaterialTheme.colors.secondary),
+                            )
+                            Text("Favorites")
+                        }
+                        FilledTonalButton(
+                            onClick = {},
+                            modifier = Modifier
+                                .align(Alignment.Start)
+                                .fillMaxWidth()
+                                .padding(start = 20.dp, end = 20.dp)
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.ic_favorite_white_24dp),
+                                contentDescription = "Icon",
+                                colorFilter = ColorFilter.tint(MaterialTheme.colors.secondary),
+                            )
+                            Text("Train")
+                        }
+                    }*/
                     Drawer(
                         onDestinationClicked = { route ->
                             scope.launch {
@@ -157,110 +182,85 @@ fun Home() {
                             }
                         }
                     )
-                }
-            ) {
-                NavHost(
-                    navController = navController,
-                    startDestination = DrawerScreens.Favorites.route
-                ) {
-                    composable(DrawerScreens.Favorites.route) {
-                        Favorites(
-                            openDrawer = {
-                                openDrawer()
+                },
+                content = {
+                    Scaffold(
+                        topBar = {
+                            AppBar(title.value) { openDrawer() }
+                        }
+                    ) {
+                        NavHost(
+                            navController = navController,
+                            startDestination = DrawerScreens.Favorites.route
+                        ) {
+                            composable(DrawerScreens.Favorites.route) {
+                                title.value = DrawerScreens.Favorites.title
+                                Favorites()
                             }
-                        )
-                    }
-                    composable(DrawerScreens.Train.route) {
-                        Train(
-                            openDrawer = {
-                                openDrawer()
+                            composable(DrawerScreens.Train.route) {
+                                title.value = DrawerScreens.Train.title
+                                Train()
                             }
-                        )
-                    }
-                    composable(DrawerScreens.Bus.route) {
-                        Bus(
-                            openDrawer = {
-                                openDrawer()
+                            composable(DrawerScreens.Bus.route) {
+                                title.value = DrawerScreens.Bus.title
+                                Bus()
                             }
-                        )
-                    }
-                    composable(DrawerScreens.Divvy.route) {
-                        Divvy(
-                            openDrawer = {
-                                openDrawer()
+                            composable(DrawerScreens.Divvy.route) {
+                                title.value = DrawerScreens.Divvy.title
+                                Divvy()
                             }
-                        )
-                    }
-                    composable(DrawerScreens.Nearby.route) {
-                        Nearby(
-                            openDrawer = {
-                                openDrawer()
+                            composable(DrawerScreens.Nearby.route) {
+                                title.value = DrawerScreens.Nearby.title
+                                Nearby()
                             }
-                        )
-                    }
-                    composable(DrawerScreens.Map.route) {
-                        Map(
-                            openDrawer = {
-                                openDrawer()
+                            composable(DrawerScreens.Map.route) {
+                                title.value = DrawerScreens.Map.title
+                                Map()
                             }
-                        )
-                    }
-                    composable(DrawerScreens.Alerts.route) {
-                        Alerts(
-                            openDrawer = {
-                                openDrawer()
+                            composable(DrawerScreens.Alerts.route) {
+                                title.value = DrawerScreens.Alerts.title
+                                Alerts()
                             }
-                        )
-                    }
-                    composable(DrawerScreens.Rate.route) {
-                        Rate(
-                            openDrawer = {
-                                openDrawer()
+                            composable(DrawerScreens.Rate.route) {
+                                title.value = DrawerScreens.Rate.title
+                                Rate()
                             }
-                        )
-                    }
-                    composable(DrawerScreens.Settings.route) {
-                        Settings(
-                            openDrawer = {
-                                openDrawer()
+                            composable(DrawerScreens.Settings.route) {
+                                title.value = DrawerScreens.Settings.title
+                                Settings()
                             }
-                        )
+                        }
                     }
                 }
-            }
+            )
         }
     }
 }
 
 @Composable
-fun AppBar(title: String = "", buttonIcon: ImageVector, onButtonClicked: () -> Unit, actions: @Composable RowScope.() -> Unit = {}) {
-    TopAppBar(
+fun AppBar(title: String, openDrawer: () -> Unit) {
+    CenterAlignedTopAppBar(
+        title = { Text(title) },
         navigationIcon = {
-            IconButton(onClick = { onButtonClicked() }) {
+            IconButton(onClick = { openDrawer() }) {
                 Icon(
-                    imageVector = buttonIcon,
-                    contentDescription = null,
-                    modifier = Modifier.padding(horizontal = 12.dp),
+                    imageVector = Icons.Filled.Menu,
+                    contentDescription = "Localized description"
                 )
             }
         },
-        title = {
-            Text(text = title)
-        },
-        backgroundColor = MaterialTheme.colors.primarySurface,
-        elevation = 12.dp,
-        actions = actions
-/*            IconButton(onClick = {
+        actions = {
+            IconButton(onClick = {
                 isRefreshing.value = true
                 Timber.i("Start Refreshing")
                 store.dispatch(FavoritesAction())
             }) {
-                Image(
-                    painter = painterResource(R.drawable.ic_refresh_white_24dp),
-                    contentDescription = "",
+                Icon(
+                    imageVector = Icons.Filled.Refresh,
+                    contentDescription = "Refresh"
                 )
-            }*/
-
+            }
+        }
     )
 }
 
@@ -421,6 +421,7 @@ fun BusArrivals(busRoute: BusRoute) {
             for ((key, value) in boundMap) {
                 val (_, _, _, stopId, _, routeId, boundTitle) = value.iterator().next()
                 val busDirection = BusDirection.fromString(key)
+                // TODO: Handle different size for busdirection
                 val stopNameDisplay = if (busDirection == BusDirection.UNKNOWN) stopNameTrimmed else "$stopNameTrimmed ${busDirection.shortLowerCase}"
                 ArrivalLine(
                     title = stopNameDisplay,
@@ -528,190 +529,135 @@ fun Drawer(modifier: Modifier = Modifier, onDestinationClicked: (route: String) 
                 text = "Chicago Commutes",
                 color = Color.White,
                 style = MaterialTheme.typography.h5,
-                modifier = Modifier.align(Alignment.BottomStart)
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
                     .padding(20.dp),
             )
         }
 
         screens.forEach { screen ->
-            Row {
+            FilledTonalButton(
+                onClick = { onDestinationClicked(screen.route) },
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 20.dp)
+            ) {
                 Image(
                     painter = painterResource(screen.icon),
                     contentDescription = "Icon",
-                    colorFilter = ColorFilter.tint(MaterialTheme.colors.secondary),
+                    //colorFilter = ColorFilter.tint(MaterialTheme.colors.secondary),
                 )
                 Text(
                     text = screen.title,
                     style = MaterialTheme.typography.h6,
-                    modifier = Modifier.clickable {
-                        onDestinationClicked(screen.route)
-                    }
+/*                        modifier = Modifier.clickable {
+                            onDestinationClicked(screen.route)
+                        }*/
                 )
             }
-
         }
     }
 }
 
 @Composable
-fun Favorites(openDrawer: () -> Unit) {
+fun Favorites() {
+    StationCard()
+}
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        AppBar(
-            title = "Favorites",
-            buttonIcon = Icons.Filled.Menu,
-            onButtonClicked = { openDrawer() },
-            actions = {
-                IconButton(onClick = {
-                    isRefreshing.value = true
-                    Timber.i("Start Refreshing")
-                    store.dispatch(FavoritesAction())
-                }) {
-                    Image(
-                        painter = painterResource(R.drawable.ic_refresh_white_24dp),
-                        contentDescription = "",
-                    )
-                }
-            }
-        )
-        StationCard()
+@Composable
+fun Train() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "Train Page content here.")
     }
 }
 
 @Composable
-fun Train(openDrawer: () -> Unit) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        AppBar(
-            title = "Train",
-            buttonIcon = Icons.Filled.Menu,
-            onButtonClicked = { openDrawer() }
-        )
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Train Page content here.")
-        }
+fun Bus() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "Bus Page content here.")
     }
+
 }
 
 @Composable
-fun Bus(openDrawer: () -> Unit) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        AppBar(
-            title = "Bus",
-            buttonIcon = Icons.Filled.Menu,
-            onButtonClicked = { openDrawer() }
-        )
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Bus Page content here.")
-        }
+fun Divvy() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "Divvy Page content here.")
     }
+
 }
 
 @Composable
-fun Divvy(openDrawer: () -> Unit) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        AppBar(
-            title = "Divvy",
-            buttonIcon = Icons.Filled.Menu,
-            onButtonClicked = { openDrawer() }
-        )
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Divvy Page content here.")
-        }
+fun Nearby() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "Nearby Page content here.")
     }
+
 }
 
 @Composable
-fun Nearby(openDrawer: () -> Unit) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        AppBar(
-            title = "Nearby",
-            buttonIcon = Icons.Filled.Menu,
-            onButtonClicked = { openDrawer() }
-        )
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Nearby Page content here.")
-        }
+fun Map() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "Map Page content here.")
     }
+
 }
 
 @Composable
-fun Map(openDrawer: () -> Unit) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        AppBar(
-            title = "Map",
-            buttonIcon = Icons.Filled.Menu,
-            onButtonClicked = { openDrawer() }
-        )
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Map Page content here.")
-        }
+fun Alerts() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "Alerts Page content here.")
     }
+
 }
 
 @Composable
-fun Alerts(openDrawer: () -> Unit) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        AppBar(
-            title = "Alerts",
-            buttonIcon = Icons.Filled.Menu,
-            onButtonClicked = { openDrawer() }
-        )
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Alerts Page content here.")
-        }
+fun Rate() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "Rate Page content here.")
     }
+
 }
 
 @Composable
-fun Rate(openDrawer: () -> Unit) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        AppBar(
-            title = "Rate",
-            buttonIcon = Icons.Filled.Menu,
-            onButtonClicked = { openDrawer() }
-        )
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Rate Page content here.")
-        }
+fun Settings() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "Settings Page content here.")
     }
-}
 
-@Composable
-fun Settings(openDrawer: () -> Unit) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        AppBar(
-            title = "Settings",
-            buttonIcon = Icons.Filled.Menu,
-            onButtonClicked = { openDrawer() }
-        )
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Settings Page content here.")
-        }
-    }
 }
 
 
