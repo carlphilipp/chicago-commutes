@@ -10,18 +10,19 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.StarRate
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 
-sealed class DrawerScreens(val title: String, val route: String, val icon: ImageVector) {
-    object Favorites : DrawerScreens("Favorites", "fav", Icons.Filled.Favorite)
-    object Train : DrawerScreens("Train", "train", Icons.Filled.Train)
-    object Bus : DrawerScreens("Bus", "bus", Icons.Filled.DirectionsBus)
-    object Divvy : DrawerScreens("Divvy", "divvy", Icons.Filled.DirectionsBike)
-    object Nearby : DrawerScreens("Nearby", "nearby", Icons.Filled.NearMe)
-    object Map : DrawerScreens("CTA map", "map", Icons.Filled.Map)
-    object Alerts : DrawerScreens("CTA alerts", "alerts", Icons.Filled.Warning)
-    object Rate : DrawerScreens("Rate this app", "rate", Icons.Filled.StarRate)
-    object Settings : DrawerScreens("Settings", "settings", Icons.Filled.Settings)
+sealed class DrawerScreens(val title: String, val route: String, val icon: ImageVector, val component: @Composable () -> Unit) {
+    object Favorites : DrawerScreens("Favorites", "fav", Icons.Filled.Favorite, { Favorites() })
+    object Train : DrawerScreens("Train", "train", Icons.Filled.Train, { Train() })
+    object Bus : DrawerScreens("Bus", "bus", Icons.Filled.DirectionsBus, { Bus() })
+    object Divvy : DrawerScreens("Divvy", "divvy", Icons.Filled.DirectionsBike, { Divvy() })
+    object Nearby : DrawerScreens("Nearby", "nearby", Icons.Filled.NearMe, { Nearby() })
+    object Map : DrawerScreens("CTA map", "map", Icons.Filled.Map, { Map() })
+    object Alerts : DrawerScreens("CTA alerts", "alerts", Icons.Filled.Warning, { Alerts() })
+    object Rate : DrawerScreens("Rate this app", "rate", Icons.Filled.StarRate, { Rate() })
+    object Settings : DrawerScreens("Settings", "settings", Icons.Filled.Settings, { Settings() })
 }
 
 val screens = listOf(

@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -76,13 +77,13 @@ fun Drawer(modifier: Modifier = Modifier, currentScreen: DrawerScreens, onDestin
                             imageVector = screen.icon,
                             contentDescription = "Icon",
                             modifier = Modifier,
-                            //colorFilter = ColorFilter.tint(MaterialTheme.colors.secondary),
+                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
                         )
                         Spacer(Modifier.width(16.dp))
                         Text(
                             text = screen.title,
                             //style = MaterialTheme.typography.body2,
-                            //color = textIconColor
+
                         )
                     }
                 }

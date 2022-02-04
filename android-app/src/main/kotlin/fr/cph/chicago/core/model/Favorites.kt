@@ -21,7 +21,6 @@ package fr.cph.chicago.core.model
 
 import android.os.Parcelable
 import androidx.compose.runtime.mutableStateOf
-import fr.cph.chicago.core.composable.LastUpdate
 import fr.cph.chicago.core.model.dto.BusArrivalStopMappedDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.redux.store
@@ -32,10 +31,11 @@ import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.Util
 import java.math.BigInteger
+import java.util.Calendar
 import java.util.Date
 import java.util.TreeMap
+import kotlin.random.Random
 import org.apache.commons.lang3.StringUtils
-import java.util.Calendar
 
 /**
  * Vehicle Arrival. Hold data for favorites adapter.
@@ -159,3 +159,5 @@ object Favorites {
         }
     }
 }
+
+data class LastUpdate(val value: String, private val random: Int = Random.nextInt())

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsBus
@@ -22,6 +23,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,7 +55,7 @@ fun Favorites() {
         state = rememberSwipeRefreshState(isRefreshing.value),
         onRefresh = {
             isRefreshing.value = true
-            Timber.i("Start Refreshing")
+            Timber.d("Start Refreshing")
             store.dispatch(FavoritesAction())
         },
     ) {
@@ -62,6 +64,9 @@ fun Favorites() {
                 Card(
                     modifier = Modifier.padding(horizontal = 7.dp, vertical = 7.dp),
                     elevation = 2.dp,
+                    shape = RoundedCornerShape(20.dp),
+                    backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = contentColorFor(backgroundColor),
                 ) {
                     Column {
                         when (val model = Favorites.getObject(index)) {

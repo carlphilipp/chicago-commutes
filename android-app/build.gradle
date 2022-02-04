@@ -187,7 +187,7 @@ dependencies {
     // Google
     implementation(Lib.material)
 
-    // Jackson
+    // Jackson4
     implementation(Lib.jackson_core)
     implementation(Lib.jackson_databind)
     implementation(Lib.jackson_annotations)
