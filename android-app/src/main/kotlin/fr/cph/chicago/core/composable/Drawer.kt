@@ -81,10 +81,9 @@ fun DrawerButton(
         modifier = modifier,
         color = backgroundColor,
         shape = RoundedCornerShape(20.0.dp),
-        onClick = { onDestinationClicked(screen) },
     ) {
         TextButton(
-            onClick = { },
+            onClick = { onDestinationClicked(screen) },
             modifier = Modifier.fillMaxWidth().fillMaxHeight(),
         ) {
             Row(
