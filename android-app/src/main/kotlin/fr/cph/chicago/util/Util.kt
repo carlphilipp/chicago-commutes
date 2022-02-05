@@ -23,6 +23,7 @@ import android.app.Activity
 import android.content.Context
 import android.util.TypedValue
 import android.view.View
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
@@ -114,7 +115,7 @@ object Util {
         return BusFavoriteDTO(routeId, stopId, bound)
     }
 
-    fun setWindowsColor(activity: Activity, toolbar: MaterialToolbar, trainLine: TrainLine) {
+    fun setWindowsColor(activity: Activity, toolbar: Toolbar, trainLine: TrainLine) {
         var backgroundColor = 0
         var statusBarColor = 0
         val textTitleColor = R.color.white
