@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -59,34 +60,49 @@ fun Drawer(modifier: Modifier = Modifier, currentScreen: DrawerScreens, onDestin
             val surfaceModifier = modifier
                 .padding(start = 8.dp, top = 8.dp, end = 8.dp)
                 .fillMaxWidth()
-            Surface(
+                .height(50.dp)
+            DrawerButton(
+                screen = screen,
+                backgroundColor = backgroundColor,
                 modifier = surfaceModifier,
-                color = backgroundColor,
-                shape = RoundedCornerShape(20.0.dp),
-            ) {
-                TextButton(
-                    onClick = { onDestinationClicked(screen) },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.Start,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Image(
-                            imageVector = screen.icon,
-                            contentDescription = "Icon",
-                            modifier = Modifier,
-                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
-                        )
-                        Spacer(Modifier.width(16.dp))
-                        Text(
-                            text = screen.title,
-                            //style = MaterialTheme.typography.body2,
+                onDestinationClicked = onDestinationClicked
+            )
+        }
+    }
+}
 
-                        )
-                    }
-                }
+@Composable
+fun DrawerButton(
+    screen: DrawerScreens,
+    backgroundColor: Color,
+    modifier: Modifier,
+    onDestinationClicked: (route: DrawerScreens) -> Unit) {
+    Surface(
+        modifier = modifier,
+        color = backgroundColor,
+        shape = RoundedCornerShape(20.0.dp),
+        onClick = { onDestinationClicked(screen) },
+    ) {
+        TextButton(
+            onClick = { },
+            modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Image(
+                    imageVector = screen.icon,
+                    contentDescription = "Icon",
+                    modifier = Modifier,
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+                )
+                Spacer(Modifier.width(16.dp))
+                Text(
+                    text = screen.title,
+                    style = MaterialTheme.typography.titleSmall,
+                )
             }
         }
     }
