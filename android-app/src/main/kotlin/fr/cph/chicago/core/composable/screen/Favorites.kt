@@ -14,12 +14,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Details
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsBus
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -161,21 +166,31 @@ fun FooterCard() {
             .padding(all = 0.dp)
             .fillMaxWidth()
     ) {
-        TextButton(
-            onClick = {
-                store.dispatch(FavoritesAction())
-            },
+        ElevatedButton(
+            onClick = { store.dispatch(FavoritesAction()) },
             modifier = Modifier.padding(3.dp),
         ) {
+            Image(
+                imageVector = Icons.Filled.Details,
+                contentDescription = "Icon",
+                modifier = Modifier.padding(end = 5.dp),
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+            )
             Text(
                 text = "Details".uppercase(),
             )
         }
-        TextButton(
+        ElevatedButton(
             onClick = {
             },
             modifier = Modifier.padding(3.dp),
         ) {
+            Image(
+                imageVector = Icons.Filled.Map,
+                contentDescription = "Icon",
+                modifier = Modifier.padding(end = 5.dp),
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+            )
             Text(
                 text = "View Trains".uppercase(),
             )
