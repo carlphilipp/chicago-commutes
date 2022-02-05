@@ -19,7 +19,7 @@
 <resources>
 
     <!-- Night Theme -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/darkPrimaryColor</item> <!-- Top action bar color -->
         <item name="colorPrimaryDark">@color/darkPrimaryColorDarker</item> <!-- Top status color -->
         <item name="colorSecondary">@color/darkFloatingButton</item> <!-- Floating button background -->
@@ -51,7 +51,7 @@
     </style>
 
     <!-- Button -->
-    <style name="ButtonColor" parent="Widget.MaterialComponents.Button">
+    <style name="ButtonColor" parent="Widget.Material3.Button">
         <item name="android:textColor">@color/darkColorTextPrimary</item>
     </style>
 
@@ -62,17 +62,17 @@
     </style>
 
     <!-- Alert Dialog -->
-    <style name="AlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog.Centered">
+    <style name="AlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog.Centered">
         <item name="colorAccent">@color/white</item>
         <item name="buttonBarPositiveButtonStyle">@style/Alert.Button</item>
         <item name="buttonBarNegativeButtonStyle">@style/Alert.Button</item>
         <item name="buttonBarNeutralButtonStyle">@style/Alert.Button</item>
     </style>
 
-    <style name="Alert.Button" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+    <style name="Alert.Button" parent="Widget.Material3.Button.TextButton.Dialog">
         <item name="android:textColor">@color/white</item>
     </style>
 
-    <style name="Theme.Material.DayNight.NoActionBar" parent="@android:style/Theme.Material.NoActionBar" />
+    <style name="Theme.Material3.DayNight.NoActionBar" parent="@android:style/Theme.Material.NoActionBar" />
 
 </resources>

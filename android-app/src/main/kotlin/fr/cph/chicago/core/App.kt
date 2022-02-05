@@ -29,6 +29,7 @@ import android.os.Build
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.res.ResourcesCompat
+import com.google.android.material.color.DynamicColors
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.ErrorActivity
 import fr.cph.chicago.core.model.Theme
@@ -75,6 +76,7 @@ class App : Application() {
 
     override fun onCreate() {
         instance = this
+        DynamicColors.applyToActivitiesIfAvailable(this);
         Timber.plant(DebugTree())
 
         RxJavaPlugins.setErrorHandler { throwable ->

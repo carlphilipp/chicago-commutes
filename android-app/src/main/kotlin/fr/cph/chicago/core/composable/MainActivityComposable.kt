@@ -13,7 +13,6 @@ import fr.cph.chicago.redux.store
 import fr.cph.chicago.task.refreshTask
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.observers.DisposableObserver
-import kotlin.random.Random
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 

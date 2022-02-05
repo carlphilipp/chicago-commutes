@@ -19,7 +19,7 @@
 <resources>
 
     <!-- Day Theme -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/lightPrimaryColor</item> <!-- Top action bar color -->
         <item name="colorPrimaryDark">@color/lightPrimaryColorDark</item> <!-- Top status color -->
         <item name="colorSecondary">@color/lightPrimaryColorDark</item> <!-- Floating button background -->
@@ -54,15 +54,15 @@
     </style>
 
     <!-- Alert Dialog -->
-    <style name="AlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog.Centered">
+    <style name="AlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog.Centered">
 
     </style>
 
-    <style name="Theme.ComposeTheming" parent="Theme.Material.DayNight.NoActionBar">
+    <style name="Theme.ComposeTheming" parent="Theme.Material3.DayNight.NoActionBar">
         <!--<item name="android:statusBarColor">@color/status_bar</item>-->
     </style>
 
-    <style name="Theme.Material.DayNight.NoActionBar" parent="@android:style/Theme.Material.Light.NoActionBar" />
+    <style name="Theme.Material3.DayNight.NoActionBar" parent="@android:style/Theme.Material.Light.NoActionBar" />
 
 
 </resources>
