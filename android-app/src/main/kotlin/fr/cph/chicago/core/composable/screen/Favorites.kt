@@ -12,10 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Details
 import androidx.compose.material.icons.filled.DirectionsBike
@@ -24,11 +23,8 @@ import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,10 +32,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.core.composable.isRefreshing
+import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.Favorites
@@ -49,6 +49,7 @@ import fr.cph.chicago.redux.FavoritesAction
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.util.Util
 import timber.log.Timber
+import java.math.BigInteger
 
 private val util = Util
 
@@ -70,12 +71,13 @@ fun Favorites() {
                     modifier = Modifier.padding(horizontal = 7.dp, vertical = 7.dp),
                     elevation = 2.dp,
                     shape = RoundedCornerShape(20.dp),
-                    backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = contentColorFor(backgroundColor),
+                    //backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
+                    //contentColor = contentColorFor(backgroundColor),
                 ) {
                     Column {
                         when (val model = Favorites.getObject(index)) {
                             is TrainStation -> {
+                                /*
                                 HeaderCard(
                                     image = Icons.Filled.Train,
                                     title = model.name,
@@ -88,7 +90,10 @@ fun Favorites() {
 
                                 Divider(thickness = 1.dp)
 
-                                FooterCard()
+                                FooterCard()*/
+
+                                NewDesign(model)
+
                             }
 
                             is BusRoute -> {
@@ -127,6 +132,68 @@ fun Favorites() {
             }
         }
     }
+}
+
+@Composable
+fun NewDesign(trainStation: TrainStation) {
+    Column {
+        Row {
+            Image(
+                imageVector = Icons.Filled.Train,
+                contentDescription = "icon",
+                //colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary),
+                //modifier = Modifier
+                //    .size(55.dp),
+                //.padding(10.dp),
+            )
+            Text(
+                text = trainStation.name,
+                color = Color(0xFF4f76bf),
+                style = MaterialTheme.typography.titleLarge,
+            )
+        }
+        trainStation.lines.forEach { trainLine ->
+            val arrivals = Favorites.getTrainArrivalByLine(trainStation.id, trainLine)
+            for (entry in arrivals.entries) {
+                val title = entry.key
+                val value = entry.value
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(15.dp)
+                            .clip(RoundedCornerShape(3.dp))
+                            .background(Color(trainLine.color))
+                    )
+                    Text(
+                        text = title,
+                        maxLines = 1,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 10.dp),
+                    )
+                    Text(
+                        text = value,
+                        maxLines = 1,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Preview(
+    name = "NewDesign",
+    showBackground = true
+)
+@Composable
+fun NewDesignPreview(@PreviewParameter(TrainStationProvider::class) trainStation: TrainStation) {
+    ChicagoCommutesTheme {
+        NewDesign(trainStation)
+    }
+}
+
+class TrainStationProvider : PreviewParameterProvider<TrainStation> {
+    override val values = sequenceOf(TrainStation(id = BigInteger("1"), name = "Belmont", stops = listOf()))
 }
 
 @Composable
