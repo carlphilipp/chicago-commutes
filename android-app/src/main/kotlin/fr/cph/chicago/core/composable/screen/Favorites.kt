@@ -160,21 +160,34 @@ fun NewDesign(trainStation: TrainStation) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
                         modifier = Modifier
-                            .size(15.dp)
+                            .size(35.dp)
                             .clip(RoundedCornerShape(3.dp))
                             .background(Color(trainLine.color))
                     )
                     Text(
                         text = title,
                         maxLines = 1,
+                        style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier
                             .weight(1f)
-                            .padding(horizontal = 10.dp),
+                            //.padding(horizontal = 10.dp),
                     )
-                    Text(
-                        text = value,
-                        maxLines = 1,
-                    )
+                    Column {
+                        Text(
+                            text = value[0],
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color(0xFF4f76bf),
+                            maxLines = 1,
+                        )
+                        Row {
+                            for (index in 1 until value.size) {
+                                Text(
+                                    text = value[index],
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -272,7 +285,7 @@ fun TrainArrivals(trainStation: TrainStation) {
             val arrivals = Favorites.getTrainArrivalByLine(trainStation.id, trainLine)
             for (entry in arrivals.entries) {
                 val text = entry.key
-                val arrival = entry.value
+                val arrival = entry.value.joinToString(" ")
                 ArrivalLine(boxColor = Color(trainLine.color), text, arrival)
             }
         }

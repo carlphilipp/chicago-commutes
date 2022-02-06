@@ -90,18 +90,22 @@ object Favorites {
         }
     }
 
-    fun getTrainArrivalByLine(stationId: BigInteger, trainLine: TrainLine): Map<String, String> {
+    fun getTrainArrivalByLine(stationId: BigInteger, trainLine: TrainLine): Map<String, MutableList<String>> {
         return store.state.trainArrivalsDTO.trainsArrivals
             .getOrElse(stationId, { TrainArrival.buildEmptyTrainArrival() })
             .getEtas(trainLine)
             .fold(TreeMap()) { accumulator, eta ->
                 val destinationName = eta.destName
                 val timeLeft = eta.timeLeftDueDelay
-                val value = if (accumulator.contains(destinationName))
-                    accumulator.getValue(destinationName) + " " + timeLeft
-                else
-                    timeLeft
-                accumulator[destinationName] = value
+                if (accumulator.contains(destinationName)) {
+                    val list: MutableList<String> = accumulator.getValue(destinationName)/* + " " + timeLeft*/
+                    list.add(timeLeft)
+                    accumulator[destinationName] = list
+                } else {
+                    val list = mutableListOf(timeLeft)
+                    accumulator[destinationName] = list
+                }
+                //accumulator[destinationName] = value
                 accumulator
             }
     }

@@ -105,9 +105,9 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
                     accumulator
                 }
 
-                val trainLayout = layoutUtil.layoutForTrainLine(nearbyFragment.context!!, linearLayout, etas, trainLine)
+                /*val trainLayout = layoutUtil.layoutForTrainLine(nearbyFragment.context!!, linearLayout, etas, trainLine)
                 container.addView(trainLayout)
-                nbOfLine += etas.size
+                nbOfLine += etas.size*/
             }
             container.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
             nearbyFragment.slidingLayoutPanel.panelHeight = getSlidingPanelHeight(container.measuredHeight)
