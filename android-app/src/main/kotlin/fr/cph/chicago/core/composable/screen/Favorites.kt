@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -136,7 +137,7 @@ fun Favorites() {
 
 @Composable
 fun NewDesign(trainStation: TrainStation) {
-    Column {
+    Column(modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 10.dp)) {
         Row {
             Image(
                 imageVector = Icons.Filled.Train,
@@ -172,14 +173,14 @@ fun NewDesign(trainStation: TrainStation) {
                             .weight(1f)
                             //.padding(horizontal = 10.dp),
                     )
-                    Column {
+                    Column(modifier = Modifier.width(100.dp)) {
                         Text(
                             text = value[0],
                             style = MaterialTheme.typography.bodyLarge,
                             color = Color(0xFF4f76bf),
                             maxLines = 1,
                         )
-                        Row {
+                        Row(modifier = Modifier.background(Color.Red)) {
                             for (index in 1 until value.size) {
                                 Text(
                                     text = value[index],
