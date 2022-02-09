@@ -21,17 +21,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsBus
 import androidx.compose.material.icons.filled.Train
+import androidx.compose.material3.Card
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -61,6 +66,7 @@ import timber.log.Timber
 
 private val util = Util
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Favorites() {
     val lastUpdate: LastUpdate = Favorites.time.value
@@ -75,12 +81,14 @@ fun Favorites() {
     ) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(Favorites.size()) { index ->
-                Card(
+                ElevatedCard(
                     modifier = Modifier.padding(horizontal = 7.dp, vertical = 7.dp),
-                    elevation = 2.dp,
-                    shape = RoundedCornerShape(20.dp),
+                    //elevation = 2.dp,
+                    //shape = RoundedCornerShape(20.dp),
+                    //backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+                    //contentColor = contentColorFor(MaterialTheme.colorScheme.surfaceVariant),
                     //backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
-                    //contentColor = contentColorFor(backgroundColor),
+                    //contentColor = contentColorFor(backgroundColor),4
                 ) {
                     Column {
                         when (val model = Favorites.getObject(index)) {
@@ -104,7 +112,7 @@ fun TrainFavoriteCard(modifier: Modifier = Modifier, trainStation: TrainStation,
         trainStation.lines.forEach { trainLine ->
             val arrivals = Favorites.getTrainArrivalByLine(trainStation.id, trainLine)
             for (entry in arrivals.entries) {
-                TrainArrivals(
+                Arrivals(
                     trainLine = trainLine,
                     destination = entry.key,
                     arrivals = entry.value,
@@ -129,7 +137,7 @@ fun BusFavoriteCard(modifier: Modifier = Modifier, busRoute: BusRoute, lastUpdat
                 val busDirection = BusDirection.fromString(key)
                 // TODO: Handle different size for busdirection
                 val stopNameDisplay = if (busDirection == BusDirection.UNKNOWN) stopNameTrimmed else "$stopNameTrimmed ${busDirection.shortLowerCase}"
-                TrainArrivals(
+                Arrivals(
                     destination = stopNameDisplay,
                     arrivals = value.map { busArrival -> busArrival.timeLeftDueDelay }
                 )
@@ -145,8 +153,8 @@ fun BikeFavoriteCard(modifier: Modifier = Modifier, bikeStation: BikeStation, la
     FavoriteCardWrapper(modifier = modifier) {
         HeaderCard(name = bikeStation.name, image = Icons.Filled.DirectionsBike, lastUpdate = lastUpdate)
 
-        TrainArrivals(destination = "Available bikes", arrivals = listOf(bikeStation.availableBikes.toString()))
-        TrainArrivals(destination = "Available docks", arrivals = listOf(bikeStation.availableDocks.toString()))
+        Arrivals(destination = "Available bikes", arrivals = listOf(bikeStation.availableBikes.toString()))
+        Arrivals(destination = "Available docks", arrivals = listOf(bikeStation.availableDocks.toString()))
 
         FooterCard()
     }
@@ -169,6 +177,7 @@ fun HeaderCard(modifier: Modifier = Modifier, name: String, lines: Set<TrainLine
         Image(
             imageVector = image,
             contentDescription = "train icon",
+            colorFilter = ColorFilter.tint(contentColorFor(MaterialTheme.colorScheme.onSecondaryContainer)),
             //colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary),
             modifier = Modifier
                 .padding(/*start = 10.dp, */end = 10.dp)
@@ -177,7 +186,6 @@ fun HeaderCard(modifier: Modifier = Modifier, name: String, lines: Set<TrainLine
         Column {
             Text(
                 text = name,
-                //color = Color(0xFF4f76bf),
                 style = MaterialTheme.typography.titleMedium,
             )
             Row(
@@ -237,7 +245,7 @@ fun FooterCard(modifier: Modifier = Modifier, detailsOnClick: () -> Unit = {}, m
 }
 
 @Composable
-fun TrainArrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA, destination: String, arrivals: List<String>) {
+fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA, destination: String, arrivals: List<String>) {
     Column(modifier = modifier.padding(start = 12.dp, end = 12.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
