@@ -28,6 +28,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
+
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Details
 import androidx.compose.material.icons.filled.DirectionsBike
@@ -36,11 +37,13 @@ import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -159,35 +162,38 @@ fun Favorites() {
 fun NewDesign(trainStation: TrainStation) {
     Column(modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 10.dp)) {
         Row(
-            horizontalArrangement = Arrangement.Center,
+            horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
         ) {
             Image(
                 imageVector = Icons.Filled.Train,
-                contentDescription = "icon",
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+                contentDescription = "train icon",
+                //colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary),
                 modifier = Modifier
-                    .size(55.dp),
-                //.padding(10.dp),
+                    .padding(start = 10.dp, end = 10.dp)
+                    .size(50.dp),
             )
-            Text(
-                text = trainStation.name,
-                color = Color(0xFF4f76bf),
-                style = MaterialTheme.typography.titleMedium,
-            )
+            Column {
+                Text(
+                    text = trainStation.name,
+                    //color = Color(0xFF4f76bf),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Row(
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.Bottom,
+                    //modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(
+                        text = "last updated: ",
+                        style = MaterialTheme.typography.labelSmall,
+                    )
+                    AnimatedText(time = Favorites.time.value.value, style = MaterialTheme.typography.labelSmall)
+                }
+            }
         }
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(
-                text = "last updated: ",
-                style = MaterialTheme.typography.labelSmall,
-            )
-            AnimatedText(time = Favorites.time.value.value, style = MaterialTheme.typography.labelSmall)
-        }
+
         trainStation.lines.forEach { trainLine ->
             val arrivals = Favorites.getTrainArrivalByLine(trainStation.id, trainLine)
             for (entry in arrivals.entries) {
@@ -225,13 +231,13 @@ fun NewDesign(trainStation: TrainStation) {
                             Text(
                                 text = title,
                                 maxLines = 1,
-                                style = MaterialTheme.typography.titleMedium,
+                                style = MaterialTheme.typography.titleSmall,
                                 modifier = Modifier
                                     .weight(1f)
-                                //.padding(horizontal = 10.dp),
+                                    .padding(horizontal = 10.dp),
                             )
                             nextTrainTime = value[0]
-                            AnimatedText(time = nextTrainTime, style = MaterialTheme.typography.bodyLarge)
+                            AnimatedText(time = nextTrainTime, style = MaterialTheme.typography.bodyMedium)
                         }
                     }
                 }
@@ -240,19 +246,41 @@ fun NewDesign(trainStation: TrainStation) {
                     Spacer(modifier = Modifier.height(8.dp))
                 }
                 if (visible) {
-                    Row(modifier = Modifier.background(Color.Red)) {
+                    Row(modifier = Modifier) {
                         for (index in 1 until value.size) {
-                            Text(
-                                text = value[index],
-                                style = MaterialTheme.typography.bodySmall,
-                            )
+                            var nextTime by remember { mutableStateOf(value[index]) }
+                            nextTime = value[index]
+                            AnimatedText(time = nextTime, style = MaterialTheme.typography.bodyMedium)
                         }
                     }
                 }
                 AnimatedVisibility(visible = visible) {
                     Spacer(modifier = Modifier.height(8.dp))
                 }
-
+            }
+        }
+        Row(
+            horizontalArrangement = Arrangement.End,
+            modifier = Modifier
+                .padding(all = 0.dp)
+                .fillMaxWidth()
+        ) {
+            FilledTonalButton(
+                onClick = { },
+                modifier = Modifier.padding(3.dp),
+            ) {
+                Text(
+                    text = "Details",
+                )
+            }
+            OutlinedButton(
+                onClick = {
+                },
+                modifier = Modifier.padding(3.dp),
+            ) {
+                Text(
+                    text = "Show map",
+                )
             }
         }
     }
@@ -285,9 +313,8 @@ fun AnimatedText(time: String, style: TextStyle = LocalTextStyle.current) {
                 }
             ) { target ->
                 Text(
-                    text = "$target",
+                    text = target,
                     style = style,
-                    color = Color(0xFF4f76bf),
                     maxLines = 1,
                 )
             }
@@ -329,7 +356,7 @@ fun ArrivalTime2(/*time: String*/) {
                 Text(
                     text = "$target",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = Color(0xFF4f76bf),
+                    //color = Color(0xFF4f76bf),
                     maxLines = 1,
                 )
             }
@@ -338,21 +365,6 @@ fun ArrivalTime2(/*time: String*/) {
             Text("Add")
         }
     }
-}
-
-class ArrivalTimePreviewParameterProvider() : PreviewParameterProvider<String> {
-    override val values = sequenceOf("10 min")
-}
-
-@Composable
-fun NewDesignPreview(@PreviewParameter(TrainStationProvider::class) trainStation: TrainStation) {
-    ChicagoCommutesTheme {
-        NewDesign(trainStation)
-    }
-}
-
-class TrainStationProvider : PreviewParameterProvider<TrainStation> {
-    override val values = sequenceOf(TrainStation(id = BigInteger("1"), name = "Belmont", stops = listOf()))
 }
 
 @Composable
