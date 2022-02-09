@@ -51,9 +51,8 @@ fun Drawer(modifier: Modifier = Modifier, currentScreen: DrawerScreens, onDestin
         }
 
         screens.forEach { screen ->
-            val colors = MaterialTheme.colorScheme
             val backgroundColor = if (screen.route == currentScreen.route) {
-                colors.primary.copy(alpha = 0.12f)
+                MaterialTheme.colorScheme.secondaryContainer
             } else {
                 Color.Transparent
             }
@@ -73,10 +72,11 @@ fun Drawer(modifier: Modifier = Modifier, currentScreen: DrawerScreens, onDestin
 
 @Composable
 fun DrawerButton(
+    modifier: Modifier,
     screen: DrawerScreens,
     backgroundColor: Color,
-    modifier: Modifier,
-    onDestinationClicked: (route: DrawerScreens) -> Unit) {
+    onDestinationClicked: (route: DrawerScreens) -> Unit
+) {
     Surface(
         modifier = modifier,
         color = backgroundColor,
@@ -84,7 +84,9 @@ fun DrawerButton(
     ) {
         TextButton(
             onClick = { onDestinationClicked(screen) },
-            modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(),
         ) {
             Row(
                 horizontalArrangement = Arrangement.Start,
@@ -95,7 +97,7 @@ fun DrawerButton(
                     imageVector = screen.icon,
                     contentDescription = "Icon",
                     modifier = Modifier,
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer),
                 )
                 Spacer(Modifier.width(16.dp))
                 Text(

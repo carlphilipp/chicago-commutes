@@ -1,5 +1,7 @@
 package fr.cph.chicago.core.composable.screen
 
+import android.content.Intent
+import android.os.Bundle
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.SizeTransform
@@ -25,17 +27,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsBus
 import androidx.compose.material.icons.filled.Train
-import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,6 +50,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import fr.cph.chicago.R
+import fr.cph.chicago.core.App
+import fr.cph.chicago.core.activity.station.TrainStationActivity
+import fr.cph.chicago.core.composable.TrainStationComposable
 import fr.cph.chicago.core.composable.isRefreshing
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
@@ -83,12 +86,6 @@ fun Favorites() {
             items(Favorites.size()) { index ->
                 ElevatedCard(
                     modifier = Modifier.padding(horizontal = 7.dp, vertical = 7.dp),
-                    //elevation = 2.dp,
-                    //shape = RoundedCornerShape(20.dp),
-                    //backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
-                    //contentColor = contentColorFor(MaterialTheme.colorScheme.surfaceVariant),
-                    //backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
-                    //contentColor = contentColorFor(backgroundColor),4
                 ) {
                     Column {
                         when (val model = Favorites.getObject(index)) {
@@ -120,7 +117,15 @@ fun TrainFavoriteCard(modifier: Modifier = Modifier, trainStation: TrainStation,
             }
         }
 
-        FooterCard()
+        FooterCard(detailsOnClick = {
+            // Start train station activity
+            val extras = Bundle()
+            val intent = Intent(App.instance.applicationContext, TrainStationComposable::class.java)
+            extras.putString(App.instance.getString(R.string.bundle_train_stationId), trainStation.id.toString())
+            intent.putExtras(extras)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            App.instance.startActivity(intent)
+        })
     }
 }
 
@@ -177,8 +182,7 @@ fun HeaderCard(modifier: Modifier = Modifier, name: String, lines: Set<TrainLine
         Image(
             imageVector = image,
             contentDescription = "train icon",
-            colorFilter = ColorFilter.tint(contentColorFor(MaterialTheme.colorScheme.onSecondaryContainer)),
-            //colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary),
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer),
             modifier = Modifier
                 .padding(/*start = 10.dp, */end = 10.dp)
                 .size(50.dp),

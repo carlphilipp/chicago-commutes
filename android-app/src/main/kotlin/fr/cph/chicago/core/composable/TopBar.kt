@@ -1,7 +1,9 @@
 package fr.cph.chicago.core.composable
 
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -11,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 
 @Composable
 fun TopBar(title: String, openDrawer: () -> Unit) {
@@ -39,6 +42,31 @@ fun TopBar(title: String, openDrawer: () -> Unit) {
                     contentDescription = "Search"
                 )
             }
+        },
+    )
+}
+
+// TODO refactor
+@Composable
+fun TopBar(title: String) {
+    val activity = (LocalLifecycleOwner.current as ComponentActivity)
+    CenterAlignedTopAppBar(
+        title = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge,
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = { activity.finish() }) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "Back"
+                )
+            }
+        },
+        actions = {
+
         },
     )
 }
