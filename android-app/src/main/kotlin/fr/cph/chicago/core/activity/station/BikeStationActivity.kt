@@ -20,6 +20,7 @@
 package fr.cph.chicago.core.activity.station
 
 import android.os.Bundle
+import androidx.appcompat.widget.Toolbar
 import com.google.android.material.appbar.MaterialToolbar
 import fr.cph.chicago.R
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
@@ -133,7 +134,7 @@ class BikeStationActivity : StationActivity(), StoreSubscriber<State> {
         loadGoogleStreetImage(position)
     }
 
-    override fun buildToolbar(toolbar: MaterialToolbar) {
+    override fun buildToolbar(toolbar: Toolbar) {
         super.buildToolbar(toolbar)
         toolbar.title = bikeStation.name
     }

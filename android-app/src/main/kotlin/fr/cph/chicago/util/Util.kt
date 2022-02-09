@@ -25,7 +25,6 @@ import android.util.TypedValue
 import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App

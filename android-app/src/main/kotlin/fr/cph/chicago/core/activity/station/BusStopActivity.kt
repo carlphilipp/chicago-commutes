@@ -25,7 +25,7 @@ import android.view.View
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.RelativeLayout
 import android.widget.TextView
-import com.google.android.material.appbar.MaterialToolbar
+import androidx.appcompat.widget.Toolbar
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
@@ -193,7 +193,7 @@ class BusStopActivity : StationActivity(), StoreSubscriber<State> {
         streetViewProgressBar.visibility = View.GONE
     }
 
-    override fun buildToolbar(toolbar: MaterialToolbar) {
+    override fun buildToolbar(toolbar: Toolbar) {
         super.buildToolbar(toolbar)
         toolbar.title = busRouteId
     }

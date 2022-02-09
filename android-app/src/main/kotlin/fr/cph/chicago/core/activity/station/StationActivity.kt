@@ -26,8 +26,8 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.google.android.material.appbar.MaterialToolbar
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.App
@@ -61,7 +61,7 @@ abstract class StationActivity : AppCompatActivity() {
     private lateinit var streetViewText: TextView
     protected lateinit var favoritesImage: ImageView
     protected lateinit var mapImage: ImageView
-    protected lateinit var toolbar: MaterialToolbar
+    protected lateinit var toolbar: Toolbar
 
     fun setupView(
         swipeRefreshLayout: SwipeRefreshLayout,
@@ -137,7 +137,7 @@ abstract class StationActivity : AppCompatActivity() {
         applyFavorite = true
     }
 
-    protected open fun buildToolbar(toolbar: MaterialToolbar) {
+    protected open fun buildToolbar(toolbar: Toolbar) {
         this.toolbar = toolbar
         toolbar.inflateMenu(R.menu.main)
         toolbar.setOnMenuItemClickListener { refresh(); false }

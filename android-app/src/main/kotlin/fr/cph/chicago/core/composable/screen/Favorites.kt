@@ -29,8 +29,8 @@ import androidx.compose.material.icons.filled.Details
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsBus
 import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.PedalBike
 import androidx.compose.material.icons.filled.Train
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.LocalTextStyle
@@ -58,6 +58,7 @@ import fr.cph.chicago.core.composable.isRefreshing
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.Favorites
+import fr.cph.chicago.core.model.LastUpdate
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
@@ -70,7 +71,7 @@ private val util = Util
 
 @Composable
 fun Favorites() {
-    val time = Favorites.time.value
+    val lastUpdate: LastUpdate = Favorites.time.value
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(isRefreshing.value),
@@ -91,38 +92,9 @@ fun Favorites() {
                 ) {
                     Column {
                         when (val model = Favorites.getObject(index)) {
-                            is TrainStation -> { TrainFavoriteCard(trainStation = model) }
-
-                            is BusRoute -> {
-                                HeaderCard(
-                                    image = Icons.Filled.DirectionsBus,
-                                    title = model.id,
-                                    lastUpdate = time.value,
-                                )
-
-                                Divider(thickness = 1.dp)
-
-                                BusArrivals(model)
-
-                                Divider(thickness = 1.dp)
-
-                                FooterCard()
-                            }
-                            is BikeStation -> {
-                                HeaderCard(
-                                    image = Icons.Filled.DirectionsBike,
-                                    title = model.name,
-                                    lastUpdate = time.value,
-                                )
-
-                                Divider(thickness = 1.dp)
-
-                                BikeData(model)
-
-                                Divider(thickness = 1.dp)
-
-                                FooterCard()
-                            }
+                            is TrainStation -> TrainFavoriteCard(trainStation = model, lastUpdate = lastUpdate)
+                            is BusRoute -> BusFavoriteCard(busRoute = model, lastUpdate = lastUpdate)
+                            is BikeStation -> BikeFavoriteCard(bikeStation = model, lastUpdate = lastUpdate)
                         }
                     }
                 }
@@ -133,10 +105,10 @@ fun Favorites() {
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalAnimationApi::class)
 @Composable
-fun TrainFavoriteCard(modifier : Modifier = Modifier, trainStation: TrainStation) {
-    Column(modifier = modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 10.dp)) {
+fun TrainFavoriteCard(modifier: Modifier = Modifier, trainStation: TrainStation, lastUpdate: LastUpdate) {
+    FavoriteCardWrapper(modifier = modifier) {
 
-        HeaderCard2(name = trainStation.name, lines = trainStation.lines)
+        HeaderCard2(name = trainStation.name, lines = trainStation.lines, image = Icons.Filled.Train, lastUpdate = lastUpdate)
 
         trainStation.lines.forEach { trainLine ->
             val arrivals = Favorites.getTrainArrivalByLine(trainStation.id, trainLine)
@@ -154,19 +126,57 @@ fun TrainFavoriteCard(modifier : Modifier = Modifier, trainStation: TrainStation
 }
 
 @Composable
-fun BusFavoriteCard(modifier : Modifier = Modifier) {
+fun BusFavoriteCard(modifier: Modifier = Modifier, busRoute: BusRoute, lastUpdate: LastUpdate) {
+    FavoriteCardWrapper(modifier = modifier) {
+        HeaderCard2(name = "${busRoute.id} ${busRoute.name}", image = Icons.Filled.DirectionsBus, lastUpdate = lastUpdate)
 
+        val busArrivalDTO = Favorites.getBusArrivalsMapped(busRoute.id)
+        for ((stopName, boundMap) in busArrivalDTO.entries) {
+            val stopNameTrimmed = util.trimBusStopNameIfNeeded(stopName)
+            for ((key, value) in boundMap) {
+                val (_, _, _, stopId, _, routeId, boundTitle) = value.iterator().next()
+                val busDirection = BusDirection.fromString(key)
+                // TODO: Handle different size for busdirection
+                val stopNameDisplay = if (busDirection == BusDirection.UNKNOWN) stopNameTrimmed else "$stopNameTrimmed ${busDirection.shortLowerCase}"
+                TrainDirectionArrivals(
+                    destination = stopNameDisplay,
+                    arrivals = value.map { busArrival -> busArrival.timeLeftDueDelay }
+                )
+            }
+        }
+
+        FooterCard2()
+    }
 }
 
 @Composable
-fun HeaderCard2(modifier: Modifier = Modifier, name: String, lines: Set<TrainLine>) {
+fun BikeFavoriteCard(modifier: Modifier = Modifier, bikeStation: BikeStation, lastUpdate: LastUpdate) {
+    FavoriteCardWrapper(modifier = modifier) {
+        HeaderCard2(name = bikeStation.name, image = Icons.Filled.DirectionsBike, lastUpdate = lastUpdate)
+
+        TrainDirectionArrivals(destination = "Available bikes", arrivals = listOf(bikeStation.availableBikes.toString()))
+        TrainDirectionArrivals(destination = "Available docks", arrivals = listOf(bikeStation.availableDocks.toString()))
+
+        FooterCard2()
+    }
+}
+
+@Composable
+fun FavoriteCardWrapper(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+    Column(modifier = modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 10.dp)) {
+        content()
+    }
+}
+
+@Composable
+fun HeaderCard2(modifier: Modifier = Modifier, name: String, lines: Set<TrainLine> = mutableSetOf(), image: ImageVector, lastUpdate: LastUpdate) {
     Row(
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.fillMaxWidth(),
     ) {
         Image(
-            imageVector = Icons.Filled.Train,
+            imageVector = image,
             contentDescription = "train icon",
             //colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary),
             modifier = Modifier
@@ -187,14 +197,16 @@ fun HeaderCard2(modifier: Modifier = Modifier, name: String, lines: Set<TrainLin
                     text = "last updated: ",
                     style = MaterialTheme.typography.labelSmall,
                 )
-                AnimatedText(time = Favorites.time.value.value, style = MaterialTheme.typography.labelSmall)
+                AnimatedText(time = lastUpdate.value, style = MaterialTheme.typography.labelSmall)
             }
         }
-        Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth().padding(end = 12.dp)) {
+        Row(horizontalArrangement = Arrangement.End, modifier = Modifier
+            .fillMaxWidth()
+            .padding(end = 12.dp)) {
             lines.forEach { trainLine ->
                 Box(
                     modifier = Modifier
-                        .padding(start = 10.dp)
+                        .padding(start = 5.dp)
                         .size(20.dp)
                         .clip(RoundedCornerShape(3.dp))
                         .background(Color(trainLine.color)),
@@ -232,10 +244,10 @@ fun FooterCard2(modifier: Modifier = Modifier, detailsOnClick: () -> Unit = {}, 
 }
 
 @Composable
-fun TrainDirectionArrivals(modifier: Modifier = Modifier, trainLine: TrainLine, destination: String, arrivals: List<String>) {
-    var nextTrainTime by remember { mutableStateOf(arrivals[0]) }
+fun TrainDirectionArrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA, destination: String, arrivals: List<String>) {
+    //var nextTrainTime by remember { mutableStateOf(arrivals[0]) }
     TextButton(
-        onClick = {  },
+        onClick = { },
         modifier = modifier
     ) {
         Column {
@@ -257,9 +269,9 @@ fun TrainDirectionArrivals(modifier: Modifier = Modifier, trainLine: TrainLine, 
                         .weight(1f)
                         .padding(horizontal = 10.dp),
                 )
-                nextTrainTime = arrivals[0]
-                AnimatedText(time = nextTrainTime, style = MaterialTheme.typography.bodyMedium)
-                for (index in 1 until arrivals.size) {
+                //nextTrainTime = arrivals[0]
+                //AnimatedText(time = nextTrainTime, style = MaterialTheme.typography.bodyMedium)
+                for (index in arrivals.indices) {
                     var nextTime by remember { mutableStateOf(arrivals[index]) }
                     nextTime = arrivals[index]
                     AnimatedText(

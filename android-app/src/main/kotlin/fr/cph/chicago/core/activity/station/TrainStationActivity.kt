@@ -26,7 +26,7 @@ import android.text.TextUtils.TruncateAt
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.google.android.material.appbar.MaterialToolbar
+import androidx.appcompat.widget.Toolbar
 import com.google.android.material.checkbox.MaterialCheckBox
 import fr.cph.chicago.R
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
@@ -202,7 +202,7 @@ class TrainStationActivity : StationActivity(), StoreSubscriber<State> {
         }
     }
 
-    override fun buildToolbar(toolbar: MaterialToolbar) {
+    override fun buildToolbar(toolbar: Toolbar) {
         super.buildToolbar(toolbar)
         toolbar.title = trainStation.name
         util.setWindowsColor(this, toolbar, randomTrainLine)
