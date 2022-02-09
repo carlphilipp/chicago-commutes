@@ -28,8 +28,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Details
 import androidx.compose.material.icons.filled.DirectionsBike
@@ -38,6 +36,7 @@ import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -46,7 +45,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,6 +52,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -69,8 +68,8 @@ import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.redux.FavoritesAction
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.util.Util
-import java.math.BigInteger
 import timber.log.Timber
+import java.math.BigInteger
 
 private val util = Util
 
@@ -155,24 +154,39 @@ fun Favorites() {
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class, androidx.compose.animation.ExperimentalAnimationApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun NewDesign(trainStation: TrainStation) {
     Column(modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 10.dp)) {
-        Row {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
             Image(
                 imageVector = Icons.Filled.Train,
                 contentDescription = "icon",
-                //colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary),
-                //modifier = Modifier
-                //    .size(55.dp),
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+                modifier = Modifier
+                    .size(55.dp),
                 //.padding(10.dp),
             )
             Text(
                 text = trainStation.name,
                 color = Color(0xFF4f76bf),
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleMedium,
             )
+        }
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
+                text = "last updated: ",
+                style = MaterialTheme.typography.labelSmall,
+            )
+            AnimatedText(time = Favorites.time.value.value, style = MaterialTheme.typography.labelSmall)
         }
         trainStation.lines.forEach { trainLine ->
             val arrivals = Favorites.getTrainArrivalByLine(trainStation.id, trainLine)
@@ -187,7 +201,7 @@ fun NewDesign(trainStation: TrainStation) {
                         .fillMaxWidth()
                         .height(40.dp),
                     //color = Color.Transparent,
-                    color = Color.Green,
+                    //color = Color.Green,
                     shape = RoundedCornerShape(20.0.dp),
                 ) {
                     TextButton(
@@ -216,53 +230,11 @@ fun NewDesign(trainStation: TrainStation) {
                                     .weight(1f)
                                 //.padding(horizontal = 10.dp),
                             )
-
-                            //ArrivalTime2()
-                            Button(onClick = { nextTrainTime = nextTrainTime + "1" }) {
-                                Text("Add")
-                            }
-                            ArrivalTime(time = nextTrainTime, onTimeChange = { nextTrainTime = it })
-                            Text(
-                                text = value[0],
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = Color(0xFF4f76bf),
-                                maxLines = 1,
-                            )
+                            nextTrainTime = value[0]
+                            AnimatedText(time = nextTrainTime, style = MaterialTheme.typography.bodyLarge)
                         }
                     }
                 }
-/*                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.clickable {
-                        expandedArrivals = if (expandedArrivals == expendedId) null else expendedId
-                    }
-                        .padding(top = 10.dp, bottom = 10.dp)
-                        //.clip(RoundedCornerShape(20.dp))
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(20.dp)
-                            .clip(RoundedCornerShape(3.dp))
-                            .background(Color(trainLine.color))
-                            .padding(start = 5.dp),
-                    )
-                    Text(
-                        text = title,
-                        maxLines = 1,
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(horizontal = 10.dp),
-                        //.padding(horizontal = 10.dp),
-                    )
-
-                    Text(
-                        text = value[0],
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color(0xFF4f76bf),
-                        maxLines = 1,
-                    )
-                }*/
                 val visible = expandedArrivals == expendedId
                 AnimatedVisibility(visible = visible) {
                     Spacer(modifier = Modifier.height(8.dp))
@@ -288,15 +260,9 @@ fun NewDesign(trainStation: TrainStation) {
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun ArrivalTime(time: String, onTimeChange: (String) -> Unit) {
+fun AnimatedText(time: String, style: TextStyle = LocalTextStyle.current) {
     Row {
-        var expanded by remember { mutableStateOf(false) }
-        //var count by remember { mutableStateOf(time) }
-        //var timeState by remember { mutableStateOf(time) }
-        Surface(
-            color = MaterialTheme.colorScheme.primary,
-            //onClick = { expanded = !expanded }
-        ) {
+        Surface {
             AnimatedContent(
                 targetState = time,
                 transitionSpec = {
@@ -320,13 +286,12 @@ fun ArrivalTime(time: String, onTimeChange: (String) -> Unit) {
             ) { target ->
                 Text(
                     text = "$target",
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = style,
                     color = Color(0xFF4f76bf),
                     maxLines = 1,
                 )
             }
         }
-
     }
 }
 

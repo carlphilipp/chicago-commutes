@@ -16,7 +16,7 @@ val ChicagoCommutesTypography = Typography(
         fontWeight = FontWeight.W400,
         fontSize = 57.sp,
         lineHeight = 64.sp,
-        letterSpacing = -0.25.sp,
+        letterSpacing = (-0.25).sp,
     ),
     displayMedium = TextStyle(
         fontFamily = font,
@@ -56,14 +56,14 @@ val ChicagoCommutesTypography = Typography(
     titleLarge = TextStyle(
         fontFamily = font,
         fontWeight = FontWeight.W400,
-        fontSize = 22.sp,
+        fontSize = 25.sp,
         lineHeight = 28.sp,
         letterSpacing = 0.sp,
     ),
     titleMedium = TextStyle(
         fontFamily = font,
         fontWeight = FontWeight.Medium,
-        fontSize = 16.sp,
+        fontSize = 20.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.1.sp,
     ),
