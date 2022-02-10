@@ -76,12 +76,11 @@ import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import java.math.BigInteger
+import java.util.Locale
 import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import java.math.BigInteger
-import java.util.Calendar
-import java.util.Locale
 
 private val googleStreetClient = GoogleStreetClient
 private val preferenceService = PreferenceService
@@ -328,13 +327,24 @@ fun Stop(modifier: Modifier = Modifier, stationId: BigInteger, line: TrainLine, 
             colors = CheckboxDefaults.colors(), // TODO to customize
         )
         Text(text = stop.direction.toString())
+        val etas = trainEtas
+            .filter { trainEta -> trainEta.stop.direction.toString() == stop.direction.toString() }
+            .fold(mutableMapOf<String, MutableList<String>>()) { acc, cur ->
+                if (acc.containsKey(cur.destName)) {
+                    acc[cur.destName]!!.add(cur.timeLeftDueDelay)
+                } else {
+                    acc[cur.destName] = mutableListOf(cur.timeLeftDueDelay)
+                }
+                acc
+            }
         Column {
-            trainEtas
-                .filter { trainEta -> trainEta.stop.direction.toString() == stop.direction.toString() }
+            etas
                 .forEach { trainEta ->
                     Row {
-                        Text(text = trainEta.destName + ": ")
-                        Text(text = trainEta.timeLeftDueDelay + " ")
+                        Text(text = trainEta.key + ": ")
+                        trainEta.value.forEach {
+                            Text(text = "$it ")
+                        }
                     }
                 }
         }
