@@ -14,7 +14,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,7 +27,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Map
-import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -124,13 +122,13 @@ class TrainStationComposable : ComponentActivity(), StoreSubscriber<State> {
                 trainEtasState.value = state.trainStationArrival.trainEtas
             }
             Status.FAILURE -> {
-                TODO()
+                // TODO
             }
             Status.ADD_FAVORITES -> {
-                TODO()
+                // TODO
             }
             Status.REMOVE_FAVORITES -> {
-                TODO()
+                // TODO
             }
             else -> Timber.d("Status not handled")
         }
@@ -229,7 +227,7 @@ fun TrainStationView(
                     Column {
                         Row(modifier = Modifier.fillMaxWidth()) {
                             Text(
-                                text = "${trainStation.name} (${trainStation.id})",
+                                text = trainStation.name,
                                 style = MaterialTheme.typography.titleLarge
                             )
                             IconButton(onClick = { switchFavorite(trainStation.id) }) {
@@ -239,19 +237,8 @@ fun TrainStationView(
                                     tint = if (isFavorite) Color(fr.cph.chicago.util.Color.yellowLineDark) else LocalContentColor.current
                                 )
                             }
-                            val context = LocalContext.current
-                            val (snackbarVisibleState, setSnackBarState) = remember { mutableStateOf(false) }
-                            if (snackbarVisibleState) {
-                                Snackbar(
-                                    action = {
-                                        Button(onClick = {}) {
-                                            Text("MyAction")
-                                        }
-                                    },
-                                    modifier = Modifier.padding(8.dp)
-                                ) { Text(text = "This is a snackbar!") }
-                            }
 
+                            val context = LocalContext.current
                             IconButton(onClick = {
                                 val uri = String.format(Locale.ENGLISH, "geo:%f,%f", trainStation.stops[0].position.latitude, trainStation.stops[0].position.longitude)
                                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
@@ -318,15 +305,13 @@ fun TrainStationView(
 fun Stop(modifier: Modifier = Modifier, stationId: BigInteger, line: TrainLine, stop: Stop, trainEtas: List<TrainEta>) {
     Row(
         modifier = modifier
-            .fillMaxWidth()
-            .background(Color.Gray),
+            .fillMaxWidth(),
     ) {
         Checkbox(
             checked = preferenceService.getTrainFilter(stationId, line, stop.direction),
             onCheckedChange = {},
             colors = CheckboxDefaults.colors(), // TODO to customize
         )
-        Text(text = stop.direction.toString())
         val etas = trainEtas
             .filter { trainEta -> trainEta.stop.direction.toString() == stop.direction.toString() }
             .fold(mutableMapOf<String, MutableList<String>>()) { acc, cur ->
@@ -340,10 +325,25 @@ fun Stop(modifier: Modifier = Modifier, stationId: BigInteger, line: TrainLine, 
         Column {
             etas
                 .forEach { trainEta ->
-                    Row {
-                        Text(text = trainEta.key + ": ")
-                        trainEta.value.forEach {
-                            Text(text = "$it ")
+                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                        val destination = trainEta.key
+                        val direction = stop.direction.toString()
+                        val actualEtas = trainEta.value
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = destination,
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                            Text(
+                                text = direction,
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
+                        actualEtas.forEach {
+                            Text(
+                                text = "$it ",
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
                         }
                     }
                 }
