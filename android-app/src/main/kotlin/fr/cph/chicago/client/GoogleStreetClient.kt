@@ -39,8 +39,11 @@ import retrofit2.http.Query
  */
 object GoogleStreetClient {
 
-    fun getImage(latitude: Double, longitude: Double): Single<Drawable> {
-        return googleStreetHttpClient.getStreetViewImage(location = "$latitude,$longitude")
+    fun getImage(latitude: Double, longitude: Double, width: Int = WIDTH, height: Int = HEIGHT): Single<Drawable> {
+        return googleStreetHttpClient.getStreetViewImage(
+            location = "$latitude,$longitude",
+            size = "${width}x${height}"
+        )
             .map { response -> Drawable.createFromStream(ByteArrayInputStream(response.bytes()), "src name") }
     }
 }
