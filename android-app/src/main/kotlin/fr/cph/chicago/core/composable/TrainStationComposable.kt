@@ -66,7 +66,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.composable.screen.AnimatedText
+import fr.cph.chicago.core.composable.common.AnimatedText
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Stop
@@ -181,12 +181,12 @@ fun TrainStationView(
 ) {
     val scope = rememberCoroutineScope()
     if (switchedIsFavorite.value) {
+        switchedIsFavorite.value = false
         LaunchedEffect(isFavorite) {
             scope.launch {
                 val message = if (isFavorite) "Added to favorites" else "Removed from favorites"
                 snackbarHostState.value.showSnackbar(message)
             }
-            switchedIsFavorite.value = false
         }
     }
     SwipeRefresh(
@@ -301,7 +301,7 @@ fun TrainStationView(
                             ) {
                                 Surface(
                                     color = Color(line.color),
-                                    shadowElevation = 3.dp,
+                                    shadowElevation = 1.dp,
                                     shape = RoundedCornerShape(15.0.dp),
                                 ) {
                                     Text(

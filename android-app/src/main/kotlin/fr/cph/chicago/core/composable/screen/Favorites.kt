@@ -53,6 +53,8 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.composable.TrainStationComposable
+import fr.cph.chicago.core.composable.common.AnimatedText
+import fr.cph.chicago.core.composable.common.ColoredBox
 import fr.cph.chicago.core.composable.isRefreshing
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
@@ -202,21 +204,16 @@ fun HeaderCard(modifier: Modifier = Modifier, name: String, lines: Set<TrainLine
                 AnimatedText(time = lastUpdate.value, style = MaterialTheme.typography.labelSmall)
             }
         }
-        Row(
+        // FIXME: Keep that or not? Or making it a bit different?
+        /*Row(
             horizontalArrangement = Arrangement.End, modifier = Modifier
             .fillMaxWidth()
             .padding(end = 12.dp)
         ) {
             lines.forEach { trainLine ->
-                Box(
-                    modifier = Modifier
-                        .padding(start = 5.dp)
-                        .size(20.dp)
-                        .clip(RoundedCornerShape(3.dp))
-                        .background(Color(trainLine.color)),
-                )
+                ColoredBox(modifier = Modifier.padding(start = 5.dp), color = Color(trainLine.color))
             }
-        }
+        }*/
     }
 }
 
@@ -256,12 +253,7 @@ fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA,
                 .fillMaxWidth()
                 .padding(top = 6.dp, bottom = 6.dp),
         ) {
-            Box(
-                modifier = Modifier
-                    .size(20.dp)
-                    .clip(RoundedCornerShape(3.dp))
-                    .background(Color(trainLine.color)),
-            )
+            ColoredBox(color = Color(trainLine.color))
             Text(
                 text = destination,
                 maxLines = 1,
@@ -277,31 +269,6 @@ fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA,
                     time = nextTime,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(start = 3.dp)
-                )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalAnimationApi::class)
-@Composable
-fun AnimatedText(modifier: Modifier = Modifier, time: String, style: TextStyle = LocalTextStyle.current) {
-    Row(modifier = modifier) {
-        Surface(color = Color.Transparent) {
-            AnimatedContent(
-                targetState = time,
-                transitionSpec = {
-                    run {
-                        // The target slides up and fades in while the initial string slides up and fades out.
-                        slideInVertically { height -> height } + fadeIn() with
-                            slideOutVertically { height -> -height } + fadeOut()
-                    }.using(SizeTransform(clip = false))
-                }
-            ) { target ->
-                Text(
-                    text = target,
-                    style = style,
-                    maxLines = 1,
                 )
             }
         }
