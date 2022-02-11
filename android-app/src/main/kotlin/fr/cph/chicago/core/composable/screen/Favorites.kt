@@ -52,7 +52,6 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.activity.station.TrainStationActivity
 import fr.cph.chicago.core.composable.TrainStationComposable
 import fr.cph.chicago.core.composable.isRefreshing
 import fr.cph.chicago.core.model.BikeStation
@@ -205,8 +204,8 @@ fun HeaderCard(modifier: Modifier = Modifier, name: String, lines: Set<TrainLine
         }
         Row(
             horizontalArrangement = Arrangement.End, modifier = Modifier
-                .fillMaxWidth()
-                .padding(end = 12.dp)
+            .fillMaxWidth()
+            .padding(end = 12.dp)
         ) {
             lines.forEach { trainLine ->
                 Box(
