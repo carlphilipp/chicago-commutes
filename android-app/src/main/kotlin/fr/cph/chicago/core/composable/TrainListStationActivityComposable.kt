@@ -46,7 +46,7 @@ class TrainListStationActivityComposable : ComponentActivity() {
                             Text(
                                 text = station.name
                             )
-                            station.lines.forEach {  line ->
+                            station.lines.forEach { line ->
                                 ColoredBox(color = Color(line.color))
                             }
                         }

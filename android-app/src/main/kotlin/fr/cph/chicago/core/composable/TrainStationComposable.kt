@@ -46,6 +46,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -75,6 +76,7 @@ import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.redux.AddTrainFavoriteAction
 import fr.cph.chicago.redux.RemoveTrainFavoriteAction
+import fr.cph.chicago.redux.ResetTrainFavoriteAction
 import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.TrainStationAction
@@ -91,19 +93,18 @@ import java.util.Locale
 private val googleStreetClient = GoogleStreetClient
 private val preferenceService = PreferenceService
 
-private var isFavorite = mutableStateOf(false)
-private val switchedIsFavorite = mutableStateOf(false)
-private val isTrainStationRefreshing = mutableStateOf(false)
-private val snackbarHostState = mutableStateOf(SnackbarHostState())
-
 class TrainStationComposable : ComponentActivity(), StoreSubscriber<State> {
     private var googleStreetMapImage = mutableStateOf<Drawable>(ShapeDrawable())
     private var showGoogleStreetImage = mutableStateOf(false)
     private var trainEtasState = mutableStateOf(listOf<TrainEta>())
 
+    private var isFavorite = mutableStateOf(false)
+    private val applyFavorite = mutableStateOf(false)
+    private val isTrainStationRefreshing = mutableStateOf(false)
+    private val snackbarHostState = mutableStateOf(SnackbarHostState())
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        googleStreetMapImage.value = AppCompatResources.getDrawable(App.instance.applicationContext, R.drawable.placeholder_street_view)!!
         val stationId = BigInteger(intent.extras?.getString(getString(R.string.bundle_train_stationId), "0")!!)
         isFavorite.value = isFavorite(stationId)
         val trainStation = TrainService.getStation(stationId)
@@ -116,19 +117,36 @@ class TrainStationComposable : ComponentActivity(), StoreSubscriber<State> {
 
         setContent {
             ChicagoCommutesTheme {
+                val scope = rememberCoroutineScope()
+                if (applyFavorite.value) {
+                    applyFavorite.value = false
+                    LaunchedEffect(applyFavorite.value) {
+                        scope.launch {
+                            val message = if (isFavorite.value) "Added to favorites" else "Removed from favorites"
+                            snackbarHostState.value.showSnackbar(message)
+                        }
+                    }
+                }
                 TrainStationView(
                     trainStation = trainStation,
                     trainEtas = trainEtasState.value,
                     googleStreetMapImage = googleStreetMapImage.value,
                     showGoogleStreetImage = showGoogleStreetImage.value,
+                    snackbarHostState = snackbarHostState.value,
                     isFavorite = isFavorite.value,
+                    isTrainStationRefreshing = isTrainStationRefreshing.value,
+                    onRefresh = {
+                        isTrainStationRefreshing.value = true
+                        Timber.d("Start Refreshing")
+                        store.dispatch(TrainStationAction(trainStation.id))
+                    }
                 )
             }
         }
     }
 
     override fun newState(state: State) {
-        Timber.i("new state")
+        Timber.d("new state")
         when (state.trainStationStatus) {
             Status.SUCCESS -> {
                 trainEtasState.value = state.trainStationArrival.trainEtas
@@ -138,12 +156,13 @@ class TrainStationComposable : ComponentActivity(), StoreSubscriber<State> {
             }
             Status.ADD_FAVORITES -> {
                 isFavorite.value = true
-                switchedIsFavorite.value = true
-
+                applyFavorite.value = true
+                store.dispatch(ResetTrainFavoriteAction())
             }
             Status.REMOVE_FAVORITES -> {
                 isFavorite.value = false
-                switchedIsFavorite.value = true
+                applyFavorite.value = true
+                store.dispatch(ResetTrainFavoriteAction())
             }
             else -> Timber.d("Status not handled")
         }
@@ -156,13 +175,11 @@ class TrainStationComposable : ComponentActivity(), StoreSubscriber<State> {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { drawable ->
-                    val height = drawable.intrinsicHeight
-                    val width = drawable.intrinsicWidth
-                    Timber.i("Size ${height}x$width")
                     googleStreetMapImage.value = drawable
                     showGoogleStreetImage.value = true
                 },
                 { error ->
+                    // TODO: If that failed, we need to retry when the user refreshes data
                     Timber.e(error, "Error while loading street view image")
                 }
             )
@@ -177,31 +194,23 @@ fun TrainStationView(
     trainEtas: List<TrainEta>,
     googleStreetMapImage: Drawable,
     showGoogleStreetImage: Boolean,
+    snackbarHostState: SnackbarHostState,
     isFavorite: Boolean,
+    isTrainStationRefreshing: Boolean,
+    onRefresh: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-    if (switchedIsFavorite.value) {
-        switchedIsFavorite.value = false
-        LaunchedEffect(isFavorite) {
-            scope.launch {
-                val message = if (isFavorite) "Added to favorites" else "Removed from favorites"
-                snackbarHostState.value.showSnackbar(message)
-            }
-        }
-    }
+    val context = LocalContext.current
+    val activity = (LocalLifecycleOwner.current as ComponentActivity)
     SwipeRefresh(
         modifier = modifier,
-        state = rememberSwipeRefreshState(isTrainStationRefreshing.value),
-        onRefresh = {
-            isTrainStationRefreshing.value = true
-            Timber.d("Start Refreshing")
-            store.dispatch(TrainStationAction(trainStation.id))
-        },
+        state = rememberSwipeRefreshState(isTrainStationRefreshing),
+        onRefresh = onRefresh,
     ) {
         Scaffold(
-            snackbarHost = { SnackbarHost(hostState = snackbarHostState.value) { data -> Snackbar(snackbarData = data) } },
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) { data -> Snackbar(snackbarData = data) } },
             content = {
-                val activity = (LocalLifecycleOwner.current as ComponentActivity)
+
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
@@ -224,7 +233,8 @@ fun TrainStationView(
                                 exit = fadeOut(animationSpec = tween(durationMillis = 300)),
                             ) {
                                 Image(
-                                    bitmap = AppCompatResources.getDrawable(App.instance.applicationContext, R.drawable.placeholder_street_view)!!.toBitmap().asImageBitmap(),
+                                    // TODO check how to do that with jetpack apis
+                                    bitmap = AppCompatResources.getDrawable(context, R.drawable.placeholder_street_view)!!.toBitmap().asImageBitmap(),
                                     contentDescription = "Placeholder",
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier
@@ -267,8 +277,8 @@ fun TrainStationView(
                                             tint = if (isFavorite) Color(fr.cph.chicago.util.Color.yellowLineDark) else LocalContentColor.current,
                                         )
                                     }
-                                    val context = LocalContext.current
                                     IconButton(onClick = {
+                                        // TODO: show pin or do not start other app, just do it within our app
                                         val uri = String.format(Locale.ENGLISH, "geo:%f,%f", trainStation.stops[0].position.latitude, trainStation.stops[0].position.longitude)
                                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
 
@@ -276,7 +286,7 @@ fun TrainStationView(
                                             context.startActivity(intent)
                                         } else {
                                             scope.launch {
-                                                snackbarHostState.value.showSnackbar("Could not find any Map application on device")
+                                                snackbarHostState.showSnackbar("Could not find any Map application on device")
                                             }
                                         }
                                     }) {
