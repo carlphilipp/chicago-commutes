@@ -2,6 +2,7 @@ package fr.cph.chicago.core.composable
 
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
@@ -64,9 +65,6 @@ fun TopBar(title: String) {
                     contentDescription = "Back"
                 )
             }
-        },
-        actions = {
-
-        },
+        }
     )
 }

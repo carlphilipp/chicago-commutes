@@ -168,7 +168,7 @@ fun BikeFavoriteCard(modifier: Modifier = Modifier, bikeStation: BikeStation, la
 
 @Composable
 fun FavoriteCardWrapper(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
-    Column(modifier = modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 10.dp)) {
+    Column(modifier = modifier.padding(10.dp)) {
         content()
     }
 }
