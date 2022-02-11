@@ -156,6 +156,9 @@ class TrainStationComposable : ComponentActivity(), StoreSubscriber<State> {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { drawable ->
+                    val height = drawable.intrinsicHeight
+                    val width = drawable.intrinsicWidth
+                    Timber.i("Size ${height}x$width")
                     googleStreetMapImage.value = drawable
                     showGoogleStreetImage.value = true
                 },
@@ -225,8 +228,8 @@ fun TrainStationView(
                                     contentDescription = "Placeholder",
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier
-                                        .fillMaxWidth(),
-                                        //.height(245.dp),
+                                        .fillMaxWidth()
+                                        .height(233.dp), // FIXME: not sure how to handle that in a better way yet
                                 )
                             }
                             FilledTonalButton(
