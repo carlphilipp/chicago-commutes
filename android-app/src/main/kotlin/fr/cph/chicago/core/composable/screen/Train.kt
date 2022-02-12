@@ -22,6 +22,7 @@ import fr.cph.chicago.core.composable.TrainListStationActivityComposable
 import fr.cph.chicago.core.composable.TrainStationComposable
 import fr.cph.chicago.core.composable.common.ColoredBox
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.core.model.enumeration.toComposeColor
 import fr.cph.chicago.service.TrainService
 
 private val trainService = TrainService
@@ -77,7 +78,7 @@ fun Train(modifier: Modifier = Modifier) {
                     horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()) {
-                    ColoredBox(modifier = Modifier.padding(end = 20.dp), color = Color(line.color))
+                    ColoredBox(modifier = Modifier.padding(end = 20.dp), color = line.toComposeColor())
                     Text(
                         text = line.toString(),
                         style = MaterialTheme.typography.bodyLarge,

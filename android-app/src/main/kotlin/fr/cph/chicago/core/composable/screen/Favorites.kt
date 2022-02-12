@@ -66,6 +66,7 @@ import fr.cph.chicago.core.model.LastUpdate
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.core.model.enumeration.toComposeColor
 import fr.cph.chicago.redux.FavoritesAction
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.util.Util
@@ -257,7 +258,7 @@ fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA,
                 .fillMaxWidth()
                 .padding(top = 6.dp, bottom = 6.dp),
         ) {
-            ColoredBox(color = Color(trainLine.color))
+            ColoredBox(color = trainLine.toComposeColor())
             Text(
                 text = destination,
                 maxLines = 1,

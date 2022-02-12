@@ -24,6 +24,7 @@ import fr.cph.chicago.core.composable.common.ColoredBox
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.core.model.enumeration.toComposeColor
 import fr.cph.chicago.service.TrainService
 import org.apache.commons.lang3.StringUtils
 
@@ -77,12 +78,11 @@ fun TrainLineStops(title: String, trainStations: List<TrainStation>) {
                                 modifier = Modifier.weight(1f),
                             )
                             station.lines.forEach { line ->
-                                ColoredBox(modifier = Modifier.padding(start = 5.dp), color = Color(line.color))
+                                ColoredBox(modifier = Modifier.padding(start = 5.dp), color = line.toComposeColor())
                             }
                         }
                     }
                 }
-
             }
         )
     }

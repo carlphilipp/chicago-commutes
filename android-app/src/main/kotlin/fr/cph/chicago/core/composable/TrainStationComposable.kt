@@ -46,7 +46,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,6 +58,8 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.graphics.drawable.toBitmap
@@ -66,7 +67,6 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
-import fr.cph.chicago.core.App
 import fr.cph.chicago.core.composable.common.AnimatedText
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.Position
@@ -373,9 +373,13 @@ fun Stop(modifier: Modifier = Modifier, stationId: BigInteger, line: TrainLine, 
                 }
                 acc
             }
-        val etaAugmented = if(etas.isEmpty()) {
+        val etaAugmented = if (etas.isEmpty()) {
             mutableMapOf("Unknown" to mutableListOf())
         } else {
+            // FIXME: Trying to fix when a lot of times are returned
+            if (etas.containsKey("O'Hare")) {
+                etas["O'Hare"] = mutableListOf("1 min", "2 min", "3 min", "4 min", "5 min", "6 min", "7 min", "8 min")
+            }
             etas
         }
         Column {
@@ -385,24 +389,43 @@ fun Stop(modifier: Modifier = Modifier, stationId: BigInteger, line: TrainLine, 
                         val destination = eta.key
                         val direction = stop.direction.toString()
                         val actualEtas = eta.value
-                        Column(modifier = Modifier.weight(1f)) {
+                        Column(modifier = Modifier.weight(0.1f, true)) {
                             Text(
                                 text = destination,
                                 style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1,
                             )
                             Text(
                                 text = direction,
                                 style = MaterialTheme.typography.bodySmall,
+                                maxLines = 1,
                             )
                         }
-                        actualEtas.forEach {
-                            var nextTime by remember { mutableStateOf(it) }
-                            nextTime = "$it "
-                            AnimatedText(
-                                time = nextTime,
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.padding(start = 3.dp)
-                            )
+                        /*                      Text(
+                            text = destination,
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                        )*/
+                        Row(modifier = Modifier.weight(0.9f)) {
+                            actualEtas.forEach {
+                                var nextTime by remember { mutableStateOf(it) }
+                                nextTime = "$it "
+                                Text(
+                                    text = nextTime,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.padding(start = 3.dp),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    onTextLayout = { result ->
+                                        Timber.i("nextTime $nextTime ${result.firstBaseline} ${result.lastBaseline}")
+                                    },
+                                )
+                                /*AnimatedText(
+                                    time = nextTime,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.padding(start = 3.dp)
+                                )*/
+                            }
                         }
                     }
                 }
