@@ -17,6 +17,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,6 +33,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -325,14 +327,16 @@ fun TrainStationView(
                                     )
                                 }
                             }
-                            stops.sorted().forEach { stop ->
+                            Spacer(modifier = Modifier.padding(bottom = 3.dp))
+                            stops.sorted().forEachIndexed { index, stop ->
                                 Stop(
                                     stationId = trainStation.id,
                                     line = line,
                                     stop = stop,
                                     trainEtas = trainEtas
                                         .filter { trainEta -> trainEta.trainStation.id == trainStation.id }
-                                        .filter { trainEta -> trainEta.routeName == line }
+                                        .filter { trainEta -> trainEta.routeName == line },
+                                    showDivider = index != stops.size - 1
                                 )
                             }
                         }
@@ -345,12 +349,30 @@ fun TrainStationView(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Stop(modifier: Modifier = Modifier, stationId: BigInteger, line: TrainLine, stop: Stop, trainEtas: List<TrainEta>) {
+fun Stop(modifier: Modifier = Modifier, stationId: BigInteger, line: TrainLine, stop: Stop, trainEtas: List<TrainEta>, showDivider: Boolean) {
     val checkboxChecked = remember { mutableStateOf(false) }
     checkboxChecked.value = preferenceService.getTrainFilter(stationId, line, stop.direction)
+    // FIXME: This processing should probably not happen here
+    val etas = trainEtas
+        .filter { trainEta -> trainEta.stop.direction.toString() == stop.direction.toString() }
+        .fold(mutableMapOf<String, MutableList<String>>()) { acc, cur ->
+            if (acc.containsKey(cur.destName)) {
+                acc[cur.destName]!!.add(cur.timeLeftDueDelay)
+            } else {
+                acc[cur.destName] = mutableListOf(cur.timeLeftDueDelay)
+            }
+            acc
+        }
+    val etaAugmented = if (etas.isEmpty()) {
+        mutableMapOf("Unknown" to mutableListOf())
+    } else {
+        etas
+    }
+
     Row(
         modifier = modifier
             .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Checkbox(
             checked = checkboxChecked.value,
@@ -366,25 +388,14 @@ fun Stop(modifier: Modifier = Modifier, stationId: BigInteger, line: TrainLine, 
                 uncheckedColor = Color(line.color),
             ),
         )
-        val etas = trainEtas
-            .filter { trainEta -> trainEta.stop.direction.toString() == stop.direction.toString() }
-            .fold(mutableMapOf<String, MutableList<String>>()) { acc, cur ->
-                if (acc.containsKey(cur.destName)) {
-                    acc[cur.destName]!!.add(cur.timeLeftDueDelay)
-                } else {
-                    acc[cur.destName] = mutableListOf(cur.timeLeftDueDelay)
-                }
-                acc
-            }
-        val etaAugmented = if (etas.isEmpty()) {
-            mutableMapOf("Unknown" to mutableListOf())
-        } else {
-            etas
-        }
         Column {
             etaAugmented
                 .forEach { eta ->
-                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
                         val destination = eta.key
                         val direction = stop.direction.toString()
                         val actualEtas = eta.value
@@ -413,8 +424,14 @@ fun Stop(modifier: Modifier = Modifier, stationId: BigInteger, line: TrainLine, 
                         }
                     }
                 }
+            if (showDivider) {
+                Row(Modifier.padding(top = 8.dp, bottom = 8.dp)) {
+                    Divider(thickness = 1.dp)
+                }
+            }
         }
     }
+
 }
 
 fun isFavorite(trainStationId: BigInteger): Boolean {
