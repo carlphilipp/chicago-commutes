@@ -46,8 +46,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startActivity
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
@@ -118,14 +121,15 @@ fun TrainFavoriteCard(modifier: Modifier = Modifier, trainStation: TrainStation,
             }
         }
 
+        val context = LocalContext.current
         FooterCard(detailsOnClick = {
             // Start train station activity
             val extras = Bundle()
-            val intent = Intent(App.instance.applicationContext, TrainStationComposable::class.java)
-            extras.putString(App.instance.getString(R.string.bundle_train_stationId), trainStation.id.toString())
+            val intent = Intent(context, TrainStationComposable::class.java)
+            extras.putString(context.getString(R.string.bundle_train_stationId), trainStation.id.toString())
             intent.putExtras(extras)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            App.instance.startActivity(intent)
+            startActivity(context, intent, null)
         })
     }
 }
