@@ -68,6 +68,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.composable.common.AnimatedText
+import fr.cph.chicago.core.composable.common.ShimmerAnimation
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Stop
@@ -84,19 +85,21 @@ import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import java.math.BigInteger
-import java.util.Locale
 import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
+import java.math.BigInteger
+import java.util.Locale
 
 private val googleStreetClient = GoogleStreetClient
 private val preferenceService = PreferenceService
+private val trainService = TrainService
 
 class TrainStationComposable : ComponentActivity(), StoreSubscriber<State> {
     private var googleStreetMapImage = mutableStateOf<Drawable>(ShapeDrawable())
     private var showGoogleStreetImage = mutableStateOf(false)
     private var trainEtasState = mutableStateOf(listOf<TrainEta>())
+    private var showStationName = mutableStateOf(false)
 
     private var isFavorite = mutableStateOf(false)
     private val applyFavorite = mutableStateOf(false)
@@ -107,7 +110,7 @@ class TrainStationComposable : ComponentActivity(), StoreSubscriber<State> {
         super.onCreate(savedInstanceState)
         val stationId = BigInteger(intent.extras?.getString(getString(R.string.bundle_train_stationId), "0")!!)
         isFavorite.value = isFavorite(stationId)
-        val trainStation = TrainService.getStation(stationId)
+        val trainStation = trainService.getStation(stationId)
 
         val position = trainStation.stops[0].position
         loadGoogleStreetImage(position)
@@ -135,6 +138,7 @@ class TrainStationComposable : ComponentActivity(), StoreSubscriber<State> {
                     snackbarHostState = snackbarHostState.value,
                     isFavorite = isFavorite.value,
                     isTrainStationRefreshing = isTrainStationRefreshing.value,
+                    showStationName = showStationName.value,
                     onRefresh = {
                         isTrainStationRefreshing.value = true
                         Timber.d("Start Refreshing")
@@ -146,13 +150,16 @@ class TrainStationComposable : ComponentActivity(), StoreSubscriber<State> {
     }
 
     override fun newState(state: State) {
-        Timber.d("new state")
+        Timber.d("new state ${state.trainStationStatus}")
         when (state.trainStationStatus) {
             Status.SUCCESS -> {
                 trainEtasState.value = state.trainStationArrival.trainEtas
+                showStationName.value = true
+                store.dispatch(ResetTrainFavoriteAction())
             }
             Status.FAILURE -> {
                 // TODO
+                store.dispatch(ResetTrainFavoriteAction())
             }
             Status.ADD_FAVORITES -> {
                 isFavorite.value = true
@@ -197,6 +204,7 @@ fun TrainStationView(
     snackbarHostState: SnackbarHostState,
     isFavorite: Boolean,
     isTrainStationRefreshing: Boolean,
+    showStationName: Boolean,
     onRefresh: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -210,11 +218,11 @@ fun TrainStationView(
         Scaffold(
             snackbarHost = { SnackbarHost(hostState = snackbarHostState) { data -> Snackbar(snackbarData = data) } },
             content = {
-
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
                         .fillMaxHeight()
+                        //.padding(bottom = 20.dp)
                 ) {
                     item {
                         Surface(modifier = Modifier.zIndex(1f)) {
@@ -336,6 +344,7 @@ fun TrainStationView(
                                     trainEtas = trainEtas
                                         .filter { trainEta -> trainEta.trainStation.id == trainStation.id }
                                         .filter { trainEta -> trainEta.routeName == line },
+                                    showStationName = showStationName,
                                     showDivider = index != stops.size - 1
                                 )
                             }
@@ -349,7 +358,7 @@ fun TrainStationView(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Stop(modifier: Modifier = Modifier, stationId: BigInteger, line: TrainLine, stop: Stop, trainEtas: List<TrainEta>, showDivider: Boolean) {
+fun Stop(modifier: Modifier = Modifier, stationId: BigInteger, line: TrainLine, stop: Stop, trainEtas: List<TrainEta>, showStationName: Boolean, showDivider: Boolean) {
     val checkboxChecked = remember { mutableStateOf(false) }
     checkboxChecked.value = preferenceService.getTrainFilter(stationId, line, stop.direction)
     // FIXME: This processing should probably not happen here
@@ -400,11 +409,15 @@ fun Stop(modifier: Modifier = Modifier, stationId: BigInteger, line: TrainLine, 
                         val direction = stop.direction.toString()
                         val actualEtas = eta.value
                         Column(modifier = Modifier.padding(end = 5.dp)) {
-                            Text(
-                                text = destination,
-                                style = MaterialTheme.typography.titleMedium,
-                                maxLines = 1,
-                            )
+                            if (showStationName) {
+                                Text(
+                                    text = destination,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    maxLines = 1,
+                                )
+                            } else {
+                                ShimmerAnimation(width = 100.dp, height = 25.dp)
+                            }
                             Text(
                                 text = direction,
                                 style = MaterialTheme.typography.bodySmall,

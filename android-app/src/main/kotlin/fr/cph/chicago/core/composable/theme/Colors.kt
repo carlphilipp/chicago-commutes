@@ -4,6 +4,12 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 
+val ShimmerColorShades = listOf(
+    Color.LightGray.copy(0.9f),
+    Color.LightGray.copy(0.2f),
+    Color.LightGray.copy(0.9f),
+)
+
 val md_theme_light_primary = Color(0xFF315da8)
 val md_theme_light_onPrimary = Color(0xFFffffff)
 val md_theme_light_primaryContainer = Color(0xFFd6e2ff)
