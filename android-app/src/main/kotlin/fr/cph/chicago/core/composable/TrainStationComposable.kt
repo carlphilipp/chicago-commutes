@@ -58,8 +58,6 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.text.TextLayoutResult
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.graphics.drawable.toBitmap
@@ -84,11 +82,11 @@ import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import java.math.BigInteger
+import java.util.Locale
 import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import java.math.BigInteger
-import java.util.Locale
 
 private val googleStreetClient = GoogleStreetClient
 private val preferenceService = PreferenceService
@@ -214,7 +212,8 @@ fun TrainStationView(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .fillMaxHeight()) {
+                        .fillMaxHeight()
+                ) {
                     item {
                         Surface(modifier = Modifier.zIndex(1f)) {
                             AnimatedVisibility(
@@ -261,9 +260,11 @@ fun TrainStationView(
                                 .fillMaxWidth()
                         ) {
                             Column {
-                                Row(modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 7.dp), horizontalArrangement = Arrangement.Center) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 7.dp), horizontalArrangement = Arrangement.Center
+                                ) {
                                     Text(
                                         text = trainStation.name,
                                         style = MaterialTheme.typography.titleLarge,
@@ -301,9 +302,11 @@ fun TrainStationView(
                     }
                     items(trainStation.stopByLines.keys.toList()) { line ->
                         val stops = trainStation.stopByLines[line]!!
-                        Column(modifier = Modifier
-                            .padding(horizontal = 20.dp)
-                            .fillMaxWidth()) {
+                        Column(
+                            modifier = Modifier
+                                .padding(horizontal = 20.dp)
+                                .fillMaxWidth()
+                        ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center,
@@ -376,10 +379,6 @@ fun Stop(modifier: Modifier = Modifier, stationId: BigInteger, line: TrainLine, 
         val etaAugmented = if (etas.isEmpty()) {
             mutableMapOf("Unknown" to mutableListOf())
         } else {
-            // FIXME: Trying to fix when a lot of times are returned
-            if (etas.containsKey("O'Hare")) {
-                etas["O'Hare"] = mutableListOf("1 min", "2 min", "3 min", "4 min", "5 min", "6 min", "7 min", "8 min")
-            }
             etas
         }
         Column {
@@ -389,7 +388,7 @@ fun Stop(modifier: Modifier = Modifier, stationId: BigInteger, line: TrainLine, 
                         val destination = eta.key
                         val direction = stop.direction.toString()
                         val actualEtas = eta.value
-                        Column(modifier = Modifier.weight(0.1f, true)) {
+                        Column(modifier = Modifier.padding(end = 5.dp)) {
                             Text(
                                 text = destination,
                                 style = MaterialTheme.typography.titleMedium,
@@ -401,30 +400,15 @@ fun Stop(modifier: Modifier = Modifier, stationId: BigInteger, line: TrainLine, 
                                 maxLines = 1,
                             )
                         }
-                        /*                      Text(
-                            text = destination,
-                            style = MaterialTheme.typography.titleMedium,
-                            maxLines = 1,
-                        )*/
-                        Row(modifier = Modifier.weight(0.9f)) {
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                             actualEtas.forEach {
-                                var nextTime by remember { mutableStateOf(it) }
-                                nextTime = "$it "
-                                Text(
-                                    text = nextTime,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier.padding(start = 3.dp),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    onTextLayout = { result ->
-                                        Timber.i("nextTime $nextTime ${result.firstBaseline} ${result.lastBaseline}")
-                                    },
-                                )
-                                /*AnimatedText(
-                                    time = nextTime,
+                                var currentTime by remember { mutableStateOf(it) }
+                                currentTime = "$it "
+                                AnimatedText(
+                                    time = currentTime,
                                     style = MaterialTheme.typography.bodyMedium,
                                     modifier = Modifier.padding(start = 3.dp)
-                                )*/
+                                )
                             }
                         }
                     }
