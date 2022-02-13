@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -109,8 +110,13 @@ fun LargeImagePlaceHolderAnimated() {
       start=specifies the position to start with in cartesian like system Offset(10f,10f) means x(10,0) , y(0,10)
       end = Animate the end position to give the shimmer effect using the transition created above
     */
+    val colorShades = listOf(
+        MaterialTheme.colorScheme.outline.copy(0.5f),
+        MaterialTheme.colorScheme.outline.copy(0.1f),
+        MaterialTheme.colorScheme.outline.copy(0.5f),
+    )
     val brush = Brush.linearGradient(
-        colors = ShimmerColorShades,
+        colors = colorShades,
         start = Offset(10f, 10f),
         end = Offset(translateAnim, translateAnim)
     )
@@ -147,8 +153,13 @@ fun ShimmerAnimation(width: Dp = 150.dp, height: Dp = 150.dp) {
       start=specifies the position to start with in cartesian like system Offset(10f,10f) means x(10,0) , y(0,10)
       end = Animate the end position to give the shimmer effect using the transition created above
     */
+    val colorShades = listOf(
+        MaterialTheme.colorScheme.outline.copy(0.5f),
+        MaterialTheme.colorScheme.outline.copy(0.1f),
+        MaterialTheme.colorScheme.outline.copy(0.5f),
+    )
     val brush = Brush.linearGradient(
-        colors = ShimmerColorShades,
+        colors = colorShades,
         start = Offset(10f, 10f),
         end = Offset(translateAnim, translateAnim)
     )
