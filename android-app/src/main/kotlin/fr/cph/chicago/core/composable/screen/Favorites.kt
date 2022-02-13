@@ -37,6 +37,8 @@ import androidx.core.content.ContextCompat.startActivity
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
+import fr.cph.chicago.core.activity.station.BusStopActivity
+import fr.cph.chicago.core.composable.BusStationComposable
 import fr.cph.chicago.core.composable.TrainStationComposable
 import fr.cph.chicago.core.composable.common.AnimatedText
 import fr.cph.chicago.core.composable.common.ColoredBox
@@ -136,8 +138,20 @@ fun BusFavoriteCard(modifier: Modifier = Modifier, busRoute: BusRoute, lastUpdat
                 )
             }
         }
+        val context = LocalContext.current
+        FooterCard( detailsOnClick = {
+/*            val intent = Intent(context, BusStationComposable::class.java)
+            val extras = Bundle()
+            extras.putString(context.getString(R.string.bundle_bus_stop_id), busDetails.stopId.toString())
+            extras.putString(context.getString(R.string.bundle_bus_route_id), busDetails.busRouteId)
+            extras.putString(context.getString(R.string.bundle_bus_route_name), busDetails.routeName)
+            extras.putString(context.getString(R.string.bundle_bus_bound), busDetails.bound)
+            extras.putString(context.getString(R.string.bundle_bus_bound_title), busDetails.boundTitle)
 
-        FooterCard()
+            intent.putExtras(extras)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(context, intent, null)*/
+        })
     }
 }
 

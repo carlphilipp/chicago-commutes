@@ -177,6 +177,22 @@
             android:theme="@style/Theme.ComposeTheming"
             android:exported="false"/>
 
+        <activity
+            android:name=".core.composable.BusBoundActivityComposable"
+            android:configChanges="uiMode"
+            android:label="@string/developer_options"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.ComposeTheming"
+            android:exported="false"/>
+
+        <activity
+            android:name=".core.composable.BusStationComposable"
+            android:configChanges="uiMode"
+            android:label="@string/developer_options"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.ComposeTheming"
+            android:exported="false"/>
+
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />

@@ -264,16 +264,6 @@ internal val removeTrainFavorites: Middleware<StateType> = { _, _ ->
     }
 }
 
-internal val resetTrainFavorites: Middleware<StateType> = { _, _ ->
-    { next ->
-        { action ->
-            (action as? ResetTrainFavoriteAction)?.let {
-                // TODO?
-            } ?: next(action)
-        }
-    }
-}
-
 internal val addBusFavorites: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->

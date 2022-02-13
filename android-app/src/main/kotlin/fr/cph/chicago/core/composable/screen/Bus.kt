@@ -1,5 +1,7 @@
 package fr.cph.chicago.core.composable.screen
 
+import android.content.Intent
+import android.os.Bundle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,9 +23,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.content.ContextCompat.startActivity
+import fr.cph.chicago.R
+import fr.cph.chicago.core.activity.BusBoundActivity
+import fr.cph.chicago.core.activity.map.BusMapActivity
+import fr.cph.chicago.core.composable.BusBoundActivityComposable
 import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.service.BusService
@@ -83,6 +91,7 @@ fun BusRouteDialog(show: Boolean, busRoute: BusRoute, hideDialog: () -> Unit) {
     if (show) {
         var isLoading by remember { mutableStateOf(true) }
         var foundBusDirections by remember { mutableStateOf(BusDirections("")) }
+        val context = LocalContext.current
 
         busService.loadBusDirectionsSingle(busRoute.id)
             .subscribe(
@@ -129,11 +138,20 @@ fun BusRouteDialog(show: Boolean, busRoute: BusRoute, hideDialog: () -> Unit) {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        foundBusDirections.busDirections.forEach { busDirection ->
+                        foundBusDirections.busDirections.forEachIndexed { index, busDirection ->
                             OutlinedButton(
                                 modifier = Modifier.fillMaxWidth(),
                                 onClick = {
-
+                                    val lBusDirections = foundBusDirections.busDirections
+                                    val extras = Bundle()
+                                    val intent = Intent(context, BusBoundActivityComposable::class.java)
+                                    extras.putString(context.getString(R.string.bundle_bus_route_id), busRoute.id)
+                                    extras.putString(context.getString(R.string.bundle_bus_route_name), busRoute.name)
+                                    extras.putString(context.getString(R.string.bundle_bus_bound), lBusDirections[index].text)
+                                    extras.putString(context.getString(R.string.bundle_bus_bound_title), lBusDirections[index].text)
+                                    intent.putExtras(extras)
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    startActivity(context, intent, null)
                                 },
                             ) {
                                 Text(
@@ -145,7 +163,20 @@ fun BusRouteDialog(show: Boolean, busRoute: BusRoute, hideDialog: () -> Unit) {
                         OutlinedButton(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = {
-
+                                val extras = Bundle()
+                                val lBusDirections = foundBusDirections.busDirections
+                                val busDirectionArray = arrayOfNulls<String>(lBusDirections.size)
+                                var i = 0
+                                for (busDir in lBusDirections) {
+                                    busDirectionArray[i++] = busDir.text
+                                }
+                                // FIXME: create new activity with correct theme
+                                val intent = Intent(context, BusMapActivity::class.java)
+                                extras.putString(context.getString(R.string.bundle_bus_route_id), foundBusDirections.id)
+                                extras.putStringArray(context.getString(R.string.bundle_bus_bounds), busDirectionArray)
+                                intent.putExtras(extras)
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                startActivity(context, intent, null)
                             },
                         ) {
                             Text(

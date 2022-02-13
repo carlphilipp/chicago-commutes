@@ -122,7 +122,9 @@ data class RemoveTrainFavoriteAction(
     val trainFavorites: List<BigInteger> = listOf()
 ) : Action
 
-data class ResetTrainFavoriteAction(val unit: Unit = Unit) : Action
+data class ResetTrainStationStatusAction(val unit: Unit = Unit) : Action
+
+data class ResetBusStationStatusAction(val unit: Unit = Unit) : Action
 
 data class AddBusFavoriteAction(
     val busRouteId: String = StringUtils.EMPTY,
