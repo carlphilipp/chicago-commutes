@@ -2,6 +2,7 @@ package fr.cph.chicago.core.composable
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
 import android.net.Uri
@@ -24,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -183,6 +185,8 @@ class TrainStationComposable : ComponentActivity(), StoreSubscriber<State> {
             .subscribe(
                 { drawable ->
                     googleStreetMapImage.value = drawable
+                    val bit = (drawable as BitmapDrawable).bitmap
+                    Timber.i("Dim: ${bit.width}x${bit.height}")
                     showGoogleStreetImage.value = true
                 },
                 { error ->
@@ -222,18 +226,19 @@ fun TrainStationView(
                     modifier = Modifier
                         .fillMaxSize()
                         .fillMaxHeight()
-                        //.padding(bottom = 20.dp)
                 ) {
                     item {
-                        Surface(modifier = Modifier.zIndex(1f)) {
+                        Surface(modifier = Modifier.zIndex(1f)/*.requiredHeight(400.dp)*/) {
                             AnimatedVisibility(
                                 visible = showGoogleStreetImage,
                                 enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
                             ) {
+                                val bit = googleStreetMapImage.toBitmap().asImageBitmap()
+                                Timber.i("Dim2: ${bit.width}x${bit.height}")
                                 Image(
-                                    bitmap = googleStreetMapImage.toBitmap().asImageBitmap(),
+                                    bitmap = bit,
                                     contentDescription = "Google image street view",
-                                    contentScale = ContentScale.Crop,
+                                    contentScale = ContentScale.FillWidth,
                                     modifier = Modifier.fillMaxWidth(),
                                 )
                             }
@@ -241,7 +246,8 @@ fun TrainStationView(
                                 visible = !showGoogleStreetImage,
                                 exit = fadeOut(animationSpec = tween(durationMillis = 300)),
                             ) {
-                                Image(
+                                ShimmerAnimation(width = 400.dp, height = 258.dp)
+                                /*Image(
                                     // TODO check how to do that with jetpack apis
                                     bitmap = AppCompatResources.getDrawable(context, R.drawable.placeholder_street_view)!!.toBitmap().asImageBitmap(),
                                     contentDescription = "Placeholder",
@@ -249,7 +255,7 @@ fun TrainStationView(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(233.dp), // FIXME: not sure how to handle that in a better way yet
-                                )
+                                )*/
                             }
                             FilledTonalButton(
                                 modifier = Modifier.padding(10.dp),

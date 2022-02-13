@@ -44,7 +44,10 @@ object GoogleStreetClient {
             location = "$latitude,$longitude",
             size = "${width}x${height}"
         )
-            .map { response -> Drawable.createFromStream(ByteArrayInputStream(response.bytes()), "src name") }
+            .map { response ->
+                Thread.sleep(2000)
+                Drawable.createFromStream(ByteArrayInputStream(response.bytes()), "src name")
+            }
     }
 }
 
