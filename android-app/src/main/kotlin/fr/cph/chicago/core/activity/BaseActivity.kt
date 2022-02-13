@@ -52,6 +52,7 @@ class BaseActivity : ComponentActivity(), StoreSubscriber<State> {
         super.onCreate(savedInstanceState)
         if (!this.isFinishing) {
             binding = LoadingBinding.inflate(layoutInflater)
+            // TODO: Use https://foso.github.io/Jetpack-Compose-Playground/material/circularprogressindicator/
             setContentView(R.layout.loading)
             store.subscribe(this)
             setUpRealm()

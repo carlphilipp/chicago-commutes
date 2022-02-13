@@ -3,12 +3,16 @@ package fr.cph.chicago.core.composable
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import fr.cph.chicago.core.composable.screen.screens
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
+import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.Favorites
 import fr.cph.chicago.redux.BusRoutesAndBikeStationAction
+import fr.cph.chicago.redux.ResetBusRoutesFavoritesAction
 import fr.cph.chicago.redux.State
+import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.task.refreshTask
 import io.reactivex.rxjava3.core.Observable
@@ -17,8 +21,10 @@ import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
 val isRefreshing = mutableStateOf(false)
+var busRoutes = mutableStateListOf<BusRoute>()
 
 class MainActivityComposable : ComponentActivity(), StoreSubscriber<State> {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -38,6 +44,11 @@ class MainActivityComposable : ComponentActivity(), StoreSubscriber<State> {
         Timber.i("new state")
         Favorites.refreshFavorites()
         isRefreshing.value = false
+        if (state.busRoutesStatus == Status.SUCCESS) {
+            busRoutes.clear()
+            busRoutes.addAll(state.busRoutes)
+            store.dispatch(ResetBusRoutesFavoritesAction())
+        }
     }
 
     private fun startRefreshTask() {

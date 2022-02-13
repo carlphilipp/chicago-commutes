@@ -57,7 +57,8 @@ data class FavoritesAction(
         trainArrivalDTO = TrainArrivalDTO(mutableMapOf(), false),
         busArrivalDTO = BusArrivalDTO(listOf(), false),
         bikeError = false,
-        bikeStations = listOf())
+        bikeStations = listOf()
+    )
 ) : Action
 
 // Bus Routes
@@ -74,6 +75,8 @@ data class BusRoutesAndBikeStationAction(
     val busRoutesError: Boolean = false,
     val bikeStationsError: Boolean = false
 ) : Action
+
+data class ResetBusRoutesFavoritesAction(val unit: Unit = Unit) : Action
 
 // Train station activity
 data class TrainStationAction(
@@ -119,9 +122,7 @@ data class RemoveTrainFavoriteAction(
     val trainFavorites: List<BigInteger> = listOf()
 ) : Action
 
-data class ResetTrainFavoriteAction(
-    val random: String = ""
-) : Action
+data class ResetTrainFavoriteAction(val unit: Unit = Unit) : Action
 
 data class AddBusFavoriteAction(
     val busRouteId: String = StringUtils.EMPTY,

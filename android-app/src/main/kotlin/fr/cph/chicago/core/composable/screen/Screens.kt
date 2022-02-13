@@ -12,11 +12,12 @@ import androidx.compose.material.icons.filled.Train
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import fr.cph.chicago.core.composable.busRoutes
 
 sealed class DrawerScreens(val title: String, val route: String, val icon: ImageVector, val component: @Composable () -> Unit) {
     object Favorites : DrawerScreens("Favorites", "fav", Icons.Filled.Favorite, { Favorites() })
     object Train : DrawerScreens("Train", "train", Icons.Filled.Train, { Train() })
-    object Bus : DrawerScreens("Bus", "bus", Icons.Filled.DirectionsBus, { Bus() })
+    object Bus : DrawerScreens("Bus", "bus", Icons.Filled.DirectionsBus, { Bus(busRoutes = busRoutes) })
     object Divvy : DrawerScreens("Divvy", "divvy", Icons.Filled.DirectionsBike, { Divvy() })
     object Nearby : DrawerScreens("Nearby", "nearby", Icons.Filled.NearMe, { Nearby() })
     object Map : DrawerScreens("CTA map", "map", Icons.Filled.Map, { Map() })
