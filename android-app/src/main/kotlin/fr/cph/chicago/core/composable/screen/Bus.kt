@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import fr.cph.chicago.core.model.BusDirections
@@ -96,12 +97,22 @@ fun BusRouteDialog(show: Boolean, busRoute: BusRoute, hideDialog: () -> Unit) {
             )
 
         AlertDialog(
+            modifier = Modifier.padding(horizontal = 50.dp),
             onDismissRequest = hideDialog,
-            // FIXME workaround because the dialog do not resize after loading. This property makes it work but it also do a weird animation
-            // Issue: https://issuetracker.google.com/issues/194911971?pli=1
+            // FIXME workaround because the dialog do not resize after loading. Issue: https://issuetracker.google.com/issues/194911971?pli=1
             properties = DialogProperties(usePlatformDefaultWidth = false),
             title = {
-                Text(text = "Route: ${busRoute.id}")
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        style = MaterialTheme.typography.titleMedium,
+                        text = "${busRoute.id} - ${busRoute.name}",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             },
             text = {
                 if (isLoading) {
@@ -112,23 +123,35 @@ fun BusRouteDialog(show: Boolean, busRoute: BusRoute, hideDialog: () -> Unit) {
                     ) {
                         CircularProgressIndicator()
                     }
-                    /*Column {
-                        for (i in 0..5) {
-                            TextButton(onClick = { *//*TODO*//* }) {
+                } else {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        foundBusDirections.busDirections.forEach { busDirection ->
+                            OutlinedButton(
+                                modifier = Modifier.fillMaxWidth(),
+                                onClick = {
+
+                                },
+                            ) {
                                 Text(
-                                    text = "$i"
+                                    text = busDirection.text,
+                                    style = MaterialTheme.typography.bodyMedium,
                                 )
                             }
                         }
-                    }*/
-                } else {
-                    Column {
-                        foundBusDirections.busDirections.forEach {
-                            TextButton(onClick = { /*TODO*/ }) {
-                                Text(
-                                    text = it.text
-                                )
-                            }
+                        OutlinedButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+
+                            },
+                        ) {
+                            Text(
+                                text = "See all buses on line ${busRoute.id}", // FIXME: Add icon
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
                         }
                     }
                 }
@@ -136,9 +159,9 @@ fun BusRouteDialog(show: Boolean, busRoute: BusRoute, hideDialog: () -> Unit) {
             confirmButton = {
             },
             dismissButton = {
-                OutlinedButton(onClick = hideDialog) {
-                    Text("Dismiss")
-                }
+                /* OutlinedButton(onClick = hideDialog) {
+                     Text("Dismiss")
+                 }*/
             }
         )
     }
