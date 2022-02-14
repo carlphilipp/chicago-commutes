@@ -117,7 +117,7 @@ fun BusBoundView(
         onRefresh = onRefresh,
     ) {
         Scaffold(
-            topBar = { TopBar("$busRouteId $busRouteName ($boundTitle)") },
+            topBar = { TopBar("$busRouteId - $boundTitle") },
             snackbarHost = { SnackbarHost(hostState = snackbarHostState) { data -> Snackbar(snackbarData = data) } },
             content = {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {

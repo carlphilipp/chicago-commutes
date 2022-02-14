@@ -51,7 +51,7 @@ fun TopBar(title: String, openDrawer: () -> Unit) {
 // TODO refactor
 @Composable
 fun TopBar(title: String) {
-    val activity = (LocalLifecycleOwner.current as ComponentActivity)
+    val activity = LocalLifecycleOwner.current as ComponentActivity
     CenterAlignedTopAppBar(
         title = {
             Text(

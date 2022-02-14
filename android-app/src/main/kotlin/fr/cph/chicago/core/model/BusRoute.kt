@@ -32,6 +32,10 @@ import org.apache.commons.lang3.StringUtils
 data class BusRoute(val id: String, val name: String) : Parcelable {
 
     companion object {
+        fun buildEmpty(): BusRoute {
+            return BusRoute("", "")
+        }
+
         @JvmField
         val CREATOR: Parcelable.Creator<BusRoute> = object : Parcelable.Creator<BusRoute> {
             override fun createFromParcel(source: Parcel): BusRoute {

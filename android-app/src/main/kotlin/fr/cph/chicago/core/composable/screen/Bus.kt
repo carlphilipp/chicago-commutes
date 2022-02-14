@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
@@ -41,7 +42,7 @@ private val busService = BusService
 fun Bus(modifier: Modifier = Modifier, busRoutes: List<BusRoute>) {
 
     var showDialog by remember { mutableStateOf(false) }
-    var selectedBusRoute by remember { mutableStateOf(BusRoute("", "")) }
+    var selectedBusRoute by remember { mutableStateOf(BusRoute.buildEmpty()) }
 
     LazyColumn(modifier = modifier.fillMaxWidth()) {
         item {
@@ -63,15 +64,17 @@ fun Bus(modifier: Modifier = Modifier, busRoutes: List<BusRoute>) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        modifier = Modifier.padding(end = 20.dp),
+                        modifier = Modifier.requiredWidth(50.dp),
                         text = busRoute.id,
-                        style = MaterialTheme.typography.titleSmall,
+                        style = MaterialTheme.typography.bodyLarge,
                         maxLines = 1,
                     )
+
                     Text(
                         busRoute.name,
                         style = MaterialTheme.typography.bodyLarge,
                         maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }
@@ -113,7 +116,8 @@ fun BusRouteDialog(show: Boolean, busRoute: BusRoute, hideDialog: () -> Unit) {
                 Row(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()) {
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Text(
                         style = MaterialTheme.typography.titleMedium,
                         text = "${busRoute.id} - ${busRoute.name}",
