@@ -223,6 +223,7 @@ fun ShimmerLargeItem(
     }
 }
 
+// FIXME: TextField is not implemented yet in material3. This should be replaced by the official implementation when available
 @Composable
 fun TextFieldMaterial3(modifier: Modifier = Modifier, text: TextFieldValue, onValueChange: (TextFieldValue) -> Unit) {
     Surface(

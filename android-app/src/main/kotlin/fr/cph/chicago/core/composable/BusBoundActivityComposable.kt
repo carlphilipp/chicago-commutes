@@ -20,16 +20,21 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.station.BusStopActivity
+import fr.cph.chicago.core.composable.common.TextFieldMaterial3
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.service.BusService
@@ -39,13 +44,14 @@ import timber.log.Timber
 
 private val busService = BusService
 
+private var busStops = mutableStateOf(listOf<BusStop>())
+
 class BusBoundActivityComposable : ComponentActivity() {
 
     private lateinit var busRouteId: String
     private lateinit var busRouteName: String
     private lateinit var bound: String
     private lateinit var boundTitle: String
-    private var busStops = mutableStateOf(listOf<BusStop>())
     private val isRefreshing = mutableStateOf(false)
     private val snackbarHostState = mutableStateOf(SnackbarHostState())
 
@@ -61,7 +67,7 @@ class BusBoundActivityComposable : ComponentActivity() {
         setContent {
             ChicagoCommutesTheme {
                 BusBoundView(
-                    busStops = busStops.value,
+                    /*busStops = busStops.value,*/
                     busRouteId = busRouteId,
                     busRouteName = busRouteName,
                     bound = bound,
@@ -105,12 +111,14 @@ fun BusBoundView(
     busRouteName: String,
     bound: String,
     boundTitle: String,
-    busStops: List<BusStop>,
+    /*busStops: List<BusStop>,*/
     isRefreshing: Boolean,
     snackbarHostState: SnackbarHostState,
     onRefresh: () -> Unit,
 ) {
     val context = LocalContext.current
+    var text by remember { mutableStateOf(TextFieldValue("")) }
+    var searchBusStops by remember { mutableStateOf(busStops.value) }
     SwipeRefresh(
         modifier = modifier,
         state = rememberSwipeRefreshState(isRefreshing),
@@ -121,7 +129,18 @@ fun BusBoundView(
             snackbarHost = { SnackbarHost(hostState = snackbarHostState) { data -> Snackbar(snackbarData = data) } },
             content = {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(busStops) { busStop ->
+                    item {
+                        TextFieldMaterial3(
+                            text = text,
+                            onValueChange = { value ->
+                                text = value
+                                searchBusStops = busStops.value.filter { busStop ->
+                                    busStop.description.contains(value.text, true)
+                                }
+                            }
+                        )
+                    }
+                    items(searchBusStops) { busStop ->
                         TextButton(
                             modifier = Modifier
                                 .fillMaxWidth()
