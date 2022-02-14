@@ -10,6 +10,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Icon
+import androidx.compose.material.TextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +30,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.SemanticsProperties.ImeAction
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -46,7 +54,30 @@ fun Bus(modifier: Modifier = Modifier, busRoutes: List<BusRoute>) {
 
     LazyColumn(modifier = modifier.fillMaxWidth()) {
         item {
-            // Search
+            TextField(
+                value = "Search",
+                onValueChange = { value ->
+
+                },
+                label = {
+                    Text(text = "Search")
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Done,
+                ),
+                leadingIcon = {
+                    Icon(Icons.Filled.Search)
+                },
+                onImeActionPerformed = { action, softKeyboardController ->
+                    if (action == ImeAction.Done) {
+                        viewModel.newSearch(query)
+                        softKeyboardController?.hideSoftwareKeyboard()
+                    }
+                },
+                textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
+                backgroundColor = MaterialTheme.colorScheme.surface
+            )
         }
         items(busRoutes) { busRoute ->
             TextButton(
