@@ -2,15 +2,18 @@ package fr.cph.chicago.core.composable.screen
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,6 +21,9 @@ import androidx.compose.material.ContentAlpha
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.TextFieldDefaults.BackgroundOpacity
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LocalContentColor
@@ -34,7 +40,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
@@ -44,6 +49,7 @@ import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.map.BusMapActivity
 import fr.cph.chicago.core.composable.BusBoundActivityComposable
+import fr.cph.chicago.core.composable.common.TextFieldMaterial3
 import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.service.BusService
@@ -61,55 +67,15 @@ fun Bus(modifier: Modifier = Modifier, busRoutes: List<BusRoute>) {
 
     LazyColumn(modifier = modifier.fillMaxWidth()) {
         item {
-            Surface(
-                modifier = modifier
-                    .padding(start = 8.dp, top = 8.dp, end = 8.dp)
-                    .fillMaxWidth()
-                    .height(50.dp).fillMaxWidth()/*.background(Color.Red)*/,
-                color = Color.Red,
-                shape = RoundedCornerShape(20.0.dp),
-
-            ) {
-                TextButton(
-                    onClick = { },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(),
-                ) {
-                    TextField(
-                        value = text,
-                        onValueChange = { value ->
-                            text = value
-                            searchBusRoutes = busRoutes.filter { busRoute ->
-                                busRoute.id.contains(value.text, true) || busRoute.name.contains(value.text, true)
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            textColor = LocalContentColor.current.copy(LocalContentAlpha.current),
-                            //disabledTextColor = textColor.copy(ContentAlpha.disabled),
-                            backgroundColor = Color.Transparent,
-                            cursorColor = MaterialTheme.colorScheme.primary,
-                            errorCursorColor = MaterialTheme.colorScheme.error,
-                            focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = ContentAlpha.high),
-                            unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = ContentAlpha.disabled),
-                            //disabledBorderColor = unfocusedBorderColor.copy(alpha = ContentAlpha.disabled),
-                            errorBorderColor = MaterialTheme.colorScheme.error,
-                            leadingIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = TextFieldDefaults.IconOpacity),
-                            //disabledLeadingIconColor = leadingIconColor.copy(alpha = ContentAlpha.disabled),
-                            errorLeadingIconColor = MaterialTheme.colorScheme.error,
-                            trailingIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = TextFieldDefaults.IconOpacity),
-                            //disabledTrailingIconColor = trailingIconColor.copy(alpha = ContentAlpha.disabled),
-                            errorTrailingIconColor = MaterialTheme.colorScheme.error,
-                            focusedLabelColor = MaterialTheme.colorScheme.primary.copy(alpha = ContentAlpha.high),
-                            unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(ContentAlpha.medium),
-                            //disabledLabelColor = unfocusedLabelColor.copy(ContentAlpha.disabled),
-                            errorLabelColor = MaterialTheme.colorScheme.error,
-                            placeholderColor = MaterialTheme.colorScheme.onSurface.copy(ContentAlpha.medium),
-                            //disabledPlaceholderColor = placeholderColor.copy(ContentAlpha.disabled)),
-                        ))
+            TextFieldMaterial3(
+                text = text,
+                onValueChange = { value ->
+                    text = value
+                    searchBusRoutes = busRoutes.filter { busRoute ->
+                        busRoute.id.contains(value.text, true) || busRoute.name.contains(value.text, true)
+                    }
                 }
-            }
+            )
         }
         items(searchBusRoutes) { busRoute ->
             TextButton(

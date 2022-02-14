@@ -14,7 +14,10 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.with
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,18 +29,26 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -209,5 +220,61 @@ fun ShimmerLargeItem(
                 .background(brush = brush)
                 .weight(1f)
         )
+    }
+}
+
+@Composable
+fun TextFieldMaterial3(modifier: Modifier = Modifier, text: TextFieldValue, onValueChange: (TextFieldValue) -> Unit) {
+    Surface(
+        modifier = modifier
+            .padding(horizontal = 25.dp)
+            .fillMaxWidth()
+            .height(50.dp)
+            .fillMaxWidth(),/*.background(Color.Red)*/
+        //color = MaterialTheme.colorScheme.secondaryContainer,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondaryContainer),
+        shape = RoundedCornerShape(20.0.dp),
+
+        ) {
+        Row(
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Image(
+                modifier = Modifier.padding(start = 15.dp),
+                imageVector = Icons.Filled.Search,
+                contentDescription = "Icon",
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer),
+            )
+            //Spacer(Modifier.width(16.dp))
+            TextField(
+                value = text,
+                onValueChange = onValueChange,
+                colors = TextFieldDefaults.textFieldColors(
+                    textColor = MaterialTheme.colorScheme.onSecondaryContainer,//LocalContentColor.current.copy(LocalContentAlpha.current),
+                    //disabledTextColor = textColor.copy(ContentAlpha.disabled),
+                    backgroundColor = Color.Transparent,//MaterialTheme.colorScheme.onSurface.copy(alpha = BackgroundOpacity),
+                    cursorColor = MaterialTheme.colorScheme.onSecondaryContainer,//MaterialTheme.colorScheme.primary,
+                    errorCursorColor = MaterialTheme.colorScheme.error,
+                    focusedIndicatorColor = Color.Transparent,//MaterialTheme.colorScheme.primary.copy(alpha = ContentAlpha.high),
+                    unfocusedIndicatorColor = Color.Transparent,//MaterialTheme.colorScheme.onSurface.copy(alpha = TextFieldDefaults.UnfocusedIndicatorLineOpacity),
+                    //disabledIndicatorColor = unfocusedIndicatorColor.copy(alpha = ContentAlpha.disabled),
+                    errorIndicatorColor = MaterialTheme.colorScheme.error,
+                    leadingIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = TextFieldDefaults.IconOpacity),
+                    //disabledLeadingIconColor = leadingIconColor.copy(alpha = ContentAlpha.disabled),
+                    //errorLeadingIconColor = leadingIconColor,
+                    trailingIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = TextFieldDefaults.IconOpacity),
+                    //disabledTrailingIconColor = trailingIconColor.copy(alpha = ContentAlpha.disabled),
+                    errorTrailingIconColor = MaterialTheme.colorScheme.error,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary.copy(alpha = ContentAlpha.high),
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(ContentAlpha.medium),
+                    //disabledLabelColor = unfocusedLabelColor.copy(ContentAlpha.disabled),
+                    errorLabelColor = MaterialTheme.colorScheme.error,
+                    placeholderColor = MaterialTheme.colorScheme.onSurface.copy(ContentAlpha.medium),
+                    //disabledPlaceholderColor = placeholderColor.copy(ContentAlpha.disabled)
+                )
+            )
+        }
     }
 }
