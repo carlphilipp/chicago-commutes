@@ -17,13 +17,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
@@ -37,9 +36,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -54,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -83,11 +80,12 @@ import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import java.math.BigInteger
+import java.util.Locale
+import kotlin.math.min
 import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import java.math.BigInteger
-import java.util.Locale
 
 private val googleStreetClient = GoogleStreetClient
 private val preferenceService = PreferenceService
@@ -193,7 +191,6 @@ class TrainStationComposable : ComponentActivity(), StoreSubscriber<State> {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrainStationView(
     modifier: Modifier = Modifier,
@@ -207,141 +204,137 @@ fun TrainStationView(
     showStationName: Boolean,
     onRefresh: () -> Unit,
 ) {
+
+    val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val activity = (LocalLifecycleOwner.current as ComponentActivity)
+
     SwipeRefresh(
         modifier = modifier,
         state = rememberSwipeRefreshState(isTrainStationRefreshing),
         onRefresh = onRefresh,
     ) {
-        Scaffold(
-            snackbarHost = { SnackbarHost(hostState = snackbarHostState) { data -> Snackbar(snackbarData = data) } },
-            content = {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    item {
-                        Surface(modifier = Modifier.zIndex(1f)) {
-                            AnimatedVisibility(
-                                modifier = Modifier.height(200.dp),
-                                visible = showGoogleStreetImage,
-                                enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
-                            ) {
-                                Image(
-                                    bitmap = googleStreetMapImage.toBitmap().asImageBitmap(),
-                                    contentDescription = "Google image street view",
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier.fillMaxWidth(),
-                                )
-                            }
-                            AnimatedVisibility(
-                                modifier = Modifier.height(200.dp),
-                                visible = !showGoogleStreetImage,
-                                exit = fadeOut(animationSpec = tween(durationMillis = 300)),
-                            ) {
-                                LargeImagePlaceHolderAnimated()
-                            }
-                            FilledTonalButton(
-                                modifier = Modifier.padding(10.dp),
-                                onClick = { activity.finish() },
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.ArrowBack,
-                                    contentDescription = "Back",
-                                )
-                            }
-                        }
+        Column(
+            modifier = Modifier
+                .verticalScroll(scrollState)
+                .fillMaxWidth()
+        ) {
+            Surface(modifier = Modifier.zIndex(1f)) {
+                AnimatedVisibility(
+                    modifier = Modifier.height(200.dp),
+                    visible = showGoogleStreetImage,
+                    enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
+                ) {
+                    Image(
+                        bitmap = googleStreetMapImage.toBitmap().asImageBitmap(),
+                        contentDescription = "Google image street view",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .graphicsLayer {
+                                alpha = min(1f, 1 - (scrollState.value / 600f))
+                                translationY = -scrollState.value * 0.1f
+                            },
+                    )
+                }
+                AnimatedVisibility(
+                    modifier = Modifier.height(200.dp),
+                    visible = !showGoogleStreetImage,
+                    exit = fadeOut(animationSpec = tween(durationMillis = 300)),
+                ) {
+                    LargeImagePlaceHolderAnimated()
+                }
+                FilledTonalButton(
+                    modifier = Modifier.padding(10.dp),
+                    onClick = { activity.finish() },
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = "Back",
+                    )
+                }
+            }
+            Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 7.dp), horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = trainStation.name,
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                }
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                    IconButton(onClick = { switchFavorite(trainStation.id) }) {
+                        Icon(
+                            imageVector = Icons.Filled.Favorite,
+                            contentDescription = "Favorite",
+                            tint = if (isFavorite) Color(fr.cph.chicago.util.Color.yellowLineDark) else LocalContentColor.current,
+                        )
                     }
-                    item {
-                        Surface(
-                            modifier = Modifier
-                                //.absoluteOffset(y = (-14).dp)
-                                .zIndex(5f)
-                                .fillMaxWidth()
-                        ) {
-                            Column {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 7.dp), horizontalArrangement = Arrangement.Center
-                                ) {
-                                    Text(
-                                        text = trainStation.name,
-                                        style = MaterialTheme.typography.titleLarge,
-                                    )
-                                }
-                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                                    IconButton(onClick = { switchFavorite(trainStation.id) }) {
-                                        Icon(
-                                            imageVector = Icons.Filled.Favorite,
-                                            contentDescription = "Favorite",
-                                            tint = if (isFavorite) Color(fr.cph.chicago.util.Color.yellowLineDark) else LocalContentColor.current,
-                                        )
-                                    }
-                                    IconButton(onClick = {
-                                        // TODO: show pin or do not start other app, just do it within our app
-                                        val uri = String.format(Locale.ENGLISH, "geo:%f,%f", trainStation.stops[0].position.latitude, trainStation.stops[0].position.longitude)
-                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
+                    IconButton(onClick = {
+                        // TODO: show pin in google map or do not start other app, just do it within our app
+                        val uri = String.format(Locale.ENGLISH, "geo:%f,%f", trainStation.stops[0].position.latitude, trainStation.stops[0].position.longitude)
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
 
-                                        if (intent.resolveActivity(context.packageManager) != null) {
-                                            context.startActivity(intent)
-                                        } else {
-                                            scope.launch {
-                                                snackbarHostState.showSnackbar("Could not find any Map application on device")
-                                            }
-                                        }
-                                    }) {
-                                        Icon(
-                                            imageVector = Icons.Filled.Map,
-                                            contentDescription = "Map",
-                                        )
-                                    }
-                                }
+                        if (intent.resolveActivity(context.packageManager) != null) {
+                            context.startActivity(intent)
+                        } else {
+                            scope.launch {
+                                snackbarHostState.showSnackbar("Could not find any Map application on device")
                             }
                         }
-                    }
-                    items(trainStation.stopByLines.keys.toList()) { line ->
-                        val stops = trainStation.stopByLines[line]!!
-                        Column(
-                            modifier = Modifier
-                                .padding(horizontal = 20.dp)
-                                .fillMaxWidth()
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
-                                modifier = Modifier.fillMaxWidth(),
-                            ) {
-                                Surface(
-                                    color = Color(line.color),
-                                    shadowElevation = 1.dp,
-                                    shape = RoundedCornerShape(15.0.dp),
-                                ) {
-                                    Text(
-                                        text = line.toStringWithLine(),
-                                        color = Color.White,
-                                        style = MaterialTheme.typography.titleSmall,
-                                        modifier = Modifier.padding(horizontal = 15.dp, vertical = 5.dp),
-                                    )
-                                }
-                            }
-                            Spacer(modifier = Modifier.padding(bottom = 3.dp))
-                            stops.sorted().forEachIndexed { index, stop ->
-                                Stop(
-                                    stationId = trainStation.id,
-                                    line = line,
-                                    stop = stop,
-                                    trainEtas = trainEtas
-                                        .filter { trainEta -> trainEta.trainStation.id == trainStation.id }
-                                        .filter { trainEta -> trainEta.routeName == line },
-                                    showStationName = showStationName,
-                                    showDivider = index != stops.size - 1
-                                )
-                            }
-                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.Map,
+                            contentDescription = "Map",
+                        )
                     }
                 }
-
-            })
+            }
+            trainStation.stopByLines.keys.forEach { line ->
+                val stops = trainStation.stopByLines[line]!!
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp)
+                        .fillMaxWidth()
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Surface(
+                            color = Color(line.color),
+                            shadowElevation = 1.dp,
+                            shape = RoundedCornerShape(15.0.dp),
+                        ) {
+                            Text(
+                                text = line.toStringWithLine(),
+                                color = Color.White,
+                                style = MaterialTheme.typography.titleSmall,
+                                modifier = Modifier.padding(horizontal = 15.dp, vertical = 5.dp),
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.padding(bottom = 3.dp))
+                    stops.sorted().forEachIndexed { index, stop ->
+                        Stop(
+                            stationId = trainStation.id,
+                            line = line,
+                            stop = stop,
+                            trainEtas = trainEtas
+                                .filter { trainEta -> trainEta.trainStation.id == trainStation.id }
+                                .filter { trainEta -> trainEta.routeName == line },
+                            showStationName = showStationName,
+                            showDivider = index != stops.size - 1
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
