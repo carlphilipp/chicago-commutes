@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -33,7 +34,6 @@ import androidx.core.content.ContextCompat.startActivity
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
-import fr.cph.chicago.core.activity.station.BusStopActivity
 import fr.cph.chicago.core.composable.common.TextFieldMaterial3
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.BusStop
@@ -44,8 +44,6 @@ import timber.log.Timber
 
 private val busService = BusService
 
-private var busStops = mutableStateOf(listOf<BusStop>())
-
 class BusBoundActivityComposable : ComponentActivity() {
 
     private lateinit var busRouteId: String
@@ -54,6 +52,7 @@ class BusBoundActivityComposable : ComponentActivity() {
     private lateinit var boundTitle: String
     private val isRefreshing = mutableStateOf(false)
     private val snackbarHostState = mutableStateOf(SnackbarHostState())
+    private var busStops = mutableStateListOf<BusStop>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +66,7 @@ class BusBoundActivityComposable : ComponentActivity() {
         setContent {
             ChicagoCommutesTheme {
                 BusBoundView(
-                    /*busStops = busStops.value,*/
+                    busStops = busStops,
                     busRouteId = busRouteId,
                     busRouteName = busRouteName,
                     bound = bound,
@@ -78,7 +77,7 @@ class BusBoundActivityComposable : ComponentActivity() {
                         isRefreshing.value = true
                         Timber.d("Start Refreshing")
                         loadData()
-                    }
+                    },
                 )
             }
         }
@@ -89,9 +88,8 @@ class BusBoundActivityComposable : ComponentActivity() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { result ->
-                    busStops.value = result
-                    //adapter.updateBusStops(result)
-                    //adapter.notifyDataSetChanged()
+                    busStops.clear()
+                    busStops.addAll(result)
                     isRefreshing.value = false
                 },
                 { throwable ->
@@ -111,14 +109,15 @@ fun BusBoundView(
     busRouteName: String,
     bound: String,
     boundTitle: String,
-    /*busStops: List<BusStop>,*/
+    busStops: List<BusStop>,
     isRefreshing: Boolean,
     snackbarHostState: SnackbarHostState,
     onRefresh: () -> Unit,
 ) {
     val context = LocalContext.current
-    var text by remember { mutableStateOf(TextFieldValue("")) }
-    var searchBusStops by remember { mutableStateOf(busStops.value) }
+    var searchText by remember { mutableStateOf(TextFieldValue("")) }
+    var searchBusStops by remember { mutableStateOf(busStops) }
+
     SwipeRefresh(
         modifier = modifier,
         state = rememberSwipeRefreshState(isRefreshing),
@@ -131,11 +130,11 @@ fun BusBoundView(
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     item {
                         TextFieldMaterial3(
-                            text = text,
-                            onValueChange = { value ->
-                                text = value
-                                searchBusStops = busStops.value.filter { busStop ->
-                                    busStop.description.contains(value.text, true)
+                            text = searchText,
+                            onValueChange = { textFieldValue ->
+                                searchText = textFieldValue
+                                searchBusStops = busStops.filter { busStop ->
+                                    busStop.description.contains(textFieldValue.text, true)
                                 }
                             }
                         )
@@ -165,7 +164,7 @@ fun BusBoundView(
                                 startActivity(context, intent, null)
                             },
 
-                        ) {
+                            ) {
                             Row(
                                 horizontalArrangement = Arrangement.Start,
                                 verticalAlignment = Alignment.CenterVertically,
