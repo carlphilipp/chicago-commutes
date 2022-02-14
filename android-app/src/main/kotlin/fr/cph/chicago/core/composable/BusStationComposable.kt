@@ -105,7 +105,7 @@ class BusStationComposable : ComponentActivity(), StoreSubscriber<State> {
     private lateinit var busRouteName: String
     private var position: Position = Position()
     private var busStop = mutableStateOf(BusStop(BigInteger.ZERO, "", "", Position()))
-    private var busArrivalStopDTO = mutableStateOf(BusArrivalStopDTO())
+    private var busArrivalStopDTO = mutableStateOf(BusArrivalStopDTO()) //FIXME: understand the alert
     private lateinit var action: BusStopArrivalsAction
 
     private var googleStreetMapImage = mutableStateOf<Drawable>(ShapeDrawable())
@@ -348,7 +348,7 @@ fun BusStationView(
                                         horizontalArrangement = Arrangement.Center
                                     ) {
                                         val text = if(busStopName != "") {
-                                            "$busRouteId - $busStopName"
+                                            "$busRouteId - $busRouteName"
                                         } else {
                                             busRouteId
                                         }
@@ -419,7 +419,7 @@ fun BusStationView(
                             val destination = busArrivalsKeys[index]
                             val arrivals = busArrivals[busArrivalsKeys[index]]
                             Text(
-                                text = "$busRouteName"
+                                text = busStopName
                             )
                             Text(
                                 text = "$destination -> " + arrivals?.joinToString(separator = " ") { util.formatArrivalTime(it) }

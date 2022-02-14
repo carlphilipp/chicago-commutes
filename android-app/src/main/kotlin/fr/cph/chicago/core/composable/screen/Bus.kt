@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.R
-import fr.cph.chicago.core.activity.BusBoundActivity
 import fr.cph.chicago.core.activity.map.BusMapActivity
 import fr.cph.chicago.core.composable.BusBoundActivityComposable
 import fr.cph.chicago.core.model.BusDirections
