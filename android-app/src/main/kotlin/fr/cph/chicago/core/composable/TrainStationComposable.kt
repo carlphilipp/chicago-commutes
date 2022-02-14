@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,6 +37,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -122,7 +125,7 @@ class TrainStationComposable : ComponentActivity(), StoreSubscriber<State> {
                     LaunchedEffect(applyFavorite.value) {
                         scope.launch {
                             val message = if (isFavorite.value) "Added to favorites" else "Removed from favorites"
-                            snackbarHostState.value.showSnackbar(message)
+                            snackbarHostState.value.showSnackbar(message = message, withDismissAction = true)
                         }
                     }
                 }
@@ -204,7 +207,6 @@ fun TrainStationView(
     showStationName: Boolean,
     onRefresh: () -> Unit,
 ) {
-
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -335,6 +337,14 @@ fun TrainStationView(
                 }
             }
         }
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Bottom,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        SnackbarHost(hostState = snackbarHostState) { data -> Snackbar(snackbarData = data) }
     }
 }
 
