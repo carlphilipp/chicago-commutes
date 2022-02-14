@@ -151,6 +151,7 @@ fun BusRouteDialog(show: Boolean, busRoute: BusRoute, hideDialog: () -> Unit) {
                                     intent.putExtras(extras)
                                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                     startActivity(context, intent, null)
+                                    hideDialog()
                                 },
                             ) {
                                 Text(
@@ -176,6 +177,7 @@ fun BusRouteDialog(show: Boolean, busRoute: BusRoute, hideDialog: () -> Unit) {
                                 intent.putExtras(extras)
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                 startActivity(context, intent, null)
+                                hideDialog()
                             },
                         ) {
                             Text(
