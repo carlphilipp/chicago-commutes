@@ -30,6 +30,7 @@ import fr.cph.chicago.core.composable.screen.screens
 
 @Composable
 fun Drawer(modifier: Modifier = Modifier, currentScreen: DrawerScreens, onDestinationClicked: (route: DrawerScreens) -> Unit) {
+    // FIXME: Make this component scrollable
     Column(modifier = modifier) {
         Box {
             Image(

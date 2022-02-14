@@ -2,23 +2,28 @@ package fr.cph.chicago.core.composable.screen
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.TextField
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -29,10 +34,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.SemanticsProperties.ImeAction
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -52,34 +56,62 @@ fun Bus(modifier: Modifier = Modifier, busRoutes: List<BusRoute>) {
     var showDialog by remember { mutableStateOf(false) }
     var selectedBusRoute by remember { mutableStateOf(BusRoute.buildEmpty()) }
 
+    var searchBusRoutes by remember { mutableStateOf(busRoutes) }
+    var text by remember { mutableStateOf(TextFieldValue("")) }
+
     LazyColumn(modifier = modifier.fillMaxWidth()) {
         item {
-            TextField(
-                value = "Search",
-                onValueChange = { value ->
+            Surface(
+                modifier = modifier
+                    .padding(start = 8.dp, top = 8.dp, end = 8.dp)
+                    .fillMaxWidth()
+                    .height(50.dp).fillMaxWidth()/*.background(Color.Red)*/,
+                color = Color.Red,
+                shape = RoundedCornerShape(20.0.dp),
 
-                },
-                label = {
-                    Text(text = "Search")
-                },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Done,
-                ),
-                leadingIcon = {
-                    Icon(Icons.Filled.Search)
-                },
-                onImeActionPerformed = { action, softKeyboardController ->
-                    if (action == ImeAction.Done) {
-                        viewModel.newSearch(query)
-                        softKeyboardController?.hideSoftwareKeyboard()
-                    }
-                },
-                textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
-                backgroundColor = MaterialTheme.colorScheme.surface
-            )
+            ) {
+                TextButton(
+                    onClick = { },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(),
+                ) {
+                    TextField(
+                        value = text,
+                        onValueChange = { value ->
+                            text = value
+                            searchBusRoutes = busRoutes.filter { busRoute ->
+                                busRoute.id.contains(value.text, true) || busRoute.name.contains(value.text, true)
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            textColor = LocalContentColor.current.copy(LocalContentAlpha.current),
+                            //disabledTextColor = textColor.copy(ContentAlpha.disabled),
+                            backgroundColor = Color.Transparent,
+                            cursorColor = MaterialTheme.colorScheme.primary,
+                            errorCursorColor = MaterialTheme.colorScheme.error,
+                            focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = ContentAlpha.high),
+                            unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = ContentAlpha.disabled),
+                            //disabledBorderColor = unfocusedBorderColor.copy(alpha = ContentAlpha.disabled),
+                            errorBorderColor = MaterialTheme.colorScheme.error,
+                            leadingIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = TextFieldDefaults.IconOpacity),
+                            //disabledLeadingIconColor = leadingIconColor.copy(alpha = ContentAlpha.disabled),
+                            errorLeadingIconColor = MaterialTheme.colorScheme.error,
+                            trailingIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = TextFieldDefaults.IconOpacity),
+                            //disabledTrailingIconColor = trailingIconColor.copy(alpha = ContentAlpha.disabled),
+                            errorTrailingIconColor = MaterialTheme.colorScheme.error,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary.copy(alpha = ContentAlpha.high),
+                            unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(ContentAlpha.medium),
+                            //disabledLabelColor = unfocusedLabelColor.copy(ContentAlpha.disabled),
+                            errorLabelColor = MaterialTheme.colorScheme.error,
+                            placeholderColor = MaterialTheme.colorScheme.onSurface.copy(ContentAlpha.medium),
+                            //disabledPlaceholderColor = placeholderColor.copy(ContentAlpha.disabled)),
+                        ))
+                }
+            }
         }
-        items(busRoutes) { busRoute ->
+        items(searchBusRoutes) { busRoute ->
             TextButton(
                 modifier = Modifier
                     .fillMaxWidth()
