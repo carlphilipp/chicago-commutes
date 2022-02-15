@@ -93,8 +93,6 @@ import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
-private val preferenceService = PreferenceService
-
 class TrainStationComposable : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -102,8 +100,7 @@ class TrainStationComposable : ComponentActivity() {
 
         val stationId = BigInteger(intent.extras?.getString(getString(R.string.bundle_train_stationId), "0")!!)
 
-        val viewModel = TrainStationViewModel()
-        viewModel.initModel(stationId)
+        val viewModel = TrainStationViewModel().initModel(stationId)
 
         store.dispatch(TrainStationAction(stationId))
 
@@ -137,7 +134,7 @@ class TrainStationViewModel(
     var uiState by mutableStateOf(TrainStationUiState())
         private set
 
-    fun initModel(stationId: BigInteger) {
+    fun initModel(stationId: BigInteger): TrainStationViewModel {
         val trainStation = trainService.getStation(stationId)
         val isFavorite = isFavorite(stationId)
 
@@ -147,6 +144,7 @@ class TrainStationViewModel(
         )
         store.subscribe(this)
         loadGoogleStreetImage(trainStation.stops[0].position)
+        return this
     }
 
     override fun newState(state: State) {
@@ -349,7 +347,7 @@ fun TrainStationView(
                             }
                             Spacer(modifier = Modifier.padding(bottom = 3.dp))
                             stops.sorted().forEachIndexed { index, stop ->
-                                TrainStop(
+                                /*TrainStop(
                                     stationId = viewModel.uiState.trainStation.id,
                                     line = line,
                                     stop = stop,
@@ -358,6 +356,18 @@ fun TrainStationView(
                                         .filter { trainEta -> trainEta.routeName == line },
                                     showStationName = uiState.showTrainArrivalData,
                                     showDivider = index != stops.size - 1
+                                )*/
+                                TrainStop(
+                                    viewModel = TrainStopViewModel(
+                                        stationId = viewModel.uiState.trainStation.id,
+                                        line = line,
+                                        stop = stop,
+                                        trainEtas = uiState.trainEtasState
+                                            .filter { trainEta -> trainEta.trainStation.id == viewModel.uiState.trainStation.id }
+                                            .filter { trainEta -> trainEta.routeName == line },
+                                        showStationName = uiState.showTrainArrivalData,
+                                        showDivider = index != stops.size - 1
+                                    ).initModel()
                                 )
                             }
                         }
@@ -392,25 +402,50 @@ fun ShowSnackBar(viewModel: TrainStationViewModel, scope: CoroutineScope) {
 
 data class StopStationUiState(
     val stationId: BigInteger,
-    val isFiltered: Boolean,
     val line: TrainLine,
     val stop: Stop,
     val trainEtas: List<TrainEta>,
     val showStationName: Boolean,
-    val showDivider: Boolean
+    val showDivider: Boolean,
+    val isFiltered: Boolean = false,
 )
 
 class TrainStopViewModel(
-    preferenceService: PreferenceService = PreferenceService
+    stationId: BigInteger,
+    line: TrainLine,
+    stop: Stop,
+    trainEtas: List<TrainEta>,
+    showStationName: Boolean,
+    showDivider: Boolean,
+    val preferenceService: PreferenceService = PreferenceService,
 ) : ViewModel() {
-    var stopUiState by mutableStateOf(StopStationUiState())
+    var stopUiState by mutableStateOf(
+        StopStationUiState(
+            stationId = stationId,
+            line = line,
+            stop = stop,
+            trainEtas = trainEtas,
+            showStationName = showStationName,
+            showDivider = showDivider,
+        )
+    )
         private set
 
-    fun initModel(stationId: BigInteger) {
-        stopUiState = stopUiState.copy(
-            stationId = stationId,
-            isFiltered =
-        )
+    fun initModel(): TrainStopViewModel {
+        stopUiState = stopUiState.copy(isFiltered = isFiltered())
+        return this
+    }
+
+    fun switchFiltering(isChecked: Boolean) {
+        preferenceService.saveTrainFilter(stopUiState.stationId, stopUiState.line, stopUiState.stop.direction, isChecked)
+        stopUiState = stopUiState.copy(isFiltered = isFiltered())
+        if (isChecked) {
+            store.dispatch(TrainStationAction(stopUiState.stationId))
+        }
+    }
+
+    private fun isFiltered(): Boolean {
+        return preferenceService.getTrainFilter(stopUiState.stationId, stopUiState.line, stopUiState.stop.direction)
     }
 }
 
@@ -419,18 +454,15 @@ class TrainStopViewModel(
 fun TrainStop(
     modifier: Modifier = Modifier,
     viewModel: TrainStopViewModel,
-    stationId: BigInteger,
-    line: TrainLine,
-    stop: Stop,
-    trainEtas: List<TrainEta>,
-    showStationName: Boolean,
-    showDivider: Boolean
 ) {
-    val checkboxChecked = remember { mutableStateOf(false) }
-    checkboxChecked.value = preferenceService.getTrainFilter(stationId, line, stop.direction)
+    val stopUiState = viewModel.stopUiState
+
+    val isFiltered = stopUiState.isFiltered
+
+
     // FIXME: This processing should probably not happen here
-    val etas = trainEtas
-        .filter { trainEta -> trainEta.stop.direction.toString() == stop.direction.toString() }
+    val etas = stopUiState.trainEtas
+        .filter { trainEta -> trainEta.stop.direction.toString() == stopUiState.stop.direction.toString() }
         .fold(mutableMapOf<String, MutableList<String>>()) { acc, cur ->
             if (acc.containsKey(cur.destName)) {
                 acc[cur.destName]!!.add(cur.timeLeftDueDelay)
@@ -446,22 +478,15 @@ fun TrainStop(
     }
 
     Row(
-        modifier = modifier
-            .fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Checkbox(
-            checked = checkboxChecked.value,
-            onCheckedChange = { isChecked ->
-                preferenceService.saveTrainFilter(stationId, line, stop.direction, isChecked)
-                checkboxChecked.value = preferenceService.getTrainFilter(stationId, line, stop.direction)
-                if (isChecked) {
-                    store.dispatch(TrainStationAction(stationId))
-                }
-            },
+            checked = isFiltered,
+            onCheckedChange = { isChecked -> viewModel.switchFiltering(isChecked = isChecked) },
             colors = CheckboxDefaults.colors(
-                checkedColor = Color(line.color),
-                uncheckedColor = Color(line.color),
+                checkedColor = Color(stopUiState.line.color),
+                uncheckedColor = Color(stopUiState.line.color),
             ),
         )
         Column {
@@ -473,10 +498,10 @@ fun TrainStop(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         val destination = eta.key
-                        val direction = stop.direction.toString()
+                        val direction = stopUiState.stop.direction.toString()
                         val actualEtas = eta.value
                         Column(modifier = Modifier.padding(end = 5.dp)) {
-                            if (showStationName) {
+                            if (stopUiState.showStationName) {
                                 Text(
                                     text = destination,
                                     style = MaterialTheme.typography.titleMedium,
@@ -492,7 +517,7 @@ fun TrainStop(
                             )
                         }
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                            if (showStationName) {
+                            if (stopUiState.showStationName) {
                                 actualEtas.forEach {
                                     var currentTime by remember { mutableStateOf(it) }
                                     currentTime = "$it "
@@ -509,7 +534,7 @@ fun TrainStop(
                     }
                 }
         }
-        if (showDivider) {
+        if (stopUiState.showDivider) {
             Row(Modifier.padding(top = 8.dp, bottom = 8.dp)) {
                 Divider(thickness = 1.dp)
             }
