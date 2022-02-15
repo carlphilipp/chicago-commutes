@@ -36,6 +36,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -221,6 +222,7 @@ class TrainStationViewModel(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrainStationView(
     modifier: Modifier = Modifier,
@@ -248,128 +250,130 @@ fun TrainStationView(
         state = rememberSwipeRefreshState(uiState.isRefreshing),
         onRefresh = uiState.onRefresh,
     ) {
-        Column(
-            modifier = Modifier
-                .verticalScroll(scrollState)
-                .fillMaxWidth()
-        ) {
-            Surface(modifier = Modifier.zIndex(1f)) {
-                AnimatedVisibility(
-                    modifier = Modifier.height(200.dp),
-                    visible = uiState.showGoogleStreetImage,
-                    enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
-                ) {
-                    Image(
-                        bitmap = uiState.googleStreetMapImage.toBitmap().asImageBitmap(),
-                        contentDescription = "Google image street view",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .graphicsLayer {
-                                alpha = min(1f, 1 - (scrollState.value / 600f))
-                                translationY = -scrollState.value * 0.1f
-                            },
-                    )
-                }
-                AnimatedVisibility(
-                    modifier = Modifier.height(200.dp),
-                    visible = !uiState.showGoogleStreetImage,
-                    exit = fadeOut(animationSpec = tween(durationMillis = 300)),
-                ) {
-                    LargeImagePlaceHolderAnimated()
-                }
-                FilledTonalButton(
-                    modifier = Modifier.padding(10.dp),
-                    onClick = { activity.finish() },
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Back",
-                    )
-                }
-            }
-            Column {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 7.dp), horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = viewModel.uiState.trainStation.name,
-                        style = MaterialTheme.typography.titleLarge,
-                    )
-                }
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                    IconButton(onClick = uiState.onSwitchFavorite) {
-                        Icon(
-                            imageVector = Icons.Filled.Favorite,
-                            contentDescription = "Favorite",
-                            tint = if (viewModel.uiState.isFavorite) Color(fr.cph.chicago.util.Color.yellowLineDark) else LocalContentColor.current,
-                        )
-                    }
-                    IconButton(onClick = {
-                        // TODO: show pin in google map or do not start other app, just do it within our app
-                        val uri = String.format(Locale.ENGLISH, "geo:%f,%f", viewModel.uiState.trainStation.stops[0].position.latitude, viewModel.uiState.trainStation.stops[0].position.longitude)
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
-
-                        if (intent.resolveActivity(context.packageManager) != null) {
-                            context.startActivity(intent)
-                        } else {
-                            scope.launch {
-                                snackbarHostState.showSnackbar("Could not find any Map application on device")
-                            }
-                        }
-                    }) {
-                        Icon(
-                            imageVector = Icons.Filled.Map,
-                            contentDescription = "Map",
-                        )
-                    }
-                }
-            }
-            viewModel.uiState.trainStation.stopByLines.keys.forEach { line ->
-                val stops = viewModel.uiState.trainStation.stopByLines[line]!!
+        Scaffold(
+            content = {
                 Column(
                     modifier = Modifier
-                        .padding(horizontal = 20.dp)
+                        .verticalScroll(scrollState)
                         .fillMaxWidth()
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Surface(
-                            color = Color(line.color),
-                            shadowElevation = 1.dp,
-                            shape = RoundedCornerShape(15.0.dp),
+                    Surface(modifier = Modifier.zIndex(1f)) {
+                        AnimatedVisibility(
+                            modifier = Modifier.height(200.dp),
+                            visible = uiState.showGoogleStreetImage,
+                            enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
                         ) {
-                            Text(
-                                text = line.toStringWithLine(),
-                                color = Color.White,
-                                style = MaterialTheme.typography.titleSmall,
-                                modifier = Modifier.padding(horizontal = 15.dp, vertical = 5.dp),
+                            Image(
+                                bitmap = uiState.googleStreetMapImage.toBitmap().asImageBitmap(),
+                                contentDescription = "Google image street view",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .graphicsLayer {
+                                        alpha = min(1f, 1 - (scrollState.value / 600f))
+                                        translationY = -scrollState.value * 0.1f
+                                    },
+                            )
+                        }
+                        AnimatedVisibility(
+                            modifier = Modifier.height(200.dp),
+                            visible = !uiState.showGoogleStreetImage,
+                            exit = fadeOut(animationSpec = tween(durationMillis = 300)),
+                        ) {
+                            LargeImagePlaceHolderAnimated()
+                        }
+                        FilledTonalButton(
+                            modifier = Modifier.padding(10.dp),
+                            onClick = { activity.finish() },
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowBack,
+                                contentDescription = "Back",
                             )
                         }
                     }
-                    Spacer(modifier = Modifier.padding(bottom = 3.dp))
-                    stops.sorted().forEachIndexed { index, stop ->
-                        Stop(
-                            stationId = viewModel.uiState.trainStation.id,
-                            line = line,
-                            stop = stop,
-                            trainEtas = uiState.trainEtasState
-                                .filter { trainEta -> trainEta.trainStation.id == viewModel.uiState.trainStation.id }
-                                .filter { trainEta -> trainEta.routeName == line },
-                            showStationName = uiState.showTrainArrivalData,
-                            showDivider = index != stops.size - 1
-                        )
+                    Column {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 7.dp), horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = viewModel.uiState.trainStation.name,
+                                style = MaterialTheme.typography.titleLarge,
+                            )
+                        }
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                            IconButton(onClick = uiState.onSwitchFavorite) {
+                                Icon(
+                                    imageVector = Icons.Filled.Favorite,
+                                    contentDescription = "Favorite",
+                                    tint = if (viewModel.uiState.isFavorite) Color(fr.cph.chicago.util.Color.yellowLineDark) else LocalContentColor.current,
+                                )
+                            }
+                            IconButton(onClick = {
+                                // TODO: show pin in google map or do not start other app, just do it within our app
+                                val uri = String.format(Locale.ENGLISH, "geo:%f,%f", viewModel.uiState.trainStation.stops[0].position.latitude, viewModel.uiState.trainStation.stops[0].position.longitude)
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
+
+                                if (intent.resolveActivity(context.packageManager) != null) {
+                                    context.startActivity(intent)
+                                } else {
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar("Could not find any Map application on device")
+                                    }
+                                }
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Map,
+                                    contentDescription = "Map",
+                                )
+                            }
+                        }
+                    }
+                    viewModel.uiState.trainStation.stopByLines.keys.forEach { line ->
+                        val stops = viewModel.uiState.trainStation.stopByLines[line]!!
+                        Column(
+                            modifier = Modifier
+                                .padding(horizontal = 20.dp)
+                                .fillMaxWidth()
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                Surface(
+                                    color = Color(line.color),
+                                    shadowElevation = 1.dp,
+                                    shape = RoundedCornerShape(15.0.dp),
+                                ) {
+                                    Text(
+                                        text = line.toStringWithLine(),
+                                        color = Color.White,
+                                        style = MaterialTheme.typography.titleSmall,
+                                        modifier = Modifier.padding(horizontal = 15.dp, vertical = 5.dp),
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.padding(bottom = 3.dp))
+                            stops.sorted().forEachIndexed { index, stop ->
+                                Stop(
+                                    stationId = viewModel.uiState.trainStation.id,
+                                    line = line,
+                                    stop = stop,
+                                    trainEtas = uiState.trainEtasState
+                                        .filter { trainEta -> trainEta.trainStation.id == viewModel.uiState.trainStation.id }
+                                        .filter { trainEta -> trainEta.routeName == line },
+                                    showStationName = uiState.showTrainArrivalData,
+                                    showDivider = index != stops.size - 1
+                                )
+                            }
+                        }
                     }
                 }
-            }
-        }
+            })
     }
-
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Bottom,
