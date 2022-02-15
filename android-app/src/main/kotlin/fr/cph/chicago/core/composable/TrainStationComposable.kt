@@ -13,6 +13,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,7 +22,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -125,6 +125,7 @@ data class TrainStationUiState(
     val googleStreetMapImage: Drawable = ShapeDrawable(),
     val showGoogleStreetImage: Boolean = false,
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
+    val scrollState: ScrollState = ScrollState(0),
 )
 
 class TrainStationViewModel(
@@ -242,7 +243,6 @@ fun TrainStationView(
     viewModel: TrainStationViewModel,
 ) {
     val uiState = viewModel.uiState
-    val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
     val activity = (LocalLifecycleOwner.current as ComponentActivity)
     val context = LocalContext.current
@@ -256,7 +256,7 @@ fun TrainStationView(
             content = {
                 Column(
                     modifier = Modifier
-                        .verticalScroll(scrollState)
+                        .verticalScroll(uiState.scrollState)
                         .fillMaxWidth()
                 ) {
                     Surface(modifier = Modifier.zIndex(1f)) {
@@ -272,8 +272,8 @@ fun TrainStationView(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .graphicsLayer {
-                                        alpha = min(1f, 1 - (scrollState.value / 600f))
-                                        translationY = -scrollState.value * 0.1f
+                                        alpha = min(1f, 1 - (uiState.scrollState.value / 600f))
+                                        translationY = -uiState.scrollState.value * 0.1f
                                     },
                             )
                         }
@@ -349,7 +349,7 @@ fun TrainStationView(
                             }
                             Spacer(modifier = Modifier.padding(bottom = 3.dp))
                             stops.sorted().forEachIndexed { index, stop ->
-                                Stop(
+                                TrainStop(
                                     stationId = viewModel.uiState.trainStation.id,
                                     line = line,
                                     stop = stop,
@@ -390,10 +390,35 @@ fun ShowSnackBar(viewModel: TrainStationViewModel, scope: CoroutineScope) {
     }
 }
 
+data class StopStationUiState(
+    val stationId: BigInteger,
+    val isFiltered: Boolean,
+    val line: TrainLine,
+    val stop: Stop,
+    val trainEtas: List<TrainEta>,
+    val showStationName: Boolean,
+    val showDivider: Boolean
+)
+
+class TrainStopViewModel(
+    preferenceService: PreferenceService = PreferenceService
+) : ViewModel() {
+    var stopUiState by mutableStateOf(StopStationUiState())
+        private set
+
+    fun initModel(stationId: BigInteger) {
+        stopUiState = stopUiState.copy(
+            stationId = stationId,
+            isFiltered =
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Stop(
+fun TrainStop(
     modifier: Modifier = Modifier,
+    viewModel: TrainStopViewModel,
     stationId: BigInteger,
     line: TrainLine,
     stop: Stop,
