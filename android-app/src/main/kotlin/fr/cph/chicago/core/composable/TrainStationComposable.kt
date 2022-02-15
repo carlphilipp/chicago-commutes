@@ -236,12 +236,10 @@ class TrainStationViewModel @Inject constructor(
     }
 
     fun onStart() {
-        Timber.i("On start")
         store.subscribe(this)
     }
 
     fun onStop() {
-        Timber.i("On Stop")
         store.unsubscribe(this)
     }
 }

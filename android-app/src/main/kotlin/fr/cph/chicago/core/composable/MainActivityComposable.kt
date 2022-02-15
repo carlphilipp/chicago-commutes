@@ -5,6 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import fr.cph.chicago.core.composable.screen.screens
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.BusRoute
@@ -16,6 +19,7 @@ import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.task.refreshTask
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.observers.DisposableObserver
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
@@ -24,6 +28,8 @@ val isRefreshing = mutableStateOf(false)
 var busRoutes = mutableStateListOf<BusRoute>()
 
 class MainActivityComposable : ComponentActivity(), StoreSubscriber<State> {
+
+    private var disposable: Disposable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +44,36 @@ class MainActivityComposable : ComponentActivity(), StoreSubscriber<State> {
         if (store.state.busRoutes.isEmpty() || store.state.bikeStations.isEmpty()) {
             store.dispatch(BusRoutesAndBikeStationAction())
         }
+
+        lifecycle.addObserver(LifecycleEventObserver { _, event ->
+            when(event) {
+                Lifecycle.Event.ON_PAUSE -> {
+                    Timber.i("d on pause")
+                    disposable?.dispose()
+                    store.unsubscribe(this)
+                }
+                Lifecycle.Event.ON_STOP -> {
+                    Timber.i("d on stop")
+                    disposable?.dispose()
+                }
+                Lifecycle.Event.ON_RESUME -> {
+                    Timber.i("d on resume")
+                    store.subscribe(this)
+                    disposable?.run {
+                        if (this.isDisposed) {
+                            Timber.i("start refresh task again")
+                            startRefreshTask()
+                        }
+                    }
+                }
+                Lifecycle.Event.ON_DESTROY -> {
+                    Timber.i("d on destroy")
+                    disposable?.dispose()
+                    store.unsubscribe(this)
+                }
+                else -> {}
+            }
+        })
     }
 
     override fun newState(state: State) {
@@ -53,7 +89,7 @@ class MainActivityComposable : ComponentActivity(), StoreSubscriber<State> {
 
     private fun startRefreshTask() {
         val refreshTask: Observable<Long> = refreshTask()
-        refreshTask.subscribeWith(object : DisposableObserver<Long>() {
+        disposable = refreshTask.subscribeWith(object : DisposableObserver<Long>() {
             override fun onNext(t: Long) {
                 Timber.v("Update time. Thread id: %s", Thread.currentThread().id)
                 Favorites.refreshTime()
