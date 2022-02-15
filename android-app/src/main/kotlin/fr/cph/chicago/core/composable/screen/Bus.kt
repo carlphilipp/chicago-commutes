@@ -10,8 +10,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -45,16 +48,15 @@ fun Bus(modifier: Modifier = Modifier, busRoutes: List<BusRoute>) {
 
     var showDialog by remember { mutableStateOf(false) }
     var selectedBusRoute by remember { mutableStateOf(BusRoute.buildEmpty()) }
-
     var searchBusRoutes by remember { mutableStateOf(busRoutes) }
-    var text by remember { mutableStateOf(TextFieldValue("")) }
+    var textSearch by remember { mutableStateOf(TextFieldValue("")) }
 
     LazyColumn(modifier = modifier.fillMaxWidth()) {
         item {
             TextFieldMaterial3(
-                text = text,
+                text = textSearch,
                 onValueChange = { value ->
-                    text = value
+                    textSearch = value
                     searchBusRoutes = busRoutes.filter { busRoute ->
                         busRoute.id.contains(value.text, true) || busRoute.name.contains(value.text, true)
                     }
@@ -82,7 +84,6 @@ fun Bus(modifier: Modifier = Modifier, busRoutes: List<BusRoute>) {
                         style = MaterialTheme.typography.bodyLarge,
                         maxLines = 1,
                     )
-
                     Text(
                         busRoute.name,
                         style = MaterialTheme.typography.bodyLarge,
@@ -93,53 +94,57 @@ fun Bus(modifier: Modifier = Modifier, busRoutes: List<BusRoute>) {
             }
         }
     }
-    BusRouteDialog(
-        show = showDialog,
-        busRoute = selectedBusRoute,
-        hideDialog = { showDialog = false },
-    )
+    if (showDialog) {
+        BusRouteDialog(
+            busRoute = selectedBusRoute,
+            hideDialog = { showDialog = false },
+        )
+    }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun BusRouteDialog(show: Boolean, busRoute: BusRoute, hideDialog: () -> Unit) {
-    if (show) {
-        var isLoading by remember { mutableStateOf(true) }
-        var foundBusDirections by remember { mutableStateOf(BusDirections("")) }
-        val context = LocalContext.current
+fun BusRouteDialog(busRoute: BusRoute, hideDialog: () -> Unit) {
+    var isLoading by remember { mutableStateOf(true) }
+    var foundBusDirections by remember { mutableStateOf(BusDirections("")) }
+    val context = LocalContext.current
 
-        busService.loadBusDirectionsSingle(busRoute.id)
-            .subscribe(
-                { busDirections ->
-                    foundBusDirections = busDirections
-                    isLoading = false
-                },
-                { error ->
-                    // TODO: handle error
-                    isLoading = false
-                }
-            )
-
-        AlertDialog(
-            modifier = Modifier.padding(horizontal = 50.dp),
-            onDismissRequest = hideDialog,
-            // FIXME workaround because the dialog do not resize after loading. Issue: https://issuetracker.google.com/issues/194911971?pli=1
-            properties = DialogProperties(usePlatformDefaultWidth = false),
-            title = {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        style = MaterialTheme.typography.titleMedium,
-                        text = "${busRoute.id} - ${busRoute.name}",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
+    busService.loadBusDirectionsSingle(busRoute.id)
+        .subscribe(
+            { busDirections ->
+                foundBusDirections = busDirections
+                isLoading = false
             },
-            text = {
+            { error ->
+                // TODO: handle error
+                isLoading = false
+            }
+        )
+
+    AlertDialog(
+        modifier = Modifier.padding(horizontal = 50.dp),
+        onDismissRequest = hideDialog,
+        // FIXME workaround because the dialog do not resize after loading. Issue: https://issuetracker.google.com/issues/194911971?pli=1
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        title = {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    style = MaterialTheme.typography.titleMedium,
+                    text = "${busRoute.id} - ${busRoute.name}",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        },
+        text = {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
                 if (isLoading) {
                     Row(
                         horizontalArrangement = Arrangement.Center,
@@ -177,41 +182,41 @@ fun BusRouteDialog(show: Boolean, busRoute: BusRoute, hideDialog: () -> Unit) {
                                 )
                             }
                         }
-                        OutlinedButton(
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = {
-                                val extras = Bundle()
-                                val lBusDirections = foundBusDirections.busDirections
-                                val busDirectionArray = arrayOfNulls<String>(lBusDirections.size)
-                                var i = 0
-                                for (busDir in lBusDirections) {
-                                    busDirectionArray[i++] = busDir.text
-                                }
-                                // FIXME: create new activity with correct theme
-                                val intent = Intent(context, BusMapActivity::class.java)
-                                extras.putString(context.getString(R.string.bundle_bus_route_id), foundBusDirections.id)
-                                extras.putStringArray(context.getString(R.string.bundle_bus_bounds), busDirectionArray)
-                                intent.putExtras(extras)
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                startActivity(context, intent, null)
-                                hideDialog()
-                            },
-                        ) {
-                            Text(
-                                text = "See all buses on line ${busRoute.id}", // FIXME: Add icon
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
-                        }
                     }
                 }
-            },
-            confirmButton = {
-            },
-            dismissButton = {
-                /* OutlinedButton(onClick = hideDialog) {
-                     Text("Dismiss")
-                 }*/
+                OutlinedButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        val extras = Bundle()
+                        val lBusDirections = foundBusDirections.busDirections
+                        val busDirectionArray = arrayOfNulls<String>(lBusDirections.size)
+                        var i = 0
+                        for (busDir in lBusDirections) {
+                            busDirectionArray[i++] = busDir.text
+                        }
+                        // FIXME: create new activity with correct theme
+                        val intent = Intent(context, BusMapActivity::class.java)
+                        extras.putString(context.getString(R.string.bundle_bus_route_id), foundBusDirections.id)
+                        extras.putStringArray(context.getString(R.string.bundle_bus_bounds), busDirectionArray)
+                        intent.putExtras(extras)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(context, intent, null)
+                        hideDialog()
+                    },
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Map,
+                        contentDescription = "Map",
+                        modifier = Modifier.padding(end = 5.dp)
+                    )
+                    Text(
+                        text = "See all buses on line ${busRoute.id}", // FIXME: Add icon
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
             }
-        )
-    }
+        },
+        confirmButton = {},
+        dismissButton = {},
+    )
 }

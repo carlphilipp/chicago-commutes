@@ -83,30 +83,33 @@ import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import java.math.BigInteger
-import java.util.Locale
-import kotlin.math.min
 import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
+import java.math.BigInteger
+import java.util.Locale
+import kotlin.math.min
 
-private val googleStreetClient = GoogleStreetClient
 private val preferenceService = PreferenceService
-private val trainService = TrainService
 
 class TrainStationComposable : ComponentActivity(), StoreSubscriber<State> {
-    private var googleStreetMapImage = mutableStateOf<Drawable>(ShapeDrawable())
-    private var showGoogleStreetImage = mutableStateOf(false)
-    private var trainEtasState = mutableStateOf(listOf<TrainEta>())
-    private var showStationName = mutableStateOf(false)
+    private val googleStreetClient = GoogleStreetClient
+    private val trainService = TrainService
 
+    // Redux state dependant
+    private var trainEtasState = mutableStateOf(listOf<TrainEta>())
+    private var showTrainArrivalData = mutableStateOf(false)
+    private val isTrainStationRefreshing = mutableStateOf(false)
     private var isFavorite = mutableStateOf(false)
     private val applyFavorite = mutableStateOf(false)
-    private val isTrainStationRefreshing = mutableStateOf(false)
-    private val snackbarHostState = mutableStateOf(SnackbarHostState())
+
+    // Async tasks data
+    private var googleStreetMapImage = mutableStateOf<Drawable>(ShapeDrawable())
+    private var showGoogleStreetImage = mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val stationId = BigInteger(intent.extras?.getString(getString(R.string.bundle_train_stationId), "0")!!)
         isFavorite.value = isFavorite(stationId)
         val trainStation = trainService.getStation(stationId)
@@ -119,30 +122,26 @@ class TrainStationComposable : ComponentActivity(), StoreSubscriber<State> {
 
         setContent {
             ChicagoCommutesTheme {
-                val scope = rememberCoroutineScope()
-                if (applyFavorite.value) {
-                    applyFavorite.value = false
-                    LaunchedEffect(applyFavorite.value) {
-                        scope.launch {
-                            val message = if (isFavorite.value) "Added to favorites" else "Removed from favorites"
-                            snackbarHostState.value.showSnackbar(message = message, withDismissAction = true)
-                        }
-                    }
-                }
                 TrainStationView(
                     trainStation = trainStation,
                     trainEtas = trainEtasState.value,
                     googleStreetMapImage = googleStreetMapImage.value,
                     showGoogleStreetImage = showGoogleStreetImage.value,
-                    snackbarHostState = snackbarHostState.value,
                     isFavorite = isFavorite.value,
+                    applyFavorite = applyFavorite.value,
+                    resetApplyFavorite = {
+                        applyFavorite.value = false
+                    },
                     isTrainStationRefreshing = isTrainStationRefreshing.value,
-                    showStationName = showStationName.value,
+                    showTrainArrivalData = showTrainArrivalData.value,
                     onRefresh = {
                         isTrainStationRefreshing.value = true
                         Timber.d("Start Refreshing")
                         store.dispatch(TrainStationAction(trainStation.id))
-                    }
+                    },
+                    onSwitchFavorite = {
+                        switchFavorite(trainStation.id)
+                    },
                 )
             }
         }
@@ -153,7 +152,7 @@ class TrainStationComposable : ComponentActivity(), StoreSubscriber<State> {
         when (state.trainStationStatus) {
             Status.SUCCESS -> {
                 trainEtasState.value = state.trainStationArrival.trainEtas
-                showStationName.value = true
+                showTrainArrivalData.value = true
                 store.dispatch(ResetTrainStationStatusAction())
             }
             Status.FAILURE -> {
@@ -173,6 +172,18 @@ class TrainStationComposable : ComponentActivity(), StoreSubscriber<State> {
             else -> Timber.d("Status not handled")
         }
         isTrainStationRefreshing.value = false
+    }
+
+    private fun isFavorite(trainStationId: BigInteger): Boolean {
+        return preferenceService.isTrainStationFavorite(trainStationId)
+    }
+
+    private fun switchFavorite(trainStationId: BigInteger) {
+        if (isFavorite(trainStationId)) {
+            store.dispatch(RemoveTrainFavoriteAction(trainStationId))
+        } else {
+            store.dispatch(AddTrainFavoriteAction(trainStationId))
+        }
     }
 
     @SuppressLint("CheckResult")
@@ -201,16 +212,29 @@ fun TrainStationView(
     trainEtas: List<TrainEta>,
     googleStreetMapImage: Drawable,
     showGoogleStreetImage: Boolean,
-    snackbarHostState: SnackbarHostState,
     isFavorite: Boolean,
+    applyFavorite: Boolean,
+    resetApplyFavorite: () -> Unit,
     isTrainStationRefreshing: Boolean,
-    showStationName: Boolean,
+    showTrainArrivalData: Boolean,
     onRefresh: () -> Unit,
+    onSwitchFavorite: () -> Unit,
 ) {
+    val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val activity = (LocalLifecycleOwner.current as ComponentActivity)
+
+    if (applyFavorite) {
+        resetApplyFavorite()
+        LaunchedEffect(applyFavorite) {
+            scope.launch {
+                val message = if (isFavorite) "Added to favorites" else "Removed from favorites"
+                snackbarHostState.showSnackbar(message = message, withDismissAction = true)
+            }
+        }
+    }
 
     SwipeRefresh(
         modifier = modifier,
@@ -269,7 +293,7 @@ fun TrainStationView(
                     )
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                    IconButton(onClick = { switchFavorite(trainStation.id) }) {
+                    IconButton(onClick = onSwitchFavorite) {
                         Icon(
                             imageVector = Icons.Filled.Favorite,
                             contentDescription = "Favorite",
@@ -330,7 +354,7 @@ fun TrainStationView(
                             trainEtas = trainEtas
                                 .filter { trainEta -> trainEta.trainStation.id == trainStation.id }
                                 .filter { trainEta -> trainEta.routeName == line },
-                            showStationName = showStationName,
+                            showStationName = showTrainArrivalData,
                             showDivider = index != stops.size - 1
                         )
                     }
@@ -350,7 +374,15 @@ fun TrainStationView(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Stop(modifier: Modifier = Modifier, stationId: BigInteger, line: TrainLine, stop: Stop, trainEtas: List<TrainEta>, showStationName: Boolean, showDivider: Boolean) {
+fun Stop(
+    modifier: Modifier = Modifier,
+    stationId: BigInteger,
+    line: TrainLine,
+    stop: Stop,
+    trainEtas: List<TrainEta>,
+    showStationName: Boolean,
+    showDivider: Boolean
+) {
     val checkboxChecked = remember { mutableStateOf(false) }
     checkboxChecked.value = preferenceService.getTrainFilter(stationId, line, stop.direction)
     // FIXME: This processing should probably not happen here
@@ -417,36 +449,27 @@ fun Stop(modifier: Modifier = Modifier, stationId: BigInteger, line: TrainLine, 
                             )
                         }
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                            actualEtas.forEach {
-                                var currentTime by remember { mutableStateOf(it) }
-                                currentTime = "$it "
-                                AnimatedText(
-                                    time = currentTime,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier.padding(start = 3.dp)
-                                )
+                            if (showStationName) {
+                                actualEtas.forEach {
+                                    var currentTime by remember { mutableStateOf(it) }
+                                    currentTime = "$it "
+                                    AnimatedText(
+                                        time = currentTime,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier.padding(start = 3.dp)
+                                    )
+                                }
+                            } else {
+                                ShimmerAnimation(width = 100.dp, height = 25.dp)
                             }
                         }
                     }
                 }
-            if (showDivider) {
-                Row(Modifier.padding(top = 8.dp, bottom = 8.dp)) {
-                    Divider(thickness = 1.dp)
-                }
+        }
+        if (showDivider) {
+            Row(Modifier.padding(top = 8.dp, bottom = 8.dp)) {
+                Divider(thickness = 1.dp)
             }
         }
-    }
-
-}
-
-fun isFavorite(trainStationId: BigInteger): Boolean {
-    return preferenceService.isTrainStationFavorite(trainStationId)
-}
-
-fun switchFavorite(trainStationId: BigInteger) {
-    if (isFavorite(trainStationId)) {
-        store.dispatch(RemoveTrainFavoriteAction(trainStationId))
-    } else {
-        store.dispatch(AddTrainFavoriteAction(trainStationId))
     }
 }
