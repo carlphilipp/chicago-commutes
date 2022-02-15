@@ -1,6 +1,5 @@
 package fr.cph.chicago.core.composable
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
@@ -60,6 +59,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.ViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
@@ -83,76 +83,89 @@ import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import kotlinx.coroutines.launch
-import org.rekotlin.StoreSubscriber
-import timber.log.Timber
 import java.math.BigInteger
 import java.util.Locale
 import kotlin.math.min
+import kotlinx.coroutines.launch
+import org.rekotlin.StoreSubscriber
+import timber.log.Timber
 
 private val preferenceService = PreferenceService
 
-class TrainStationComposable : ComponentActivity(), StoreSubscriber<State> {
-    private val googleStreetClient = GoogleStreetClient
-    private val trainService = TrainService
-
-    // Redux state dependant
-    private var trainEtasState = mutableStateOf(listOf<TrainEta>())
-    private var showTrainArrivalData = mutableStateOf(false)
-    private val isTrainStationRefreshing = mutableStateOf(false)
-    private var isFavorite = mutableStateOf(false)
-    private val applyFavorite = mutableStateOf(false)
-
-    // Async tasks data
-    private var googleStreetMapImage = mutableStateOf<Drawable>(ShapeDrawable())
-    private var showGoogleStreetImage = mutableStateOf(false)
+class TrainStationComposable : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val stationId = BigInteger(intent.extras?.getString(getString(R.string.bundle_train_stationId), "0")!!)
-        isFavorite.value = isFavorite(stationId)
-        val trainStation = trainService.getStation(stationId)
 
-        val position = trainStation.stops[0].position
-        loadGoogleStreetImage(position)
+        val viewModel = TrainStationViewModel()
+        viewModel.initModel(stationId)
 
-        store.subscribe(this)
-        store.dispatch(TrainStationAction(trainStation.id))
+        store.dispatch(TrainStationAction(stationId))
 
         setContent {
             ChicagoCommutesTheme {
-                TrainStationView(
-                    trainStation = trainStation,
-                    trainEtas = trainEtasState.value,
-                    googleStreetMapImage = googleStreetMapImage.value,
-                    showGoogleStreetImage = showGoogleStreetImage.value,
-                    isFavorite = isFavorite.value,
-                    applyFavorite = applyFavorite.value,
-                    resetApplyFavorite = {
-                        applyFavorite.value = false
-                    },
-                    isTrainStationRefreshing = isTrainStationRefreshing.value,
-                    showTrainArrivalData = showTrainArrivalData.value,
-                    onRefresh = {
-                        isTrainStationRefreshing.value = true
-                        Timber.d("Start Refreshing")
-                        store.dispatch(TrainStationAction(trainStation.id))
-                    },
-                    onSwitchFavorite = {
-                        switchFavorite(trainStation.id)
-                    },
-                )
+                TrainStationView(viewModel = viewModel)
             }
         }
+    }
+}
+
+data class TrainStationUiState(
+    val trainStation: TrainStation = TrainStation.buildEmptyStation(),
+    val isFavorite: Boolean = false,
+    val trainEtasState: List<TrainEta> = listOf(),
+    val isRefreshing: Boolean = false,
+    val applyFavorite: Boolean = false,
+    val showTrainArrivalData: Boolean = false,
+    val googleStreetMapImage: Drawable = ShapeDrawable(),
+    val showGoogleStreetImage: Boolean = false,
+    val onSwitchFavorite: () -> Unit = {},
+    val onRefresh: () -> Unit = {},
+    val resetApplyFavorite: () -> Unit = {},
+)
+
+class TrainStationViewModel(
+    private val trainService: TrainService = TrainService,
+    private val preferenceService: PreferenceService = PreferenceService,
+    private val googleStreetClient: GoogleStreetClient = GoogleStreetClient,
+) : ViewModel(), StoreSubscriber<State> {
+
+    var uiState by mutableStateOf(TrainStationUiState())
+        private set
+
+    fun initModel(stationId: BigInteger) {
+        val trainStation = trainService.getStation(stationId)
+        val isFavorite = isFavorite(stationId)
+
+        uiState = uiState.copy(
+            trainStation = trainStation,
+            isFavorite = isFavorite,
+            onSwitchFavorite = {
+                switchFavorite(trainStation.id)
+            },
+            onRefresh = {
+                uiState = uiState.copy(isRefreshing = true)
+                Timber.d("Start Refreshing")
+                store.dispatch(TrainStationAction(trainStation.id))
+            },
+            resetApplyFavorite = {
+                uiState = uiState.copy(applyFavorite = false)
+            },
+        )
+        store.subscribe(this)
+        loadGoogleStreetImage(trainStation.stops[0].position)
     }
 
     override fun newState(state: State) {
         Timber.d("new state ${state.trainStationStatus}")
         when (state.trainStationStatus) {
             Status.SUCCESS -> {
-                trainEtasState.value = state.trainStationArrival.trainEtas
-                showTrainArrivalData.value = true
+                uiState = uiState.copy(
+                    trainEtasState = state.trainStationArrival.trainEtas,
+                    showTrainArrivalData = true
+                )
                 store.dispatch(ResetTrainStationStatusAction())
             }
             Status.FAILURE -> {
@@ -160,18 +173,39 @@ class TrainStationComposable : ComponentActivity(), StoreSubscriber<State> {
                 store.dispatch(ResetTrainStationStatusAction())
             }
             Status.ADD_FAVORITES -> {
-                isFavorite.value = true
-                applyFavorite.value = true
+                uiState = uiState.copy(
+                    isFavorite = true,
+                    applyFavorite = true
+                )
                 store.dispatch(ResetTrainStationStatusAction())
             }
             Status.REMOVE_FAVORITES -> {
-                isFavorite.value = false
-                applyFavorite.value = true
+                uiState = uiState.copy(
+                    isFavorite = false,
+                    applyFavorite = true
+                )
                 store.dispatch(ResetTrainStationStatusAction())
             }
             else -> Timber.d("Status not handled")
         }
-        isTrainStationRefreshing.value = false
+        uiState = uiState.copy(isRefreshing = false)
+    }
+
+    private fun loadGoogleStreetImage(position: Position) {
+        googleStreetClient.getImage(position.latitude, position.longitude, 1000, 400)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { drawable ->
+                    uiState = uiState.copy(
+                        googleStreetMapImage = drawable,
+                        showGoogleStreetImage = true,
+                    )
+                },
+                { error ->
+                    // TODO: If that failed, we need to retry when the user refreshes data
+                    Timber.e(error, "Error while loading street view image")
+                }
+            )
     }
 
     private fun isFavorite(trainStationId: BigInteger): Boolean {
@@ -185,52 +219,25 @@ class TrainStationComposable : ComponentActivity(), StoreSubscriber<State> {
             store.dispatch(AddTrainFavoriteAction(trainStationId))
         }
     }
-
-    @SuppressLint("CheckResult")
-    fun loadGoogleStreetImage(position: Position) {
-        googleStreetClient.getImage(position.latitude, position.longitude, 1000, 400)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { drawable ->
-                    googleStreetMapImage.value = drawable
-                    //val bit = (bitmap as BitmapDrawable).bitmap
-                    //Timber.i("Dim: ${bit.width}x${bit.height}")
-                    showGoogleStreetImage.value = true
-                },
-                { error ->
-                    // TODO: If that failed, we need to retry when the user refreshes data
-                    Timber.e(error, "Error while loading street view image")
-                }
-            )
-    }
 }
 
 @Composable
 fun TrainStationView(
     modifier: Modifier = Modifier,
-    trainStation: TrainStation,
-    trainEtas: List<TrainEta>,
-    googleStreetMapImage: Drawable,
-    showGoogleStreetImage: Boolean,
-    isFavorite: Boolean,
-    applyFavorite: Boolean,
-    resetApplyFavorite: () -> Unit,
-    isTrainStationRefreshing: Boolean,
-    showTrainArrivalData: Boolean,
-    onRefresh: () -> Unit,
-    onSwitchFavorite: () -> Unit,
+    viewModel: TrainStationViewModel,
 ) {
+    val uiState = viewModel.uiState
     val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val activity = (LocalLifecycleOwner.current as ComponentActivity)
 
-    if (applyFavorite) {
-        resetApplyFavorite()
-        LaunchedEffect(applyFavorite) {
+    if (uiState.applyFavorite) {
+        uiState.resetApplyFavorite()
+        LaunchedEffect(uiState.applyFavorite) {
             scope.launch {
-                val message = if (isFavorite) "Added to favorites" else "Removed from favorites"
+                val message = if (viewModel.uiState.isFavorite) "Added to favorites" else "Removed from favorites"
                 snackbarHostState.showSnackbar(message = message, withDismissAction = true)
             }
         }
@@ -238,8 +245,8 @@ fun TrainStationView(
 
     SwipeRefresh(
         modifier = modifier,
-        state = rememberSwipeRefreshState(isTrainStationRefreshing),
-        onRefresh = onRefresh,
+        state = rememberSwipeRefreshState(uiState.isRefreshing),
+        onRefresh = uiState.onRefresh,
     ) {
         Column(
             modifier = Modifier
@@ -249,11 +256,11 @@ fun TrainStationView(
             Surface(modifier = Modifier.zIndex(1f)) {
                 AnimatedVisibility(
                     modifier = Modifier.height(200.dp),
-                    visible = showGoogleStreetImage,
+                    visible = uiState.showGoogleStreetImage,
                     enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
                 ) {
                     Image(
-                        bitmap = googleStreetMapImage.toBitmap().asImageBitmap(),
+                        bitmap = uiState.googleStreetMapImage.toBitmap().asImageBitmap(),
                         contentDescription = "Google image street view",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
@@ -266,7 +273,7 @@ fun TrainStationView(
                 }
                 AnimatedVisibility(
                     modifier = Modifier.height(200.dp),
-                    visible = !showGoogleStreetImage,
+                    visible = !uiState.showGoogleStreetImage,
                     exit = fadeOut(animationSpec = tween(durationMillis = 300)),
                 ) {
                     LargeImagePlaceHolderAnimated()
@@ -288,21 +295,21 @@ fun TrainStationView(
                         .padding(vertical = 7.dp), horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = trainStation.name,
+                        text = viewModel.uiState.trainStation.name,
                         style = MaterialTheme.typography.titleLarge,
                     )
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                    IconButton(onClick = onSwitchFavorite) {
+                    IconButton(onClick = uiState.onSwitchFavorite) {
                         Icon(
                             imageVector = Icons.Filled.Favorite,
                             contentDescription = "Favorite",
-                            tint = if (isFavorite) Color(fr.cph.chicago.util.Color.yellowLineDark) else LocalContentColor.current,
+                            tint = if (viewModel.uiState.isFavorite) Color(fr.cph.chicago.util.Color.yellowLineDark) else LocalContentColor.current,
                         )
                     }
                     IconButton(onClick = {
                         // TODO: show pin in google map or do not start other app, just do it within our app
-                        val uri = String.format(Locale.ENGLISH, "geo:%f,%f", trainStation.stops[0].position.latitude, trainStation.stops[0].position.longitude)
+                        val uri = String.format(Locale.ENGLISH, "geo:%f,%f", viewModel.uiState.trainStation.stops[0].position.latitude, viewModel.uiState.trainStation.stops[0].position.longitude)
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
 
                         if (intent.resolveActivity(context.packageManager) != null) {
@@ -320,8 +327,8 @@ fun TrainStationView(
                     }
                 }
             }
-            trainStation.stopByLines.keys.forEach { line ->
-                val stops = trainStation.stopByLines[line]!!
+            viewModel.uiState.trainStation.stopByLines.keys.forEach { line ->
+                val stops = viewModel.uiState.trainStation.stopByLines[line]!!
                 Column(
                     modifier = Modifier
                         .padding(horizontal = 20.dp)
@@ -348,13 +355,13 @@ fun TrainStationView(
                     Spacer(modifier = Modifier.padding(bottom = 3.dp))
                     stops.sorted().forEachIndexed { index, stop ->
                         Stop(
-                            stationId = trainStation.id,
+                            stationId = viewModel.uiState.trainStation.id,
                             line = line,
                             stop = stop,
-                            trainEtas = trainEtas
-                                .filter { trainEta -> trainEta.trainStation.id == trainStation.id }
+                            trainEtas = uiState.trainEtasState
+                                .filter { trainEta -> trainEta.trainStation.id == viewModel.uiState.trainStation.id }
                                 .filter { trainEta -> trainEta.routeName == line },
-                            showStationName = showTrainArrivalData,
+                            showStationName = uiState.showTrainArrivalData,
                             showDivider = index != stops.size - 1
                         )
                     }
