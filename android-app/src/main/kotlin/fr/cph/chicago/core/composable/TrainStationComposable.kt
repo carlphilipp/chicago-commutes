@@ -1,5 +1,6 @@
 package fr.cph.chicago.core.composable
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
@@ -87,6 +88,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import java.math.BigInteger
 import java.util.Locale
 import kotlin.math.min
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
@@ -122,9 +124,7 @@ data class TrainStationUiState(
     val showTrainArrivalData: Boolean = false,
     val googleStreetMapImage: Drawable = ShapeDrawable(),
     val showGoogleStreetImage: Boolean = false,
-    val onSwitchFavorite: () -> Unit = {},
-    val onRefresh: () -> Unit = {},
-    val resetApplyFavorite: () -> Unit = {},
+    val snackbarHostState: SnackbarHostState = SnackbarHostState(),
 )
 
 class TrainStationViewModel(
@@ -143,17 +143,6 @@ class TrainStationViewModel(
         uiState = uiState.copy(
             trainStation = trainStation,
             isFavorite = isFavorite,
-            onSwitchFavorite = {
-                switchFavorite(trainStation.id)
-            },
-            onRefresh = {
-                uiState = uiState.copy(isRefreshing = true)
-                Timber.d("Start Refreshing")
-                store.dispatch(TrainStationAction(trainStation.id))
-            },
-            resetApplyFavorite = {
-                uiState = uiState.copy(applyFavorite = false)
-            },
         )
         store.subscribe(this)
         loadGoogleStreetImage(trainStation.stops[0].position)
@@ -192,6 +181,38 @@ class TrainStationViewModel(
         uiState = uiState.copy(isRefreshing = false)
     }
 
+    fun refresh() {
+        uiState = uiState.copy(isRefreshing = true)
+        Timber.d("Start Refreshing")
+        store.dispatch(TrainStationAction(uiState.trainStation.id))
+    }
+
+    fun resetApplyFavorite() {
+        uiState = uiState.copy(applyFavorite = false)
+    }
+
+    fun openMap(context: Context, scope: CoroutineScope) {
+        // TODO: show pin in google map or do not start other app, just do it within our app
+        val uri = String.format(Locale.ENGLISH, "geo:%f,%f", uiState.trainStation.stops[0].position.latitude, uiState.trainStation.stops[0].position.longitude)
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
+
+        if (intent.resolveActivity(context.packageManager) != null) {
+            context.startActivity(intent)
+        } else {
+            scope.launch {
+                uiState.snackbarHostState.showSnackbar("Could not find any Map application on device")
+            }
+        }
+    }
+
+    fun switchFavorite() {
+        if (isFavorite(uiState.trainStation.id)) {
+            store.dispatch(RemoveTrainFavoriteAction(uiState.trainStation.id))
+        } else {
+            store.dispatch(AddTrainFavoriteAction(uiState.trainStation.id))
+        }
+    }
+
     private fun loadGoogleStreetImage(position: Position) {
         googleStreetClient.getImage(position.latitude, position.longitude, 1000, 400)
             .observeOn(AndroidSchedulers.mainThread())
@@ -212,14 +233,6 @@ class TrainStationViewModel(
     private fun isFavorite(trainStationId: BigInteger): Boolean {
         return preferenceService.isTrainStationFavorite(trainStationId)
     }
-
-    private fun switchFavorite(trainStationId: BigInteger) {
-        if (isFavorite(trainStationId)) {
-            store.dispatch(RemoveTrainFavoriteAction(trainStationId))
-        } else {
-            store.dispatch(AddTrainFavoriteAction(trainStationId))
-        }
-    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -229,26 +242,15 @@ fun TrainStationView(
     viewModel: TrainStationViewModel,
 ) {
     val uiState = viewModel.uiState
-    val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
     val activity = (LocalLifecycleOwner.current as ComponentActivity)
-
-    if (uiState.applyFavorite) {
-        uiState.resetApplyFavorite()
-        LaunchedEffect(uiState.applyFavorite) {
-            scope.launch {
-                val message = if (viewModel.uiState.isFavorite) "Added to favorites" else "Removed from favorites"
-                snackbarHostState.showSnackbar(message = message, withDismissAction = true)
-            }
-        }
-    }
+    val context = LocalContext.current
 
     SwipeRefresh(
         modifier = modifier,
-        state = rememberSwipeRefreshState(uiState.isRefreshing),
-        onRefresh = uiState.onRefresh,
+        state = rememberSwipeRefreshState(isRefreshing = uiState.isRefreshing),
+        onRefresh = { viewModel.refresh() },
     ) {
         Scaffold(
             content = {
@@ -296,7 +298,8 @@ fun TrainStationView(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 7.dp), horizontalArrangement = Arrangement.Center
+                                .padding(vertical = 7.dp),
+                            horizontalArrangement = Arrangement.Center,
                         ) {
                             Text(
                                 text = viewModel.uiState.trainStation.name,
@@ -304,26 +307,14 @@ fun TrainStationView(
                             )
                         }
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                            IconButton(onClick = uiState.onSwitchFavorite) {
+                            IconButton(onClick = { viewModel.switchFavorite() }) {
                                 Icon(
                                     imageVector = Icons.Filled.Favorite,
                                     contentDescription = "Favorite",
                                     tint = if (viewModel.uiState.isFavorite) Color(fr.cph.chicago.util.Color.yellowLineDark) else LocalContentColor.current,
                                 )
                             }
-                            IconButton(onClick = {
-                                // TODO: show pin in google map or do not start other app, just do it within our app
-                                val uri = String.format(Locale.ENGLISH, "geo:%f,%f", viewModel.uiState.trainStation.stops[0].position.latitude, viewModel.uiState.trainStation.stops[0].position.longitude)
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
-
-                                if (intent.resolveActivity(context.packageManager) != null) {
-                                    context.startActivity(intent)
-                                } else {
-                                    scope.launch {
-                                        snackbarHostState.showSnackbar("Could not find any Map application on device")
-                                    }
-                                }
-                            }) {
+                            IconButton(onClick = { viewModel.openMap(context = context, scope = scope) }) {
                                 Icon(
                                     imageVector = Icons.Filled.Map,
                                     contentDescription = "Map",
@@ -374,12 +365,28 @@ fun TrainStationView(
                 }
             })
     }
+
+    if (uiState.applyFavorite) {
+        ShowSnackBar(viewModel = viewModel, scope = scope)
+    }
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Bottom,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        SnackbarHost(hostState = snackbarHostState) { data -> Snackbar(snackbarData = data) }
+        SnackbarHost(hostState = uiState.snackbarHostState) { data -> Snackbar(snackbarData = data) }
+    }
+}
+
+@Composable
+fun ShowSnackBar(viewModel: TrainStationViewModel, scope: CoroutineScope) {
+    viewModel.resetApplyFavorite()
+
+    LaunchedEffect(viewModel.uiState.applyFavorite) {
+        scope.launch {
+            val message = if (viewModel.uiState.isFavorite) "Added to favorites" else "Removed from favorites"
+            viewModel.uiState.snackbarHostState.showSnackbar(message = message, withDismissAction = true)
+        }
     }
 }
 
