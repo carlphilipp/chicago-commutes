@@ -163,24 +163,28 @@ dependencies {
 
 
     // Jetpack
-    implementation("androidx.compose.runtime:runtime:1.2.0-alpha02")
-    implementation("androidx.compose.ui:ui:1.2.0-alpha02")
-    implementation("androidx.compose.foundation:foundation-layout:1.2.0-alpha02")
-    implementation("androidx.compose.material:material:1.2.0-alpha02")
-    implementation("androidx.compose.material:material-icons-core:1.2.0-alpha02")
-    implementation("androidx.compose.material:material-icons-extended:1.2.0-alpha02")
-    implementation("androidx.compose.foundation:foundation:1.2.0-alpha02")
-    implementation("androidx.compose.animation:animation:1.2.0-alpha02")
-    implementation("androidx.compose.ui:ui-tooling:1.2.0-alpha02")
-    implementation("androidx.compose.runtime:runtime-livedata:1.2.0-alpha02")
+    implementation("androidx.compose.runtime:runtime:1.2.0-alpha03")
+    implementation("androidx.compose.ui:ui:1.2.0-alpha03")
+    implementation("androidx.compose.foundation:foundation-layout:1.2.0-alpha03")
+    implementation("androidx.compose.material:material:1.2.0-alpha03")
+    implementation("androidx.compose.material:material-icons-core:1.2.0-alpha03")
+    implementation("androidx.compose.material:material-icons-extended:1.2.0-alpha03")
+    implementation("androidx.compose.foundation:foundation:1.2.0-alpha03")
+    implementation("androidx.compose.animation:animation:1.2.0-alpha03")
+    implementation("androidx.compose.ui:ui-tooling:1.2.0-alpha03")
+    implementation("androidx.compose.runtime:runtime-livedata:1.2.0-alpha03")
 
     implementation("androidx.activity:activity-compose:1.4.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1")
     implementation("com.google.accompanist:accompanist-appcompat-theme:0.20.3")
     implementation "com.google.accompanist:accompanist-swiperefresh:0.20.3"
     implementation 'androidx.navigation:navigation-runtime-ktx:2.4.1'
     implementation("androidx.navigation:navigation-compose:2.4.1")
     implementation group: 'androidx.compose.material3', name: 'material3', version: '1.0.0-alpha05'
+
+    implementation("androidx.hilt:hilt-work:1.0.0")
+    // When using Kotlin.
+    kapt("androidx.hilt:hilt-compiler:1.0.0")
 
 
 
