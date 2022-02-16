@@ -57,6 +57,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.ViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
@@ -163,6 +164,7 @@ class BusStationComposable : ComponentActivity(), StoreSubscriber<State> {
                         }
                     }
                 }
+                val viewModel = BusStationViewModel()
                 BusStationView(
                     busArrivals = busArrivalStopDTO.value,
                     busRouteId = busRouteId,
@@ -264,6 +266,24 @@ class BusStationComposable : ComponentActivity(), StoreSubscriber<State> {
                 }
             )
     }
+}
+
+data class BusStationUiState(
+    val busArrivalStopDTO: BusArrivalStopDTO = BusArrivalStopDTO(),
+    val isFavorite: Boolean = false,
+    val isRefreshing: Boolean = false,
+    val applyFavorite: Boolean = false,
+    val showTrainArrivalData: Boolean = false,
+    val googleStreetMapImage: Drawable = ShapeDrawable(),
+    val showGoogleStreetImage: Boolean = false,
+    val snackbarHostState: SnackbarHostState = SnackbarHostState(),
+)
+
+class BusStationViewModel() : ViewModel() {
+    var uiState by mutableStateOf(BusStationUiState())
+        private set
+
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
