@@ -1,8 +1,11 @@
 package fr.cph.chicago.core.composable
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -59,6 +62,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.composable.common.LargeImagePlaceHolderAnimated
+import fr.cph.chicago.core.composable.common.ShowFavoriteSnackBar
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
@@ -77,7 +81,9 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.math.BigInteger
+import java.util.Locale
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
@@ -89,51 +95,26 @@ private val busService = BusService
 private val util = Util
 
 class BusStationComposable : ComponentActivity() {
-    private lateinit var action: BusStopArrivalsAction
-
-   // private var googleStreetMapImage = mutableStateOf<Drawable>(ShapeDrawable())
-   // private var showGoogleStreetImage = mutableStateOf(false)
-
-    //private var showStationName = mutableStateOf(false)
-    //private var busStopName = mutableStateOf("")
-
-    //private var isFavorite = mutableStateOf(false)
-    //private val applyFavorite = mutableStateOf(false)
-    //private val isRefreshing = mutableStateOf(false)
-    //private val snackbarHostState = mutableStateOf(SnackbarHostState())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val busStopId = BigInteger(intent.getStringExtra(getString(R.string.bundle_bus_stop_id)) ?: "0")
+        val busStopName = intent.getStringExtra(getString(R.string.bundle_bus_stop_name)) ?: StringUtils.EMPTY
+
         val busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
-        val bound = intent.getStringExtra(getString(R.string.bundle_bus_bound)) ?: StringUtils.EMPTY
-        val boundTitle = intent.getStringExtra(getString(R.string.bundle_bus_bound_title)) ?: StringUtils.EMPTY
         val busRouteName = intent.getStringExtra(getString(R.string.bundle_bus_route_name)) ?: StringUtils.EMPTY
 
-        Timber.i("busStopId -> $busStopId")
-        Timber.i("busRouteId -> $busRouteId")
-        Timber.i("busRouteName -> $busRouteName")
+        val bound = intent.getStringExtra(getString(R.string.bundle_bus_bound)) ?: StringUtils.EMPTY
+        val boundTitle = intent.getStringExtra(getString(R.string.bundle_bus_bound_title)) ?: StringUtils.EMPTY
 
-        Timber.i("bound -> $bound")
-        Timber.i("boundTitle -> $boundTitle")
-
-        action = BusStopArrivalsAction(
-            busRouteId = busRouteId,
-            busStopId = busStopId,
-            bound = bound,
-            boundTitle = boundTitle
+        store.dispatch(
+            BusStopArrivalsAction(
+                busRouteId = busRouteId,
+                busStopId = busStopId,
+                bound = bound,
+                boundTitle = boundTitle
+            )
         )
-
-        //store.subscribe(this)
-        store.dispatch(action)
-
-/*        isFavorite.value = isFavorite2(
-            busRouteId = busRouteId,
-            busStopId = busStopId,
-            boundTitle = boundTitle
-        )*/
-
-        //loadStopDetailsAndStreetImage()
 
         val viewModel = BusStationViewModel().initModel(
             busRouteId = busRouteId,
@@ -141,35 +122,12 @@ class BusStationComposable : ComponentActivity() {
             bound = bound,
             boundTitle = boundTitle,
             busStopId = busStopId,
+            busStopName = busStopName,
         )
 
         setContent {
             ChicagoCommutesTheme {
-                val scope = rememberCoroutineScope()
-/*                if (applyFavorite.value) {
-                    applyFavorite.value = false
-                    LaunchedEffect(applyFavorite.value) {
-                        scope.launch {
-                            val message = if (isFavorite.value) "Added to favorites" else "Removed from favorites"
-                            snackbarHostState.value.showSnackbar(message)
-                        }
-                    }
-                }*/
-
-                BusStationView(
-                    viewModel = viewModel,
-                    //busRouteName = busRouteName,
-                    //busStopName = busStopName.value,
-                    //snackbarHostState = snackbarHostState.value,
-                    //isFavorite = isFavorite.value,
-                    //isTrainStationRefreshing = isRefreshing.value,
-                    //showStationName = showStationName.value,
-                    /*onRefresh = {
-                        isRefreshing.value = true
-                        Timber.d("Start Refreshing")
-                        //store.dispatch(TrainStationAction(trainStation.id))
-                    }*/
-                )
+                BusStationView(viewModel = viewModel)
             }
         }
     }
@@ -177,9 +135,9 @@ class BusStationComposable : ComponentActivity() {
 
 data class BusStationUiState(
     val busRouteId: String = "",
-    val busRouteName: String= "",
-    val bound: String= "",
-    val boundTitle: String= "",
+    val busRouteName: String = "",
+    val bound: String = "",
+    val boundTitle: String = "",
     val busStopId: BigInteger = BigInteger.ZERO,
     val position: Position = Position(),
     val busStopName: String = "",
@@ -199,13 +157,14 @@ class BusStationViewModel @Inject constructor() : ViewModel(), StoreSubscriber<S
     var uiState by mutableStateOf(BusStationUiState())
         private set
 
-    fun initModel(busRouteId: String, busRouteName: String, bound: String, boundTitle: String, busStopId: BigInteger): BusStationViewModel {
+    fun initModel(busRouteId: String, busRouteName: String, bound: String, boundTitle: String, busStopId: BigInteger, busStopName: String): BusStationViewModel {
         uiState = uiState.copy(
             busRouteId = busRouteId,
             busRouteName = busRouteName,
             bound = bound,
             boundTitle = boundTitle,
             busStopId = busStopId,
+            busStopName = busStopName,
             isFavorite = isFavorite(busRouteId = busRouteId, busStopId = busStopId, boundTitle = boundTitle)
         )
 
@@ -222,8 +181,6 @@ class BusStationViewModel @Inject constructor() : ViewModel(), StoreSubscriber<S
                     busArrivalStopDTO = state.busArrivalStopDTO,
                     showBusArrivalData = true
                 )
-                //busArrivalStopDTO.value = state.busArrivalStopDTO
-                //showStationName.value = true
                 store.dispatch(ResetBusStationStatusAction())
             }
             Status.FAILURE -> {
@@ -231,12 +188,11 @@ class BusStationViewModel @Inject constructor() : ViewModel(), StoreSubscriber<S
                 store.dispatch(ResetBusStationStatusAction())
             }
             Status.ADD_FAVORITES -> {
-                //isFavorite.value = true
-                //applyFavorite.value = true
                 uiState = uiState.copy(
                     isFavorite = true,
                     applyFavorite = true,
                 )
+
                 store.dispatch(ResetBusStationStatusAction())
             }
             Status.REMOVE_FAVORITES -> {
@@ -244,13 +200,50 @@ class BusStationViewModel @Inject constructor() : ViewModel(), StoreSubscriber<S
                     isFavorite = false,
                     applyFavorite = true,
                 )
-                //isFavorite.value = false
-                //applyFavorite.value = true
                 store.dispatch(ResetBusStationStatusAction())
             }
             else -> Timber.d("Status not handled")
         }
-        isRefreshing.value = false
+        uiState = uiState.copy(isRefreshing = false)
+    }
+
+    fun switchFavorite(busRouteId: String, busStopId: BigInteger, boundTitle: String, busRouteName: String, busStopName: String) {
+        if (isFavorite(busRouteId = busRouteId, busStopId = busStopId, boundTitle = boundTitle)) {
+            store.dispatch(RemoveBusFavoriteAction(busRouteId, busStopId.toString(), boundTitle))
+        } else {
+            store.dispatch(AddBusFavoriteAction(busRouteId, busStopId.toString(), boundTitle, busRouteName, busStopName))
+        }
+    }
+
+    fun refresh() {
+        uiState = uiState.copy(isRefreshing = true)
+        Timber.d("Start Refreshing")
+        store.dispatch(
+            BusStopArrivalsAction(
+                busRouteId = uiState.busRouteId,
+                busStopId = uiState.busStopId,
+                bound = uiState.bound,
+                boundTitle = uiState.boundTitle
+            )
+        )
+    }
+
+    fun resetApplyFavorite() {
+        uiState = uiState.copy(applyFavorite = false)
+    }
+
+    fun openMap(context: Context, scope: CoroutineScope) {
+        // TODO: show pin in google map or do not start other app, just do it within our app
+        val uri = String.format(Locale.ENGLISH, "geo:%f,%f", uiState.position.latitude, uiState.position.longitude)
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
+
+        if (intent.resolveActivity(context.packageManager) != null) {
+            context.startActivity(intent)
+        } else {
+            scope.launch {
+                uiState.snackbarHostState.showSnackbar("Could not find any Map application on device")
+            }
+        }
     }
 
     @SuppressLint("CheckResult")
@@ -268,11 +261,8 @@ class BusStationViewModel @Inject constructor() : ViewModel(), StoreSubscriber<S
                     position = Position(
                         busStop.position.latitude,
                         busStop.position.longitude
-                    ),
-                    busStopName = busStop.name
+                    )
                 )
-                //position = Position(busStop.position.latitude, busStop.position.longitude)
-                //busStopName.value = busStop.name
                 busStop
             }
             .observeOn(AndroidSchedulers.mainThread())
@@ -295,7 +285,7 @@ class BusStationViewModel @Inject constructor() : ViewModel(), StoreSubscriber<S
 
 
     @SuppressLint("CheckResult")
-    fun loadGoogleStreetImage(position: Position) {
+    private fun loadGoogleStreetImage(position: Position) {
         googleStreetClient.getImage(position.latitude, position.longitude, 1000, 400)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -312,22 +302,8 @@ class BusStationViewModel @Inject constructor() : ViewModel(), StoreSubscriber<S
             )
     }
 
-    fun isFavorite(busRouteId: String, busStopId: BigInteger, boundTitle: String): Boolean {
+    private fun isFavorite(busRouteId: String, busStopId: BigInteger, boundTitle: String): Boolean {
         return preferenceService.isStopFavorite(busRouteId, busStopId, boundTitle)
-    }
-
-    fun switchFavorite(busRouteId: String, busStopId: BigInteger, boundTitle: String, busRouteName: String, busStopName: String) {
-        if (isFavorite(busRouteId = busRouteId, busStopId = busStopId, boundTitle = boundTitle)) {
-            store.dispatch(RemoveBusFavoriteAction(busRouteId, busStopId.toString(), boundTitle))
-        } else {
-            store.dispatch(AddBusFavoriteAction(busRouteId, busStopId.toString(), boundTitle, busRouteName, busStopName))
-        }
-    }
-
-    fun refresh() {
-        isRefreshing.value = true
-        Timber.d("Start Refreshing")
-        //store.dispatch(TrainStationAction(trainStation.id))
     }
 
     fun onStart() {
@@ -345,13 +321,12 @@ fun BusStationView(
     modifier: Modifier = Modifier,
     viewModel: BusStationViewModel,
 ) {
-    Timber.i("BusStationView")
     val uiState = viewModel.uiState
-
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
     val activity = (LocalLifecycleOwner.current as ComponentActivity)
+    val context = LocalContext.current
     val busArrivalsKeys = uiState.busArrivalStopDTO.keys.toList()
+
     SwipeRefresh(
         modifier = modifier,
         state = rememberSwipeRefreshState(uiState.isRefreshing),
@@ -362,6 +337,7 @@ fun BusStationView(
             content = {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     item {
+                        // TODO: create common component to be shared between train/bus/bike
                         Surface(modifier = Modifier.zIndex(1f)) {
                             AnimatedVisibility(
                                 modifier = Modifier.height(200.dp),
@@ -410,21 +386,15 @@ fun BusStationView(
                                             .fillMaxWidth(),
                                         horizontalArrangement = Arrangement.Center
                                     ) {
-                                        val text = if (uiState.busStopName != "") { // FIXME?
-                                            "${uiState.busRouteId} - ${uiState.busRouteName}"
-                                        } else {
-                                            uiState.busRouteId
-                                        }
                                         Text(
-                                            text = text,
+                                            text = "${uiState.busRouteId} - ${uiState.busRouteName}",
                                             style = MaterialTheme.typography.titleLarge,
                                             maxLines = 1,
                                             overflow = TextOverflow.Ellipsis,
                                         )
                                     }
                                     Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
+                                        modifier = Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.Center
                                     ) {
                                         Text(
@@ -450,19 +420,7 @@ fun BusStationView(
                                             tint = if (uiState.isFavorite) Color(fr.cph.chicago.util.Color.yellowLineDark) else LocalContentColor.current,
                                         )
                                     }
-                                    IconButton(onClick = {
-                                        // TODO: show pin or do not start other app, just do it within our app
-/*                                        val uri = String.format(Locale.ENGLISH, "geo:%f,%f", trainStation.stops[0].position.latitude, trainStation.stops[0].position.longitude)
-                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
-
-                                        if (intent.resolveActivity(context.packageManager) != null) {
-                                            context.startActivity(intent)
-                                        } else {*/
-                                        scope.launch {
-                                            uiState.snackbarHostState.showSnackbar("Could not find any Map application on device")
-                                        }
-                                        // }
-                                    }) {
+                                    IconButton(onClick = { viewModel.openMap(context = context, scope = scope) }) {
                                         Icon(
                                             imageVector = Icons.Filled.Map,
                                             contentDescription = "Map",
@@ -478,19 +436,30 @@ fun BusStationView(
                                 .padding(horizontal = 20.dp)
                                 .fillMaxWidth()
                         ) {
+                            // TODO: create a better UI
                             Spacer(modifier = Modifier.padding(bottom = 3.dp))
                             val destination = busArrivalsKeys[index]
                             val arrivals = uiState.busArrivalStopDTO[busArrivalsKeys[index]]
                             Text(
-                                text = uiState.busStopName
+                                text = uiState.busStopName,
+                                style = MaterialTheme.typography.bodyLarge,
                             )
                             Text(
-                                text = "$destination -> " + arrivals?.joinToString(separator = " ") { util.formatArrivalTime(it) }
+                                text = "$destination: " + arrivals?.joinToString(separator = " ") { util.formatArrivalTime(it) }
                             )
                         }
                     }
                 }
             })
+    }
+
+    if (uiState.applyFavorite) {
+        viewModel.resetApplyFavorite()
+        ShowFavoriteSnackBar(
+            scope = scope,
+            snackbarHostState = viewModel.uiState.snackbarHostState,
+            isFavorite = viewModel.uiState.isFavorite,
+        )
     }
 
     DisposableEffect(key1 = viewModel) {

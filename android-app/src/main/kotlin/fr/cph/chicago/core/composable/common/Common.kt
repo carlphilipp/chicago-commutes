@@ -36,9 +36,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,7 +54,10 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import fr.cph.chicago.core.composable.TrainStationViewModel
 import fr.cph.chicago.core.composable.theme.ShimmerColorShades
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun ColoredBox(modifier: Modifier = Modifier, color: Color = Color.Black) {
@@ -276,6 +281,16 @@ fun TextFieldMaterial3(modifier: Modifier = Modifier, text: TextFieldValue, onVa
                     //disabledPlaceholderColor = placeholderColor.copy(ContentAlpha.disabled)
                 )
             )
+        }
+    }
+}
+
+@Composable
+fun ShowFavoriteSnackBar(scope: CoroutineScope, snackbarHostState: SnackbarHostState, isFavorite: Boolean) {
+    LaunchedEffect(/*viewModel.uiState.applyFavorite*/isFavorite) {
+        scope.launch {
+            val message = if (isFavorite) "Added to favorites" else "Removed from favorites"
+            snackbarHostState.showSnackbar(message = message, withDismissAction = true)
         }
     }
 }

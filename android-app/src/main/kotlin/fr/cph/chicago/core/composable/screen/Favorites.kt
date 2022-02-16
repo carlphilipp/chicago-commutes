@@ -218,6 +218,7 @@ fun startBusDetailActivity(context: Context, busDetailsDTO: BusDetailsDTO) {
     extras.putString(context.getString(R.string.bundle_bus_route_name), busDetailsDTO.routeName)
     extras.putString(context.getString(R.string.bundle_bus_bound), busDetailsDTO.bound)
     extras.putString(context.getString(R.string.bundle_bus_bound_title), busDetailsDTO.boundTitle)
+    extras.putString(context.getString(R.string.bundle_bus_stop_name), busDetailsDTO.stopName)
 
     intent.putExtras(extras)
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

@@ -48,26 +48,21 @@ class MainActivityComposable : ComponentActivity(), StoreSubscriber<State> {
         lifecycle.addObserver(LifecycleEventObserver { _, event ->
             when(event) {
                 Lifecycle.Event.ON_PAUSE -> {
-                    Timber.i("d on pause")
                     disposable?.dispose()
                     store.unsubscribe(this)
                 }
                 Lifecycle.Event.ON_STOP -> {
-                    Timber.i("d on stop")
                     disposable?.dispose()
                 }
                 Lifecycle.Event.ON_RESUME -> {
-                    Timber.i("d on resume")
                     store.subscribe(this)
                     disposable?.run {
                         if (this.isDisposed) {
-                            Timber.i("start refresh task again")
                             startRefreshTask()
                         }
                     }
                 }
                 Lifecycle.Event.ON_DESTROY -> {
-                    Timber.i("d on destroy")
                     disposable?.dispose()
                     store.unsubscribe(this)
                 }

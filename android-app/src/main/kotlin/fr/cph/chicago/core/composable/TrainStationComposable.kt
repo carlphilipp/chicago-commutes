@@ -45,7 +45,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -71,6 +70,7 @@ import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.composable.common.AnimatedText
 import fr.cph.chicago.core.composable.common.LargeImagePlaceHolderAnimated
 import fr.cph.chicago.core.composable.common.ShimmerAnimation
+import fr.cph.chicago.core.composable.common.ShowFavoriteSnackBar
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Stop
@@ -377,7 +377,12 @@ fun TrainStationView(
     }
 
     if (uiState.applyFavorite) {
-        ShowSnackBar(viewModel = viewModel, scope = scope)
+        viewModel.resetApplyFavorite()
+        ShowFavoriteSnackBar(
+            scope = scope,
+            snackbarHostState = viewModel.uiState.snackbarHostState,
+            isFavorite = viewModel.uiState.isFavorite,
+        )
     }
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -390,18 +395,6 @@ fun TrainStationView(
     DisposableEffect(key1 = viewModel) {
         viewModel.onStart()
         onDispose { viewModel.onStop() }
-    }
-}
-
-@Composable
-fun ShowSnackBar(viewModel: TrainStationViewModel, scope: CoroutineScope) {
-    viewModel.resetApplyFavorite()
-
-    LaunchedEffect(viewModel.uiState.applyFavorite) {
-        scope.launch {
-            val message = if (viewModel.uiState.isFavorite) "Added to favorites" else "Removed from favorites"
-            viewModel.uiState.snackbarHostState.showSnackbar(message = message, withDismissAction = true)
-        }
     }
 }
 
