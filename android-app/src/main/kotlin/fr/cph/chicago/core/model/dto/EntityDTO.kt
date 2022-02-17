@@ -66,7 +66,7 @@ data class BusDetailsDTO(
 
 // destination -> list of bus arrival
 class
-BusArrivalStopDTO(private val underlying: MutableMap<String, MutableList<BusArrival>> = ArrayMap()) : MutableMap<String, MutableList<BusArrival>> by underlying
+BusArrivalStopDTO(val underlying: MutableMap<String, MutableList<BusArrival>> = ArrayMap()) : MutableMap<String, MutableList<BusArrival>> by underlying
 
 class BusArrivalStopMappedDTO(private val underlying: TreeMap<String, MutableMap<String, MutableSet<BusArrival>>> = TreeMap()) : MutableMap<String, MutableMap<String, MutableSet<BusArrival>>> by underlying {
     // stop name => { bound => BusArrival }

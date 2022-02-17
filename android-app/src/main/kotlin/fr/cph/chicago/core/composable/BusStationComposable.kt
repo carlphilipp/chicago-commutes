@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.util.ArrayMap
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
@@ -45,6 +46,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
@@ -62,8 +64,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.composable.common.LargeImagePlaceHolderAnimated
+import fr.cph.chicago.core.composable.common.ShimmerAnimation
 import fr.cph.chicago.core.composable.common.ShowFavoriteSnackBar
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
+import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
@@ -142,7 +146,7 @@ data class BusStationUiState(
     val position: Position = Position(),
     val busStopName: String = "",
 
-    val busArrivalStopDTO: BusArrivalStopDTO = BusArrivalStopDTO(),
+    val busArrivalStopDTO: BusArrivalStopDTO = BusArrivalStopDTO(underlying = ArrayMap()),
     val isFavorite: Boolean = false,
     val isRefreshing: Boolean = false,
     val applyFavorite: Boolean = false,
@@ -158,6 +162,8 @@ class BusStationViewModel @Inject constructor() : ViewModel(), StoreSubscriber<S
         private set
 
     fun initModel(busRouteId: String, busRouteName: String, bound: String, boundTitle: String, busStopId: BigInteger, busStopName: String): BusStationViewModel {
+        val defaultedArrivals = ArrayMap<String, MutableList<BusArrival>>()
+        defaultedArrivals["Unknown"] = mutableListOf()
         uiState = uiState.copy(
             busRouteId = busRouteId,
             busRouteName = busRouteName,
@@ -165,7 +171,8 @@ class BusStationViewModel @Inject constructor() : ViewModel(), StoreSubscriber<S
             boundTitle = boundTitle,
             busStopId = busStopId,
             busStopName = busStopName,
-            isFavorite = isFavorite(busRouteId = busRouteId, busStopId = busStopId, boundTitle = boundTitle)
+            isFavorite = isFavorite(busRouteId = busRouteId, busStopId = busStopId, boundTitle = boundTitle),
+            busArrivalStopDTO = BusArrivalStopDTO(underlying = defaultedArrivals)
         )
 
         loadStopDetailsAndStreetImage()
@@ -430,23 +437,42 @@ fun BusStationView(
                             }
                         }
                     }
+                    // TODO: handle when there is no bus arriving (no service)
                     items(busArrivalsKeys.size) { index ->
                         Column(
                             modifier = Modifier
                                 .padding(horizontal = 20.dp)
                                 .fillMaxWidth()
                         ) {
-                            // TODO: create a better UI
                             Spacer(modifier = Modifier.padding(bottom = 3.dp))
                             val destination = busArrivalsKeys[index]
-                            val arrivals = uiState.busArrivalStopDTO[busArrivalsKeys[index]]
+                            val arrivals = uiState.busArrivalStopDTO[busArrivalsKeys[index]] // TODO handle case where arrivals is null
                             Text(
                                 text = uiState.busStopName,
-                                style = MaterialTheme.typography.bodyLarge,
+                                style = MaterialTheme.typography.titleMedium,
                             )
-                            Text(
-                                text = "$destination: " + arrivals?.joinToString(separator = " ") { util.formatArrivalTime(it) }
-                            )
+                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically) {
+                                if (uiState.showBusArrivalData) {
+                                    Text(
+                                        text = "To $destination",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        )
+                                } else {
+                                    ShimmerAnimation(width = 100.dp, height = 25.dp)
+                                }
+                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+                                    if (uiState.showBusArrivalData) {
+                                        arrivals?.forEach { busArrival ->
+                                            Text(
+                                                text = util.formatArrivalTime(busArrival),
+                                                style = MaterialTheme.typography.bodyLarge,
+                                            )
+                                        }
+                                    } else {
+                                        ShimmerAnimation(width = 100.dp, height = 25.dp)
+                                    }
+                                }
+                            }
                         }
                     }
                 }
