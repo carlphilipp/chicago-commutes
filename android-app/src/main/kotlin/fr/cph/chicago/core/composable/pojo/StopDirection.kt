@@ -2,14 +2,14 @@ package fr.cph.chicago.core.composable.pojo
 
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 
-data class StopDirection(val destination: String, val trainDirection: TrainDirection) : java.lang.Comparable<StopDirection> {
-    override fun compareTo(stopDirection: StopDirection): Int {
-        if (this == stopDirection) {
+data class StopDirection(val destination: String, val trainDirection: TrainDirection) : Comparable<StopDirection> {
+    override fun compareTo(other: StopDirection): Int {
+        if (this == other) {
             return 0;
         }
-        val dest = this.destination.compareTo(stopDirection.destination)
+        val dest = this.destination.compareTo(other.destination)
         return if (dest == 0) {
-            this.trainDirection.compareTo(stopDirection.trainDirection)
+            this.trainDirection.compareTo(other.trainDirection)
         } else {
             dest
         }
