@@ -93,11 +93,6 @@ import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
-private val googleStreetClient = GoogleStreetClient
-private val preferenceService = PreferenceService
-private val busService = BusService
-private val util = Util
-
 class BusStationComposable : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -111,15 +106,6 @@ class BusStationComposable : ComponentActivity() {
         val bound = intent.getStringExtra(getString(R.string.bundle_bus_bound)) ?: StringUtils.EMPTY
         val boundTitle = intent.getStringExtra(getString(R.string.bundle_bus_bound_title)) ?: StringUtils.EMPTY
 
-        store.dispatch(
-            BusStopArrivalsAction(
-                busRouteId = busRouteId,
-                busStopId = busStopId,
-                bound = bound,
-                boundTitle = boundTitle
-            )
-        )
-
         val viewModel = BusStationViewModel().initModel(
             busRouteId = busRouteId,
             busRouteName = busRouteName,
@@ -127,6 +113,15 @@ class BusStationComposable : ComponentActivity() {
             boundTitle = boundTitle,
             busStopId = busStopId,
             busStopName = busStopName,
+        )
+
+        store.dispatch(
+            BusStopArrivalsAction(
+                busRouteId = busRouteId,
+                busStopId = busStopId,
+                bound = bound,
+                boundTitle = boundTitle
+            )
         )
 
         setContent {
@@ -157,7 +152,11 @@ data class BusStationUiState(
 )
 
 @HiltViewModel
-class BusStationViewModel @Inject constructor() : ViewModel(), StoreSubscriber<State> {
+class BusStationViewModel @Inject constructor(
+    private val googleStreetClient: GoogleStreetClient = GoogleStreetClient,
+    private val preferenceService: PreferenceService = PreferenceService,
+    private val busService: BusService = BusService,
+) : ViewModel(), StoreSubscriber<State> {
     var uiState by mutableStateOf(BusStationUiState())
         private set
 
@@ -180,10 +179,9 @@ class BusStationViewModel @Inject constructor() : ViewModel(), StoreSubscriber<S
     }
 
     override fun newState(state: State) {
-        Timber.i("new state ${state.busStopStatus}")
+        Timber.d("new state ${state.busStopStatus}")
         when (state.busStopStatus) {
             Status.SUCCESS -> {
-                Timber.i("Set new bus arrival stop DTO ${state.busArrivalStopDTO.keys.size}")
                 uiState = uiState.copy(
                     busArrivalStopDTO = state.busArrivalStopDTO,
                     showBusArrivalData = true
@@ -462,9 +460,9 @@ fun BusStationView(
                                 }
                                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
                                     if (uiState.showBusArrivalData) {
-                                        arrivals?.forEach { busArrival ->
+                                        arrivals.forEach { busArrival ->
                                             Text(
-                                                text = util.formatArrivalTime(busArrival),
+                                                text = busArrival.formatArrivalTime(),
                                                 style = MaterialTheme.typography.bodyLarge,
                                             )
                                         }

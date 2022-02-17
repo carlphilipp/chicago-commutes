@@ -100,6 +100,10 @@ data class BusArrival(
             }
         }
 
+    fun formatArrivalTime() : String {
+        return if (this.isDelay) " Delay" else " " + this.timeLeftMinutes
+    }
+
     override fun describeContents(): Int {
         return 0
     }

@@ -235,6 +235,7 @@ object Util {
         return if (num >= 10) num.toString() else "  $num"
     }
 
+    @Deprecated("Replaced by a method within BusArrival")
     fun formatArrivalTime(busArrival: BusArrival): String {
         return if (busArrival.isDelay) " Delay" else " " + busArrival.timeLeftMinutes
     }
