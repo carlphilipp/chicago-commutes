@@ -36,6 +36,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -52,6 +53,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
+import fr.cph.chicago.core.composable.common.AnimatedText
 import fr.cph.chicago.core.composable.common.ShimmerAnimation
 import fr.cph.chicago.core.composable.common.ShowFavoriteSnackBar
 import fr.cph.chicago.core.composable.common.StationDetailsImageView
@@ -423,8 +425,10 @@ fun BusStationView(
                                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
                                     if (uiState.showBusArrivalData) {
                                         arrivals.forEach { busArrival ->
-                                            Text(
-                                                text = busArrival.formatArrivalTime(),
+                                            var currentTime by remember { mutableStateOf(busArrival.formatArrivalTime()) }
+                                            currentTime = busArrival.formatArrivalTime()
+                                            AnimatedText(
+                                                time = currentTime,
                                                 style = MaterialTheme.typography.bodyLarge,
                                             )
                                         }
