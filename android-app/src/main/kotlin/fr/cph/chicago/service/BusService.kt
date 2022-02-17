@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.service
 
+import android.util.ArrayMap
 import fr.cph.chicago.Constants.REQUEST_ROUTE
 import fr.cph.chicago.Constants.REQUEST_STOP_ID
 import fr.cph.chicago.client.CtaClient
@@ -241,12 +242,19 @@ object BusService {
     fun loadBusArrivals(busRouteId: String, busStopId: BigInteger, bound: String, boundTitle: String): Single<BusArrivalStopDTO> {
         return getBusArrivals(listOf(busStopId), listOf(busRouteId))
             .map { busArrivals ->
-                busArrivals
+                val result = busArrivals
                     .filter { (_, _, _, _, _, _, routeDirection) -> routeDirection == bound || routeDirection == boundTitle }
                     .fold(BusArrivalStopDTO()) { accumulator, busArrival ->
-                        accumulator.getOrPut(busArrival.busDestination, { mutableListOf() }).add(busArrival)
+                        accumulator.getOrPut(busArrival.busDestination) { mutableListOf() }.add(busArrival)
                         accumulator
                     }
+                if(result.size == 0) {
+                    val noService = ArrayMap<String, MutableList<BusArrival>>()
+                    noService["No Service"] = mutableListOf()
+                    BusArrivalStopDTO(noService)
+                } else {
+                    result
+                }
             }
             .subscribeOn(Schedulers.computation())
     }

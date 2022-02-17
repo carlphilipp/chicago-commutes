@@ -240,6 +240,7 @@ class BusStationViewModel @Inject constructor() : ViewModel(), StoreSubscriber<S
     }
 
     fun openMap(context: Context, scope: CoroutineScope) {
+        // TODO: This is probably duplicated code that should be merged
         // TODO: show pin in google map or do not start other app, just do it within our app
         val uri = String.format(Locale.ENGLISH, "geo:%f,%f", uiState.position.latitude, uiState.position.longitude)
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
@@ -437,7 +438,6 @@ fun BusStationView(
                             }
                         }
                     }
-                    // TODO: handle when there is no bus arriving (no service)
                     items(busArrivalsKeys.size) { index ->
                         Column(
                             modifier = Modifier
@@ -446,7 +446,7 @@ fun BusStationView(
                         ) {
                             Spacer(modifier = Modifier.padding(bottom = 3.dp))
                             val destination = busArrivalsKeys[index]
-                            val arrivals = uiState.busArrivalStopDTO[busArrivalsKeys[index]] // TODO handle case where arrivals is null
+                            val arrivals = uiState.busArrivalStopDTO[busArrivalsKeys[index]]!!
                             Text(
                                 text = uiState.busStopName,
                                 style = MaterialTheme.typography.titleMedium,
@@ -454,7 +454,7 @@ fun BusStationView(
                             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically) {
                                 if (uiState.showBusArrivalData) {
                                     Text(
-                                        text = "To $destination",
+                                        text = if(arrivals.size == 0) destination else "To $destination",
                                         style = MaterialTheme.typography.bodyLarge,
                                         )
                                 } else {
