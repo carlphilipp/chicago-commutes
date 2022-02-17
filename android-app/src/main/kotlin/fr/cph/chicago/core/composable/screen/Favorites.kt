@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -13,14 +12,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsBus
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -35,7 +32,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -102,14 +98,15 @@ fun Favorites() {
 fun TrainFavoriteCard(modifier: Modifier = Modifier, trainStation: TrainStation, lastUpdate: LastUpdate) {
     FavoriteCardWrapper(modifier = modifier) {
 
-        HeaderCard(name = trainStation.name, lines = trainStation.lines, image = Icons.Filled.Train, lastUpdate = lastUpdate)
+        HeaderCard(name = trainStation.name, image = Icons.Filled.Train, lastUpdate = lastUpdate)
 
         trainStation.lines.forEach { trainLine ->
-            val arrivals = Favorites.getTrainArrivalByLine(trainStation.id, trainLine)
+            val arrivals = Favorites.getTrainArrivalByStopDirection(trainStation.id, trainLine)
             for (entry in arrivals.entries) {
                 Arrivals(
                     trainLine = trainLine,
-                    destination = entry.key,
+                    destination  = entry.key.destination,
+                    direction  = entry.key.trainDirection.toString(),
                     arrivals = entry.value,
                 )
             }
@@ -152,10 +149,9 @@ fun BusFavoriteCard(modifier: Modifier = Modifier, busRoute: BusRoute, lastUpdat
                 )
                 busDetailsDTOs.add(busDetailsDTO)
                 val busDirection = BusDirection.fromString(key)
-                // TODO: Handle different size for busdirection
-                val stopNameDisplay = if (busDirection == BusDirection.UNKNOWN) stopNameTrimmed else "$stopNameTrimmed ${busDirection.shortLowerCase}"
                 Arrivals(
-                    destination = stopNameDisplay,
+                    destination = stopNameTrimmed,
+                    direction = busDirection.shortLowerCase,
                     arrivals = value.map { busArrival -> busArrival.timeLeftDueDelay }
                 )
             }
@@ -205,7 +201,9 @@ fun BusDetailDialog(show: Boolean, busDetailsDTOs: List<BusDetailsDTO>, hideDial
                         val modifier = if (index == busDetailsDTOs.size - 1) {
                             Modifier.fillMaxWidth()
                         } else {
-                            Modifier.fillMaxWidth().padding(bottom = 5.dp)
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 5.dp)
                         }
                         OutlinedButton(
                             modifier = modifier,
@@ -271,7 +269,7 @@ fun FavoriteCardWrapper(modifier: Modifier = Modifier, content: @Composable Colu
 }
 
 @Composable
-fun HeaderCard(modifier: Modifier = Modifier, name: String, lines: Set<TrainLine> = mutableSetOf(), image: ImageVector, lastUpdate: LastUpdate) {
+fun HeaderCard(modifier: Modifier = Modifier, name: String, image: ImageVector, lastUpdate: LastUpdate) {
     Row(
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
@@ -301,16 +299,6 @@ fun HeaderCard(modifier: Modifier = Modifier, name: String, lines: Set<TrainLine
                 AnimatedText(time = lastUpdate.value, style = MaterialTheme.typography.labelSmall)
             }
         }
-        // FIXME: Keep that or not? Or making it a bit different?
-        /*Row(
-            horizontalArrangement = Arrangement.End, modifier = Modifier
-            .fillMaxWidth()
-            .padding(end = 12.dp)
-        ) {
-            lines.forEach { trainLine ->
-                ColoredBox(modifier = Modifier.padding(start = 5.dp), color = Color(trainLine.color))
-            }
-        }*/
     }
 }
 
@@ -342,7 +330,7 @@ fun FooterCard(modifier: Modifier = Modifier, detailsOnClick: () -> Unit = {}, m
 }
 
 @Composable
-fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA, destination: String, arrivals: List<String>) {
+fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA, destination: String, direction: String? = null, arrivals: List<String>) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
@@ -350,13 +338,20 @@ fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA,
             .fillMaxWidth()
     ) {
         ColoredBox(color = trainLine.toComposeColor())
-        Text(
-            text = destination,
-            maxLines = 1,
-            style = MaterialTheme.typography.titleSmall,
-            modifier = Modifier
-                .padding(horizontal = 10.dp),
-        )
+        Column(modifier = Modifier.padding(horizontal = 10.dp)) {
+            Text(
+                text = destination,
+                maxLines = 1,
+                style = MaterialTheme.typography.titleSmall,
+            )
+            if (direction != null) {
+                Text(
+                    text = direction,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+        }
+
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             arrivals.forEach {
                 var currentTime by remember { mutableStateOf(it) }

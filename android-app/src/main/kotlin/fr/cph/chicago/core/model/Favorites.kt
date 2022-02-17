@@ -21,6 +21,7 @@ package fr.cph.chicago.core.model
 
 import android.os.Parcelable
 import androidx.compose.runtime.mutableStateOf
+import fr.cph.chicago.core.composable.pojo.StopDirection
 import fr.cph.chicago.core.model.dto.BusArrivalStopMappedDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.redux.store
@@ -90,22 +91,41 @@ object Favorites {
         }
     }
 
+    @Deprecated("Use getTrainArrivalByStopDirection instead")
     fun getTrainArrivalByLine(stationId: BigInteger, trainLine: TrainLine): Map<String, MutableList<String>> {
         return store.state.trainArrivalsDTO.trainsArrivals
-            .getOrElse(stationId, { TrainArrival.buildEmptyTrainArrival() })
+            .getOrElse(stationId) { TrainArrival.buildEmptyTrainArrival() }
             .getEtas(trainLine)
             .fold(TreeMap()) { accumulator, eta ->
-                val destinationName = eta.destName
+                val destinationName = eta.destName + "_" + eta.stop.direction.toString()
                 val timeLeft = eta.timeLeftDueDelay
                 if (accumulator.contains(destinationName)) {
-                    val list: MutableList<String> = accumulator.getValue(destinationName)/* + " " + timeLeft*/
+                    val list: MutableList<String> = accumulator.getValue(destinationName)
                     list.add(timeLeft)
                     accumulator[destinationName] = list
                 } else {
                     val list = mutableListOf(timeLeft)
                     accumulator[destinationName] = list
                 }
-                //accumulator[destinationName] = value
+                accumulator
+            }
+    }
+
+    fun getTrainArrivalByStopDirection(stationId: BigInteger, trainLine: TrainLine): Map<StopDirection, MutableList<String>> {
+        return store.state.trainArrivalsDTO.trainsArrivals
+            .getOrElse(stationId) { TrainArrival.buildEmptyTrainArrival() }
+            .getEtas(trainLine)
+            .fold(TreeMap()) { accumulator, eta ->
+                val stopDirection = StopDirection(destination = eta.destName, trainDirection = eta.stop.direction)
+                val timeLeft = eta.timeLeftDueDelay
+                if (accumulator.contains(stopDirection)) {
+                    val list: MutableList<String> = accumulator.getValue(stopDirection)
+                    list.add(timeLeft)
+                    accumulator[stopDirection] = list
+                } else {
+                    val list = mutableListOf(timeLeft)
+                    accumulator[stopDirection] = list
+                }
                 accumulator
             }
     }
