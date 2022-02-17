@@ -1,6 +1,9 @@
 package fr.cph.chicago.core.composable.common
 
+import android.graphics.drawable.Drawable
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -33,7 +36,10 @@ import androidx.compose.material.ContentAlpha
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
@@ -49,11 +55,15 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
+import androidx.core.graphics.drawable.toBitmap
 import fr.cph.chicago.core.composable.TrainStationViewModel
 import fr.cph.chicago.core.composable.theme.ShimmerColorShades
 import kotlinx.coroutines.CoroutineScope
@@ -291,6 +301,46 @@ fun ShowFavoriteSnackBar(scope: CoroutineScope, snackbarHostState: SnackbarHostS
         scope.launch {
             val message = if (isFavorite) "Added to favorites" else "Removed from favorites"
             snackbarHostState.showSnackbar(message = message, withDismissAction = true)
+        }
+    }
+}
+
+
+@Composable
+fun StationDetailsImageView(
+    modifier: Modifier = Modifier,
+    activity: ComponentActivity,
+    showGoogleStreetImage: Boolean,
+    googleStreetMapImage: Drawable,
+) {
+    Surface(modifier = modifier.zIndex(1f)) {
+        AnimatedVisibility(
+            modifier = Modifier.height(200.dp),
+            visible = showGoogleStreetImage,
+            enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
+        ) {
+            Image(
+                bitmap = googleStreetMapImage.toBitmap().asImageBitmap(),
+                contentDescription = "Google image street view",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+        AnimatedVisibility(
+            modifier = Modifier.height(200.dp),
+            visible = !showGoogleStreetImage,
+            exit = fadeOut(animationSpec = tween(durationMillis = 300)),
+        ) {
+            LargeImagePlaceHolderAnimated()
+        }
+        FilledTonalButton(
+            modifier = Modifier.padding(10.dp),
+            onClick = { activity.finish() },
+        ) {
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = "Back",
+            )
         }
     }
 }

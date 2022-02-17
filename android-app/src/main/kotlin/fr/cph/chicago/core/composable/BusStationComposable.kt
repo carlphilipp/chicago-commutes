@@ -66,6 +66,7 @@ import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.composable.common.LargeImagePlaceHolderAnimated
 import fr.cph.chicago.core.composable.common.ShimmerAnimation
 import fr.cph.chicago.core.composable.common.ShowFavoriteSnackBar
+import fr.cph.chicago.core.composable.common.StationDetailsImageView
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusStop
@@ -343,37 +344,11 @@ fun BusStationView(
             content = {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     item {
-                        // TODO: create common component to be shared between train/bus/bike
-                        Surface(modifier = Modifier.zIndex(1f)) {
-                            AnimatedVisibility(
-                                modifier = Modifier.height(200.dp),
-                                visible = uiState.showGoogleStreetImage,
-                                enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
-                            ) {
-                                Image(
-                                    bitmap = uiState.googleStreetMapImage.toBitmap().asImageBitmap(),
-                                    contentDescription = "Google image street view",
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier.fillMaxWidth(),
-                                )
-                            }
-                            AnimatedVisibility(
-                                modifier = Modifier.height(200.dp),
-                                visible = !uiState.showGoogleStreetImage,
-                                exit = fadeOut(animationSpec = tween(durationMillis = 300)),
-                            ) {
-                                LargeImagePlaceHolderAnimated()
-                            }
-                            FilledTonalButton(
-                                modifier = Modifier.padding(10.dp),
-                                onClick = { activity.finish() },
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.ArrowBack,
-                                    contentDescription = "Back",
-                                )
-                            }
-                        }
+                        StationDetailsImageView(
+                            activity = activity,
+                            showGoogleStreetImage = uiState.showGoogleStreetImage,
+                            googleStreetMapImage = uiState.googleStreetMapImage,
+                        )
                     }
                     item {
                         Surface(
@@ -452,9 +427,9 @@ fun BusStationView(
                             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically) {
                                 if (uiState.showBusArrivalData) {
                                     Text(
-                                        text = if(arrivals.size == 0) destination else "To $destination",
+                                        text = if (arrivals.size == 0) destination else "To $destination",
                                         style = MaterialTheme.typography.bodyLarge,
-                                        )
+                                    )
                                 } else {
                                     ShimmerAnimation(width = 100.dp, height = 25.dp)
                                 }
