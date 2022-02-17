@@ -58,6 +58,7 @@ import fr.cph.chicago.core.composable.common.AnimatedText
 import fr.cph.chicago.core.composable.common.ShimmerAnimation
 import fr.cph.chicago.core.composable.common.ShowFavoriteSnackBar
 import fr.cph.chicago.core.composable.common.StationDetailsImageView
+import fr.cph.chicago.core.composable.common.StationDetailsTitleIconView
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Stop
@@ -257,35 +258,14 @@ fun TrainStationView(
                         activity = activity,
                         showGoogleStreetImage = uiState.showGoogleStreetImage,
                         googleStreetMapImage = uiState.googleStreetMapImage,
+                        scrollState = uiState.scrollState
                     )
-                    Column {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 7.dp),
-                            horizontalArrangement = Arrangement.Center,
-                        ) {
-                            Text(
-                                text = uiState.trainStation.name,
-                                style = MaterialTheme.typography.titleLarge,
-                            )
-                        }
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                            IconButton(onClick = { viewModel.switchFavorite() }) {
-                                Icon(
-                                    imageVector = Icons.Filled.Favorite,
-                                    contentDescription = "Favorite",
-                                    tint = if (uiState.isFavorite) Color(fr.cph.chicago.util.Color.yellowLineDark) else LocalContentColor.current,
-                                )
-                            }
-                            IconButton(onClick = { viewModel.openMap(context = context, scope = scope) }) {
-                                Icon(
-                                    imageVector = Icons.Filled.Map,
-                                    contentDescription = "Map",
-                                )
-                            }
-                        }
-                    }
+                    StationDetailsTitleIconView(
+                        title = uiState.trainStation.name,
+                        isFavorite = uiState.isFavorite,
+                        onFavoriteClick = { viewModel.switchFavorite() },
+                        onMapClick = { viewModel.openMap(context = context, scope = scope) }
+                    )
                     uiState.trainStation.stopByLines.keys.forEach { line ->
                         val stops = uiState.trainStation.stopByLines[line]!!
                         Column(

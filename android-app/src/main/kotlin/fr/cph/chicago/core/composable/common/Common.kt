@@ -19,6 +19,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.with
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,9 +38,13 @@ import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
@@ -56,6 +61,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
@@ -64,10 +70,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.graphics.drawable.toBitmap
-import fr.cph.chicago.core.composable.TrainStationViewModel
-import fr.cph.chicago.core.composable.theme.ShimmerColorShades
+import kotlin.math.min
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.apache.commons.lang3.StringUtils
 
 @Composable
 fun ColoredBox(modifier: Modifier = Modifier, color: Color = Color.Black) {
@@ -312,6 +318,7 @@ fun StationDetailsImageView(
     activity: ComponentActivity,
     showGoogleStreetImage: Boolean,
     googleStreetMapImage: Drawable,
+    scrollState: ScrollState? = null,
 ) {
     Surface(modifier = modifier.zIndex(1f)) {
         AnimatedVisibility(
@@ -319,11 +326,21 @@ fun StationDetailsImageView(
             visible = showGoogleStreetImage,
             enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
         ) {
+            val imageModifier = if (scrollState != null) {
+                Modifier
+                    .fillMaxWidth()
+                    .graphicsLayer {
+                        alpha = min(1f, 1 - (scrollState.value / 600f))
+                        translationY = -scrollState.value * 0.1f
+                    }
+            } else {
+                Modifier.fillMaxWidth()
+            }
             Image(
                 bitmap = googleStreetMapImage.toBitmap().asImageBitmap(),
                 contentDescription = "Google image street view",
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = imageModifier
             )
         }
         AnimatedVisibility(
@@ -341,6 +358,69 @@ fun StationDetailsImageView(
                 imageVector = Icons.Filled.ArrowBack,
                 contentDescription = "Back",
             )
+        }
+    }
+}
+
+@Composable
+fun StationDetailsTitleIconView(
+    modifier: Modifier = Modifier,
+    title: String,
+    subTitle: String = StringUtils.EMPTY,
+    isFavorite: Boolean,
+    onFavoriteClick: () -> Unit,
+    onMapClick: () -> Unit,
+) {
+    Surface(
+        modifier = modifier
+            .zIndex(5f)
+            .fillMaxWidth()
+    ) {
+        Column {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 7.dp),
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleLarge,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                if (subTitle != StringUtils.EMPTY) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = subTitle,
+                            style = MaterialTheme.typography.titleSmall,
+                        )
+                    }
+                }
+            }
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                IconButton(onClick = onFavoriteClick) {
+                    Icon(
+                        imageVector = Icons.Filled.Favorite,
+                        contentDescription = "Favorite",
+                        tint = if (isFavorite) Color(fr.cph.chicago.util.Color.yellowLineDark) else LocalContentColor.current,
+                    )
+                }
+                IconButton(onClick = onMapClick) {
+                    Icon(
+                        imageVector = Icons.Filled.Map,
+                        contentDescription = "Map",
+                    )
+                }
+            }
         }
     }
 }

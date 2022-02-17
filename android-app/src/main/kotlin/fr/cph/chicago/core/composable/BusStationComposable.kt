@@ -57,6 +57,7 @@ import fr.cph.chicago.core.composable.common.AnimatedText
 import fr.cph.chicago.core.composable.common.ShimmerAnimation
 import fr.cph.chicago.core.composable.common.ShowFavoriteSnackBar
 import fr.cph.chicago.core.composable.common.StationDetailsImageView
+import fr.cph.chicago.core.composable.common.StationDetailsTitleIconView
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusStop
@@ -340,65 +341,23 @@ fun BusStationView(
                         )
                     }
                     item {
-                        Surface(
-                            modifier = Modifier
-                                .zIndex(5f)
-                                .fillMaxWidth()
-                        ) {
-                            Column {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 7.dp),
-                                ) {
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.Center
-                                    ) {
-                                        Text(
-                                            text = "${uiState.busRouteId} - ${uiState.busRouteName}",
-                                            style = MaterialTheme.typography.titleLarge,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis,
-                                        )
-                                    }
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.Center
-                                    ) {
-                                        Text(
-                                            text = uiState.boundTitle,
-                                            style = MaterialTheme.typography.titleSmall,
-                                        )
-                                    }
-
-                                }
-                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                                    IconButton(onClick = {
-                                        viewModel.switchFavorite(
-                                            boundTitle = uiState.boundTitle,
-                                            busStopId = uiState.busStopId,
-                                            busRouteId = uiState.busRouteId,
-                                            busRouteName = uiState.busRouteName,
-                                            busStopName = uiState.busStopName
-                                        )
-                                    }) {
-                                        Icon(
-                                            imageVector = Icons.Filled.Favorite,
-                                            contentDescription = "Favorite",
-                                            tint = if (uiState.isFavorite) Color(fr.cph.chicago.util.Color.yellowLineDark) else LocalContentColor.current,
-                                        )
-                                    }
-                                    IconButton(onClick = { viewModel.openMap(context = context, scope = scope) }) {
-                                        Icon(
-                                            imageVector = Icons.Filled.Map,
-                                            contentDescription = "Map",
-                                        )
-                                    }
-                                }
+                        StationDetailsTitleIconView(
+                            title = "${uiState.busRouteId} - ${uiState.busRouteName}",
+                            subTitle = uiState.boundTitle,
+                            isFavorite = uiState.isFavorite,
+                            onFavoriteClick = {
+                                viewModel.switchFavorite(
+                                    boundTitle = uiState.boundTitle,
+                                    busStopId = uiState.busStopId,
+                                    busRouteId = uiState.busRouteId,
+                                    busRouteName = uiState.busRouteName,
+                                    busStopName = uiState.busStopName
+                                )
+                            },
+                            onMapClick = {
+                                viewModel.openMap(context = context, scope = scope)
                             }
-                        }
+                        )
                     }
                     items(busArrivalsKeys.size) { index ->
                         Column(
