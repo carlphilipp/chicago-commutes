@@ -1,10 +1,8 @@
 package fr.cph.chicago.core.composable
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -47,8 +45,6 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
-import fr.cph.chicago.client.GoogleStreetClient
-import fr.cph.chicago.core.App
 import fr.cph.chicago.core.composable.common.AnimatedText
 import fr.cph.chicago.core.composable.common.ShimmerAnimation
 import fr.cph.chicago.core.composable.common.ShowFavoriteSnackBar
@@ -71,14 +67,11 @@ import fr.cph.chicago.redux.TrainStationAction
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import java.math.BigInteger
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import java.math.BigInteger
-import java.util.Locale
-import javax.inject.Inject
 
 class TrainStationComposable : ComponentActivity() {
 
@@ -115,7 +108,6 @@ data class TrainStationUiState(
 class TrainStationViewModel @Inject constructor(
     private val trainService: TrainService = TrainService,
     private val preferenceService: PreferenceService = PreferenceService,
-    private val googleStreetClient: GoogleStreetClient = GoogleStreetClient,
 ) : ViewModel(), StoreSubscriber<State> {
 
     var uiState by mutableStateOf(TrainStationUiState())

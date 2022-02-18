@@ -39,7 +39,6 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
-import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.composable.common.AnimatedText
 import fr.cph.chicago.core.composable.common.ShimmerAnimation
 import fr.cph.chicago.core.composable.common.ShowFavoriteSnackBar
@@ -127,7 +126,6 @@ data class BusStationUiState(
 
 @HiltViewModel
 class BusStationViewModel @Inject constructor(
-    private val googleStreetClient: GoogleStreetClient = GoogleStreetClient,
     private val preferenceService: PreferenceService = PreferenceService,
     private val busService: BusService = BusService,
 ) : ViewModel(), StoreSubscriber<State> {

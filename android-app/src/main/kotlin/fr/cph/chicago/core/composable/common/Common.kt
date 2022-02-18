@@ -84,6 +84,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apache.commons.lang3.StringUtils
 
+private val googleStreetClient = GoogleStreetClient
+
 fun openMapApplication(context: Context, scope: CoroutineScope, snackbarHostState: SnackbarHostState, latitude: Double, longitude: Double) {
     val uri = String.format(Locale.ENGLISH, "geo:%f,%f", latitude, longitude)
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
@@ -98,7 +100,7 @@ fun openMapApplication(context: Context, scope: CoroutineScope, snackbarHostStat
 }
 
 fun loadGoogleStreet(position: Position, onSuccess: Consumer<Drawable>, onError: Consumer<Throwable>) {
-    GoogleStreetClient.getImage(position.latitude, position.longitude, 1000, 400)
+    googleStreetClient.getImage(position.latitude, position.longitude, 1000, 400)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(onSuccess, onError)
 }
