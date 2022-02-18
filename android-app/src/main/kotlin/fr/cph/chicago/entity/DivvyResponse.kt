@@ -45,4 +45,8 @@ data class DivvyStationStatus(
     @JsonProperty("num_bikes_available")
     val availableBikes: Int,
     @JsonProperty("num_docks_available")
-    val availableDocks: Int)
+    val availableDocks: Int,
+    @JsonProperty("num_bikes_disabled")
+    val disabledBikes: Int,
+)
+

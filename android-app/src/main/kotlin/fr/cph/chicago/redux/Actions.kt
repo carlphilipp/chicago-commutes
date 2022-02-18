@@ -78,6 +78,8 @@ data class BusRoutesAndBikeStationAction(
 
 data class ResetBusRoutesFavoritesAction(val unit: Unit = Unit) : Action
 
+data class ResetBikeStationFavoritesAction(val unit: Unit = Unit) : Action
+
 // Train station activity
 data class TrainStationAction(
     val trainStationId: BigInteger = BigInteger.ZERO,

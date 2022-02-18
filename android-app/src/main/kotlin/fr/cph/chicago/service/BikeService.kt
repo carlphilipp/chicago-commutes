@@ -72,20 +72,23 @@ object BikeService {
     private fun loadAllBikeStations(): Single<List<BikeStation>> {
         val informationSingle = client.getStationsInformation().onErrorReturn(handleMapError())
         val statusSingle = client.getStationsStatus().onErrorReturn(handleMapError())
-        return Single.zip(informationSingle, statusSingle, { info, stat ->
+        return Single.zip(informationSingle, statusSingle) { info, stat ->
             val res = mutableListOf<BikeStation>()
             for ((key, stationInfo) in info) {
-                val stationStatus = stat[key] ?: DivvyStationStatus("", 0, 0)
-                res.add(BikeStation(
-                    id = stationInfo.id.toBigInteger(),
-                    name = stationInfo.name,
-                    availableDocks = stationStatus.availableDocks,
-                    availableBikes = stationStatus.availableBikes,
-                    latitude = stationInfo.latitude,
-                    longitude = stationInfo.longitude,
-                    address = stationInfo.name))
+                val stationStatus = stat[key] ?: DivvyStationStatus("", 0, 0, 0)
+                res.add(
+                    BikeStation(
+                        id = stationInfo.id.toBigInteger(),
+                        name = stationInfo.name,
+                        availableDocks = stationStatus.availableDocks,
+                        availableBikes = stationStatus.availableBikes,
+                        latitude = stationInfo.latitude,
+                        longitude = stationInfo.longitude,
+                        address = stationInfo.name
+                    )
+                )
             }
             res.sortedWith(compareBy(BikeStation::name))
-        })
+        }
     }
 }

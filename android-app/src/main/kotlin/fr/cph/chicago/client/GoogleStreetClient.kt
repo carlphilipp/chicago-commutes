@@ -49,7 +49,7 @@ object GoogleStreetClient {
             .map { response ->
                 if(counter == 0 || counter == 1) {
                     counter++
-                    throw RuntimeException()
+                    //throw RuntimeException()
                 }
                 Drawable.createFromStream(ByteArrayInputStream(response.bytes()), "src name") }
     }

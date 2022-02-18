@@ -120,6 +120,12 @@ fun reducer(action: Action, oldState: State?): State {
                 random = UUID.randomUUID().toString()
             )
         }
+        is ResetBikeStationFavoritesAction -> {
+            state = state.copy(
+                bikeStationsStatus = Status.UNKNOWN,
+                random = UUID.randomUUID().toString()
+            )
+        }
         is FavoritesAction -> {
             val status = when {
                 action.favoritesDTO.trainArrivalDTO.error && action.favoritesDTO.busArrivalDTO.error && action.favoritesDTO.bikeError -> {

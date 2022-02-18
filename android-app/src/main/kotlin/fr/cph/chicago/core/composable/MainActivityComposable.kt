@@ -7,12 +7,13 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
 import fr.cph.chicago.core.composable.screen.screens
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
+import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.Favorites
 import fr.cph.chicago.redux.BusRoutesAndBikeStationAction
+import fr.cph.chicago.redux.ResetBikeStationFavoritesAction
 import fr.cph.chicago.redux.ResetBusRoutesFavoritesAction
 import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
@@ -24,8 +25,10 @@ import io.reactivex.rxjava3.observers.DisposableObserver
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
+// FIXME state should not be declared here
 val isRefreshing = mutableStateOf(false)
 var busRoutes = mutableStateListOf<BusRoute>()
+var bikeStations = mutableStateListOf<BikeStation>()
 
 class MainActivityComposable : ComponentActivity(), StoreSubscriber<State> {
 
@@ -46,7 +49,7 @@ class MainActivityComposable : ComponentActivity(), StoreSubscriber<State> {
         }
 
         lifecycle.addObserver(LifecycleEventObserver { _, event ->
-            when(event) {
+            when (event) {
                 Lifecycle.Event.ON_PAUSE -> {
                     disposable?.dispose()
                     store.unsubscribe(this)
@@ -79,6 +82,11 @@ class MainActivityComposable : ComponentActivity(), StoreSubscriber<State> {
             busRoutes.clear()
             busRoutes.addAll(state.busRoutes)
             store.dispatch(ResetBusRoutesFavoritesAction())
+        }
+        if (state.bikeStationsStatus == Status.SUCCESS) {
+            bikeStations.clear()
+            bikeStations.addAll(state.bikeStations)
+            store.dispatch(ResetBikeStationFavoritesAction())
         }
     }
 
