@@ -217,7 +217,6 @@ class TrainStationViewModel @Inject constructor(
                     )
                 },
                 { error ->
-                    // TODO: If that failed, we need to retry when the user refreshes data
                     Timber.e(error, "Error while loading street view image")
                     uiState = uiState.copy(
                         isGoogleStreetImageLoading = false,

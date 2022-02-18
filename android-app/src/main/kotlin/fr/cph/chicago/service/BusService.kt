@@ -44,6 +44,9 @@ import fr.cph.chicago.rx.RxUtil.handleListError
 import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.annotations.NonNull
+import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.math.BigInteger
@@ -98,6 +101,27 @@ object BusService {
                         position = Position(stop.lat, stop.lon))
                 }
             }
+    }
+
+    fun getStopPosition(route: String, bound: String, stopId: BigInteger): @NonNull Single<Position> {
+        return ctaClient.getBusStops(route, bound)
+            .map { busStopsResponse ->
+                if (busStopsResponse.bustimeResponse.stops == null) {
+                    throw CtaException(busStopsResponse)
+                }
+                busStopsResponse.bustimeResponse.stops!!.map { stop ->
+                    BusStop(
+                        id = stop.stpid.toBigInteger(),
+                        name = WordUtils.capitalizeFully(stop.stpnm),
+                        description = stop.stpnm,
+                        position = Position(stop.lat, stop.lon))
+                }
+            }
+            .toObservable()
+            .flatMapIterable { busStop -> busStop }
+            .filter { busStop -> busStop.id == stopId }
+            .map { busStop -> busStop.position }
+            .firstOrError()
     }
 
     fun loadLocalBusData(): Single<Boolean> {

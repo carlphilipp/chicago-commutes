@@ -45,23 +45,25 @@ data class FirstLoadDTO(
     val busRoutesError: Boolean,
     val bikeStationsError: Boolean,
     val busRoutes: List<BusRoute>,
-    val bikeStations: List<BikeStation>)
+    val bikeStations: List<BikeStation>
+)
 
 data class FavoritesDTO(
     val trainArrivalDTO: TrainArrivalDTO,
     val busArrivalDTO: BusArrivalDTO,
     val bikeError: Boolean,
-    val bikeStations: List<BikeStation>)
+    val bikeStations: List<BikeStation>
+)
 
 data class BusFavoriteDTO(val routeId: String, val stopId: String, val bound: String)
 
 data class BusDetailsDTO(
-    val busRouteId: String,
-    val bound: String,
-    val boundTitle: String,
-    val stopId: Int,
-    val routeName: String,
-    val stopName: String
+    val busRouteId: String = StringUtils.EMPTY,
+    val bound: String = StringUtils.EMPTY,
+    val boundTitle: String = StringUtils.EMPTY,
+    val stopId: Int = 0,
+    val routeName: String = StringUtils.EMPTY,
+    val stopName: String = StringUtils.EMPTY,
 )
 
 // destination -> list of bus arrival
@@ -72,8 +74,8 @@ class BusArrivalStopMappedDTO(private val underlying: TreeMap<String, MutableMap
     // stop name => { bound => BusArrival }
 
     fun addBusArrival(busArrival: BusArrival) {
-        getOrPut(busArrival.stopName, { TreeMap() })
-            .getOrPut(busArrival.routeDirection, { mutableSetOf() })
+        getOrPut(busArrival.stopName) { TreeMap() }
+            .getOrPut(busArrival.routeDirection) { mutableSetOf() }
             .add(busArrival)
     }
 

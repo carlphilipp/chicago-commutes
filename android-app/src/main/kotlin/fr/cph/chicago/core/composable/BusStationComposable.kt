@@ -1,6 +1,5 @@
 package fr.cph.chicago.core.composable
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
@@ -50,9 +49,9 @@ import fr.cph.chicago.core.composable.common.StationDetailsImageView
 import fr.cph.chicago.core.composable.common.StationDetailsTitleIconView
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.BusArrival
-import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
+import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.redux.AddBusFavoriteAction
 import fr.cph.chicago.redux.BusStopArrivalsAction
 import fr.cph.chicago.redux.RemoveBusFavoriteAction
@@ -63,16 +62,15 @@ import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.PreferenceService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.math.BigInteger
+import java.util.Locale
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import java.math.BigInteger
-import java.util.Locale
-import javax.inject.Inject
 
 class BusStationComposable : ComponentActivity() {
 
@@ -87,14 +85,16 @@ class BusStationComposable : ComponentActivity() {
         val bound = intent.getStringExtra(getString(R.string.bundle_bus_bound)) ?: StringUtils.EMPTY
         val boundTitle = intent.getStringExtra(getString(R.string.bundle_bus_bound_title)) ?: StringUtils.EMPTY
 
-        val viewModel = BusStationViewModel().initModel(
+        val busDetails = BusDetailsDTO(
             busRouteId = busRouteId,
-            busRouteName = busRouteName,
+            routeName = busRouteName,
             bound = bound,
             boundTitle = boundTitle,
-            busStopId = busStopId,
-            busStopName = busStopName,
+            stopId = busStopId.toInt(),
+            stopName = busStopName,
         )
+
+        val viewModel = BusStationViewModel().initModel(busDetails = busDetails)
 
         store.dispatch(
             BusStopArrivalsAction(
@@ -114,14 +114,8 @@ class BusStationComposable : ComponentActivity() {
 }
 
 data class BusStationUiState(
-    val busRouteId: String = "",
-    val busRouteName: String = "",
-    val bound: String = "",
-    val boundTitle: String = "",
-    val busStopId: BigInteger = BigInteger.ZERO,
+    val busDetails: BusDetailsDTO = BusDetailsDTO(),
     val position: Position = Position(),
-    val busStopName: String = "",
-
     val busArrivalStopDTO: BusArrivalStopDTO = BusArrivalStopDTO(underlying = ArrayMap()),
     val isFavorite: Boolean = false,
     val isRefreshing: Boolean = false,
@@ -142,21 +136,16 @@ class BusStationViewModel @Inject constructor(
     var uiState by mutableStateOf(BusStationUiState())
         private set
 
-    fun initModel(busRouteId: String, busRouteName: String, bound: String, boundTitle: String, busStopId: BigInteger, busStopName: String): BusStationViewModel {
+    fun initModel(busDetails: BusDetailsDTO): BusStationViewModel {
         val defaultedArrivals = ArrayMap<String, MutableList<BusArrival>>()
         defaultedArrivals["Unknown"] = mutableListOf()
         uiState = uiState.copy(
-            busRouteId = busRouteId,
-            busRouteName = busRouteName,
-            bound = bound,
-            boundTitle = boundTitle,
-            busStopId = busStopId,
-            busStopName = busStopName,
-            isFavorite = isFavorite(busRouteId = busRouteId, busStopId = busStopId, boundTitle = boundTitle),
+            busDetails = busDetails,
+            isFavorite = isFavorite(busRouteId = busDetails.busRouteId, busStopId = busDetails.stopId, boundTitle = busDetails.boundTitle),
             busArrivalStopDTO = BusArrivalStopDTO(underlying = defaultedArrivals)
         )
 
-        loadStopDetailsAndStreetImage()
+        loadStopPositionAndGoogleStreetImage()
         return this
     }
 
@@ -194,7 +183,7 @@ class BusStationViewModel @Inject constructor(
         uiState = uiState.copy(isRefreshing = false)
     }
 
-    fun switchFavorite(busRouteId: String, busStopId: BigInteger, boundTitle: String, busRouteName: String, busStopName: String) {
+    fun switchFavorite(busRouteId: String, busStopId: Int, boundTitle: String, busRouteName: String, busStopName: String) {
         if (isFavorite(busRouteId = busRouteId, busStopId = busStopId, boundTitle = boundTitle)) {
             store.dispatch(RemoveBusFavoriteAction(busRouteId, busStopId.toString(), boundTitle))
         } else {
@@ -207,12 +196,19 @@ class BusStationViewModel @Inject constructor(
         Timber.d("Start Refreshing")
         store.dispatch(
             BusStopArrivalsAction(
-                busRouteId = uiState.busRouteId,
-                busStopId = uiState.busStopId,
-                bound = uiState.bound,
-                boundTitle = uiState.boundTitle
+                busRouteId = uiState.busDetails.busRouteId,
+                busStopId = BigInteger(uiState.busDetails.stopId.toString()),
+                bound = uiState.busDetails.bound,
+                boundTitle = uiState.busDetails.boundTitle
             )
         )
+        if (!isPositionSetup()) {
+            Timber.d("Trying to reload stop position and google street image")
+            loadStopPositionAndGoogleStreetImage()
+        } else if (!isGoogleMapImageLoaded()) {
+            Timber.d("Trying to reload google street image")
+            loadGoogleStreetImage(uiState.position)
+        }
     }
 
     fun resetApplyFavorite() {
@@ -234,45 +230,33 @@ class BusStationViewModel @Inject constructor(
         }
     }
 
-    @SuppressLint("CheckResult")
-    private fun loadStopDetailsAndStreetImage() {
-        // Load bus stop details and google street image
-        busService.loadAllBusStopsForRouteBound(uiState.busRouteId, uiState.boundTitle)
+    private fun isGoogleMapImageLoaded(): Boolean {
+        return !uiState.isGoogleStreetImageLoading && uiState.showGoogleStreetImage
+    }
+
+    private fun isPositionSetup(): Boolean {
+        return uiState.position != Position()
+    }
+
+    private fun loadStopPositionAndGoogleStreetImage() {
+        // Load bus position and google street image
+        busService.getStopPosition(uiState.busDetails.busRouteId, uiState.busDetails.boundTitle, uiState.busDetails.stopId.toBigInteger())
             .observeOn(Schedulers.computation())
-            .flatMap { stops ->
-                val busStop: BusStop? = stops.firstOrNull { busStop -> busStop.id == uiState.busStopId }
-                Single.just(busStop!!)
-            }
-            .map { busStop ->
-                loadGoogleStreetImage(busStop.position)
-                uiState = uiState.copy(
-                    position = Position(
-                        busStop.position.latitude,
-                        busStop.position.longitude
-                    )
-                )
-                busStop
-            }
+            .doOnSuccess { position -> loadGoogleStreetImage(position) }
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnError { throwable ->
-                Timber.e(throwable, "Error while loading street image and stop details")
-                //onError()
-            }
             .subscribe(
-                { busStop ->
-                    //toolbar.title = "$busRouteId - ${busStop.name}"
-/*                    streetViewImage.setOnClickListener(GoogleStreetOnClickListener(position.latitude, position.longitude))
-                    binding.header.favorites.mapContainer.setOnClickListener(OpenMapOnClickListener(position.latitude, position.longitude))
-                    binding.header.favorites.walkContainer.setOnClickListener(OpenMapDirectionOnClickListener(position.latitude, position.longitude))*/
+                { position ->
+                    uiState = uiState.copy(position = Position(position.latitude, position.longitude))
                 },
                 { throwable ->
-                    Timber.e(throwable, "Error while loading street image and stop details")
-                    // onError()
+                    Timber.e(throwable, "Error while loading bus position and google street image")
+                    uiState = uiState.copy(
+                        isGoogleStreetImageLoading = false,
+                        showGoogleStreetImage = false,
+                    )
                 })
     }
 
-
-    @SuppressLint("CheckResult")
     private fun loadGoogleStreetImage(position: Position) {
         googleStreetClient.getImage(position.latitude, position.longitude, 1000, 400)
             .observeOn(AndroidSchedulers.mainThread())
@@ -285,7 +269,6 @@ class BusStationViewModel @Inject constructor(
                     )
                 },
                 { error ->
-                    // TODO: If that failed, we need to retry when the user refreshes data
                     Timber.e(error, "Error while loading street view image")
                     uiState = uiState.copy(
                         isGoogleStreetImageLoading = false,
@@ -295,8 +278,8 @@ class BusStationViewModel @Inject constructor(
             )
     }
 
-    private fun isFavorite(busRouteId: String, busStopId: BigInteger, boundTitle: String): Boolean {
-        return preferenceService.isStopFavorite(busRouteId, busStopId, boundTitle)
+    private fun isFavorite(busRouteId: String, busStopId: Int, boundTitle: String): Boolean {
+        return preferenceService.isStopFavorite(busRouteId, BigInteger(busStopId.toString()), boundTitle)
     }
 
     fun onStart() {
@@ -339,16 +322,16 @@ fun BusStationView(
                     }
                     item {
                         StationDetailsTitleIconView(
-                            title = "${uiState.busRouteId} - ${uiState.busRouteName}",
-                            subTitle = uiState.boundTitle,
+                            title = "${uiState.busDetails.busRouteId} - ${uiState.busDetails.routeName}",
+                            subTitle = uiState.busDetails.boundTitle,
                             isFavorite = uiState.isFavorite,
                             onFavoriteClick = {
                                 viewModel.switchFavorite(
-                                    boundTitle = uiState.boundTitle,
-                                    busStopId = uiState.busStopId,
-                                    busRouteId = uiState.busRouteId,
-                                    busRouteName = uiState.busRouteName,
-                                    busStopName = uiState.busStopName
+                                    boundTitle = uiState.busDetails.boundTitle,
+                                    busStopId = uiState.busDetails.stopId,
+                                    busRouteId = uiState.busDetails.busRouteId,
+                                    busRouteName = uiState.busDetails.routeName,
+                                    busStopName = uiState.busDetails.stopName
                                 )
                             },
                             onMapClick = {
@@ -366,7 +349,7 @@ fun BusStationView(
                             val destination = busArrivalsKeys[index]
                             val arrivals = uiState.busArrivalStopDTO[busArrivalsKeys[index]]!!
                             Text(
-                                text = uiState.busStopName,
+                                text = uiState.busDetails.stopName,
                                 style = MaterialTheme.typography.titleMedium,
                             )
                             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically) {
