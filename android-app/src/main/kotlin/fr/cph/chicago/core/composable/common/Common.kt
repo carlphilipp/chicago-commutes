@@ -1,6 +1,9 @@
 package fr.cph.chicago.core.composable.common
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -70,11 +73,35 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.graphics.drawable.toBitmap
+import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.App
+import fr.cph.chicago.core.model.Position
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.functions.Consumer
+import java.util.Locale
 import kotlin.math.min
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apache.commons.lang3.StringUtils
+
+fun openMapApplication(context: Context, scope: CoroutineScope, snackbarHostState: SnackbarHostState, latitude: Double, longitude: Double) {
+    val uri = String.format(Locale.ENGLISH, "geo:%f,%f", latitude, longitude)
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
+
+    if (intent.resolveActivity(context.packageManager) != null) {
+        context.startActivity(intent)
+    } else {
+        scope.launch {
+            snackbarHostState.showSnackbar("Could not find any Map application on device")
+        }
+    }
+}
+
+fun loadGoogleStreet(position: Position, onSuccess: Consumer<Drawable>, onError: Consumer<Throwable>) {
+    GoogleStreetClient.getImage(position.latitude, position.longitude, 1000, 400)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(onSuccess, onError)
+}
 
 @Composable
 fun ColoredBox(modifier: Modifier = Modifier, color: Color = Color.Black) {

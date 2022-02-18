@@ -54,6 +54,8 @@ import fr.cph.chicago.core.composable.common.ShimmerAnimation
 import fr.cph.chicago.core.composable.common.ShowFavoriteSnackBar
 import fr.cph.chicago.core.composable.common.StationDetailsImageView
 import fr.cph.chicago.core.composable.common.StationDetailsTitleIconView
+import fr.cph.chicago.core.composable.common.loadGoogleStreet
+import fr.cph.chicago.core.composable.common.openMapApplication
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Stop
@@ -180,17 +182,13 @@ class TrainStationViewModel @Inject constructor(
     }
 
     fun openMap(context: Context, scope: CoroutineScope) {
-        // TODO: show pin in google map or do not start other app, just do it within our app
-        val uri = String.format(Locale.ENGLISH, "geo:%f,%f", uiState.trainStation.stops[0].position.latitude, uiState.trainStation.stops[0].position.longitude)
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
-
-        if (intent.resolveActivity(context.packageManager) != null) {
-            context.startActivity(intent)
-        } else {
-            scope.launch {
-                uiState.snackbarHostState.showSnackbar("Could not find any Map application on device")
-            }
-        }
+        openMapApplication(
+            context = context,
+            scope = scope,
+            snackbarHostState = uiState.snackbarHostState,
+            latitude = uiState.trainStation.stops[0].position.latitude,
+            longitude = uiState.trainStation.stops[0].position.longitude,
+        )
     }
 
     fun switchFavorite() {
@@ -206,24 +204,23 @@ class TrainStationViewModel @Inject constructor(
     }
 
     private fun loadGoogleStreetImage(position: Position) {
-        googleStreetClient.getImage(position.latitude, position.longitude, 1000, 400)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { drawable ->
-                    uiState = uiState.copy(
-                        googleStreetMapImage = drawable,
-                        isGoogleStreetImageLoading = false,
-                        showGoogleStreetImage = true,
-                    )
-                },
-                { error ->
-                    Timber.e(error, "Error while loading street view image")
-                    uiState = uiState.copy(
-                        isGoogleStreetImageLoading = false,
-                        showGoogleStreetImage = false,
-                    )
-                }
-            )
+        loadGoogleStreet(
+            position = position,
+            onSuccess = { drawable ->
+                uiState = uiState.copy(
+                    googleStreetMapImage = drawable,
+                    isGoogleStreetImageLoading = false,
+                    showGoogleStreetImage = true,
+                )
+            },
+            onError = { throwable ->
+                Timber.e(throwable, "Error while loading street view image")
+                uiState = uiState.copy(
+                    isGoogleStreetImageLoading = false,
+                    showGoogleStreetImage = false,
+                )
+            }
+        )
     }
 
     private fun isFavorite(trainStationId: BigInteger): Boolean {
