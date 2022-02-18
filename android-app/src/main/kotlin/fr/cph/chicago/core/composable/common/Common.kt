@@ -333,9 +333,28 @@ fun TextFieldMaterial3(modifier: Modifier = Modifier, text: TextFieldValue, onVa
 
 @Composable
 fun ShowFavoriteSnackBar(scope: CoroutineScope, snackbarHostState: SnackbarHostState, isFavorite: Boolean) {
-    LaunchedEffect(/*viewModel.uiState.applyFavorite*/isFavorite) {
+    ShowSnackBar(
+        scope = scope,
+        snackbarHostState = snackbarHostState,
+        element = isFavorite,
+        message = if (isFavorite) "Added to favorites" else "Removed from favorites",
+    )
+}
+
+@Composable
+fun ShowErrorMessageSnackBar(scope: CoroutineScope, snackbarHostState: SnackbarHostState, showErrorMessage: Boolean) {
+    ShowSnackBar(
+        scope = scope,
+        snackbarHostState = snackbarHostState,
+        element = showErrorMessage,
+        message = "Something went wrong, try again later"
+    )
+}
+
+@Composable
+fun ShowSnackBar(scope: CoroutineScope, snackbarHostState: SnackbarHostState, element: Boolean, message: String) {
+    LaunchedEffect(element) {
         scope.launch {
-            val message = if (isFavorite) "Added to favorites" else "Removed from favorites"
             snackbarHostState.showSnackbar(message = message, withDismissAction = true)
         }
     }

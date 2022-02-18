@@ -117,7 +117,7 @@ object TrainService {
     fun loadStationTrainArrival(stationId: BigInteger): Single<TrainArrival> {
         return getTrainArrivals(mutableSetOf(stationId))
             .observeOn(Schedulers.computation())
-            .map { trainArrivals -> trainArrivals.getOrElse(stationId, { TrainArrival.buildEmptyTrainArrival() }) }
+            .map { trainArrivals -> trainArrivals.getOrElse(stationId) { TrainArrival.buildEmptyTrainArrival() } }
     }
 
     fun trainEtas(runNumber: String, loadAll: Boolean): Single<List<TrainEta>> {

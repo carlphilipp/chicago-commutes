@@ -41,6 +41,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
 import fr.cph.chicago.core.composable.common.AnimatedText
 import fr.cph.chicago.core.composable.common.ShimmerAnimation
+import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.composable.common.ShowFavoriteSnackBar
 import fr.cph.chicago.core.composable.common.StationDetailsImageView
 import fr.cph.chicago.core.composable.common.StationDetailsTitleIconView
@@ -122,6 +123,7 @@ data class BusStationUiState(
     val isGoogleStreetImageLoading: Boolean = true,
     val showGoogleStreetImage: Boolean = false,
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
+    val showErrorMessage: Boolean = false,
 )
 
 @HiltViewModel
@@ -156,7 +158,10 @@ class BusStationViewModel @Inject constructor(
                 store.dispatch(ResetBusStationStatusAction())
             }
             Status.FAILURE -> {
-                // TODO
+                uiState = uiState.copy(
+                    showBusArrivalData = true,
+                    showErrorMessage = true,
+                )
                 store.dispatch(ResetBusStationStatusAction())
             }
             Status.ADD_FAVORITES -> {
@@ -209,6 +214,10 @@ class BusStationViewModel @Inject constructor(
 
     fun resetApplyFavorite() {
         uiState = uiState.copy(applyFavorite = false)
+    }
+
+    fun resetShowErrorMessage() {
+        uiState = uiState.copy(showErrorMessage = false)
     }
 
     fun openMap(context: Context, scope: CoroutineScope) {
@@ -378,6 +387,15 @@ fun BusStationView(
             scope = scope,
             snackbarHostState = viewModel.uiState.snackbarHostState,
             isFavorite = viewModel.uiState.isFavorite,
+        )
+    }
+
+    if (uiState.showErrorMessage) {
+        viewModel.resetShowErrorMessage()
+        ShowErrorMessageSnackBar(
+            scope = scope,
+            snackbarHostState = viewModel.uiState.snackbarHostState,
+            showErrorMessage = uiState.showErrorMessage
         )
     }
 

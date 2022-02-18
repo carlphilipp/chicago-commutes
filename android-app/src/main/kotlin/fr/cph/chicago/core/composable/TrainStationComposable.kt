@@ -47,6 +47,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
 import fr.cph.chicago.core.composable.common.AnimatedText
 import fr.cph.chicago.core.composable.common.ShimmerAnimation
+import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.composable.common.ShowFavoriteSnackBar
 import fr.cph.chicago.core.composable.common.StationDetailsImageView
 import fr.cph.chicago.core.composable.common.StationDetailsTitleIconView
@@ -102,6 +103,7 @@ data class TrainStationUiState(
     val showGoogleStreetImage: Boolean = false,
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
     val scrollState: ScrollState = ScrollState(0),
+    val showErrorMessage: Boolean = false,
 )
 
 @HiltViewModel
@@ -132,12 +134,15 @@ class TrainStationViewModel @Inject constructor(
             Status.SUCCESS -> {
                 uiState = uiState.copy(
                     trainEtasState = state.trainStationArrival.trainEtas,
-                    showTrainArrivalData = true
+                    showTrainArrivalData = true,
                 )
                 store.dispatch(ResetTrainStationStatusAction())
             }
             Status.FAILURE -> {
-                // TODO
+                uiState = uiState.copy(
+                    showTrainArrivalData = true,
+                    showErrorMessage = true,
+                )
                 store.dispatch(ResetTrainStationStatusAction())
             }
             Status.ADD_FAVORITES -> {
@@ -171,6 +176,10 @@ class TrainStationViewModel @Inject constructor(
 
     fun resetApplyFavorite() {
         uiState = uiState.copy(applyFavorite = false)
+    }
+
+    fun resetShowErrorMessage() {
+        uiState = uiState.copy(showErrorMessage = false)
     }
 
     fun openMap(context: Context, scope: CoroutineScope) {
@@ -318,6 +327,16 @@ fun TrainStationView(
             isFavorite = viewModel.uiState.isFavorite,
         )
     }
+
+    if (uiState.showErrorMessage) {
+        viewModel.resetShowErrorMessage()
+        ShowErrorMessageSnackBar(
+            scope = scope,
+            snackbarHostState = viewModel.uiState.snackbarHostState,
+            showErrorMessage = uiState.showErrorMessage
+        )
+    }
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Bottom,
