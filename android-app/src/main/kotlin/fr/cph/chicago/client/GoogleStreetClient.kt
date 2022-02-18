@@ -39,12 +39,19 @@ import java.io.ByteArrayInputStream
  */
 object GoogleStreetClient {
 
+    var counter = 0
+
     fun getImage(latitude: Double, longitude: Double, width: Int = WIDTH, height: Int = HEIGHT): Single<Drawable> {
         return googleStreetHttpClient.getStreetViewImage(
             location = "$latitude,$longitude",
             size = "${width}x${height}"
         )
-            .map { response -> Drawable.createFromStream(ByteArrayInputStream(response.bytes()), "src name") }
+            .map { response ->
+                if(counter == 0 || counter == 1) {
+                    counter++
+                    throw RuntimeException()
+                }
+                Drawable.createFromStream(ByteArrayInputStream(response.bytes()), "src name") }
     }
 }
 

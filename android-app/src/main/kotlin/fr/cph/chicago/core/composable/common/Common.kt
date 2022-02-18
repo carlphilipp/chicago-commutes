@@ -70,6 +70,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.graphics.drawable.toBitmap
+import fr.cph.chicago.core.App
 import kotlin.math.min
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -316,6 +317,7 @@ fun ShowFavoriteSnackBar(scope: CoroutineScope, snackbarHostState: SnackbarHostS
 fun StationDetailsImageView(
     modifier: Modifier = Modifier,
     activity: ComponentActivity,
+    isLoading: Boolean,
     showGoogleStreetImage: Boolean,
     googleStreetMapImage: Drawable,
     scrollState: ScrollState? = null,
@@ -323,7 +325,14 @@ fun StationDetailsImageView(
     Surface(modifier = modifier.zIndex(1f)) {
         AnimatedVisibility(
             modifier = Modifier.height(200.dp),
-            visible = showGoogleStreetImage,
+            visible = isLoading,
+            exit = fadeOut(animationSpec = tween(durationMillis = 300)),
+        ) {
+            LargeImagePlaceHolderAnimated()
+        }
+        AnimatedVisibility(
+            modifier = Modifier.height(200.dp),
+            visible = !isLoading && showGoogleStreetImage,
             enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
         ) {
             val imageModifier = if (scrollState != null) {
@@ -345,11 +354,28 @@ fun StationDetailsImageView(
         }
         AnimatedVisibility(
             modifier = Modifier.height(200.dp),
-            visible = !showGoogleStreetImage,
+            visible = !isLoading && !showGoogleStreetImage,
+            enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
             exit = fadeOut(animationSpec = tween(durationMillis = 300)),
         ) {
-            LargeImagePlaceHolderAnimated()
+            val imageModifier = if (scrollState != null) {
+                Modifier
+                    .fillMaxWidth()
+                    .graphicsLayer {
+                        alpha = min(1f, 1 - (scrollState.value / 600f))
+                        translationY = -scrollState.value * 0.1f
+                    }
+            } else {
+                Modifier.fillMaxWidth()
+            }
+            Image(
+                bitmap = App.instance.streetViewPlaceHolder.toBitmap().asImageBitmap(),
+                contentDescription = "Place holder",
+                contentScale = ContentScale.Crop,
+                modifier = imageModifier
+            )
         }
+
         FilledTonalButton(
             modifier = Modifier.padding(10.dp),
             onClick = { activity.finish() },

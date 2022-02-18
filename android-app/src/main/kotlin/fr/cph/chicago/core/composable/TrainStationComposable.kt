@@ -48,6 +48,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
+import fr.cph.chicago.core.App
 import fr.cph.chicago.core.composable.common.AnimatedText
 import fr.cph.chicago.core.composable.common.ShimmerAnimation
 import fr.cph.chicago.core.composable.common.ShowFavoriteSnackBar
@@ -102,6 +103,7 @@ data class TrainStationUiState(
     val applyFavorite: Boolean = false,
     val showTrainArrivalData: Boolean = false,
     val googleStreetMapImage: Drawable = ShapeDrawable(),
+    val isGoogleStreetImageLoading: Boolean = true,
     val showGoogleStreetImage: Boolean = false,
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
     val scrollState: ScrollState = ScrollState(0),
@@ -167,6 +169,10 @@ class TrainStationViewModel @Inject constructor(
         uiState = uiState.copy(isRefreshing = true)
         Timber.d("Start Refreshing")
         store.dispatch(TrainStationAction(uiState.trainStation.id))
+        if (!isGoogleMapImageLoaded()) {
+            Timber.d("Trying to reload google street image")
+            loadGoogleStreetImage(uiState.trainStation.stops[0].position)
+        }
     }
 
     fun resetApplyFavorite() {
@@ -195,6 +201,10 @@ class TrainStationViewModel @Inject constructor(
         }
     }
 
+    private fun isGoogleMapImageLoaded(): Boolean {
+        return !uiState.isGoogleStreetImageLoading && uiState.showGoogleStreetImage
+    }
+
     private fun loadGoogleStreetImage(position: Position) {
         googleStreetClient.getImage(position.latitude, position.longitude, 1000, 400)
             .observeOn(AndroidSchedulers.mainThread())
@@ -202,12 +212,17 @@ class TrainStationViewModel @Inject constructor(
                 { drawable ->
                     uiState = uiState.copy(
                         googleStreetMapImage = drawable,
+                        isGoogleStreetImageLoading = false,
                         showGoogleStreetImage = true,
                     )
                 },
                 { error ->
                     // TODO: If that failed, we need to retry when the user refreshes data
                     Timber.e(error, "Error while loading street view image")
+                    uiState = uiState.copy(
+                        isGoogleStreetImageLoading = false,
+                        showGoogleStreetImage = false,
+                    )
                 }
             )
     }
@@ -252,6 +267,7 @@ fun TrainStationView(
                         activity = activity,
                         showGoogleStreetImage = uiState.showGoogleStreetImage,
                         googleStreetMapImage = uiState.googleStreetMapImage,
+                        isLoading = uiState.isGoogleStreetImageLoading,
                         scrollState = uiState.scrollState
                     )
                     StationDetailsTitleIconView(

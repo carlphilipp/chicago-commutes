@@ -128,6 +128,7 @@ data class BusStationUiState(
     val applyFavorite: Boolean = false,
     val showBusArrivalData: Boolean = false,
     val googleStreetMapImage: Drawable = ShapeDrawable(),
+    val isGoogleStreetImageLoading: Boolean = true,
     val showGoogleStreetImage: Boolean = false,
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
 )
@@ -279,12 +280,17 @@ class BusStationViewModel @Inject constructor(
                 { drawable ->
                     uiState = uiState.copy(
                         googleStreetMapImage = drawable,
+                        isGoogleStreetImageLoading = false,
                         showGoogleStreetImage = true,
                     )
                 },
                 { error ->
                     // TODO: If that failed, we need to retry when the user refreshes data
                     Timber.e(error, "Error while loading street view image")
+                    uiState = uiState.copy(
+                        isGoogleStreetImageLoading = false,
+                        showGoogleStreetImage = false,
+                    )
                 }
             )
     }
@@ -328,6 +334,7 @@ fun BusStationView(
                             activity = activity,
                             showGoogleStreetImage = uiState.showGoogleStreetImage,
                             googleStreetMapImage = uiState.googleStreetMapImage,
+                            isLoading = uiState.isGoogleStreetImageLoading,
                         )
                     }
                     item {
