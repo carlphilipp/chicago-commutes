@@ -3,14 +3,10 @@ package fr.cph.chicago.core.composable
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import fr.cph.chicago.core.composable.screen.screens
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
-import fr.cph.chicago.core.model.BikeStation
-import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.Favorites
 import fr.cph.chicago.redux.BusRoutesAndBikeStationAction
 import fr.cph.chicago.redux.ResetBikeStationFavoritesAction
@@ -24,11 +20,6 @@ import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.observers.DisposableObserver
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-
-// FIXME state should not be declared here
-val isRefreshing = mutableStateOf(false)
-var busRoutes = mutableStateListOf<BusRoute>()
-var bikeStations = mutableStateListOf<BikeStation>()
 
 class MainActivityComposable : ComponentActivity(), StoreSubscriber<State> {
 
