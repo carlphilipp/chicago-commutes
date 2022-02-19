@@ -75,7 +75,7 @@ object BikeService {
         return Single.zip(informationSingle, statusSingle) { info, stat ->
             val res = mutableListOf<BikeStation>()
             for ((key, stationInfo) in info) {
-                val stationStatus = stat[key] ?: DivvyStationStatus("", 0, 0, 0)
+                val stationStatus = stat[key] ?: DivvyStationStatus("", 0, 0, 0, "")
                 res.add(
                     BikeStation(
                         id = stationInfo.id.toBigInteger(),
@@ -84,7 +84,8 @@ object BikeService {
                         availableBikes = stationStatus.availableBikes,
                         latitude = stationInfo.latitude,
                         longitude = stationInfo.longitude,
-                        address = stationInfo.name
+                        address = stationInfo.name,
+                        lastReported = stationStatus.lastReported,
                     )
                 )
             }

@@ -24,7 +24,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.R
-import fr.cph.chicago.core.App
 import fr.cph.chicago.core.composable.BikeStationComposable
 import fr.cph.chicago.core.composable.common.TextFieldMaterial3
 import fr.cph.chicago.core.model.BikeStation

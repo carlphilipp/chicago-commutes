@@ -6,7 +6,9 @@ import android.graphics.drawable.ShapeDrawable
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -43,18 +46,19 @@ import fr.cph.chicago.core.composable.common.openMapApplication
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.redux.AddBusFavoriteAction
-import fr.cph.chicago.redux.RemoveBusFavoriteAction
-import fr.cph.chicago.redux.ResetBusStationStatusAction
+import fr.cph.chicago.redux.AddBikeFavoriteAction
+import fr.cph.chicago.redux.BikeStationAction
+import fr.cph.chicago.redux.RemoveBikeFavoriteAction
+import fr.cph.chicago.redux.ResetBikeStationStatusAction
 import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
-import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.PreferenceService
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
+import java.math.BigInteger
+import javax.inject.Inject
 
 class BikeStationComposable : ComponentActivity() {
 
@@ -78,7 +82,6 @@ data class BikeStationUiState(
     val isFavorite: Boolean = false,
     val isRefreshing: Boolean = false,
     val applyFavorite: Boolean = false,
-    val showBusArrivalData: Boolean = false,
     val googleStreetMapImage: Drawable = ShapeDrawable(),
     val isGoogleStreetImageLoading: Boolean = true,
     val showGoogleStreetImage: Boolean = false,
@@ -89,13 +92,15 @@ data class BikeStationUiState(
 @HiltViewModel
 class BikeStationViewModel @Inject constructor(
     private val preferenceService: PreferenceService = PreferenceService,
-    private val busService: BusService = BusService,
 ) : ViewModel(), StoreSubscriber<State> {
     var uiState by mutableStateOf(BikeStationUiState())
         private set
 
     fun initModel(bikeStation: BikeStation): BikeStationViewModel {
-        uiState = uiState.copy(bikeStation = bikeStation)
+        uiState = uiState.copy(
+            bikeStation = bikeStation,
+            isFavorite = isFavorite(bikeStation.id),
+        )
 
         loadGoogleStreetImage(bikeStation.latitude, bikeStation.longitude)
         return this
@@ -103,67 +108,54 @@ class BikeStationViewModel @Inject constructor(
 
     override fun newState(state: State) {
         Timber.d("new state ${state.busStopStatus}")
-        when (state.busStopStatus) {
+        when (state.bikeStationsStatus) {
             Status.SUCCESS -> {
                 uiState = uiState.copy(
                     //busArrivalStopDTO = state.busArrivalStopDTO,
-                    showBusArrivalData = true
                 )
-                store.dispatch(ResetBusStationStatusAction())
+                store.dispatch(ResetBikeStationStatusAction())
             }
             Status.FAILURE -> {
                 uiState = uiState.copy(
-                    showBusArrivalData = true,
                     showErrorMessage = true,
                 )
-                store.dispatch(ResetBusStationStatusAction())
+                store.dispatch(ResetBikeStationStatusAction())
             }
             Status.ADD_FAVORITES -> {
                 uiState = uiState.copy(
                     isFavorite = true,
                     applyFavorite = true,
                 )
-
-                store.dispatch(ResetBusStationStatusAction())
+                store.dispatch(ResetBikeStationStatusAction())
             }
             Status.REMOVE_FAVORITES -> {
                 uiState = uiState.copy(
                     isFavorite = false,
                     applyFavorite = true,
                 )
-                store.dispatch(ResetBusStationStatusAction())
+                store.dispatch(ResetBikeStationStatusAction())
             }
             else -> Timber.d("Status not handled")
         }
         uiState = uiState.copy(isRefreshing = false)
     }
 
-    fun switchFavorite(busRouteId: String, busStopId: Int, boundTitle: String, busRouteName: String, busStopName: String) {
-        if (isFavorite(busRouteId = busRouteId, busStopId = busStopId, boundTitle = boundTitle)) {
-            store.dispatch(RemoveBusFavoriteAction(busRouteId, busStopId.toString(), boundTitle))
+    fun switchFavorite() {
+        if (isFavorite(uiState.bikeStation.id)) {
+            store.dispatch(RemoveBikeFavoriteAction(uiState.bikeStation.id))
         } else {
-            store.dispatch(AddBusFavoriteAction(busRouteId, busStopId.toString(), boundTitle, busRouteName, busStopName))
+            store.dispatch(AddBikeFavoriteAction(uiState.bikeStation.id, uiState.bikeStation.name))
         }
     }
 
     fun refresh() {
-        /*uiState = uiState.copy(isRefreshing = true)
+        uiState = uiState.copy(isRefreshing = true)
         Timber.d("Start Refreshing")
-        store.dispatch(
-            BusStopArrivalsAction(
-                busRouteId = uiState.busDetails.busRouteId,
-                busStopId = BigInteger(uiState.busDetails.stopId.toString()),
-                bound = uiState.busDetails.bound,
-                boundTitle = uiState.busDetails.boundTitle
-            )
-        )
-        if (!isPositionSetup()) {
-            Timber.d("Trying to reload stop position and google street image")
-            loadStopPositionAndGoogleStreetImage()
-        } else if (!isGoogleMapImageLoaded()) {
+        store.dispatch(BikeStationAction())
+        if (!isGoogleMapImageLoaded()) {
             Timber.d("Trying to reload google street image")
-            loadGoogleStreetImage(uiState.position)
-        }*/
+            loadGoogleStreetImage(uiState.bikeStation.latitude, uiState.bikeStation.longitude)
+        }
     }
 
     fun resetApplyFavorite() {
@@ -208,13 +200,8 @@ class BikeStationViewModel @Inject constructor(
         return !uiState.isGoogleStreetImageLoading && uiState.showGoogleStreetImage
     }
 
-    private fun isPositionSetup(): Boolean {
-        return uiState.position != Position()
-    }
-
-    private fun isFavorite(busRouteId: String, busStopId: Int, boundTitle: String): Boolean {
-        //return preferenceService.isStopFavorite(busRouteId, BigInteger(busStopId.toString()), boundTitle)
-        return false
+    private fun isFavorite(id: BigInteger): Boolean {
+        return preferenceService.isBikeStationFavorite(id)
     }
 
     fun onStart() {
@@ -236,7 +223,6 @@ fun BikeStationView(
     val scope = rememberCoroutineScope()
     val activity = (LocalLifecycleOwner.current as ComponentActivity)
     val context = LocalContext.current
-    //val busArrivalsKeys = uiState.busArrivalStopDTO.keys.toList()
 
     SwipeRefresh(
         modifier = modifier,
@@ -257,20 +243,12 @@ fun BikeStationView(
                     }
                     item {
                         StationDetailsTitleIconView(
-                            title = "${uiState.bikeStation.id} - ${uiState.bikeStation.name}",
+                            title = uiState.bikeStation.name,
+                            // FIXME: timestamp to be transformed
+                            subTitle = "Last reported: ${uiState.bikeStation.lastReported}",
                             isFavorite = uiState.isFavorite,
-                            onFavoriteClick = {
-                                /*viewModel.switchFavorite(
-                                    boundTitle = uiState.busDetails.boundTitle,
-                                    busStopId = uiState.busDetails.stopId,
-                                    busRouteId = uiState.busDetails.busRouteId,
-                                    busRouteName = uiState.busDetails.routeName,
-                                    busStopName = uiState.busDetails.stopName
-                                )*/
-                            },
-                            onMapClick = {
-                                viewModel.openMap(context = context, scope = scope)
-                            }
+                            onFavoriteClick = { viewModel.switchFavorite() },
+                            onMapClick = { viewModel.openMap(context = context, scope = scope) }
                         )
                     }
                     item {
@@ -280,11 +258,37 @@ fun BikeStationView(
                                 .fillMaxWidth()
                         ) {
                             Spacer(modifier = Modifier.padding(bottom = 3.dp))
-                            val destination = uiState.bikeStation.name
-                            Text(
-                                text = uiState.bikeStation.address,
-                                style = MaterialTheme.typography.titleMedium,
-                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Available bikes",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                )
+                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = uiState.bikeStation.availableBikes.toString(),
+                                        //textAlign = TextAlign.End,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                    )
+                                }
+                            }
+                            Row(
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = "Available docks",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                )
+                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = uiState.bikeStation.availableDocks.toString(),
+                                        //textAlign = TextAlign.End,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                    )
+                                }
+                            }
                         }
                     }
                 }

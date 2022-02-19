@@ -31,7 +31,8 @@ class BikeStation(
     val availableBikes: Int,
     val latitude: Double,
     val longitude: Double,
-    val address: String) : Parcelable, Station(id, name) {
+    val address: String,
+    val lastReported: String) : Parcelable, Station(id, name) {
 
     companion object {
         fun buildUnknownStation(): BikeStation {
@@ -39,7 +40,7 @@ class BikeStation(
         }
 
         fun buildDefaultBikeStationWithName(name: String, id : BigInteger = BigInteger.ZERO): BikeStation {
-            return BikeStation(id, name, -1, -1, 0.0, 0.0, StringUtils.EMPTY)
+            return BikeStation(id, name, -1, -1, 0.0, 0.0, StringUtils.EMPTY, StringUtils.EMPTY)
         }
 
         @JvmField
@@ -61,7 +62,9 @@ class BikeStation(
         availableBikes = source.readInt(),
         latitude = source.readDouble(),
         longitude = source.readDouble(),
-        address = source.readString() ?: StringUtils.EMPTY)
+        address = source.readString() ?: StringUtils.EMPTY,
+        lastReported = source.readString() ?: StringUtils.EMPTY
+    )
 
     override fun describeContents(): Int {
         return 0
@@ -75,5 +78,6 @@ class BikeStation(
         dest.writeDouble(latitude)
         dest.writeDouble(longitude)
         dest.writeString(address)
+        dest.writeString(lastReported)
     }
 }

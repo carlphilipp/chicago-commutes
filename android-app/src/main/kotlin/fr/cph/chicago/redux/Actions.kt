@@ -128,6 +128,8 @@ data class ResetTrainStationStatusAction(val unit: Unit = Unit) : Action
 
 data class ResetBusStationStatusAction(val unit: Unit = Unit) : Action
 
+data class ResetBikeStationStatusAction(val unit: Unit = Unit) : Action
+
 data class AddBusFavoriteAction(
     val busRouteId: String = StringUtils.EMPTY,
     val busStopId: String = StringUtils.EMPTY,

@@ -42,6 +42,7 @@ import androidx.core.content.ContextCompat.startActivity
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
+import fr.cph.chicago.core.composable.BikeStationComposable
 import fr.cph.chicago.core.composable.BusStationComposable
 import fr.cph.chicago.core.composable.TrainStationComposable
 import fr.cph.chicago.core.composable.common.AnimatedText
@@ -257,7 +258,17 @@ fun BikeFavoriteCard(modifier: Modifier = Modifier, bikeStation: BikeStation, la
         Arrivals(destination = "Available bikes", arrivals = listOf(bikeStation.availableBikes.toString()))
         Arrivals(destination = "Available docks", arrivals = listOf(bikeStation.availableDocks.toString()))
 
-        FooterCard()
+        val context = LocalContext.current
+        FooterCard(
+            detailsOnClick = {
+                val intent = Intent(context, BikeStationComposable::class.java)
+                val extras = Bundle()
+                extras.putParcelable(context.getString(R.string.bundle_bike_station), bikeStation)
+                intent.putExtras(extras)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(context, intent, null)
+            }
+        )
     }
 }
 

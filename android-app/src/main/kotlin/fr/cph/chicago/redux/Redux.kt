@@ -252,6 +252,12 @@ fun reducer(action: Action, oldState: State?): State {
                 random = UUID.randomUUID().toString()
             )
         }
+        is ResetBikeStationStatusAction -> {
+            state = state.copy(
+                bikeStationsStatus = Status.UNKNOWN,
+                random = UUID.randomUUID().toString()
+            )
+        }
         is AddBusFavoriteAction -> {
             state = state.copy(
                 busFavorites = action.busFavorites,
