@@ -37,6 +37,7 @@ import java.util.Date
 import java.util.TreeMap
 import kotlin.random.Random
 import org.apache.commons.lang3.StringUtils
+import timber.log.Timber
 
 /**
  * Vehicle Arrival. Hold data for favorites adapter.
@@ -155,9 +156,7 @@ object Favorites {
     }
 
     fun refreshTime() {
-        //Timber.i("Hash %s", System.identityHashCode(time.value))
         time.value = LastUpdate(timeUtil.formatTimeDifference(store.state.lastFavoritesUpdate, Calendar.getInstance().time))
-        //Timber.i("Hash %s", System.identityHashCode(time.value))
     }
 
     private fun isBusInFavorites(routeId: String, stopId: Int, bound: String): Boolean {
