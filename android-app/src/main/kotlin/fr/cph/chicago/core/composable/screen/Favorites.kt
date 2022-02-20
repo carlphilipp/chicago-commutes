@@ -44,10 +44,10 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.composable.BikeStationComposable
 import fr.cph.chicago.core.composable.BusStationComposable
+import fr.cph.chicago.core.composable.MainViewModel
 import fr.cph.chicago.core.composable.TrainStationComposable
 import fr.cph.chicago.core.composable.common.AnimatedText
 import fr.cph.chicago.core.composable.common.ColoredBox
-import fr.cph.chicago.core.composable.isRefreshing
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.Favorites
@@ -57,24 +57,19 @@ import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.model.enumeration.toComposeColor
-import fr.cph.chicago.redux.FavoritesAction
-import fr.cph.chicago.redux.store
 import fr.cph.chicago.util.Util
-import timber.log.Timber
 
 private val util = Util
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Favorites() {
+fun Favorites(mainViewModel: MainViewModel) {
     val lastUpdate: LastUpdate = Favorites.time.value
 
     SwipeRefresh(
-        state = rememberSwipeRefreshState(isRefreshing.value),
+        state = rememberSwipeRefreshState(mainViewModel.uiState.isRefreshing),
         onRefresh = {
-            isRefreshing.value = true
-            Timber.d("Start Refreshing")
-            store.dispatch(FavoritesAction())
+            mainViewModel.refresh()
         },
     ) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -106,8 +101,8 @@ fun TrainFavoriteCard(modifier: Modifier = Modifier, trainStation: TrainStation,
             for (entry in arrivals.entries) {
                 Arrivals(
                     trainLine = trainLine,
-                    destination  = entry.key.destination,
-                    direction  = entry.key.trainDirection.toString(),
+                    destination = entry.key.destination,
+                    direction = entry.key.trainDirection.toString(),
                     arrivals = entry.value,
                 )
             }
@@ -139,6 +134,7 @@ fun BusFavoriteCard(modifier: Modifier = Modifier, busRoute: BusRoute, lastUpdat
         for ((stopName, boundMap) in busArrivalDTO.entries) {
             val stopNameTrimmed = util.trimBusStopNameIfNeeded(stopName)
             for ((key, value) in boundMap) {
+                // FIXME unused
                 val (_, _, _, stopId, _, routeId, boundTitle) = value.iterator().next()
                 val busDetailsDTO = BusDetailsDTO(
                     busRouteId = busRoute.id,

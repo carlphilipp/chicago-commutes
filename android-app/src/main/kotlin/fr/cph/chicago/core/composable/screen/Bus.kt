@@ -36,6 +36,7 @@ import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.map.BusMapActivity
 import fr.cph.chicago.core.composable.BusBoundActivityComposable
+import fr.cph.chicago.core.composable.MainViewModel
 import fr.cph.chicago.core.composable.common.TextFieldMaterial3
 import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusRoute
@@ -44,11 +45,11 @@ import fr.cph.chicago.service.BusService
 private val busService = BusService
 
 @Composable
-fun Bus(modifier: Modifier = Modifier, busRoutes: List<BusRoute>) {
+fun Bus(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
 
     var showDialog by remember { mutableStateOf(false) }
     var selectedBusRoute by remember { mutableStateOf(BusRoute.buildEmpty()) }
-    var searchBusRoutes by remember { mutableStateOf(busRoutes) }
+    var searchBusRoutes by remember { mutableStateOf(mainViewModel.uiState.busRoutes) }
     var textSearch by remember { mutableStateOf(TextFieldValue("")) }
 
     LazyColumn(modifier = modifier.fillMaxWidth()) {
@@ -57,7 +58,7 @@ fun Bus(modifier: Modifier = Modifier, busRoutes: List<BusRoute>) {
                 text = textSearch,
                 onValueChange = { value ->
                     textSearch = value
-                    searchBusRoutes = busRoutes.filter { busRoute ->
+                    searchBusRoutes = mainViewModel.uiState.busRoutes.filter { busRoute ->
                         busRoute.id.contains(value.text, true) || busRoute.name.contains(value.text, true)
                     }
                 }

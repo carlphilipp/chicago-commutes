@@ -12,19 +12,18 @@ import androidx.compose.material.icons.filled.Train
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
-import fr.cph.chicago.core.composable.bikeStations
-import fr.cph.chicago.core.composable.busRoutes
+import fr.cph.chicago.core.composable.mainViewModel
 
 sealed class DrawerScreens(val title: String, val route: String, val icon: ImageVector, val component: @Composable () -> Unit) {
-    object Favorites : DrawerScreens("Favorites", "fav", Icons.Filled.Favorite, { Favorites() })
-    object Train : DrawerScreens("Train", "train", Icons.Filled.Train, { Train() })
-    object Bus : DrawerScreens("Bus", "bus", Icons.Filled.DirectionsBus, { Bus(busRoutes = busRoutes) })
-    object Divvy : DrawerScreens("Divvy", "divvy", Icons.Filled.DirectionsBike, { Divvy(bikeStations = bikeStations) })
-    object Nearby : DrawerScreens("Nearby", "nearby", Icons.Filled.NearMe, { Nearby() })
-    object Map : DrawerScreens("CTA map", "map", Icons.Filled.Map, { Map() })
-    object Alerts : DrawerScreens("CTA alerts", "alerts", Icons.Filled.Warning, { Alerts() })
-    object Rate : DrawerScreens("Rate this app", "rate", Icons.Filled.StarRate, { Rate() })
-    object Settings : DrawerScreens("Settings", "settings", Icons.Filled.Settings, { Settings() })
+    object Favorites : DrawerScreens("Favorites", "fav", Icons.Filled.Favorite, { Favorites(mainViewModel = mainViewModel) })
+    object Train : DrawerScreens("Train", "train", Icons.Filled.Train, { Train(mainViewModel = mainViewModel) })
+    object Bus : DrawerScreens("Bus", "bus", Icons.Filled.DirectionsBus, { Bus(mainViewModel = mainViewModel) })
+    object Divvy : DrawerScreens("Divvy", "divvy", Icons.Filled.DirectionsBike, { Divvy(mainViewModel = mainViewModel) })
+    object Nearby : DrawerScreens("Nearby", "nearby", Icons.Filled.NearMe, { Nearby(mainViewModel = mainViewModel) })
+    object Map : DrawerScreens("CTA map", "map", Icons.Filled.Map, { Map(mainViewModel = mainViewModel) })
+    object Alerts : DrawerScreens("CTA alerts", "alerts", Icons.Filled.Warning, { Alerts(mainViewModel = mainViewModel) })
+    object Rate : DrawerScreens("Rate this app", "rate", Icons.Filled.StarRate, { Rate(mainViewModel = mainViewModel) })
+    object Settings : DrawerScreens("Settings", "settings", Icons.Filled.Settings, { Settings(mainViewModel = mainViewModel) })
 }
 
 val screens = listOf(

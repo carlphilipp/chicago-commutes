@@ -25,14 +25,15 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.R
 import fr.cph.chicago.core.composable.BikeStationComposable
+import fr.cph.chicago.core.composable.MainViewModel
 import fr.cph.chicago.core.composable.common.TextFieldMaterial3
 import fr.cph.chicago.core.model.BikeStation
 
 @Composable
-fun Divvy(modifier: Modifier = Modifier, bikeStations: List<BikeStation>) {
+fun Divvy(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
 
     val context = LocalContext.current
-    var searchBikeStations by remember { mutableStateOf(bikeStations) }
+    var searchBikeStations by remember { mutableStateOf(mainViewModel.uiState.bikeStations) }
     var textSearch by remember { mutableStateOf(TextFieldValue("")) }
 
     LazyColumn(modifier = modifier.fillMaxWidth()) {
@@ -41,7 +42,7 @@ fun Divvy(modifier: Modifier = Modifier, bikeStations: List<BikeStation>) {
                 text = textSearch,
                 onValueChange = { value ->
                     textSearch = value
-                    searchBikeStations = bikeStations.filter { bikeStation ->
+                    searchBikeStations = mainViewModel.uiState.bikeStations.filter { bikeStation ->
                         bikeStation.name.contains(value.text, true)
                     }
                 }

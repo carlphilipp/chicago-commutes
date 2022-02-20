@@ -7,9 +7,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import fr.cph.chicago.core.composable.MainViewModel
 
 @Composable
-fun Settings() {
+fun Settings(mainViewModel: MainViewModel) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
