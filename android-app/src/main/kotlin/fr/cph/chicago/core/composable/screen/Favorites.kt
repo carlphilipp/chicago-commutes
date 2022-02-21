@@ -63,9 +63,6 @@ import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.Util
 import java.util.Calendar
 
-// FIXME do not declare util here
-private val util = Util
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Favorites(mainViewModel: MainViewModel) {
@@ -127,20 +124,25 @@ fun TrainFavoriteCard(modifier: Modifier = Modifier, trainStation: TrainStation,
 }
 
 @Composable
-fun BusFavoriteCard(modifier: Modifier = Modifier, busRoute: BusRoute, lastUpdate: LastUpdate) {
+fun BusFavoriteCard(modifier: Modifier = Modifier, util: Util = Util, busRoute: BusRoute, lastUpdate: LastUpdate) {
 
     var showDialog by remember { mutableStateOf(false) }
 
     FavoriteCardWrapper(modifier = modifier) {
-        HeaderCard(name = "${busRoute.id} ${busRoute.name}", image = Icons.Filled.DirectionsBus, lastUpdate = lastUpdate)
+        // FIXME: This is some UI logic, should be moved in a view model or something
+        val title = if(busRoute.name != "?") {
+            "${busRoute.id} ${busRoute.name}"
+        } else {
+            busRoute.id
+        }
+        HeaderCard(name = title, image = Icons.Filled.DirectionsBus, lastUpdate = lastUpdate)
 
         val busDetailsDTOs = mutableListOf<BusDetailsDTO>()
         val busArrivalDTO = Favorites.getBusArrivalsMapped(busRoute.id)
         for ((stopName, boundMap) in busArrivalDTO.entries) {
             val stopNameTrimmed = util.trimBusStopNameIfNeeded(stopName)
             for ((key, value) in boundMap) {
-                // FIXME unused
-                val (_, _, _, stopId, _, routeId, boundTitle) = value.iterator().next()
+                val (_, _, _, stopId, _, _, boundTitle) = value.iterator().next()
                 val busDetailsDTO = BusDetailsDTO(
                     busRouteId = busRoute.id,
                     bound = key,

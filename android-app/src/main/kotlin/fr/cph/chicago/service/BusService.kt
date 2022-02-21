@@ -45,11 +45,8 @@ import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.annotations.NonNull
-import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.lang.RuntimeException
 import java.math.BigInteger
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -99,7 +96,8 @@ object BusService {
                         id = stop.stpid.toBigInteger(),
                         name = WordUtils.capitalizeFully(stop.stpnm),
                         description = stop.stpnm,
-                        position = Position(stop.lat, stop.lon))
+                        position = Position(stop.lat, stop.lon)
+                    )
                 }
             }
     }
@@ -115,7 +113,8 @@ object BusService {
                         id = stop.stpid.toBigInteger(),
                         name = WordUtils.capitalizeFully(stop.stpnm),
                         description = stop.stpnm,
-                        position = Position(stop.lat, stop.lon))
+                        position = Position(stop.lat, stop.lon)
+                    )
                 }
             }
             .toObservable()
@@ -142,7 +141,6 @@ object BusService {
     }
 
     fun loadBusDirectionsSingle(busRouteId: String): Single<BusDirections> {
-        //return ctaClient.get(BUS_DIRECTION, BusDirectionResponse::class.java, busDirectionParams(busRouteId))
         return ctaClient.getBusDirections(busRouteId)
             .map { response ->
                 if (response.bustimeResponse.directions == null) {
@@ -273,7 +271,7 @@ object BusService {
                         accumulator.getOrPut(busArrival.busDestination) { mutableListOf() }.add(busArrival)
                         accumulator
                     }
-                if(result.size == 0) {
+                if (result.size == 0) {
                     val noService = ArrayMap<String, MutableList<BusArrival>>()
                     noService["No Service"] = mutableListOf()
                     BusArrivalStopDTO(noService)
@@ -317,7 +315,8 @@ object BusService {
                                     routeDirection = BusDirection.fromString(prd.rtdir).text,
                                     busDestination = prd.des,
                                     predictionTime = simpleDateFormatBus.parseNotNull(prd.prdtm),
-                                    isDelay = prd.dly)
+                                    isDelay = prd.dly
+                                )
                             }
                             .sortedBy { it.timeLeftMilli }
                     }

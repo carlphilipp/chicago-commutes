@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
@@ -14,15 +15,20 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -37,75 +43,105 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.map.BusMapActivity
 import fr.cph.chicago.core.composable.BusBoundActivityComposable
 import fr.cph.chicago.core.composable.MainViewModel
+import fr.cph.chicago.core.composable.common.ErrorView
+import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.composable.common.TextFieldMaterial3
 import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.service.BusService
 
-private val busService = BusService
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Bus(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
 
     var showDialog by remember { mutableStateOf(false) }
     var selectedBusRoute by remember { mutableStateOf(BusRoute.buildEmpty()) }
-    var searchBusRoutes by remember { mutableStateOf(mainViewModel.uiState.busRoutes) }
+    var searchBusRoutes by remember { mutableStateOf<List<BusRoute>>(listOf()) }
+    searchBusRoutes = mainViewModel.uiState.busRoutes
     var textSearch by remember { mutableStateOf(TextFieldValue("")) }
+    val scope = rememberCoroutineScope()
 
-    LazyColumn(modifier = modifier.fillMaxWidth()) {
-        item {
-            TextFieldMaterial3(
-                text = textSearch,
-                onValueChange = { value ->
-                    textSearch = value
-                    searchBusRoutes = mainViewModel.uiState.busRoutes.filter { busRoute ->
-                        busRoute.id.contains(value.text, true) || busRoute.name.contains(value.text, true)
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = mainViewModel.uiState.snackbarHostState) { data -> Snackbar(snackbarData = data) } },
+        content = {
+            if (mainViewModel.uiState.busRoutes.isNotEmpty()) {
+                LazyColumn(
+                    modifier = modifier.fillMaxSize()
+                ) {
+                    item {
+                        TextFieldMaterial3(
+                            text = textSearch,
+                            onValueChange = { value ->
+                                textSearch = value
+                                searchBusRoutes = mainViewModel.uiState.busRoutes.filter { busRoute ->
+                                    busRoute.id.contains(value.text, true) || busRoute.name.contains(value.text, true)
+                                }
+                            }
+                        )
+                    }
+                    items(searchBusRoutes) { busRoute ->
+                        TextButton(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp),
+                            onClick = {
+                                showDialog = true
+                                selectedBusRoute = busRoute
+                            }
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.Start,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    modifier = Modifier.requiredWidth(50.dp),
+                                    text = busRoute.id,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    maxLines = 1,
+                                )
+                                Text(
+                                    busRoute.name,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            }
+                        }
                     }
                 }
-            )
-        }
-        items(searchBusRoutes) { busRoute ->
-            TextButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                onClick = {
-                    showDialog = true
-                    selectedBusRoute = busRoute
-                }
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        modifier = Modifier.requiredWidth(50.dp),
-                        text = busRoute.id,
-                        style = MaterialTheme.typography.bodyLarge,
-                        maxLines = 1,
-                    )
-                    Text(
-                        busRoute.name,
-                        style = MaterialTheme.typography.bodyLarge,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
+            } else {
+                ErrorView(
+                    onClick = {
+                        mainViewModel.loadBusRoutes()
+                    }
+                )
+                if (mainViewModel.uiState.busRoutesShowError) {
+                    mainViewModel.resetBusRoutesShowError()
+                    ShowErrorMessageSnackBar(
+                        scope = scope,
+                        snackbarHostState = mainViewModel.uiState.snackbarHostState,
+                        showErrorMessage = mainViewModel.uiState.busRoutesShowError
                     )
                 }
             }
-        }
-    }
-    if (showDialog) {
-        BusRouteDialog(
-            busRoute = selectedBusRoute,
-            hideDialog = { showDialog = false },
-        )
-    }
+
+            if (showDialog) {
+                BusRouteDialog(
+                    busRoute = selectedBusRoute,
+                    hideDialog = { showDialog = false },
+                )
+            }
+        })
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun BusRouteDialog(busRoute: BusRoute, hideDialog: () -> Unit) {
+fun BusRouteDialog(
+    busService: BusService = BusService,
+    busRoute: BusRoute,
+    hideDialog: () -> Unit
+) {
     var isLoading by remember { mutableStateOf(true) }
     var foundBusDirections by remember { mutableStateOf(BusDirections("")) }
     val context = LocalContext.current
