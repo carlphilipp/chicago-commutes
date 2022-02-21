@@ -160,8 +160,6 @@ dependencies {
     implementation(Lib.kotlin)
     implementation(Lib.kotlin_reflect)
 
-
-
     // Jetpack
     implementation("androidx.compose.runtime:runtime:1.2.0-alpha03")
     implementation("androidx.compose.ui:ui:1.2.0-alpha03")
@@ -173,8 +171,6 @@ dependencies {
     implementation("androidx.compose.animation:animation:1.2.0-alpha03")
     implementation("androidx.compose.ui:ui-tooling:1.2.0-alpha03")
     implementation("androidx.compose.runtime:runtime-livedata:1.2.0-alpha03")
-    implementation group: 'androidx.compose.ui', name: 'ui-viewbinding', version: '1.2.0-alpha03'
-
 
     implementation 'androidx.work:work-runtime-ktx:2.7.1'
 
