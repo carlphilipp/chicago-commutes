@@ -36,12 +36,14 @@ class BikeStation(
     val lastReported: Date) : Parcelable, Station(id, name) {
 
     companion object {
+        const val DEFAULT_AVAILABLE = -1
+
         fun buildUnknownStation(): BikeStation {
             return buildDefaultBikeStationWithName("Unknown")
         }
 
         fun buildDefaultBikeStationWithName(name: String, id : BigInteger = BigInteger.ZERO): BikeStation {
-            return BikeStation(id, name, -1, -1, 0.0, 0.0, StringUtils.EMPTY, Date())
+            return BikeStation(id, name, DEFAULT_AVAILABLE, DEFAULT_AVAILABLE, 0.0, 0.0, StringUtils.EMPTY, Date())
         }
 
         @JvmField

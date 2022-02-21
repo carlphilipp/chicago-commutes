@@ -117,14 +117,13 @@ fun ColoredBox(modifier: Modifier = Modifier, color: Color = Color.Black) {
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun AnimatedText(modifier: Modifier = Modifier, time: String, style: TextStyle = LocalTextStyle.current) {
+fun AnimatedText(modifier: Modifier = Modifier, text: String, style: TextStyle = LocalTextStyle.current, color: Color = Color.Unspecified) {
     Row(modifier = modifier) {
         Surface(color = Color.Transparent) {
             AnimatedContent(
-                targetState = time,
+                targetState = text,
                 transitionSpec = {
                     run {
-                        // The target slides up and fades in while the initial string slides up and fades out.
                         slideInVertically { height -> height } + fadeIn() with
                             slideOutVertically { height -> -height } + fadeOut()
                     }.using(SizeTransform(clip = false))
@@ -135,6 +134,7 @@ fun AnimatedText(modifier: Modifier = Modifier, time: String, style: TextStyle =
                     style = style,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                    color = color,
                 )
             }
         }
@@ -144,34 +144,15 @@ fun AnimatedText(modifier: Modifier = Modifier, time: String, style: TextStyle =
 // FIXME: Refactor duplicated code
 @Composable
 fun LargeImagePlaceHolderAnimated() {
-    /*
- Create InfiniteTransition
- which holds child animation like [Transition]
- animations start running as soon as they enter
- the composition and do not stop unless they are removed
-*/
     val transition = rememberInfiniteTransition()
     val translateAnim by transition.animateFloat(
-        /*
-         Specify animation positions,
-         initial Values 0F means it
-         starts from 0 position
-        */
         initialValue = 0f,
         targetValue = 1000f,
         animationSpec = infiniteRepeatable(
-            // Tween Animates between values over specified [durationMillis]
             tween(durationMillis = 500/*1200*/, easing = FastOutSlowInEasing),
             RepeatMode.Reverse
         )
     )
-
-    /*
-      Create a gradient using the list of colors
-      Use Linear Gradient for animating in any direction according to requirement
-      start=specifies the position to start with in cartesian like system Offset(10f,10f) means x(10,0) , y(0,10)
-      end = Animate the end position to give the shimmer effect using the transition created above
-    */
     val colorShades = listOf(
         MaterialTheme.colorScheme.outline.copy(0.5f),
         MaterialTheme.colorScheme.outline.copy(0.1f),
@@ -187,34 +168,15 @@ fun LargeImagePlaceHolderAnimated() {
 
 @Composable
 fun ShimmerAnimation(width: Dp = 150.dp, height: Dp = 150.dp) {
-    /*
-     Create InfiniteTransition
-     which holds child animation like [Transition]
-     animations start running as soon as they enter
-     the composition and do not stop unless they are removed
-    */
     val transition = rememberInfiniteTransition()
     val translateAnim by transition.animateFloat(
-        /*
-         Specify animation positions,
-         initial Values 0F means it
-         starts from 0 position
-        */
         initialValue = 0f,
         targetValue = 1000f,
         animationSpec = infiniteRepeatable(
-            // Tween Animates between values over specified [durationMillis]
             tween(durationMillis = 500/*1200*/, easing = FastOutSlowInEasing),
             RepeatMode.Reverse
         )
     )
-
-    /*
-      Create a gradient using the list of colors
-      Use Linear Gradient for animating in any direction according to requirement
-      start=specifies the position to start with in cartesian like system Offset(10f,10f) means x(10,0) , y(0,10)
-      end = Animate the end position to give the shimmer effect using the transition created above
-    */
     val colorShades = listOf(
         MaterialTheme.colorScheme.outline.copy(0.5f),
         MaterialTheme.colorScheme.outline.copy(0.1f),
@@ -282,8 +244,7 @@ fun TextFieldMaterial3(modifier: Modifier = Modifier, text: TextFieldValue, onVa
             .padding(horizontal = 25.dp)
             .fillMaxWidth()
             .height(50.dp)
-            .fillMaxWidth(),/*.background(Color.Red)*/
-        //color = MaterialTheme.colorScheme.secondaryContainer,
+            .fillMaxWidth(),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondaryContainer),
         shape = RoundedCornerShape(20.0.dp),
 
@@ -299,7 +260,6 @@ fun TextFieldMaterial3(modifier: Modifier = Modifier, text: TextFieldValue, onVa
                 contentDescription = "Icon",
                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer),
             )
-            //Spacer(Modifier.width(16.dp))
             TextField(
                 value = text,
                 onValueChange = onValueChange,

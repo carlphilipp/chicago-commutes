@@ -474,7 +474,7 @@ fun TrainStop(
                                     var currentTime by remember { mutableStateOf(it) }
                                     currentTime = "$it "
                                     AnimatedText(
-                                        time = currentTime,
+                                        text = currentTime,
                                         style = MaterialTheme.typography.bodyMedium,
                                         modifier = Modifier.padding(start = 3.dp)
                                     )

@@ -366,7 +366,7 @@ fun BusStationView(
                                             var currentTime by remember { mutableStateOf(busArrival.formatArrivalTime()) }
                                             currentTime = busArrival.formatArrivalTime()
                                             AnimatedText(
-                                                time = currentTime,
+                                                text = currentTime,
                                                 style = MaterialTheme.typography.bodyLarge,
                                             )
                                         }

@@ -37,7 +37,6 @@ import java.util.Date
 import java.util.TreeMap
 import kotlin.random.Random
 import org.apache.commons.lang3.StringUtils
-import timber.log.Timber
 
 /**
  * Vehicle Arrival. Hold data for favorites adapter.

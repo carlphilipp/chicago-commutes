@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -49,6 +50,7 @@ import fr.cph.chicago.core.composable.TrainStationComposable
 import fr.cph.chicago.core.composable.common.AnimatedText
 import fr.cph.chicago.core.composable.common.ColoredBox
 import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.model.BikeStation.Companion.DEFAULT_AVAILABLE
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.Favorites
 import fr.cph.chicago.core.model.LastUpdate
@@ -59,6 +61,7 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.model.enumeration.toComposeColor
 import fr.cph.chicago.util.Util
 
+// FIXME do not declare util here
 private val util = Util
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -303,7 +306,7 @@ fun HeaderCard(modifier: Modifier = Modifier, name: String, image: ImageVector, 
                     text = "last updated: ",
                     style = MaterialTheme.typography.labelSmall,
                 )
-                AnimatedText(time = lastUpdate.value, style = MaterialTheme.typography.labelSmall)
+                AnimatedText(text = lastUpdate.value, style = MaterialTheme.typography.labelSmall)
             }
         }
     }
@@ -362,11 +365,18 @@ fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA,
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             arrivals.forEach {
                 var currentTime by remember { mutableStateOf(it) }
-                currentTime = it
+                var color = Color.Unspecified
+                if (it == DEFAULT_AVAILABLE.toString()) {
+                    currentTime = "?"
+                    color = Color(fr.cph.chicago.util.Color.orange)
+                } else {
+                    currentTime = it
+                }
                 AnimatedText(
-                    time = currentTime,
+                    text = currentTime,
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(start = 3.dp)
+                    modifier = Modifier.padding(start = 3.dp),
+                    color = color
                 )
             }
         }

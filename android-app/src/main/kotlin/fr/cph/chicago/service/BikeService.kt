@@ -30,6 +30,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import java.math.BigInteger
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 import timber.log.Timber
+import java.lang.RuntimeException
 import java.util.Date
 
 object BikeService {

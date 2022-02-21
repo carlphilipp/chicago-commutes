@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -37,6 +38,7 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
+import fr.cph.chicago.core.composable.common.AnimatedText
 import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.composable.common.ShowFavoriteSnackBar
 import fr.cph.chicago.core.composable.common.StationDetailsImageView
@@ -45,6 +47,7 @@ import fr.cph.chicago.core.composable.common.loadGoogleStreet
 import fr.cph.chicago.core.composable.common.openMapApplication
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.model.BikeStation.Companion.DEFAULT_AVAILABLE
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.redux.AddBikeFavoriteAction
 import fr.cph.chicago.redux.BikeStationAction
@@ -104,7 +107,14 @@ class BikeStationViewModel @Inject constructor(
             isFavorite = isFavorite(bikeStation.id),
         )
 
-        loadGoogleStreetImage(bikeStation.latitude, bikeStation.longitude)
+        if (canLoadGoogleMapImage()) {
+            loadGoogleStreetImage(bikeStation.latitude, bikeStation.longitude)
+        } else {
+            uiState = uiState.copy(
+                isGoogleStreetImageLoading = false,
+                showGoogleStreetImage = false,
+            )
+        }
         return this
     }
 
@@ -113,10 +123,14 @@ class BikeStationViewModel @Inject constructor(
         when (state.bikeStationsStatus) {
             Status.SUCCESS -> {
                 uiState = uiState.copy(
-                    //busArrivalStopDTO = state.busArrivalStopDTO,
+                    bikeStation = store.state.bikeStations.first { bikeStation -> bikeStation.id == uiState.bikeStation.id }
                 )
+                if (shouldLoadGoogleMapImage()) {
+                    loadGoogleStreetImage(uiState.bikeStation.latitude, uiState.bikeStation.longitude)
+                }
                 store.dispatch(ResetBikeStationStatusAction())
             }
+            Status.FULL_FAILURE,
             Status.FAILURE -> {
                 uiState = uiState.copy(
                     showErrorMessage = true,
@@ -154,7 +168,7 @@ class BikeStationViewModel @Inject constructor(
         uiState = uiState.copy(isRefreshing = true)
         Timber.d("Start Refreshing")
         store.dispatch(BikeStationAction())
-        if (!isGoogleMapImageLoaded()) {
+        if (!isGoogleMapImageLoaded() && canLoadGoogleMapImage()) {
             Timber.d("Trying to reload google street image")
             loadGoogleStreetImage(uiState.bikeStation.latitude, uiState.bikeStation.longitude)
         }
@@ -202,6 +216,14 @@ class BikeStationViewModel @Inject constructor(
         return !uiState.isGoogleStreetImageLoading && uiState.showGoogleStreetImage
     }
 
+    private fun canLoadGoogleMapImage(): Boolean {
+        return uiState.bikeStation.availableBikes != DEFAULT_AVAILABLE
+    }
+
+    private fun shouldLoadGoogleMapImage(): Boolean {
+        return canLoadGoogleMapImage() && !uiState.isGoogleStreetImageLoading && !uiState.showGoogleStreetImage
+    }
+
     private fun isFavorite(id: BigInteger): Boolean {
         return preferenceService.isBikeStationFavorite(id)
     }
@@ -246,7 +268,7 @@ fun BikeStationView(
                     item {
                         StationDetailsTitleIconView(
                             title = uiState.bikeStation.name,
-                            subTitle = "Last reported: ${TimeUtil.formatTimeDifference(uiState.bikeStation.lastReported, Calendar.getInstance().time)} ago",
+                            subTitle = "Last reported: ${TimeUtil.formatTimeDifference(uiState.bikeStation.lastReported, Calendar.getInstance().time)}",
                             isFavorite = uiState.isFavorite,
                             onFavoriteClick = { viewModel.switchFavorite() },
                             onMapClick = { viewModel.openMap(context = context, scope = scope) }
@@ -268,9 +290,10 @@ fun BikeStationView(
                                     style = MaterialTheme.typography.bodyLarge,
                                 )
                                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
-                                    Text(
-                                        text = uiState.bikeStation.availableBikes.toString(),
-                                        //textAlign = TextAlign.End,
+                                    var availableBikes by remember { mutableStateOf(uiState.bikeStation.availableBikes.toString()) }
+                                    availableBikes = uiState.bikeStation.availableBikes.toString()
+                                    AnimatedText(
+                                        text = availableBikes,
                                         style = MaterialTheme.typography.bodyLarge,
                                     )
                                 }
@@ -283,9 +306,11 @@ fun BikeStationView(
                                     style = MaterialTheme.typography.bodyLarge,
                                 )
                                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
-                                    Text(
-                                        text = uiState.bikeStation.availableDocks.toString(),
-                                        //textAlign = TextAlign.End,
+                                    var availableDocks by remember { mutableStateOf(uiState.bikeStation.availableDocks.toString()) }
+                                    availableDocks = uiState.bikeStation.availableDocks.toString()
+
+                                    AnimatedText(
+                                        text = availableDocks,
                                         style = MaterialTheme.typography.bodyLarge,
                                     )
                                 }
