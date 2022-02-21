@@ -23,6 +23,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import org.apache.commons.lang3.StringUtils
 import java.math.BigInteger
+import java.util.Date
 
 class BikeStation(
     id: BigInteger,
@@ -32,7 +33,7 @@ class BikeStation(
     val latitude: Double,
     val longitude: Double,
     val address: String,
-    val lastReported: String) : Parcelable, Station(id, name) {
+    val lastReported: Date) : Parcelable, Station(id, name) {
 
     companion object {
         fun buildUnknownStation(): BikeStation {
@@ -40,7 +41,7 @@ class BikeStation(
         }
 
         fun buildDefaultBikeStationWithName(name: String, id : BigInteger = BigInteger.ZERO): BikeStation {
-            return BikeStation(id, name, -1, -1, 0.0, 0.0, StringUtils.EMPTY, StringUtils.EMPTY)
+            return BikeStation(id, name, -1, -1, 0.0, 0.0, StringUtils.EMPTY, Date())
         }
 
         @JvmField
@@ -63,7 +64,7 @@ class BikeStation(
         latitude = source.readDouble(),
         longitude = source.readDouble(),
         address = source.readString() ?: StringUtils.EMPTY,
-        lastReported = source.readString() ?: StringUtils.EMPTY
+        lastReported = Date(source.readLong())
     )
 
     override fun describeContents(): Int {
@@ -78,6 +79,6 @@ class BikeStation(
         dest.writeDouble(latitude)
         dest.writeDouble(longitude)
         dest.writeString(address)
-        dest.writeString(lastReported)
+        dest.writeLong(lastReported.time)
     }
 }

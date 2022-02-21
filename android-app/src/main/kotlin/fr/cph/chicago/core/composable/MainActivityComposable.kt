@@ -60,9 +60,7 @@ class MainViewModel @Inject constructor() : ViewModel(), StoreSubscriber<State> 
         private set
 
     fun initModel(): MainViewModel {
-        if (store.state.busRoutes.isEmpty() || store.state.bikeStations.isEmpty()) {
-            store.dispatch(BusRoutesAndBikeStationAction())
-        }
+        store.dispatch(BusRoutesAndBikeStationAction())
         return this
     }
 

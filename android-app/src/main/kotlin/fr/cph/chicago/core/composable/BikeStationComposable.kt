@@ -54,10 +54,12 @@ import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.PreferenceService
+import fr.cph.chicago.util.TimeUtil
 import kotlinx.coroutines.CoroutineScope
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 import java.math.BigInteger
+import java.util.Calendar
 import javax.inject.Inject
 
 class BikeStationComposable : ComponentActivity() {
@@ -244,8 +246,7 @@ fun BikeStationView(
                     item {
                         StationDetailsTitleIconView(
                             title = uiState.bikeStation.name,
-                            // FIXME: timestamp to be transformed
-                            subTitle = "Last reported: ${uiState.bikeStation.lastReported}",
+                            subTitle = "Last reported: ${TimeUtil.formatTimeDifference(uiState.bikeStation.lastReported, Calendar.getInstance().time)} ago",
                             isFavorite = uiState.isFavorite,
                             onFavoriteClick = { viewModel.switchFavorite() },
                             onMapClick = { viewModel.openMap(context = context, scope = scope) }

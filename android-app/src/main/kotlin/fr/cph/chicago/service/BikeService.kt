@@ -30,6 +30,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import java.math.BigInteger
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 import timber.log.Timber
+import java.util.Date
 
 object BikeService {
 
@@ -85,7 +86,7 @@ object BikeService {
                         latitude = stationInfo.latitude,
                         longitude = stationInfo.longitude,
                         address = stationInfo.name,
-                        lastReported = stationStatus.lastReported,
+                        lastReported = Date(stationStatus.lastReported.toLong() * 1000L)
                     )
                 )
             }
