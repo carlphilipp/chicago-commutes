@@ -268,7 +268,7 @@ fun BikeStationView(
                     item {
                         StationDetailsTitleIconView(
                             title = uiState.bikeStation.name,
-                            subTitle = "Last reported: ${TimeUtil.formatTimeDifference(uiState.bikeStation.lastReported, Calendar.getInstance().time)}",
+                            subTitle = "Last updated: ${TimeUtil.formatTimeDifference(uiState.bikeStation.lastReported, Calendar.getInstance().time)}",
                             isFavorite = uiState.isFavorite,
                             onFavoriteClick = { viewModel.switchFavorite() },
                             onMapClick = { viewModel.openMap(context = context, scope = scope) }

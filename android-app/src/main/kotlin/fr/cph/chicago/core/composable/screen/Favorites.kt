@@ -59,7 +59,9 @@ import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.model.enumeration.toComposeColor
+import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.Util
+import java.util.Calendar
 
 // FIXME do not declare util here
 private val util = Util
@@ -252,7 +254,7 @@ fun startBusDetailActivity(context: Context, busDetailsDTO: BusDetailsDTO) {
 @Composable
 fun BikeFavoriteCard(modifier: Modifier = Modifier, bikeStation: BikeStation, lastUpdate: LastUpdate) {
     FavoriteCardWrapper(modifier = modifier) {
-        HeaderCard(name = bikeStation.name, image = Icons.Filled.DirectionsBike, lastUpdate = lastUpdate)
+        HeaderCard(name = bikeStation.name, image = Icons.Filled.DirectionsBike, lastUpdate = LastUpdate(TimeUtil.formatTimeDifference(bikeStation.lastReported, Calendar.getInstance().time)))
 
         Arrivals(destination = "Available bikes", arrivals = listOf(bikeStation.availableBikes.toString()))
         Arrivals(destination = "Available docks", arrivals = listOf(bikeStation.availableDocks.toString()))
@@ -287,10 +289,10 @@ fun HeaderCard(modifier: Modifier = Modifier, name: String, image: ImageVector, 
     ) {
         Image(
             imageVector = image,
-            contentDescription = "train icon",
+            contentDescription = "icon",
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer),
             modifier = Modifier
-                .padding(/*start = 10.dp, */end = 10.dp)
+                .padding(end = 10.dp)
                 .size(50.dp),
         )
         Column {
