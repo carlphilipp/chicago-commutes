@@ -6,9 +6,11 @@ import androidx.compose.material3.NavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -23,9 +25,16 @@ fun Navigation(screens: List<DrawerScreens>) {
     val openDrawer = { scope.launch { drawerState.open() } }
     val navController = rememberNavController()
     val currentScreen = remember { mutableStateOf<DrawerScreens>(DrawerScreens.Favorites) }
+    var gesturesEnabled by remember { mutableStateOf(true) }
+    gesturesEnabled = if (drawerState.isOpen) {
+        true
+    } else {
+        currentScreen.value != DrawerScreens.Map
+    }
 
     NavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = gesturesEnabled,
         drawerContent = {
             Drawer(
                 currentScreen = currentScreen.value,
