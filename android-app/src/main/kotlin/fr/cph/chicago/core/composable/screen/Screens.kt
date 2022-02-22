@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import fr.cph.chicago.core.composable.mainViewModel
+import fr.cph.chicago.core.composable.settingsViewModel
 
 sealed class DrawerScreens(val title: String, val route: String, val icon: ImageVector, val component: @Composable () -> Unit) {
     object Favorites : DrawerScreens("Favorites", "fav", Icons.Filled.Favorite, { Favorites(mainViewModel = mainViewModel) })
@@ -23,7 +24,7 @@ sealed class DrawerScreens(val title: String, val route: String, val icon: Image
     object Map : DrawerScreens("CTA map", "map", Icons.Filled.Map, { Map() })
     object Alerts : DrawerScreens("CTA alerts", "alerts", Icons.Filled.Warning, { Alerts(mainViewModel = mainViewModel) })
     object Rate : DrawerScreens("Rate this app", "rate", Icons.Filled.StarRate, { Rate(mainViewModel = mainViewModel) })
-    object Settings : DrawerScreens("Settings", "settings", Icons.Filled.Settings, { Settings() })
+    object Settings : DrawerScreens("Settings", "settings", Icons.Filled.Settings, { Settings(viewModel = settingsViewModel) })
 }
 
 val screens = listOf(

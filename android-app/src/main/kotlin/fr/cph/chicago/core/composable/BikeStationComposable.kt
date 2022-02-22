@@ -74,7 +74,7 @@ class BikeStationComposable : ComponentActivity() {
         val viewModel = BikeStationViewModel().initModel(bikeStation = bikeStation)
 
         setContent {
-            ChicagoCommutesTheme {
+            ChicagoCommutesTheme(settingsViewModel = settingsViewModel) {
                 BikeStationView(viewModel = viewModel)
             }
         }

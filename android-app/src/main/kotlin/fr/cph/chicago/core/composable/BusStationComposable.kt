@@ -104,7 +104,7 @@ class BusStationComposable : ComponentActivity() {
         )
 
         setContent {
-            ChicagoCommutesTheme {
+            ChicagoCommutesTheme(settingsViewModel = settingsViewModel) {
                 BusStationView(viewModel = viewModel)
             }
         }

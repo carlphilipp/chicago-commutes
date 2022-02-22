@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import fr.cph.chicago.core.composable.screen.SettingsViewModel
 import fr.cph.chicago.core.composable.screen.screens
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.BikeStation
@@ -29,6 +30,7 @@ import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
 val mainViewModel = MainViewModel()
+val settingsViewModel = SettingsViewModel().initModel()
 
 class MainActivityComposable : ComponentActivity() {
 
@@ -38,7 +40,7 @@ class MainActivityComposable : ComponentActivity() {
         val viewModel = mainViewModel.initModel()
 
         setContent {
-            ChicagoCommutesTheme {
+            ChicagoCommutesTheme(settingsViewModel = settingsViewModel) {
                 Navigation(screens = screens)
 
                 DisposableEffect(key1 = viewModel) {

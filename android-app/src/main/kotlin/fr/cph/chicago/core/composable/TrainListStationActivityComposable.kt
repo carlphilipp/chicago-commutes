@@ -40,7 +40,7 @@ class TrainListStationActivityComposable : ComponentActivity() {
         val trainStations: List<TrainStation> = trainService.getStationsForLine(trainLine)
 
         setContent {
-            ChicagoCommutesTheme {
+            ChicagoCommutesTheme(settingsViewModel = settingsViewModel) {
                 TrainLineStops(
                     title = title,
                     trainStations = trainStations,

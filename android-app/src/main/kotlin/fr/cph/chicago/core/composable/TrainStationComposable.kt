@@ -84,7 +84,7 @@ class TrainStationComposable : ComponentActivity() {
         store.dispatch(TrainStationAction(stationId))
 
         setContent {
-            ChicagoCommutesTheme {
+            ChicagoCommutesTheme(settingsViewModel = settingsViewModel) {
                 TrainStationView(viewModel = viewModel)
             }
         }

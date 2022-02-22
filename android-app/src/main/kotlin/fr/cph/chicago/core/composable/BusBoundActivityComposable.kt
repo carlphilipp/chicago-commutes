@@ -64,7 +64,7 @@ class BusBoundActivityComposable : ComponentActivity() {
         loadData()
 
         setContent {
-            ChicagoCommutesTheme {
+            ChicagoCommutesTheme(settingsViewModel = settingsViewModel) {
                 BusBoundView(
                     busStops = busStops,
                     busRouteId = busRouteId,
