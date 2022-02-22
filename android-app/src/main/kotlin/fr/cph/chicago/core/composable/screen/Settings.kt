@@ -1,5 +1,8 @@
 package fr.cph.chicago.core.composable.screen
 
+import android.content.Context
+import android.content.Intent
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,79 +26,102 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.content.ContextCompat.startActivity
+import fr.cph.chicago.core.activity.BaseActivity
+import fr.cph.chicago.core.activity.DeveloperOptionsActivity
+import fr.cph.chicago.core.composable.DeveloperOptionsComposable
 import fr.cph.chicago.core.model.Theme
+import fr.cph.chicago.redux.ResetStateAction
+import fr.cph.chicago.redux.store
+import fr.cph.chicago.repository.RealmConfig
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.Util
 import timber.log.Timber
 
 @Composable
 fun Settings(modifier: Modifier = Modifier, viewModel: SettingsViewModel, util: Util = Util) {
-
     val uiState = viewModel.uiState
-
-    Timber.i("Current theme found: ${uiState.theme}")
+    val context = LocalContext.current
+    Timber.d("Current theme: ${uiState.theme}")
 
     LazyColumn(modifier = modifier.fillMaxWidth()) {
         val cellModifier = Modifier.padding(15.dp)
         item {
             // Theme
-            Row(modifier = cellModifier.clickable {
-                viewModel.showThemeChangerDialog()
-            }) {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = "Theme",
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    Spacer(modifier = Modifier.height(5.dp))
-                    Text(
-                        text = uiState.theme.description,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
+            Column(
+                modifier
+                    .fillMaxWidth()
+                    .clickable { viewModel.showThemeChangerDialog(true) }) {
+                Row(modifier = cellModifier) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = "Theme",
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        Spacer(modifier = Modifier.height(5.dp))
+                        Text(
+                            text = uiState.theme.description,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
                 }
+                Divider(thickness = 1.dp)
             }
-            Divider(thickness = 1.dp)
         }
         item {
             // Data cache
-            Row(modifier = cellModifier) {
-                Column {
-                    Text(
-                        text = "Data cache",
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    Spacer(modifier = Modifier.height(5.dp))
-                    Text(
-                        text = "Clear cache",
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                    Text(
-                        text = "Remove all cache data",
-                        style = MaterialTheme.typography.bodySmall,
-                    )
+            Column(
+                modifier
+                    .fillMaxWidth()
+                    .clickable { viewModel.showClearCache(true) }) {
+                Row(modifier = cellModifier) {
+                    Column {
+                        Text(
+                            text = "Data cache",
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        Spacer(modifier = Modifier.height(5.dp))
+                        Text(
+                            text = "Clear cache",
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                        Text(
+                            text = "Remove all cache data",
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
                 }
+                Divider(thickness = 1.dp)
             }
-            Divider(thickness = 1.dp)
         }
         item {
-            // Developer options
-            Row(modifier = cellModifier) {
-                Column {
-                    Text(
-                        text = "Developer options",
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    Spacer(modifier = Modifier.height(5.dp))
-                    Text(
-                        text = "Show developer options",
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
+            Column(
+                modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        val intent = Intent(context, DeveloperOptionsComposable::class.java)
+                        startActivity(context, intent, null)
+                    }) {
+                // Developer options
+                Row(modifier = cellModifier) {
+                    Column {
+                        Text(
+                            text = "Developer options",
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        Spacer(modifier = Modifier.height(5.dp))
+                        Text(
+                            text = "Show developer options",
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
                 }
-            }
 
-            Divider(thickness = 1.dp)
+                Divider(thickness = 1.dp)
+            }
         }
         item {
             // About
@@ -114,9 +140,13 @@ fun Settings(modifier: Modifier = Modifier, viewModel: SettingsViewModel, util: 
             }
         }
     }
+
     if (uiState.showThemeChangerDialog) {
-        Timber.i("show dialog")
         ThemeChangerDialog(viewModel = viewModel)
+    }
+
+    if (uiState.showClearCacheDialog) {
+        ClearCacheDialog(viewModel = viewModel)
     }
 }
 
@@ -128,7 +158,7 @@ fun ThemeChangerDialog(viewModel: SettingsViewModel) {
 
     AlertDialog(
         modifier = Modifier.padding(horizontal = 50.dp),
-        onDismissRequest = { viewModel.hideThemeChangerDialog() },
+        onDismissRequest = { viewModel.showThemeChangerDialog(false) },
         // FIXME workaround because the dialog do not resize after loading. Issue: https://issuetracker.google.com/issues/194911971?pli=1
         properties = DialogProperties(usePlatformDefaultWidth = false),
         title = {
@@ -140,7 +170,11 @@ fun ThemeChangerDialog(viewModel: SettingsViewModel) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Theme.values().forEach { theme ->
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                currentThemeState = theme
+                            },
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         RadioButton(
@@ -152,7 +186,7 @@ fun ThemeChangerDialog(viewModel: SettingsViewModel) {
                         )
                         Text(
                             text = theme.description,
-                            style = MaterialTheme.typography.bodyMedium
+                            style = MaterialTheme.typography.bodyMedium,
                         )
                     }
                 }
@@ -161,8 +195,8 @@ fun ThemeChangerDialog(viewModel: SettingsViewModel) {
         confirmButton = {
             FilledTonalButton(
                 onClick = {
-                   viewModel.setTheme(currentThemeState)
-                    viewModel.hideThemeChangerDialog()
+                    viewModel.setTheme(currentThemeState)
+                    viewModel.showThemeChangerDialog(false)
                 },
             ) {
                 Text(
@@ -172,7 +206,71 @@ fun ThemeChangerDialog(viewModel: SettingsViewModel) {
         },
         dismissButton = {
             OutlinedButton(
-                onClick = { viewModel.hideThemeChangerDialog() },
+                onClick = { viewModel.showThemeChangerDialog(false) },
+            ) {
+                Text(
+                    text = "Cancel",
+                )
+            }
+        },
+    )
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun ClearCacheDialog(viewModel: SettingsViewModel) {
+    val context = LocalContext.current
+    val activity = (context as ComponentActivity)
+    AlertDialog(
+        modifier = Modifier.padding(horizontal = 50.dp),
+        onDismissRequest = {},
+        // FIXME workaround because the dialog do not resize after loading. Issue: https://issuetracker.google.com/issues/194911971?pli=1
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        title = {
+            Text(
+                text = "Clear cache",
+            )
+        },
+        text = {
+            Column {
+                Text(
+                    modifier = Modifier.padding(bottom = 15.dp),
+                    text = "This is going to:",
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+                Text(
+                    text = "- Delete all your favorites",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    text = "- Clear application cache",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    text = "- Reload the application",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+
+        },
+        confirmButton = {
+            FilledTonalButton(
+                onClick = {
+                    viewModel.showClearCache(false)
+                    viewModel.clearLocalData(context = context)
+                    viewModel.restartApp(context = context, activity = activity)
+                },
+            ) {
+                Text(
+                    text = "Clear cache",
+                )
+            }
+        },
+        dismissButton = {
+            OutlinedButton(
+                onClick = {
+                    viewModel.showClearCache(false)
+                },
             ) {
                 Text(
                     text = "Cancel",
@@ -185,9 +283,10 @@ fun ThemeChangerDialog(viewModel: SettingsViewModel) {
 data class SettingsState(
     val theme: Theme = Theme.AUTO,
     val showThemeChangerDialog: Boolean = false,
+    val showClearCacheDialog: Boolean = false,
 )
 
-class SettingsViewModel(private val preferenceService: PreferenceService = PreferenceService) {
+class SettingsViewModel(private val preferenceService: PreferenceService = PreferenceService, private val realmConfig: RealmConfig = RealmConfig) {
     var uiState by mutableStateOf(SettingsState())
         private set
 
@@ -196,26 +295,46 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
         return this
     }
 
-    fun refreshCurrentTheme() {
-        uiState = uiState.copy(
-            theme = preferenceService.getTheme()
-        )
-    }
-
     fun setTheme(theme: Theme) {
         preferenceService.saveTheme(theme)
         refreshCurrentTheme()
     }
 
-    fun showThemeChangerDialog() {
+    fun showThemeChangerDialog(show: Boolean) {
         uiState = uiState.copy(
-            showThemeChangerDialog = true
+            showThemeChangerDialog = show
         )
     }
 
-    fun hideThemeChangerDialog() {
+    fun showClearCache(show: Boolean) {
         uiState = uiState.copy(
-            showThemeChangerDialog = false
+            showClearCacheDialog = show
+        )
+    }
+
+    fun clearLocalData(context: Context) {
+        deleteCache(context)
+        preferenceService.clearPreferences()
+        realmConfig.cleanRealm()
+    }
+
+    private fun deleteCache(context: Context?) {
+        try {
+            context?.cacheDir?.deleteRecursively()
+        } catch (ignored: Exception) {
+        }
+    }
+
+    fun restartApp(context: Context, activity: ComponentActivity) {
+        store.dispatch(ResetStateAction())
+        val intent = Intent(context, BaseActivity::class.java)
+        activity.finish()
+        startActivity(context, intent, null)
+    }
+
+    private fun refreshCurrentTheme() {
+        uiState = uiState.copy(
+            theme = preferenceService.getTheme()
         )
     }
 }
