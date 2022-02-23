@@ -142,7 +142,7 @@ class MainViewModel @Inject constructor() : ViewModel(), StoreSubscriber<State> 
         }
     }
 
-    private fun loadAlerts() {
+    fun loadAlerts() {
         uiState = uiState.copy(isRefreshing = true)
         store.dispatch(AlertAction())
     }

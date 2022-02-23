@@ -51,7 +51,7 @@ fun Alerts(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
         modifier = modifier,
         state = rememberSwipeRefreshState(mainViewModel.uiState.isRefreshing),
         onRefresh = {
-            // TODO
+            mainViewModel.loadAlerts()
         },
     ) {
         Scaffold(
