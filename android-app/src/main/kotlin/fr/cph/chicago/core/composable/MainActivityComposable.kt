@@ -69,8 +69,6 @@ data class MainUiState(
     val bikeStations: List<BikeStation> = listOf(),
     val bikeStationsShowError: Boolean = false,
 
-    val routesAlerts: List<RoutesAlertsDTO> = listOf(),
-
     val startMarket: Boolean = true,
     val startMarketFailed: Boolean = false,
     val justClosed: Boolean = false,
@@ -115,12 +113,6 @@ class MainViewModel @Inject constructor() : ViewModel(), StoreSubscriber<State> 
             store.dispatch(ResetBikeStationFavoritesAction())
         }
 
-        if (state.alertStatus == Status.SUCCESS) {
-            uiState = uiState.copy(routesAlerts = state.alertsDTO)
-            store.dispatch(ResetAlertsStatusAction())
-        }
-        // TODO: Handle alert refresh failure
-
         uiState = uiState.copy(isRefreshing = false)
     }
 
@@ -144,17 +136,6 @@ class MainViewModel @Inject constructor() : ViewModel(), StoreSubscriber<State> 
 
     fun resetBikeStationsShowError() {
         uiState = uiState.copy(bikeStationsShowError = false)
-    }
-
-    fun loadAlertsIfNeeded() {
-        if (uiState.routesAlerts.isEmpty()) {
-            loadAlerts()
-        }
-    }
-
-    fun loadAlerts() {
-        uiState = uiState.copy(isRefreshing = true)
-        store.dispatch(AlertAction())
     }
 
     fun startMarket(context: Context) {

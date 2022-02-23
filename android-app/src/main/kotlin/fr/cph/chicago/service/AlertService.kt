@@ -26,6 +26,7 @@ import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.entity.AlertsRouteResponse
 import fr.cph.chicago.entity.AlertsRoutesResponse
 import io.reactivex.rxjava3.core.Single
+import java.lang.RuntimeException
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -39,9 +40,15 @@ object AlertService {
     private val format = SimpleDateFormat("yyyy-MM-dd", Locale.US)
     private val displayFormat = SimpleDateFormat("MM/dd/yyyy h:mm a", Locale.US)
 
+    var counter = 0
+
     fun alerts(): Single<List<RoutesAlertsDTO>> {
         return ctaClient.getAlertRoutes()
             .map { alertRoutes: AlertsRoutesResponse ->
+                if (counter == 0 || counter == 1 || counter == 2) {
+                    counter++
+                    throw RuntimeException()
+                }
                 if (alertRoutes.ctaRoutes.routeInfo.isEmpty()) {
                     val errors = alertRoutes.ctaRoutes.errorMessage.joinToString()
                     Timber.e(errors)
