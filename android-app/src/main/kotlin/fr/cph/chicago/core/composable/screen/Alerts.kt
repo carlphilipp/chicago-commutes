@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -77,46 +78,46 @@ fun Alerts(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
                                 // TODO
                             }
                         ) {
-                            if (alert.alertType == AlertType.TRAIN) {
-                                val color = android.graphics.Color.parseColor(alert.routeBackgroundColor)
-                                ColoredBox(modifier = Modifier.padding(horizontal = 20.dp), color = androidx.compose.ui.graphics.Color(color))
-                            } else {
-                                ColoredBox(modifier = Modifier.padding(horizontal = 20.dp))
-                            }
                             Row(
-                                horizontalArrangement = Arrangement.Start,
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()) {
-                                Column(verticalArrangement = Arrangement.Center) {
-                                    val stationName = if (alert.alertType == AlertType.TRAIN) {
-                                        alert.routeName
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                Row(
+                                    modifier = Modifier.weight(1f),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    if (alert.alertType == AlertType.TRAIN) {
+                                        val color = android.graphics.Color.parseColor(alert.routeBackgroundColor)
+                                        ColoredBox(modifier = Modifier.padding(end = 20.dp), color = androidx.compose.ui.graphics.Color(color))
                                     } else {
-                                        alert.id + " - " + alert.routeName
+                                        ColoredBox(modifier = Modifier.padding(end = 20.dp))
                                     }
-                                    Text(
-                                        text = stationName,
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-                                    Text(
-                                        text = alert.routeStatus,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-                                }
-                                if ("Normal Service" != alert.routeStatus) {
-                                    Row(modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 20.dp),
-                                        horizontalArrangement = Arrangement.End) {
-                                        Image(
-                                            painter = painterResource(R.drawable.ic_action_alert_warning),
-                                            contentDescription = "alert",
-                                            colorFilter = ColorFilter.tint(androidx.compose.ui.graphics.Color.Red),
+                                    Column {
+                                        val stationName = if (alert.alertType == AlertType.TRAIN) {
+                                            alert.routeName
+                                        } else {
+                                            alert.id + " - " + alert.routeName
+                                        }
+                                        Text(
+                                            text = stationName,
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+                                        Text(
+                                            text = alert.routeStatus,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
                                         )
                                     }
+                                }
+
+                                if ("Normal Service" != alert.routeStatus) {
+                                    Image(
+                                        painter = painterResource(R.drawable.ic_action_alert_warning),
+                                        contentDescription = "alert",
+                                        colorFilter = ColorFilter.tint(Color.Red),
+                                    )
                                 }
                             }
                         }

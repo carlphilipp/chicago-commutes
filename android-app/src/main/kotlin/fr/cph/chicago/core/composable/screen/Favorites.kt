@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat.startActivity
@@ -130,7 +131,7 @@ fun BusFavoriteCard(modifier: Modifier = Modifier, util: Util = Util, busRoute: 
 
     FavoriteCardWrapper(modifier = modifier) {
         // FIXME: This is some UI logic, should be moved in a view model or something
-        val title = if(busRoute.name != "?") {
+        val title = if (busRoute.name != "?") {
             "${busRoute.id} ${busRoute.name}"
         } else {
             busRoute.id
@@ -346,43 +347,49 @@ fun FooterCard(modifier: Modifier = Modifier, detailsOnClick: () -> Unit = {}, m
 @Composable
 fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA, destination: String, direction: String? = null, arrivals: List<String>) {
     Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
             .fillMaxWidth()
     ) {
-        ColoredBox(color = trainLine.toComposeColor())
-        Column(modifier = Modifier.padding(horizontal = 10.dp)) {
-            Text(
-                text = destination,
-                maxLines = 1,
-                style = MaterialTheme.typography.titleSmall,
-            )
-            if (direction != null) {
+        Row(
+            modifier = Modifier.weight(1f),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            ColoredBox(color = trainLine.toComposeColor())
+            Column(modifier = Modifier.padding(horizontal = 10.dp)) {
                 Text(
-                    text = direction,
-                    style = MaterialTheme.typography.bodySmall,
+                    text = destination,
+                    style = MaterialTheme.typography.titleSmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
+                if (direction != null) {
+                    Text(
+                        text = direction,
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
         }
-
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-            arrivals.forEach {
-                var currentTime by remember { mutableStateOf(it) }
-                var color = Color.Unspecified
-                if (it == DEFAULT_AVAILABLE.toString()) {
-                    currentTime = "?"
-                    color = Color(fr.cph.chicago.util.Color.orange)
-                } else {
-                    currentTime = it
-                }
-                AnimatedText(
-                    text = currentTime,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(start = 3.dp),
-                    color = color
-                )
+        arrivals.forEach {
+            var currentTime by remember { mutableStateOf(it) }
+            var color = Color.Unspecified
+            if (it == DEFAULT_AVAILABLE.toString()) {
+                currentTime = "?"
+                color = Color(fr.cph.chicago.util.Color.orange)
+            } else {
+                currentTime = it
             }
+            AnimatedText(
+                text = currentTime,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(start = 3.dp),
+                color = color
+            )
         }
     }
 }

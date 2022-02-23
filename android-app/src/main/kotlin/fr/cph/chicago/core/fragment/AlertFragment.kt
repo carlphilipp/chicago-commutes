@@ -75,8 +75,7 @@ class AlertFragment : RefreshFragment(), StoreSubscriber<State> {
     override fun onResume() {
         super.onResume()
         store.subscribe(this)
-        if (store.state.alertsDTO.isEmpty()) {
-            startRefreshing()
+        if (store.state.alertsDTO.isEmpty()) {            startRefreshing()
             store.dispatch(AlertAction())
         }
     }
