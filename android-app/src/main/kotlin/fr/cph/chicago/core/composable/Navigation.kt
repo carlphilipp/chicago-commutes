@@ -39,8 +39,10 @@ fun Navigation(screens: List<DrawerScreens>) {
             Drawer(
                 currentScreen = currentScreen.value,
                 onDestinationClicked = { screen ->
-                    scope.launch {
-                        drawerState.close()
+                    if (screen != DrawerScreens.Rate) {
+                        scope.launch {
+                            drawerState.close()
+                        }
                     }
                     navController.navigate(screen.route) {
                         popUpTo(navController.graph.startDestinationId)

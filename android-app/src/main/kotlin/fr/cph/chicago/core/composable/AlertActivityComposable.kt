@@ -1,7 +1,6 @@
 package fr.cph.chicago.core.composable
 
 import android.os.Bundle
-import android.widget.LinearLayout
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -9,17 +8,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -33,10 +36,6 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.ui.unit.dp
 import timber.log.Timber
 
 class AlertActivityComposable : ComponentActivity() {
@@ -77,7 +76,9 @@ fun AlertDetails(
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(uiState.routeAlertsDTOS) { alert ->
                         Column(
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 10.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp, vertical = 10.dp)
                         ) {
                             Text(
                                 text = alert.headLine,
@@ -152,6 +153,7 @@ class AlertDetailsViewModel @Inject constructor(private val alertService: AlertS
                     )
                 },
                 { error ->
+                    // FIXME: Display error message
                     Timber.e(error, "Error while refreshing data")
                     uiState = uiState.copy(isRefreshing = false)
                 })

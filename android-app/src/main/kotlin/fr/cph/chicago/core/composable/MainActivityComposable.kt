@@ -1,5 +1,8 @@
 package fr.cph.chicago.core.composable
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,6 +11,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.core.composable.screen.SettingsViewModel
@@ -28,9 +32,9 @@ import fr.cph.chicago.redux.ResetBusRoutesFavoritesAction
 import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
+import javax.inject.Inject
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import javax.inject.Inject
 
 val mainViewModel = MainViewModel()
 val settingsViewModel = SettingsViewModel().initModel()
@@ -66,6 +70,10 @@ data class MainUiState(
     val bikeStationsShowError: Boolean = false,
 
     val routesAlerts: List<RoutesAlertsDTO> = listOf(),
+
+    val startMarket: Boolean = true,
+    val startMarketFailed: Boolean = false,
+    val justClosed: Boolean = false,
 
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
 )
@@ -147,6 +155,24 @@ class MainViewModel @Inject constructor() : ViewModel(), StoreSubscriber<State> 
     fun loadAlerts() {
         uiState = uiState.copy(isRefreshing = true)
         store.dispatch(AlertAction())
+    }
+
+    fun startMarket(context: Context) {
+        val intent = Intent(Intent.ACTION_VIEW)
+        try {
+            intent.data = Uri.parse("market://details?id=fr.cph.chicago")
+            startActivity(context, intent, null)
+        } catch (ex: Exception) {
+            Timber.e(ex, "Could not start market")
+            uiState = uiState.copy(
+                startMarket = false,
+                startMarketFailed = true
+            )
+        }
+    }
+
+    fun resetRateMeFailed() {
+        uiState = uiState.copy(startMarketFailed = false)
     }
 
     private fun loadBusRoutesAndBike() {
