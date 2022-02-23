@@ -101,7 +101,7 @@ fun Bus(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
                                     maxLines = 1,
                                 )
                                 Text(
-                                    busRoute.name,
+                                    text = busRoute.name,
                                     style = MaterialTheme.typography.bodyLarge,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,

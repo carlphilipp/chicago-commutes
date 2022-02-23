@@ -22,10 +22,7 @@ sealed class DrawerScreens(val title: String, val route: String, val icon: Image
     object Divvy : DrawerScreens("Divvy", "divvy", Icons.Filled.DirectionsBike, { Divvy(mainViewModel = mainViewModel) })
     object Nearby : DrawerScreens("Nearby", "nearby", Icons.Filled.NearMe, { Nearby(mainViewModel = mainViewModel) })
     object Map : DrawerScreens("CTA map", "map", Icons.Filled.Map, { Map() })
-    object Alerts : DrawerScreens("CTA alerts", "alerts", Icons.Filled.Warning, {
-        val alertsViewModel = AlertsViewModel().initModel()
-        Alerts(mainViewModel = mainViewModel, alertsViewModel = alertsViewModel)
-    })
+    object Alerts : DrawerScreens("CTA alerts", "alerts", Icons.Filled.Warning, { Alerts(mainViewModel = mainViewModel) })
 
     object Rate : DrawerScreens("Rate this app", "rate", Icons.Filled.StarRate, { Rate(mainViewModel = mainViewModel) })
     object Settings : DrawerScreens("Settings", "settings", Icons.Filled.Settings, { Settings(viewModel = settingsViewModel) })
