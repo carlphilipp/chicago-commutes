@@ -3,6 +3,7 @@ package fr.cph.chicago.core.composable
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
@@ -13,9 +14,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun TopBar(title: String, openDrawer: () -> Unit) {
@@ -55,6 +58,7 @@ fun TopBar(title: String) {
     CenterAlignedTopAppBar(
         title = {
             Text(
+                modifier = Modifier.padding(start = 15.dp),
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
                 maxLines = 1,

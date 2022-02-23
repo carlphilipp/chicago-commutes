@@ -111,6 +111,8 @@ class MainViewModel @Inject constructor() : ViewModel(), StoreSubscriber<State> 
             uiState = uiState.copy(routesAlerts = state.alertsDTO)
             store.dispatch(ResetAlertsStatusAction())
         }
+        // TODO: Handle alert refresh failure
+
         uiState = uiState.copy(isRefreshing = false)
     }
 

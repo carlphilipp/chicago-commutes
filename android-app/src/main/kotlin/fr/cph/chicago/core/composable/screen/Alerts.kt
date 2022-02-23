@@ -1,5 +1,7 @@
 package fr.cph.chicago.core.composable.screen
 
+import android.content.Intent
+import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,13 +27,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
+import fr.cph.chicago.core.activity.AlertActivity
+import fr.cph.chicago.core.composable.AlertActivityComposable
 import fr.cph.chicago.core.composable.MainViewModel
 import fr.cph.chicago.core.composable.common.ColoredBox
 import fr.cph.chicago.core.composable.common.TextFieldMaterial3
@@ -43,6 +49,7 @@ import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 fun Alerts(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
     mainViewModel.loadAlertsIfNeeded()
 
+    val context = LocalContext.current
     var textSearch by remember { mutableStateOf(TextFieldValue("")) }
     var searchRoutesAlerts by remember { mutableStateOf<List<RoutesAlertsDTO>>(listOf()) }
     searchRoutesAlerts = mainViewModel.uiState.routesAlerts
@@ -75,7 +82,15 @@ fun Alerts(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
                                 .fillMaxWidth()
                                 .padding(horizontal = 20.dp),
                             onClick = {
-                                // TODO
+                                val intent = Intent(context, AlertActivityComposable::class.java)
+                                val extras = Bundle()
+                                extras.putString("routeId", alert.id)
+                                extras.putString("title", if (alert.alertType === AlertType.TRAIN)
+                                    alert.routeName
+                                else
+                                    "${alert.id} - ${alert.routeName}")
+                                intent.putExtras(extras)
+                                startActivity(context, intent, null)
                             }
                         ) {
                             Row(
