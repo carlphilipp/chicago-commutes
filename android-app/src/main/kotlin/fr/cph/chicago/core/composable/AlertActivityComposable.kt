@@ -31,6 +31,7 @@ import androidx.lifecycle.ViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import fr.cph.chicago.core.composable.common.AnimatedPlaceHolderList
 import fr.cph.chicago.core.composable.common.ErrorView
 import fr.cph.chicago.core.composable.common.LargeImagePlaceHolderAnimated
 import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
@@ -78,18 +79,7 @@ fun AlertDetails(
                 onRefresh = { viewModel.loadAlertDetails() },
             ) {
                 if (uiState.isRefreshing && uiState.routeAlertsDTOS.isEmpty()) {
-                    // FIXME: Create an animated loading list
-                    Column {
-                        for (i in 1..4) {
-                            AnimatedVisibility(
-                                modifier = Modifier.height(200.dp),
-                                visible = uiState.isRefreshing,
-                                exit = fadeOut(animationSpec = tween(durationMillis = 300)),
-                            ) {
-                                LargeImagePlaceHolderAnimated()
-                            }
-                        }
-                    }
+                    AnimatedPlaceHolderList(isLoading = uiState.isRefreshing)
                 } else {
                     if (!uiState.isError) {
                         LazyColumn(modifier = Modifier.fillMaxSize()) {

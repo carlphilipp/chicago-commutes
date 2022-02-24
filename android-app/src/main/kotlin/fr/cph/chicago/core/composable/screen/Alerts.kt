@@ -43,6 +43,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.composable.AlertActivityComposable
 import fr.cph.chicago.core.composable.MainViewModel
+import fr.cph.chicago.core.composable.common.AnimatedPlaceHolderList
 import fr.cph.chicago.core.composable.common.ColoredBox
 import fr.cph.chicago.core.composable.common.ErrorView
 import fr.cph.chicago.core.composable.common.LargeImagePlaceHolderAnimated
@@ -76,18 +77,7 @@ fun Alerts(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
             snackbarHost = { SnackbarHost(hostState = mainViewModel.uiState.snackbarHostState) { data -> Snackbar(snackbarData = data) } },
             content = {
                 if (uiState.isRefreshing && uiState.routesAlerts.isEmpty()) {
-                    // FIXME: Create an animated loading list
-                    Column {
-                        for (i in 1..4) {
-                            AnimatedVisibility(
-                                modifier = Modifier.height(200.dp),
-                                visible = uiState.isRefreshing,
-                                exit = fadeOut(animationSpec = tween(durationMillis = 300)),
-                            ) {
-                                LargeImagePlaceHolderAnimated()
-                            }
-                        }
-                    }
+                    AnimatedPlaceHolderList(isLoading = uiState.isRefreshing)
                 } else {
                     if (!uiState.routeAlertErrorState) {
                         LazyColumn(modifier = Modifier.fillMaxSize()) {

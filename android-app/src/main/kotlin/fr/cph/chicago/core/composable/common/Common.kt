@@ -1,6 +1,5 @@
 package fr.cph.chicago.core.composable.common
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
@@ -157,13 +156,60 @@ fun AnimatedText(modifier: Modifier = Modifier, text: String, style: TextStyle =
 
 // FIXME: Refactor duplicated code
 @Composable
+fun AnimatedPlaceHolderList(
+    modifier: Modifier = Modifier,
+    isLoading: Boolean,
+    size : Int = 10,
+) {
+    val transition = rememberInfiniteTransition()
+    val translateAnim by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1000f,
+        animationSpec = infiniteRepeatable(
+            tween(durationMillis = 500, easing = FastOutSlowInEasing),
+            RepeatMode.Reverse
+        )
+    )
+    val colorShades = listOf(
+        MaterialTheme.colorScheme.outline.copy(0.5f),
+        MaterialTheme.colorScheme.outline.copy(0.1f),
+        MaterialTheme.colorScheme.outline.copy(0.5f),
+    )
+    val brush = Brush.linearGradient(
+        colors = colorShades,
+        start = Offset(10f, 10f),
+        end = Offset(translateAnim, translateAnim)
+    )
+
+    Column(modifier = modifier) {
+        for (i in 1..size) {
+            AnimatedVisibility(
+                modifier = Modifier.height(80.dp),
+                visible = isLoading,
+                exit = fadeOut(animationSpec = tween(durationMillis = 300)),
+            ) {
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                        .clip(RoundedCornerShape(10.0.dp))
+                        .background(brush = brush)
+                        .weight(3f)
+                )
+            }
+        }
+    }
+}
+
+// FIXME: Refactor duplicated code
+@Composable
 fun LargeImagePlaceHolderAnimated() {
     val transition = rememberInfiniteTransition()
     val translateAnim by transition.animateFloat(
         initialValue = 0f,
         targetValue = 1000f,
         animationSpec = infiniteRepeatable(
-            tween(durationMillis = 500/*1200*/, easing = FastOutSlowInEasing),
+            tween(durationMillis = 500, easing = FastOutSlowInEasing),
             RepeatMode.Reverse
         )
     )
@@ -180,6 +226,7 @@ fun LargeImagePlaceHolderAnimated() {
     ShimmerLargeItem(brush = brush)
 }
 
+// FIXME: Refactor duplicated code
 @Composable
 fun ShimmerAnimation(width: Dp = 150.dp, height: Dp = 150.dp) {
     val transition = rememberInfiniteTransition()
