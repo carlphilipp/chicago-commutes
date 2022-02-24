@@ -1,5 +1,6 @@
 package fr.cph.chicago.core.composable
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -13,7 +14,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.lifecycle.HiltViewModel
+import fr.cph.chicago.core.composable.screen.LocationViewModel
 import fr.cph.chicago.core.composable.screen.SettingsViewModel
 import fr.cph.chicago.core.composable.screen.screens
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
@@ -46,6 +49,7 @@ import timber.log.Timber
 
 val mainViewModel = MainViewModel()
 val settingsViewModel = SettingsViewModel().initModel()
+val locationViewModel = LocationViewModel()
 
 class MainActivityComposable : ComponentActivity() {
 
@@ -210,36 +214,44 @@ class MainViewModel @Inject constructor(
         uiState = uiState.copy(startMarketFailed = false)
     }
 
-    fun setCurrentUserLocation(position: Position) {
+    @SuppressLint("MissingPermission")
+    fun refreshUserLocation(context: Context) {
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            val position = if (location == null)
+                Position()
+            else
+                Position(location.latitude, location.longitude)
+            setCurrentUserLocation(position)
+            loadNearbyStations(position)
+        }
+    }
+
+    fun setDefaultUserLocation() {
+        mainViewModel.setCurrentUserLocation(chicagoPosition)
+        mainViewModel.loadNearbyStations(chicagoPosition)
+    }
+
+    private fun setCurrentUserLocation(position: Position) {
         uiState = uiState.copy(
             nearbyUserCurrentLocation = position,
             nearbyZoomIn = 16f,
         )
     }
 
-    fun loadNearbyStations(position: Position) {
+    private fun loadNearbyStations(position: Position) {
+        Timber.i("Load nearby")
         val trainStationAround = trainService.readNearbyStation(position = position)
         val busStopsAround = busService.busStopsAround(position = position)
-        Single.zip(trainStationAround, busStopsAround) { trains, buses ->
-            uiState = uiState.copy(
-                nearbyTrainStations = trains,
-                nearbyBusStops = buses,
-            )
-            Any()
-        }
-            .subscribe({}, { error -> Timber.e(error) })
-
-        /*val busStopsAround = busService.busStopsAround(position = position)
         val bikeStationsAround = mapUtil.readNearbyStation(position = position, store.state.bikeStations)
         Single.zip(trainStationAround, busStopsAround, bikeStationsAround) { trains, buses, bikeStations ->
             uiState = uiState.copy(
                 nearbyTrainStations = trains,
                 nearbyBusStops = buses,
                 nearbyBikeStations = bikeStations,
-
-                )
+            )
             Any()
-        }.subscribe({}, { error -> Timber.e(error) })*/
+        }.subscribe({}, { error -> Timber.e(error) })
     }
 
     private fun loadBusRoutesAndBike() {
