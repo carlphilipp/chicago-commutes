@@ -29,7 +29,7 @@ fun Navigation(screens: List<DrawerScreens>) {
     gesturesEnabled = if (drawerState.isOpen) {
         true
     } else {
-        currentScreen.value != DrawerScreens.Map
+        currentScreen.value != DrawerScreens.Map && currentScreen.value != DrawerScreens.Nearby
     }
 
     NavigationDrawer(

@@ -183,10 +183,7 @@ dependencies {
     implementation group: 'androidx.compose.material3', name: 'material3', version: '1.0.0-alpha05'
 
     implementation("androidx.hilt:hilt-work:1.0.0")
-    // When using Kotlin.
     kapt("androidx.hilt:hilt-compiler:1.0.0")
-
-
 
     // Google
     implementation(Lib.material)
@@ -220,6 +217,7 @@ dependencies {
     // Google play flavor
     googleplayImplementation(Lib.google_services_map)
     googleplayImplementation(Lib.google_services_location)
+    googleplayImplementation("com.google.maps.android:maps-compose:1.0.0")
 
     // Foss flavor
     fossImplementation(Lib.mapbox)
@@ -234,8 +232,6 @@ dependencies {
     testImplementation(Lib.junit) { exclude group: "org.hamcrest", module: "hamcrest-core" }
     testImplementation(Lib.mockito) { exclude group: "org.hamcrest", module: "hamcrest-core" }
     testImplementation(Lib.hamcrest)
-
-    //debugImplementation(Lib.leakcanary)
 }
 
 dependencyLocking {
