@@ -54,7 +54,6 @@ import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Alerts(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
-
     val load = remember { mutableStateOf(true) }
     if (load.value) {
         mainViewModel.shouldLoadAlerts()
@@ -70,15 +69,14 @@ fun Alerts(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(mainViewModel.uiState.isRefreshing),
-        onRefresh = {
-            mainViewModel.loadAlerts()
-        },
+        onRefresh = { mainViewModel.loadAlerts() },
     ) {
         Scaffold(
             modifier = modifier.fillMaxWidth(),
             snackbarHost = { SnackbarHost(hostState = mainViewModel.uiState.snackbarHostState) { data -> Snackbar(snackbarData = data) } },
             content = {
                 if (uiState.isRefreshing && uiState.routesAlerts.isEmpty()) {
+                    // FIXME: Create an animated loading list
                     Column {
                         for (i in 1..4) {
                             AnimatedVisibility(
@@ -90,7 +88,6 @@ fun Alerts(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
                             }
                         }
                     }
-
                 } else {
                     if (!uiState.routeAlertErrorState) {
                         LazyColumn(modifier = Modifier.fillMaxSize()) {
