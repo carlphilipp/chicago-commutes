@@ -32,9 +32,9 @@ import fr.cph.chicago.redux.ResetBusRoutesFavoritesAction
 import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
-import javax.inject.Inject
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
+import javax.inject.Inject
 
 val mainViewModel = MainViewModel()
 val settingsViewModel = SettingsViewModel().initModel()
@@ -73,6 +73,10 @@ data class MainUiState(
     val startMarketFailed: Boolean = false,
     val justClosed: Boolean = false,
 
+    val routesAlerts: List<RoutesAlertsDTO> = listOf(),
+    val routeAlertErrorState: Boolean = false,
+    val routeAlertShowError: Boolean = false,
+
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
 )
 
@@ -87,7 +91,7 @@ class MainViewModel @Inject constructor() : ViewModel(), StoreSubscriber<State> 
     }
 
     override fun newState(state: State) {
-        Timber.d("new state")
+        Timber.i("new state ${state.alertStatus}")
         Favorites.refreshFavorites()
         if (state.busRoutesStatus == Status.SUCCESS) {
             uiState = uiState.copy(
@@ -113,6 +117,23 @@ class MainViewModel @Inject constructor() : ViewModel(), StoreSubscriber<State> 
             store.dispatch(ResetBikeStationFavoritesAction())
         }
 
+        if (state.alertStatus == Status.SUCCESS) {
+            uiState = uiState.copy(
+                routesAlerts = state.alertsDTO,
+                routeAlertErrorState = false,
+                routeAlertShowError = false,
+            )
+            store.dispatch(ResetAlertsStatusAction())
+        }
+
+        if (state.alertStatus == Status.FAILURE || state.alertStatus == Status.FULL_FAILURE) {
+            uiState = uiState.copy(
+                routeAlertErrorState = true,
+                routeAlertShowError = true,
+            )
+            store.dispatch(ResetAlertsStatusAction())
+        }
+
         uiState = uiState.copy(isRefreshing = false)
     }
 
@@ -136,6 +157,21 @@ class MainViewModel @Inject constructor() : ViewModel(), StoreSubscriber<State> 
 
     fun resetBikeStationsShowError() {
         uiState = uiState.copy(bikeStationsShowError = false)
+    }
+
+    fun resetAlertsShowError() {
+        uiState = uiState.copy(routeAlertShowError = false)
+    }
+
+    fun shouldLoadAlerts() {
+        if (uiState.routesAlerts.isEmpty() && !uiState.routeAlertErrorState) {
+            loadAlerts()
+        }
+    }
+
+    fun loadAlerts() {
+        uiState = uiState.copy(isRefreshing = true)
+        store.dispatch(AlertAction())
     }
 
     fun startMarket(context: Context) {
