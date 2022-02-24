@@ -118,15 +118,15 @@ fun BusBoundView(
     var searchText by remember { mutableStateOf(TextFieldValue("")) }
     var searchBusStops by remember { mutableStateOf(busStops) }
 
-    SwipeRefresh(
+    Scaffold(
         modifier = modifier,
-        state = rememberSwipeRefreshState(isRefreshing),
-        onRefresh = onRefresh,
-    ) {
-        Scaffold(
-            topBar = { TopBar("$busRouteId - $boundTitle") },
-            snackbarHost = { SnackbarHost(hostState = snackbarHostState) { data -> Snackbar(snackbarData = data) } },
-            content = {
+        topBar = { TopBar("$busRouteId - $boundTitle") },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) { data -> Snackbar(snackbarData = data) } },
+        content = {
+            SwipeRefresh(
+                state = rememberSwipeRefreshState(isRefreshing),
+                onRefresh = onRefresh,
+            ) {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     item {
                         TextFieldMaterial3(
@@ -180,6 +180,7 @@ fun BusBoundView(
                     }
                 }
             }
-        )
-    }
+        }
+    )
 }
+
