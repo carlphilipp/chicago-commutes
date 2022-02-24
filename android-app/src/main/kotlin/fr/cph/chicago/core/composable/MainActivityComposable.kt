@@ -19,7 +19,10 @@ import fr.cph.chicago.core.composable.screen.screens
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
+import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Favorites
+import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.redux.AlertAction
 import fr.cph.chicago.redux.BikeStationAction
@@ -32,9 +35,14 @@ import fr.cph.chicago.redux.ResetBusRoutesFavoritesAction
 import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
+import fr.cph.chicago.service.BusService
+import fr.cph.chicago.service.TrainService
+import fr.cph.chicago.util.MapUtil
+import fr.cph.chicago.util.MapUtil.chicagoPosition
+import io.reactivex.rxjava3.core.Single
+import javax.inject.Inject
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import javax.inject.Inject
 
 val mainViewModel = MainViewModel()
 val settingsViewModel = SettingsViewModel().initModel()
@@ -77,11 +85,21 @@ data class MainUiState(
     val routeAlertErrorState: Boolean = false,
     val routeAlertShowError: Boolean = false,
 
+    val nearbyUserCurrentLocation: Position = chicagoPosition,
+    val nearbyTrainStations: List<TrainStation> = listOf(),
+    val nearbyBusStops: List<BusStop> = listOf(),
+    val nearbyBikeStations: List<BikeStation> = listOf(),
+    val nearbyZoomIn: Float = 8f,
+
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
 )
 
 @HiltViewModel
-class MainViewModel @Inject constructor() : ViewModel(), StoreSubscriber<State> {
+class MainViewModel @Inject constructor(
+    private val trainService: TrainService = TrainService,
+    private val busService: BusService = BusService,
+    private val mapUtil: MapUtil = MapUtil,
+) : ViewModel(), StoreSubscriber<State> {
     var uiState by mutableStateOf(MainUiState())
         private set
 
@@ -190,6 +208,38 @@ class MainViewModel @Inject constructor() : ViewModel(), StoreSubscriber<State> 
 
     fun resetRateMeFailed() {
         uiState = uiState.copy(startMarketFailed = false)
+    }
+
+    fun setCurrentUserLocation(position: Position) {
+        uiState = uiState.copy(
+            nearbyUserCurrentLocation = position,
+            nearbyZoomIn = 16f,
+        )
+    }
+
+    fun loadNearbyStations(position: Position) {
+        val trainStationAround = trainService.readNearbyStation(position = position)
+        val busStopsAround = busService.busStopsAround(position = position)
+        Single.zip(trainStationAround, busStopsAround) { trains, buses ->
+            uiState = uiState.copy(
+                nearbyTrainStations = trains,
+                nearbyBusStops = buses,
+            )
+            Any()
+        }
+            .subscribe({}, { error -> Timber.e(error) })
+
+        /*val busStopsAround = busService.busStopsAround(position = position)
+        val bikeStationsAround = mapUtil.readNearbyStation(position = position, store.state.bikeStations)
+        Single.zip(trainStationAround, busStopsAround, bikeStationsAround) { trains, buses, bikeStations ->
+            uiState = uiState.copy(
+                nearbyTrainStations = trains,
+                nearbyBusStops = buses,
+                nearbyBikeStations = bikeStations,
+
+                )
+            Any()
+        }.subscribe({}, { error -> Timber.e(error) })*/
     }
 
     private fun loadBusRoutesAndBike() {

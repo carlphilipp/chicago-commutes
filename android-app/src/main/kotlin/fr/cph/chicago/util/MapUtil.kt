@@ -19,6 +19,14 @@
 
 package fr.cph.chicago.util
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import androidx.annotation.DrawableRes
+import androidx.core.content.ContextCompat
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.rx.RxUtil.handleListError
@@ -117,5 +125,19 @@ object MapUtil {
                     .filter { station -> station.longitude >= lonMin }
             })
             .onErrorReturn(handleListError())
+    }
+
+    fun createStop(context: Context?, @DrawableRes icon: Int): BitmapDescriptor {
+        return if (context != null) {
+            val px = context.resources.getDimensionPixelSize(R.dimen.icon_shadow_2)
+            val bitMapBusStation = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitMapBusStation)
+            val shape = ContextCompat.getDrawable(context, icon)!!
+            shape.setBounds(0, 0, px, bitMapBusStation.height)
+            shape.draw(canvas)
+            BitmapDescriptorFactory.fromBitmap(bitMapBusStation)
+        } else {
+            BitmapDescriptorFactory.defaultMarker()
+        }
     }
 }
