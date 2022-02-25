@@ -89,7 +89,7 @@ data class MainUiState(
     val routeAlertErrorState: Boolean = false,
     val routeAlertShowError: Boolean = false,
 
-    val nearbyUserCurrentLocation: Position = chicagoPosition,
+    val nearbyMapCenterLocation: Position = chicagoPosition,
     val nearbyTrainStations: List<TrainStation> = listOf(),
     val nearbyBusStops: List<BusStop> = listOf(),
     val nearbyBikeStations: List<BikeStation> = listOf(),
@@ -237,14 +237,20 @@ class MainViewModel @Inject constructor(
         mainViewModel.setShowLocationError(true)
     }
 
+    fun setMapCenterLocationAndLoadNearby(position: Position, zoom: Float) {
+        mainViewModel.setCurrentUserLocation(position, zoom)
+        mainViewModel.loadNearbyStations(position)
+        mainViewModel.setShowLocationError(false)
+    }
+
     fun setShowLocationError(value: Boolean) {
         uiState = uiState.copy(nearbyShowLocationError = value)
     }
 
-    private fun setCurrentUserLocation(position: Position) {
+    private fun setCurrentUserLocation(position: Position, zoom: Float = 16f) {
         uiState = uiState.copy(
-            nearbyUserCurrentLocation = position,
-            nearbyZoomIn = 16f,
+            nearbyMapCenterLocation = position,
+            nearbyZoomIn = zoom,
         )
     }
 
