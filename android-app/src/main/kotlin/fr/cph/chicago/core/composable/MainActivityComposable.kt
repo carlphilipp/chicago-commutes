@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModel
 import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.core.composable.screen.LocationViewModel
+import fr.cph.chicago.core.composable.screen.NearbyResult
 import fr.cph.chicago.core.composable.screen.SettingsViewModel
 import fr.cph.chicago.core.composable.screen.screens
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
@@ -42,10 +43,12 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
+import javax.inject.Inject
+import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import javax.inject.Inject
 
 val mainViewModel = MainViewModel()
 val settingsViewModel = SettingsViewModel().initModel()
@@ -96,6 +99,9 @@ data class MainUiState(
     val nearbyZoomIn: Float = 8f,
     val nearbyIsMyLocationEnabled: Boolean = false,
     val nearbyShowLocationError: Boolean = false,
+    val nearbyDetailsShow: Boolean = false,
+    val nearbyDetailsTitle: String = StringUtils.EMPTY,
+    val nearbyDetailsArrivals: NearbyResult = NearbyResult(),
 
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
 )
@@ -245,6 +251,27 @@ class MainViewModel @Inject constructor(
 
     fun setShowLocationError(value: Boolean) {
         uiState = uiState.copy(nearbyShowLocationError = value)
+    }
+
+    fun setShowNearbyDetails(value: Boolean) {
+        uiState = uiState.copy(nearbyDetailsShow = value)
+    }
+
+    fun loadNearbyTrainDetails(trainStation: TrainStation) {
+        trainService.loadStationTrainArrival(trainStation.id)
+            .map { trainArrival ->
+                NearbyResult(trainEtas = trainArrival.trainEtas.filter { trainEta -> trainEta.trainStation.id == trainStation.id })
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    uiState = uiState.copy(
+                        nearbyDetailsTitle = trainStation.name,
+                        nearbyDetailsArrivals = it,
+                        nearbyDetailsShow = true,
+                    )
+                },
+                { onError -> Timber.e(onError, "Error while loading train arrivals") })
     }
 
     private fun setCurrentUserLocation(position: Position, zoom: Float = 16f) {
