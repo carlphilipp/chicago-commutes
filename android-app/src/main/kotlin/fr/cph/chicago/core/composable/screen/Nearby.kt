@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -51,12 +50,17 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.composable.MainViewModel
 import fr.cph.chicago.core.composable.common.ShowLocationNotFoundSnackBar
 import fr.cph.chicago.core.composable.permissions.NearbyLocationPermissionView
+import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.LastUpdate
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainEta
+import fr.cph.chicago.core.model.dto.BusArrivalRouteDTO
+import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.toLatLng
 import fr.cph.chicago.util.MapUtil.createStop
+import fr.cph.chicago.util.Util
 import java.util.TreeMap
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -156,6 +160,10 @@ fun GoogleMapView(
                 position = busStop.position.toLatLng(),
                 title = busStop.name,
                 icon = bitmapDescriptorBus,
+                onClick = {
+                    mainViewModel.loadNearbyBusDetails(busStop = busStop)
+                    false
+                }
             )
         }
 
@@ -164,6 +172,10 @@ fun GoogleMapView(
                 position = LatLng(bikeStation.latitude, bikeStation.longitude),
                 title = bikeStation.name,
                 icon = bitmapDescriptorBike,
+                onClick = {
+                    mainViewModel.loadNearbyBikeDetails(currentBikeStation = bikeStation)
+                    false
+                }
             )
         }
     }
@@ -181,6 +193,7 @@ fun GoogleMapView(
     MapStationDetailsView(
         showView = mainViewModel.uiState.nearbyDetailsShow,
         title = mainViewModel.uiState.nearbyDetailsTitle,
+        image = mainViewModel.uiState.nearbyDetailsIcon,
         arrivals = mainViewModel.uiState.nearbyDetailsArrivals,
     )
 
@@ -204,7 +217,7 @@ private fun SearchThisAreaButton(mainViewModel: MainViewModel, cameraPositionSta
 }
 
 @Composable
-private fun MapStationDetailsView(showView: Boolean, title: String, arrivals: NearbyResult) {
+private fun MapStationDetailsView(showView: Boolean, title: String, image: ImageVector, arrivals: NearbyResult) {
     Box(Modifier.fillMaxSize()) {
         Surface(
             modifier = Modifier
@@ -218,10 +231,10 @@ private fun MapStationDetailsView(showView: Boolean, title: String, arrivals: Ne
                 exit = fadeOut(animationSpec = tween(durationMillis = 300)),
             ) {
                 Column(modifier = Modifier.padding(10.dp)) {
-                    HeaderCard(name = title, image = Icons.Filled.Train, lastUpdate = arrivals.lastUpdate)
+                    HeaderCard(name = title, image = image, lastUpdate = arrivals.lastUpdate)
                     arrivals.arrivals.forEach { entry ->
                         Arrivals(
-                            destination = entry.key.stationName,
+                            destination = entry.key.destination,
                             arrivals = entry.value,
                             trainLine = entry.key.trainLine,
                             direction = entry.key.direction
@@ -251,29 +264,73 @@ class LocationViewModel : ViewModel() {
 
 class NearbyResult(
     val lastUpdate: LastUpdate = LastUpdate("now"),
-    trainEtas: List<TrainEta> = listOf(),
+    val arrivals: TreeMap<NearbyDetailsArrivals, MutableList<String>> = TreeMap<NearbyDetailsArrivals, MutableList<String>>()
 ) {
-    val arrivals = trainEtas.fold(TreeMap<NearbyDetailsArrivals, MutableList<String>>()) { acc, cur ->
-        val key = NearbyDetailsArrivals(cur.destName, cur.routeName, cur.stop.direction.toString())
-        if (acc.containsKey(key)) {
-            acc[key]!!.add(cur.timeLeftDueDelay)
-        } else {
-            acc[key] = mutableListOf(cur.timeLeftDueDelay)
+    companion object {
+        @JvmName("toArrivalsTrain")
+        fun toArrivals(trainEtas: List<TrainEta>): TreeMap<NearbyDetailsArrivals, MutableList<String>> {
+            return trainEtas.fold(TreeMap<NearbyDetailsArrivals, MutableList<String>>()) { acc, cur ->
+                val key = NearbyDetailsArrivals(cur.destName, cur.routeName, cur.stop.direction.toString())
+                if (acc.containsKey(key)) {
+                    acc[key]!!.add(cur.timeLeftDueDelay)
+                } else {
+                    acc[key] = mutableListOf(cur.timeLeftDueDelay)
+                }
+                acc
+            }
         }
-        acc
+
+        @JvmName("toArrivalsBus")
+        fun toArrivals(busArrivals: List<BusArrival>): TreeMap<NearbyDetailsArrivals, MutableList<String>> {
+            val busArrivalRouteDTO = BusArrivalRouteDTO(BusArrivalRouteDTO.busComparator)
+            busArrivals.forEach { busArrivalRouteDTO.addBusArrival(it) }
+
+            val result = TreeMap<NearbyDetailsArrivals, MutableList<String>>()
+
+            busArrivalRouteDTO.forEach { entry ->
+                val route = Util.trimBusStopNameIfNeeded(entry.key) // FIXME
+                entry.value.forEach { entryBound ->
+                    val bound = entryBound.key
+                    val arrivals = entryBound.value
+
+                    val nearbyDetailsArrivals = NearbyDetailsArrivals(
+                        destination = route,
+                        trainLine = TrainLine.NA,
+                        direction = BusDirection.fromString(bound).shortLowerCase,
+                    )
+                    result[nearbyDetailsArrivals] = arrivals.map { busArrival -> busArrival.timeLeftDueDelay }.toMutableList()
+                }
+            }
+            return result
+        }
+
+        @JvmName("toArrivalsBike")
+        fun toArrivals(bikeStation: BikeStation): TreeMap<NearbyDetailsArrivals, MutableList<String>> {
+            val result = TreeMap<NearbyDetailsArrivals, MutableList<String>>()
+            result[NearbyDetailsArrivals(
+                destination = "Available bikes",
+                trainLine = TrainLine.NA,
+            )] = mutableListOf(bikeStation.availableBikes.toString())
+            result[NearbyDetailsArrivals(
+                destination = "Available docks",
+                trainLine = TrainLine.NA
+            )] = mutableListOf(bikeStation.availableDocks.toString())
+
+            return result
+        }
     }
 }
 
 data class NearbyDetailsArrivals(
-    val stationName: String,
+    val destination: String,
     val trainLine: TrainLine,
-    val direction: String,
+    val direction: String? = null,
 ) : Comparable<NearbyDetailsArrivals> {
     override fun compareTo(other: NearbyDetailsArrivals): Int {
         val line = trainLine.toTextString().compareTo(other.trainLine.toTextString())
         return if (line == 0) {
-            val station = stationName.compareTo(other.stationName)
-            if (station == 0) {
+            val station = destination.compareTo(other.destination)
+            if (station == 0 && direction != null && other.direction != null) {
                 direction.compareTo(other.direction)
             } else {
                 station

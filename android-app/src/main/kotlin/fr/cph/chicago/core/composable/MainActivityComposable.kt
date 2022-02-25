@@ -7,11 +7,17 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DirectionsBike
+import androidx.compose.material.icons.filled.DirectionsBus
+import androidx.compose.material.icons.filled.PedalBike
+import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.location.LocationServices
@@ -25,6 +31,7 @@ import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Favorites
+import fr.cph.chicago.core.model.LastUpdate
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
@@ -39,12 +46,16 @@ import fr.cph.chicago.redux.ResetBusRoutesFavoritesAction
 import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
+import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
+import fr.cph.chicago.util.TimeUtil
+import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
+import java.util.Calendar
 import javax.inject.Inject
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
@@ -101,6 +112,7 @@ data class MainUiState(
     val nearbyShowLocationError: Boolean = false,
     val nearbyDetailsShow: Boolean = false,
     val nearbyDetailsTitle: String = StringUtils.EMPTY,
+    val nearbyDetailsIcon: ImageVector = Icons.Filled.Train,
     val nearbyDetailsArrivals: NearbyResult = NearbyResult(),
 
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
@@ -110,6 +122,8 @@ data class MainUiState(
 class MainViewModel @Inject constructor(
     private val trainService: TrainService = TrainService,
     private val busService: BusService = BusService,
+    private val bikeService: BikeService = BikeService,
+    private val util: Util = Util,
     private val mapUtil: MapUtil = MapUtil,
 ) : ViewModel(), StoreSubscriber<State> {
     var uiState by mutableStateOf(MainUiState())
@@ -260,7 +274,7 @@ class MainViewModel @Inject constructor(
     fun loadNearbyTrainDetails(trainStation: TrainStation) {
         trainService.loadStationTrainArrival(trainStation.id)
             .map { trainArrival ->
-                NearbyResult(trainEtas = trainArrival.trainEtas.filter { trainEta -> trainEta.trainStation.id == trainStation.id })
+                NearbyResult(arrivals = NearbyResult.toArrivals(trainArrival.trainEtas.filter { trainEta -> trainEta.trainStation.id == trainStation.id }))
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -269,10 +283,52 @@ class MainViewModel @Inject constructor(
                         nearbyDetailsTitle = trainStation.name,
                         nearbyDetailsArrivals = it,
                         nearbyDetailsShow = true,
+                        nearbyDetailsIcon = Icons.Filled.Train,
                     )
                 },
+                // FIXME: Handle error
                 { onError -> Timber.e(onError, "Error while loading train arrivals") })
     }
+
+    fun loadNearbyBusDetails(busStop: BusStop) {
+        busService.loadBusArrivals(busStop)
+            .map { busArrivals -> NearbyResult(arrivals = NearbyResult.toArrivals(busArrivals)) }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    uiState = uiState.copy(
+                        nearbyDetailsTitle = busStop.name,
+                        nearbyDetailsArrivals = it,
+                        nearbyDetailsShow = true,
+                        nearbyDetailsIcon = Icons.Filled.DirectionsBus,
+                    )
+                },
+                // FIXME: Handle error
+                { onError -> Timber.e(onError, "Error while loading bus arrivals") })
+    }
+
+    fun loadNearbyBikeDetails(currentBikeStation: BikeStation) {
+        bikeService.findBikeStation(currentBikeStation.id)
+            .map { bikeStation ->
+                NearbyResult(
+                    arrivals = NearbyResult.toArrivals(bikeStation),
+                    lastUpdate = LastUpdate(TimeUtil.formatTimeDifference(bikeStation.lastReported, Calendar.getInstance().time))
+                )
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    uiState = uiState.copy(
+                        nearbyDetailsTitle = currentBikeStation.name,
+                        nearbyDetailsArrivals = it,
+                        nearbyDetailsShow = true,
+                        nearbyDetailsIcon = Icons.Filled.DirectionsBike,
+                    )
+                },
+                // FIXME: Handle error
+                { onError -> Timber.e(onError, "Error while loading bus arrivals") })
+    }
+
 
     private fun setCurrentUserLocation(position: Position, zoom: Float = 16f) {
         uiState = uiState.copy(

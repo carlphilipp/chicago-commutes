@@ -103,8 +103,8 @@ class BusArrivalRouteDTO(
     }
 
     fun addBusArrival(busArrival: BusArrival) {
-        getOrPut(busArrival.routeId, { TreeMap() })
-            .getOrPut(busArrival.routeDirection, { mutableSetOf() })
+        getOrPut(busArrival.routeId) { TreeMap() }
+            .getOrPut(busArrival.routeDirection) { mutableSetOf() }
             .add(busArrival)
     }
 }
