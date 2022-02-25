@@ -354,7 +354,6 @@ fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA,
             .fillMaxWidth()
     ) {
         Row(
-            modifier = Modifier.weight(1f),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             ColoredBox(color = trainLine.toComposeColor())
@@ -375,21 +374,23 @@ fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA,
                 }
             }
         }
-        arrivals.forEach {
-            var currentTime by remember { mutableStateOf(it) }
-            var color = Color.Unspecified
-            if (it == DEFAULT_AVAILABLE.toString()) {
-                currentTime = "?"
-                color = Color(fr.cph.chicago.util.Color.orange)
-            } else {
-                currentTime = it
+        Row {
+            arrivals.forEach {
+                var currentTime by remember { mutableStateOf(it) }
+                var color = Color.Unspecified
+                if (it == DEFAULT_AVAILABLE.toString()) {
+                    currentTime = "?"
+                    color = Color(fr.cph.chicago.util.Color.orange)
+                } else {
+                    currentTime = it
+                }
+                AnimatedText(
+                    text = currentTime,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(start = 3.dp),
+                    color = color
+                )
             }
-            AnimatedText(
-                text = currentTime,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(start = 3.dp),
-                color = color
-            )
         }
     }
 }
