@@ -10,7 +10,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsBus
-import androidx.compose.material.icons.filled.PedalBike
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.DisposableEffect
@@ -55,11 +54,11 @@ import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
-import java.util.Calendar
-import javax.inject.Inject
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
+import java.util.Calendar
+import javax.inject.Inject
 
 val mainViewModel = MainViewModel()
 val settingsViewModel = SettingsViewModel().initModel()
@@ -114,6 +113,7 @@ data class MainUiState(
     val nearbyDetailsTitle: String = StringUtils.EMPTY,
     val nearbyDetailsIcon: ImageVector = Icons.Filled.Train,
     val nearbyDetailsArrivals: NearbyResult = NearbyResult(),
+    val nearbyDetailsError: Boolean = false,
 
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
 )
@@ -267,6 +267,10 @@ class MainViewModel @Inject constructor(
         uiState = uiState.copy(nearbyShowLocationError = value)
     }
 
+    fun setNearbyDetailsError(value: Boolean) {
+        uiState = uiState.copy(nearbyDetailsError = value)
+    }
+
     fun setShowNearbyDetails(value: Boolean) {
         uiState = uiState.copy(nearbyDetailsShow = value)
     }
@@ -286,8 +290,10 @@ class MainViewModel @Inject constructor(
                         nearbyDetailsIcon = Icons.Filled.Train,
                     )
                 },
-                // FIXME: Handle error
-                { onError -> Timber.e(onError, "Error while loading train arrivals") })
+                { onError ->
+                    Timber.e(onError, "Error while loading train arrivals")
+                    setNearbyDetailsError(true)
+                })
     }
 
     fun loadNearbyBusDetails(busStop: BusStop) {
@@ -303,8 +309,10 @@ class MainViewModel @Inject constructor(
                         nearbyDetailsIcon = Icons.Filled.DirectionsBus,
                     )
                 },
-                // FIXME: Handle error
-                { onError -> Timber.e(onError, "Error while loading bus arrivals") })
+                { onError ->
+                    Timber.e(onError, "Error while loading bus arrivals")
+                    setNearbyDetailsError(true)
+                })
     }
 
     fun loadNearbyBikeDetails(currentBikeStation: BikeStation) {
@@ -325,8 +333,10 @@ class MainViewModel @Inject constructor(
                         nearbyDetailsIcon = Icons.Filled.DirectionsBike,
                     )
                 },
-                // FIXME: Handle error
-                { onError -> Timber.e(onError, "Error while loading bus arrivals") })
+                { onError ->
+                    Timber.e(onError, "Error while loading bus arrivals")
+                    setNearbyDetailsError(true)
+                })
     }
 
 

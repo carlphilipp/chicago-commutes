@@ -48,6 +48,7 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.composable.MainViewModel
+import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.composable.common.ShowLocationNotFoundSnackBar
 import fr.cph.chicago.core.composable.permissions.NearbyLocationPermissionView
 import fr.cph.chicago.core.model.BikeStation
@@ -61,6 +62,7 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.toLatLng
 import fr.cph.chicago.util.MapUtil.createStop
 import fr.cph.chicago.util.Util
+import timber.log.Timber
 import java.util.TreeMap
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -108,6 +110,14 @@ fun Nearby(
                     showErrorMessage = mainViewModel.uiState.nearbyShowLocationError
                 )
             }
+            if(mainViewModel.uiState.nearbyDetailsError) {
+                mainViewModel.setNearbyDetailsError(false)
+                ShowErrorMessageSnackBar(
+                    scope = scope,
+                    snackbarHostState = mainViewModel.uiState.snackbarHostState,
+                    showErrorMessage = mainViewModel.uiState.nearbyDetailsError,
+                )
+            }
         }
     )
 }
@@ -123,7 +133,9 @@ fun GoogleMapView(
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(uiState.nearbyMapCenterLocation.toLatLng(), uiState.nearbyZoomIn)
     }
-    cameraPositionState.position = CameraPosition.fromLatLngZoom(uiState.nearbyMapCenterLocation.toLatLng(), uiState.nearbyZoomIn)
+    //cameraPositionState.position = CameraPosition.fromLatLngZoom(uiState.nearbyMapCenterLocation.toLatLng(), uiState.nearbyZoomIn)
+
+    Timber.i("Set location: ${uiState.nearbyMapCenterLocation.toLatLng()}")
 
     GoogleMap(
         modifier = modifier,
@@ -187,7 +199,7 @@ fun GoogleMapView(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         SearchThisAreaButton(mainViewModel = mainViewModel, cameraPositionState = cameraPositionState)
-        DebugView(cameraPositionState)
+        //DebugView(cameraPositionState)
     }
 
     MapStationDetailsView(
@@ -230,7 +242,7 @@ private fun MapStationDetailsView(showView: Boolean, title: String, image: Image
                 enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
                 exit = fadeOut(animationSpec = tween(durationMillis = 300)),
             ) {
-                Column(modifier = Modifier.padding(10.dp)) {
+                Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)) {
                     HeaderCard(name = title, image = image, lastUpdate = arrivals.lastUpdate)
                     arrivals.arrivals.forEach { entry ->
                         Arrivals(
