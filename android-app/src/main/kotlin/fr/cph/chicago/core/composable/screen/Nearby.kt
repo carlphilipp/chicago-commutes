@@ -1,10 +1,5 @@
 package fr.cph.chicago.core.composable.screen
 
-import android.Manifest
-import android.content.Context
-import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.fadeOut
@@ -19,31 +14,20 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.LocationSettingsRequest
-import com.google.android.gms.location.LocationSettingsResponse
-import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.tasks.Task
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -53,12 +37,13 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.composable.MainViewModel
+import fr.cph.chicago.core.composable.common.ShowLocationNotFoundSnackBar
+import fr.cph.chicago.core.composable.permissions.NearbyLocationPermissionView
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.toLatLng
-import fr.cph.chicago.util.GoogleMapUtil
 import fr.cph.chicago.util.MapUtil.createStop
 import timber.log.Timber
 
@@ -70,55 +55,12 @@ fun Nearby(
     locationViewModel: LocationViewModel,
 ) {
     var isMapLoaded by remember { mutableStateOf(false) }
-    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
-    if (locationViewModel.requestPermission) {
-        Timber.i("Request location permission !")
-        PermissionUI(
-            context,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            "Location rational",
-            mainViewModel.uiState.snackbarHostState
-        ) { permissionAction ->
-            when (permissionAction) {
-                is PermissionAction.OnPermissionGranted -> {
-                    Timber.d("Permission grant successful")
-                    locationViewModel.requestPermission = false
-
-                    val locationRequest = LocationRequest.create().apply {
-                        interval = 1000
-                        fastestInterval = 1000
-                        priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-                    }
-
-                    val client: SettingsClient = LocationServices.getSettingsClient(context)
-                    val builder: LocationSettingsRequest.Builder = LocationSettingsRequest
-                        .Builder()
-                        .addLocationRequest(locationRequest)
-
-                    val gpsSettingTask: Task<LocationSettingsResponse> =
-                        client.checkLocationSettings(builder.build())
-
-                    gpsSettingTask.addOnSuccessListener { locationSettingsResponse ->
-                        val settingsStates = locationSettingsResponse.locationSettingsStates
-                        if (settingsStates!!.isLocationPresent && settingsStates.isLocationUsable) {
-                            mainViewModel.refreshUserLocation(context = context)
-                        } else {
-                            Toast.makeText(context, "Location not available", Toast.LENGTH_LONG).show()
-                            mainViewModel.setDefaultUserLocation()
-                        }
-                    }
-                    gpsSettingTask.addOnFailureListener { mainViewModel.setDefaultUserLocation() }
-                }
-                is PermissionAction.OnPermissionDenied -> {
-                    Timber.d("Permission grant denied")
-                    locationViewModel.requestPermission = false
-                }
-            }
-        }
-    } else {
-        mainViewModel.refreshUserLocation(context = context)
-    }
+    NearbyLocationPermissionView(
+        mainViewModel = mainViewModel,
+        locationViewModel = locationViewModel,
+    )
 
     Scaffold(
         modifier = modifier.fillMaxWidth(),
@@ -132,7 +74,8 @@ fun Nearby(
                 busStops = mainViewModel.uiState.nearbyBusStops,
                 bikeStations = mainViewModel.uiState.nearbyBikeStations,
                 mapPosition = mainViewModel.uiState.nearbyUserCurrentLocation,
-                zoomIn = mainViewModel.uiState.nearbyZoomIn
+                zoomIn = mainViewModel.uiState.nearbyZoomIn,
+                isMyLocationEnabled = mainViewModel.uiState.nearbyIsMyLocationEnabled,
             )
             if (!isMapLoaded) {
                 AnimatedVisibility(
@@ -148,87 +91,16 @@ fun Nearby(
                     )
                 }
             }
-        }
-    )
-}
-
-class LocationViewModel : ViewModel() {
-    var requestPermission: Boolean = true
-}
-
-sealed class PermissionAction {
-    object OnPermissionGranted : PermissionAction()
-    object OnPermissionDenied : PermissionAction()
-}
-
-@Composable
-fun PermissionUI(
-    context: Context,
-    permission: String,
-    permissionRationale: String,
-    snackbarHostState: SnackbarHostState,
-    permissionAction: (PermissionAction) -> Unit
-) {
-    val permissionGranted =
-        GoogleMapUtil.checkIfPermissionGranted(
-            context,
-            permission
-        )
-
-    if (permissionGranted) {
-        Timber.d("Permission already granted, exiting..")
-        permissionAction(PermissionAction.OnPermissionGranted)
-        return
-    }
-
-
-    val launcher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            Timber.d("Permission provided by user")
-            // Permission Accepted
-            permissionAction(PermissionAction.OnPermissionGranted)
-        } else {
-            Timber.d("Permission denied by user")
-            // Permission Denied
-            permissionAction(PermissionAction.OnPermissionDenied)
-        }
-    }
-
-
-    val showPermissionRationale = GoogleMapUtil.shouldShowPermissionRationale(
-        context,
-        permission
-    )
-
-    if (showPermissionRationale) {
-        Timber.d("Showing permission rationale for $permission")
-        LaunchedEffect(showPermissionRationale) {
-            val snackbarResult = snackbarHostState.showSnackbar(
-                message = permissionRationale,
-                actionLabel = "Grant Access",
-                duration = SnackbarDuration.Long
-            )
-            when (snackbarResult) {
-                SnackbarResult.Dismissed -> {
-                    Timber.d("User dismissed permission rationale for $permission")
-                    //User denied the permission, do nothing
-                    permissionAction(PermissionAction.OnPermissionDenied)
-                }
-                SnackbarResult.ActionPerformed -> {
-                    Timber.d("User granted permission for $permission rationale. Launching permission request..")
-                    launcher.launch(permission)
-                }
+            if (mainViewModel.uiState.nearbyShowLocationError) {
+                mainViewModel.setShowLocationError(false)
+                ShowLocationNotFoundSnackBar(
+                    scope = scope,
+                    snackbarHostState = mainViewModel.uiState.snackbarHostState,
+                    showErrorMessage = mainViewModel.uiState.nearbyShowLocationError
+                )
             }
         }
-    } else {
-        //Request permissions again
-        Timber.d("Requesting permission for $permission again")
-        SideEffect {
-            launcher.launch(permission)
-        }
-    }
+    )
 }
 
 @Composable
@@ -240,25 +112,23 @@ fun GoogleMapView(
     bikeStations: List<BikeStation>,
     mapPosition: Position,
     zoomIn: Float,
+    isMyLocationEnabled: Boolean,
 ) {
-    Timber.i("Drawing GoogleMapView with ${trainStations.size} and  $mapPosition and ${zoomIn}")
     val context = LocalContext.current
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(mapPosition.toLatLng(), zoomIn)
     }
+    cameraPositionState.position = CameraPosition.fromLatLngZoom(mapPosition.toLatLng(), zoomIn)
 
     GoogleMap(
         modifier = modifier,
         cameraPositionState = cameraPositionState,
-        properties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = true),
-        uiSettings = MapUiSettings(compassEnabled = false, myLocationButtonEnabled = true),
+        properties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = isMyLocationEnabled),
+        uiSettings = MapUiSettings(compassEnabled = false, myLocationButtonEnabled = isMyLocationEnabled),
         onMapLoaded = {
             onMapLoaded()
             val cameraUpdate = CameraUpdateFactory.newLatLngZoom(mapPosition.toLatLng(), zoomIn)
             cameraPositionState.move(cameraUpdate)
-        },
-        googleMapOptionsFactory = {
-            GoogleMapOptions().camera(CameraPosition.fromLatLngZoom(GoogleMapUtil.chicago, 12f))
         },
     ) {
         val bitmapDescriptorTrain = createStop(context, R.drawable.train_station_icon)
@@ -306,4 +176,8 @@ private fun DebugView(cameraPositionState: CameraPositionState) {
         Text(text = "Camera is $moving")
         Text(text = "Camera position is ${cameraPositionState.position}")
     }
+}
+
+class LocationViewModel : ViewModel() {
+    var requestPermission: Boolean = true
 }

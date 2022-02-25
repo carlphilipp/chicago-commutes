@@ -43,9 +43,9 @@ import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import io.reactivex.rxjava3.core.Single
-import javax.inject.Inject
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
+import javax.inject.Inject
 
 val mainViewModel = MainViewModel()
 val settingsViewModel = SettingsViewModel().initModel()
@@ -94,6 +94,8 @@ data class MainUiState(
     val nearbyBusStops: List<BusStop> = listOf(),
     val nearbyBikeStations: List<BikeStation> = listOf(),
     val nearbyZoomIn: Float = 8f,
+    val nearbyIsMyLocationEnabled: Boolean = false,
+    val nearbyShowLocationError: Boolean = false,
 
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
 )
@@ -218,18 +220,25 @@ class MainViewModel @Inject constructor(
     fun refreshUserLocation(context: Context) {
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-            val position = if (location == null)
-                Position()
-            else
-                Position(location.latitude, location.longitude)
-            setCurrentUserLocation(position)
-            loadNearbyStations(position)
+            if (location != null) {
+                val position = Position(location.latitude, location.longitude)
+                uiState = uiState.copy(nearbyIsMyLocationEnabled = true)
+                setCurrentUserLocation(position)
+                loadNearbyStations(position)
+            } else {
+                setDefaultUserLocation()
+            }
         }
     }
 
     fun setDefaultUserLocation() {
         mainViewModel.setCurrentUserLocation(chicagoPosition)
         mainViewModel.loadNearbyStations(chicagoPosition)
+        mainViewModel.setShowLocationError(true)
+    }
+
+    fun setShowLocationError(value: Boolean) {
+        uiState = uiState.copy(nearbyShowLocationError = value)
     }
 
     private fun setCurrentUserLocation(position: Position) {
@@ -240,7 +249,6 @@ class MainViewModel @Inject constructor(
     }
 
     private fun loadNearbyStations(position: Position) {
-        Timber.i("Load nearby")
         val trainStationAround = trainService.readNearbyStation(position = position)
         val busStopsAround = busService.busStopsAround(position = position)
         val bikeStationsAround = mapUtil.readNearbyStation(position = position, store.state.bikeStations)

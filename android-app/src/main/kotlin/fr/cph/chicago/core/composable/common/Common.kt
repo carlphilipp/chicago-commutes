@@ -363,12 +363,31 @@ fun ShowFavoriteSnackBar(scope: CoroutineScope, snackbarHostState: SnackbarHostS
 }
 
 @Composable
-fun ShowErrorMessageSnackBar(scope: CoroutineScope, snackbarHostState: SnackbarHostState, showErrorMessage: Boolean) {
+fun ShowLocationNotFoundSnackBar(
+    scope: CoroutineScope,
+    snackbarHostState: SnackbarHostState,
+    showErrorMessage: Boolean,
+) {
+    ShowErrorMessageSnackBar(
+        scope = scope,
+        snackbarHostState = snackbarHostState,
+        showErrorMessage = showErrorMessage,
+        message = "Location could not be found"
+    )
+}
+
+@Composable
+fun ShowErrorMessageSnackBar(
+    scope: CoroutineScope,
+    snackbarHostState: SnackbarHostState,
+    showErrorMessage: Boolean,
+    message: String = "Something went wrong, try again later",
+) {
     ShowSnackBar(
         scope = scope,
         snackbarHostState = snackbarHostState,
         element = showErrorMessage,
-        message = "Something went wrong, try again later"
+        message = message
     )
 }
 
