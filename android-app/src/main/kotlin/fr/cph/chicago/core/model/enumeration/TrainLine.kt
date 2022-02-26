@@ -85,7 +85,3 @@ enum class TrainLine constructor(private val text: String, private val fullText:
         }
     }
 }
-
-fun TrainLine.toComposeColor(): androidx.compose.ui.graphics.Color {
-    return androidx.compose.ui.graphics.Color(this.color)
-}

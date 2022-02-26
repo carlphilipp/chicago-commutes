@@ -50,6 +50,7 @@ import fr.cph.chicago.core.composable.MainViewModel
 import fr.cph.chicago.core.composable.TrainStationComposable
 import fr.cph.chicago.core.composable.common.AnimatedText
 import fr.cph.chicago.core.composable.common.ColoredBox
+import fr.cph.chicago.core.composable.map.TrainMapComposable
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BikeStation.Companion.DEFAULT_AVAILABLE
 import fr.cph.chicago.core.model.BusRoute
@@ -59,7 +60,7 @@ import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.core.model.enumeration.toComposeColor
+import fr.cph.chicago.toComposeColor
 import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.Util
 import java.util.Calendar
@@ -112,15 +113,24 @@ fun TrainFavoriteCard(modifier: Modifier = Modifier, trainStation: TrainStation,
         }
 
         val context = LocalContext.current
-        FooterCard(detailsOnClick = {
-            // Start train station activity
-            val extras = Bundle()
-            val intent = Intent(context, TrainStationComposable::class.java)
-            extras.putString(context.getString(R.string.bundle_train_stationId), trainStation.id.toString())
-            intent.putExtras(extras)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(context, intent, null)
-        })
+        FooterCard(
+            detailsOnClick = {
+                // Start train station activity
+                val extras = Bundle()
+                val intent = Intent(context, TrainStationComposable::class.java)
+                extras.putString(context.getString(R.string.bundle_train_stationId), trainStation.id.toString())
+                intent.putExtras(extras)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(context, intent, null)
+            },
+            mapOnClick = {
+                val line = trainStation.lines.iterator().next()
+                startTrainMapActivity(
+                    context = context,
+                    trainLine = line
+                )
+            }
+        )
     }
 }
 
@@ -173,6 +183,68 @@ fun BusFavoriteCard(modifier: Modifier = Modifier, util: Util = Util, busRoute: 
             show = showDialog,
             busDetailsDTOs = busDetailsDTOs,
             hideDialog = { showDialog = false },
+        )
+    }
+}
+
+// FIXME: Consider merging in common with Bus.BusRouteDialog
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun TrainDetailDialog(show: Boolean, busDetailsDTOs: List<BusDetailsDTO>, hideDialog: () -> Unit) {
+    if (show) {
+        val context = LocalContext.current
+        AlertDialog(
+            modifier = Modifier.padding(horizontal = 50.dp),
+            onDismissRequest = hideDialog,
+            // FIXME workaround because the dialog do not resize after loading. Issue: https://issuetracker.google.com/issues/194911971?pli=1
+            properties = DialogProperties(usePlatformDefaultWidth = false),
+            title = {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                    Text(
+                        text = "Choose a bus stop",
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                }
+            },
+            text = {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    busDetailsDTOs.forEachIndexed() { index, busDetailsDTO ->
+                        val modifier = if (index == busDetailsDTOs.size - 1) {
+                            Modifier.fillMaxWidth()
+                        } else {
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 5.dp)
+                        }
+                        OutlinedButton(
+                            modifier = modifier,
+                            onClick = {
+                                startBusDetailActivity(context, busDetailsDTO)
+                                hideDialog()
+                            },
+                        ) {
+                            Text(
+                                text = "${busDetailsDTO.stopName} (${busDetailsDTO.bound})",
+                                style = MaterialTheme.typography.bodyMedium,
+                                textAlign = TextAlign.Center,
+                            )
+                        }
+                    }
+
+                }
+            },
+            confirmButton = {},
+            dismissButton = {
+                FilledTonalButton(onClick = { hideDialog() }) {
+                    Text(
+                        text = "Dismiss",
+                    )
+                }
+            },
         )
     }
 }
@@ -251,6 +323,14 @@ fun startBusDetailActivity(context: Context, busDetailsDTO: BusDetailsDTO) {
 
     intent.putExtras(extras)
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    startActivity(context, intent, null)
+}
+
+private fun startTrainMapActivity(context: Context, trainLine: TrainLine) {
+    val extras = Bundle()
+    val intent = Intent(context.applicationContext, TrainMapComposable::class.java)
+    extras.putString(context.getString(R.string.bundle_train_line), trainLine.toTextString())
+    intent.putExtras(extras)
     startActivity(context, intent, null)
 }
 

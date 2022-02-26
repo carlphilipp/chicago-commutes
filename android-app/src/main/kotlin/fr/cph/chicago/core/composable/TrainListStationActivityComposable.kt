@@ -23,8 +23,8 @@ import fr.cph.chicago.core.composable.common.ColoredBox
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.core.model.enumeration.toComposeColor
 import fr.cph.chicago.service.TrainService
+import fr.cph.chicago.toComposeColor
 import org.apache.commons.lang3.StringUtils
 
 private val trainService = TrainService

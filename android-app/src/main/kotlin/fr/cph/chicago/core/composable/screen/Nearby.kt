@@ -88,6 +88,7 @@ fun Nearby(
                 onMapLoaded = { isMapLoaded = true },
                 mainViewModel = mainViewModel,
             )
+            // FIXME: refactor that into a component (see TrainMapComposable.kt)
             if (!isMapLoaded) {
                 AnimatedVisibility(
                     modifier = Modifier.fillMaxSize(),

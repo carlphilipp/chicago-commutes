@@ -217,7 +217,7 @@ dependencies {
     // Google play flavor
     googleplayImplementation(Lib.google_services_map)
     googleplayImplementation(Lib.google_services_location)
-    googleplayImplementation("com.google.maps.android:maps-compose:1.0.0")
+    googleplayImplementation("com.google.maps.android:maps-compose:1.2.0")
 
     // Foss flavor
     fossImplementation(Lib.mapbox)

@@ -21,7 +21,7 @@ import fr.cph.chicago.core.composable.MainViewModel
 import fr.cph.chicago.core.composable.TrainListStationActivityComposable
 import fr.cph.chicago.core.composable.common.ColoredBox
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.core.model.enumeration.toComposeColor
+import fr.cph.chicago.toComposeColor
 
 @Composable
 fun Train(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
@@ -30,7 +30,9 @@ fun Train(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
             val line = TrainLine.values()[index]
             val context = LocalContext.current
             TextButton(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
                 onClick = {
                     val extras = Bundle()
                     val intent = Intent(context, TrainListStationActivityComposable::class.java)
