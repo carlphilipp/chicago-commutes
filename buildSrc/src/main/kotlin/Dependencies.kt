@@ -8,7 +8,7 @@ object Android {
 
 object Version {
     const val kotlin =                  "1.6.10"
-    const val android_tools_build =     "7.1.1"
+    const val android_tools_build =     "7.1.2"
     const val realm =                   "10.10.1"
     const val gradle_version =          "0.41.0"
 
@@ -29,7 +29,7 @@ object Version {
     const val rx =                      "3.+"
     const val rx_android =              "3.+"
     const val rx_kotlin =               "3.+"
-    const val re_kotlin =               "1.+"
+    const val re_kotlin =               "1.0.4"
     const val retrofit2 =               "2.+"
     const val sliding_up_panel =        "3.+"
     const val timber =                  "4.+"

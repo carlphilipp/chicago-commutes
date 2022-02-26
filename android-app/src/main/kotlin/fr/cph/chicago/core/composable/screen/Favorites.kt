@@ -96,6 +96,8 @@ fun Favorites(mainViewModel: MainViewModel) {
 
 @Composable
 fun TrainFavoriteCard(modifier: Modifier = Modifier, trainStation: TrainStation, lastUpdate: LastUpdate) {
+    var showDialog by remember { mutableStateOf(false) }
+
     FavoriteCardWrapper(modifier = modifier) {
 
         HeaderCard(name = trainStation.name, image = Icons.Filled.Train, lastUpdate = lastUpdate)
@@ -124,12 +126,21 @@ fun TrainFavoriteCard(modifier: Modifier = Modifier, trainStation: TrainStation,
                 startActivity(context, intent, null)
             },
             mapOnClick = {
-                val line = trainStation.lines.iterator().next()
-                startTrainMapActivity(
-                    context = context,
-                    trainLine = line
-                )
+                if (trainStation.lines.size == 1) {
+                    val line = trainStation.lines.iterator().next()
+                    startTrainMapActivity(
+                        context = context,
+                        trainLine = line
+                    )
+                } else {
+                    showDialog = true
+                }
             }
+        )
+        TrainDetailDialog(
+            show = showDialog,
+            trainLines = trainStation.lines,
+            hideDialog = { showDialog = false },
         )
     }
 }
@@ -190,7 +201,7 @@ fun BusFavoriteCard(modifier: Modifier = Modifier, util: Util = Util, busRoute: 
 // FIXME: Consider merging in common with Bus.BusRouteDialog
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun TrainDetailDialog(show: Boolean, busDetailsDTOs: List<BusDetailsDTO>, hideDialog: () -> Unit) {
+fun TrainDetailDialog(show: Boolean, trainLines: Set<TrainLine>, hideDialog: () -> Unit) {
     if (show) {
         val context = LocalContext.current
         AlertDialog(
@@ -201,7 +212,7 @@ fun TrainDetailDialog(show: Boolean, busDetailsDTOs: List<BusDetailsDTO>, hideDi
             title = {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                     Text(
-                        text = "Choose a bus stop",
+                        text = "Choose a train line",
                         style = MaterialTheme.typography.titleMedium,
                     )
                 }
@@ -212,8 +223,8 @@ fun TrainDetailDialog(show: Boolean, busDetailsDTOs: List<BusDetailsDTO>, hideDi
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    busDetailsDTOs.forEachIndexed() { index, busDetailsDTO ->
-                        val modifier = if (index == busDetailsDTOs.size - 1) {
+                    trainLines.forEachIndexed() { index, trainLine ->
+                        val modifier = if (index == trainLines.size - 1) {
                             Modifier.fillMaxWidth()
                         } else {
                             Modifier
@@ -223,12 +234,12 @@ fun TrainDetailDialog(show: Boolean, busDetailsDTOs: List<BusDetailsDTO>, hideDi
                         OutlinedButton(
                             modifier = modifier,
                             onClick = {
-                                startBusDetailActivity(context, busDetailsDTO)
+                                startTrainMapActivity(context, trainLine)
                                 hideDialog()
                             },
                         ) {
                             Text(
-                                text = "${busDetailsDTO.stopName} (${busDetailsDTO.bound})",
+                                text = trainLine.toStringWithLine(),
                                 style = MaterialTheme.typography.bodyMedium,
                                 textAlign = TextAlign.Center,
                             )
