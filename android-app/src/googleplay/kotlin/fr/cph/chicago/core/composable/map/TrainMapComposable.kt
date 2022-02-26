@@ -95,7 +95,12 @@ fun TrainMapView(
 ) {
     Scaffold(
         modifier = modifier,
-        topBar = { TopBar(viewModel.uiState.line.toStringWithLine()) },
+        topBar = {
+            TopBar(
+                title = viewModel.uiState.line.toStringWithLine(),
+                showRefresh = true,
+                onRefresh = { viewModel.reloadData() })
+        },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) { data -> Snackbar(snackbarData = data) } },
         content = {
             var isMapLoaded by remember { mutableStateOf(false) }
@@ -199,6 +204,7 @@ data class GoogleMapTrainUiState(
     val trains: List<Train> = listOf(),
 
     val zoom: Float = defaultZoom,
+    val shouldMoveCamera: Boolean = true,
     val moveCamera: LatLng? = null,
     val moveCameraZoom: Float? = null,
 
@@ -283,6 +289,13 @@ class GoogleMapTrainViewModel @Inject constructor(
         )
     }
 
+    fun reloadData() {
+        loadTrains(line = uiState.line)
+        if (uiState.points.isEmpty()) {
+            loadPositions(uiState.line)
+        }
+    }
+
     private fun loadPositions(line: TrainLine) {
         trainService.readPatterns(line)
             .observeOn(AndroidSchedulers.mainThread())
@@ -310,7 +323,11 @@ class GoogleMapTrainViewModel @Inject constructor(
                     uiState = uiState.copy(
                         trains = trains,
                     )
-                    centerMapOnTrains()
+                    if (uiState.shouldMoveCamera) {
+                        centerMapOnTrains()
+                        uiState = uiState.copy(shouldMoveCamera = false)
+                    }
+
                 },
                 {
                     Timber.e(it, "Could not load trains")
