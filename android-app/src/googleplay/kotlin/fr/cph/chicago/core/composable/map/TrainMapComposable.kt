@@ -47,6 +47,7 @@ import fr.cph.chicago.core.composable.settingsViewModel
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Train
+import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.toComposeColor
@@ -57,6 +58,7 @@ import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
 import org.apache.commons.lang3.StringUtils
@@ -157,6 +159,10 @@ fun GoogleMapTrainMapView(
         }
     ) {
         TrainLineLayer(viewModel = viewModel)
+        TrainStationsMarkers(
+            viewModel = viewModel,
+            cameraPositionState = cameraPositionState,
+        )
         TrainsOnMapLayer(
             viewModel = viewModel,
             cameraPositionState = cameraPositionState,
@@ -170,10 +176,27 @@ fun TrainLineLayer(
     viewModel: GoogleMapTrainViewModel,
 ) {
     Polyline(
-        points = viewModel.uiState.points,
+        points = viewModel.uiState.polyLine,
         color = viewModel.uiState.line.toComposeColor(),
         width = 9f,
     )
+}
+
+@Composable
+fun TrainStationsMarkers(
+    viewModel: GoogleMapTrainViewModel,
+    cameraPositionState: CameraPositionState,
+) {
+    viewModel.showHideStations(cameraPositionState.position.zoom)
+
+    viewModel.uiState.stations.forEach { trainStation ->
+        Marker(
+            position = trainStation.stops[0].position.toLatLng(),
+            icon = viewModel.uiState.stationIcon,
+            title = trainStation.name,
+            visible = viewModel.uiState.showStationIcon,
+        )
+    }
 }
 
 @Composable
@@ -200,8 +223,9 @@ fun TrainsOnMapLayer(
 
 data class GoogleMapTrainUiState(
     val line: TrainLine = TrainLine.NA,
-    val points: List<LatLng> = listOf(),
+    val polyLine: List<LatLng> = listOf(),
     val trains: List<Train> = listOf(),
+    val stations: List<TrainStation> = listOf(),
 
     val zoom: Float = defaultZoom,
     val shouldMoveCamera: Boolean = true,
@@ -212,6 +236,9 @@ data class GoogleMapTrainUiState(
     val trainIconSmall: BitmapDescriptor? = null,
     val trainIconMedium: BitmapDescriptor? = null,
     val trainIconLarge: BitmapDescriptor? = null,
+
+    val stationIcon: BitmapDescriptor? = null,
+    val showStationIcon: Boolean = false,
 )
 
 @HiltViewModel
@@ -223,8 +250,9 @@ class GoogleMapTrainViewModel @Inject constructor(
 
     fun initModel(line: TrainLine): GoogleMapTrainViewModel {
         uiState = uiState.copy(line = line)
-        loadPositions(line)
-        loadTrains(line)
+        loadPositions()
+        loadTrains()
+        loadStations()
         return this
     }
 
@@ -233,11 +261,13 @@ class GoogleMapTrainViewModel @Inject constructor(
         val bitmapDescSmall = createBitMapDescriptor(trainBitmap, 9)
         val bitmapDescMedium = createBitMapDescriptor(trainBitmap, 5)
         val bitmapDescLarge = createBitMapDescriptor(trainBitmap, 3)
+        val stationIcon = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(App.instance.resources, colorDrawable()))
         uiState = uiState.copy(
             trainIcon = bitmapDescSmall,
             trainIconSmall = bitmapDescSmall,
             trainIconMedium = bitmapDescMedium,
             trainIconLarge = bitmapDescLarge,
+            stationIcon = stationIcon,
         )
     }
 
@@ -260,6 +290,20 @@ class GoogleMapTrainViewModel @Inject constructor(
                     zoom = newZoom,
                 )
             }
+        }
+    }
+
+    fun showHideStations(newZoom: Float) {
+        Timber.d("showHideStations $newZoom and ${uiState.zoom}")
+        if ( newZoom >= 14f && !uiState.showStationIcon ) {
+            uiState = uiState.copy(
+                showStationIcon = true
+            )
+        }
+        if (newZoom < 14f && uiState.showStationIcon) {
+            uiState = uiState.copy(
+                showStationIcon = false
+            )
         }
     }
 
@@ -290,20 +334,20 @@ class GoogleMapTrainViewModel @Inject constructor(
     }
 
     fun reloadData() {
-        loadTrains(line = uiState.line)
-        if (uiState.points.isEmpty()) {
-            loadPositions(uiState.line)
+        loadTrains()
+        if (uiState.polyLine.isEmpty()) {
+            loadPositions()
         }
     }
 
-    private fun loadPositions(line: TrainLine) {
-        trainService.readPatterns(line)
+    private fun loadPositions() {
+        trainService.readPatterns(uiState.line)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { trainStationPattern ->
                     Timber.i("Found ${trainStationPattern.size} patterns")
                     uiState = uiState.copy(
-                        points = trainStationPattern.map { it.position.toLatLng() }
+                        polyLine = trainStationPattern.map { it.position.toLatLng() }
                     )
 
                 },
@@ -314,8 +358,24 @@ class GoogleMapTrainViewModel @Inject constructor(
             )
     }
 
-    private fun loadTrains(line: TrainLine) {
-        trainService.trainLocations(line.toTextString())
+    private fun loadStations() {
+        Single.fromCallable { trainService.getStationsForLine(uiState.line) }
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { trainStations ->
+                    uiState = uiState.copy(
+                        stations = trainStations,
+                    )
+                },
+                { throwable ->
+                    // TODO
+                }
+            )
+    }
+
+    private fun loadTrains() {
+        trainService.trainLocations(uiState.line.toTextString())
             .observeOn(Schedulers.computation())
             .subscribe(
                 { trains: List<Train> ->
@@ -338,5 +398,19 @@ class GoogleMapTrainViewModel @Inject constructor(
     private fun createBitMapDescriptor(icon: Bitmap, size: Int): BitmapDescriptor {
         val bitmap = Bitmap.createScaledBitmap(icon, icon.width / size, icon.height / size, true)
         return BitmapDescriptorFactory.fromBitmap(bitmap)
+    }
+
+    private fun colorDrawable(): Int {
+        return when (uiState.line) {
+            TrainLine.BLUE -> R.drawable.blue_marker_no_shade
+            TrainLine.BROWN -> R.drawable.brown_marker_no_shade
+            TrainLine.GREEN -> R.drawable.green_marker_no_shade
+            TrainLine.ORANGE -> R.drawable.orange_marker_no_shade
+            TrainLine.PINK -> R.drawable.pink_marker_no_shade
+            TrainLine.PURPLE -> R.drawable.purple_marker_no_shade
+            TrainLine.RED -> R.drawable.red_marker_no_shade
+            TrainLine.YELLOW -> R.drawable.yellow_marker
+            TrainLine.NA -> R.drawable.red_marker_no_shade
+        }
     }
 }
