@@ -41,6 +41,8 @@ object GoogleMapUtil {
         LatLng(chicagoPosition.latitude, chicagoPosition.longitude)
     }
 
+    val defaultZoom = 11f
+
     @Throws(SecurityException::class)
     fun centerMap(mapFragment: SupportMapFragment, zoomIn: Boolean, position: Position?) {
         mapFragment.getMapAsync { googleMap ->
@@ -67,6 +69,10 @@ object GoogleMapUtil {
         } else {
             BitmapDescriptorFactory.defaultMarker()
         }
+    }
+
+    fun isIn(num: Float, sup: Float, inf: Float): Boolean {
+        return num in inf..sup
     }
 }
 
