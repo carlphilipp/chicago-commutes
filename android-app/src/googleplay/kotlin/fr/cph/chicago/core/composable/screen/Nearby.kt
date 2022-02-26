@@ -250,15 +250,3 @@ private fun MapStationDetailsView(showView: Boolean, title: String, image: Image
         }
     }
 }
-
-@Composable
-private fun DebugView(cameraPositionState: CameraPositionState) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.Center
-    ) {
-        val moving = if (cameraPositionState.isMoving) "moving" else "not moving"
-        Text(text = "Camera is $moving")
-        Text(text = "Camera position is ${cameraPositionState.position}")
-    }
-}

@@ -25,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -46,12 +45,15 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.composable.TopBar
 import fr.cph.chicago.core.composable.settingsViewModel
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
+import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.toComposeColor
+import fr.cph.chicago.util.DebugView
 import fr.cph.chicago.util.GoogleMapUtil.defaultZoom
 import fr.cph.chicago.util.GoogleMapUtil.isIn
+import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -127,9 +129,13 @@ fun GoogleMapTrainMapView(
     onMapLoaded: () -> Unit,
 ) {
     val uiState = viewModel.uiState
-    val context = LocalContext.current
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)
+    }
+    if (uiState.moveCamera != null && uiState.moveCameraZoom != null) {
+        Timber.d("Move camera to ${uiState.moveCamera} with zoom ${uiState.zoom}")
+        cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(uiState.moveCamera, uiState.moveCameraZoom))
+        viewModel.resetMoveCamera()
     }
 
     GoogleMap(
@@ -139,8 +145,6 @@ fun GoogleMapTrainMapView(
         uiSettings = MapUiSettings(compassEnabled = false, myLocationButtonEnabled = false),
         onMapLoaded = {
             onMapLoaded()
-            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(chicagoPosition.toLatLng(), 11f)
-            cameraPositionState.move(cameraUpdate)
             viewModel.loadIcons()
         },
         onMapClick = {
@@ -153,6 +157,7 @@ fun GoogleMapTrainMapView(
             cameraPositionState = cameraPositionState,
         )
     }
+    DebugView(cameraPositionState = cameraPositionState)
 }
 
 @Composable
@@ -162,23 +167,22 @@ fun TrainLineLayer(
     Polyline(
         points = viewModel.uiState.points,
         color = viewModel.uiState.line.toComposeColor(),
-        width = 7f,
+        width = 9f,
     )
 }
 
 @Composable
 fun TrainsOnMapLayer(
-    modifier: Modifier = Modifier,
     viewModel: GoogleMapTrainViewModel,
     cameraPositionState: CameraPositionState,
 ) {
     viewModel.updateIconOnZoomChange(cameraPositionState.position.zoom)
 
-    if (viewModel.uiState.currentIcon != null) {
+    if (viewModel.uiState.trainIcon != null) {
         viewModel.uiState.trains.forEach { train ->
             Marker(
                 position = train.position.toLatLng(),
-                icon = viewModel.uiState.currentIcon,
+                icon = viewModel.uiState.trainIcon,
                 rotation = train.heading.toFloat(),
                 flat = true,
                 anchor = Offset(0.5f, 0.5f),
@@ -189,20 +193,19 @@ fun TrainsOnMapLayer(
     }
 }
 
-private fun createBitMapDescriptor(icon: Bitmap, size: Int): BitmapDescriptor {
-    val bitmap = Bitmap.createScaledBitmap(icon, icon.width / size, icon.height / size, true)
-    return BitmapDescriptorFactory.fromBitmap(bitmap)
-}
-
 data class GoogleMapTrainUiState(
     val line: TrainLine = TrainLine.NA,
     val points: List<LatLng> = listOf(),
     val trains: List<Train> = listOf(),
-    val currentIcon: BitmapDescriptor? = null,
+
+    val zoom: Float = defaultZoom,
+    val moveCamera: LatLng? = null,
+    val moveCameraZoom: Float? = null,
+
+    val trainIcon: BitmapDescriptor? = null, // this has to be null as it needs google map to be loaded to init it
     val trainIconSmall: BitmapDescriptor? = null,
     val trainIconMedium: BitmapDescriptor? = null,
     val trainIconLarge: BitmapDescriptor? = null,
-    val zoom: Float = defaultZoom,
 )
 
 @HiltViewModel
@@ -225,7 +228,7 @@ class GoogleMapTrainViewModel @Inject constructor(
         val bitmapDescMedium = createBitMapDescriptor(trainBitmap, 5)
         val bitmapDescLarge = createBitMapDescriptor(trainBitmap, 3)
         uiState = uiState.copy(
-            currentIcon = bitmapDescSmall,
+            trainIcon = bitmapDescSmall,
             trainIconSmall = bitmapDescSmall,
             trainIconMedium = bitmapDescMedium,
             trainIconLarge = bitmapDescLarge,
@@ -233,36 +236,54 @@ class GoogleMapTrainViewModel @Inject constructor(
     }
 
     fun updateIconOnZoomChange(newZoom: Float) {
-        Timber.i("New zoom $newZoom compare to old zoom ${uiState.zoom}")
         if (newZoom != uiState.zoom) {
             val oldZoom = uiState.zoom
             if (isIn(newZoom, 12.9f, 11f) && !isIn(oldZoom, 12.9f, 11f)) {
-                Timber.i("Update icon small")
                 uiState = uiState.copy(
-                    currentIcon = uiState.trainIconSmall,
+                    trainIcon = uiState.trainIconSmall,
                     zoom = newZoom,
                 )
             } else if (isIn(newZoom, 14.9f, 13f) && !isIn(oldZoom, 14.9f, 13f)) {
-                Timber.i("Update icon medium")
                 uiState = uiState.copy(
-                    currentIcon = uiState.trainIconMedium,
+                    trainIcon = uiState.trainIconMedium,
                     zoom = newZoom,
                 )
             } else if (isIn(newZoom, 21f, 15f) && !isIn(oldZoom, 21f, 15f)) {
-                Timber.i("Update icon large")
                 uiState = uiState.copy(
-                    currentIcon = uiState.trainIconLarge,
+                    trainIcon = uiState.trainIconLarge,
                     zoom = newZoom,
                 )
             }
         }
     }
 
-    fun updateIcon(currentIcon: BitmapDescriptor) {
-        uiState = uiState.copy(currentIcon = currentIcon)
+    fun centerMapOnTrains() {
+        val position: Position
+        val zoom: Float
+        if (uiState.trains.size == 1) {
+            position = if (uiState.trains[0].position.latitude == 0.0 && uiState.trains[0].position.longitude == 0.0)
+                chicagoPosition
+            else
+                uiState.trains[0].position
+            zoom = 15f
+        } else {
+            position = MapUtil.getBestPosition(uiState.trains.map { it.position })
+            zoom = 11f
+        }
+        uiState = uiState.copy(
+            moveCamera = LatLng(position.latitude, position.longitude),
+            moveCameraZoom = zoom,
+        )
     }
 
-    fun loadPositions(line: TrainLine) {
+    fun resetMoveCamera() {
+        uiState = uiState.copy(
+            moveCamera = null,
+            moveCameraZoom = null,
+        )
+    }
+
+    private fun loadPositions(line: TrainLine) {
         trainService.readPatterns(line)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -280,7 +301,7 @@ class GoogleMapTrainViewModel @Inject constructor(
             )
     }
 
-    fun loadTrains(line: TrainLine) {
+    private fun loadTrains(line: TrainLine) {
         trainService.trainLocations(line.toTextString())
             .observeOn(Schedulers.computation())
             .subscribe(
@@ -289,10 +310,16 @@ class GoogleMapTrainViewModel @Inject constructor(
                     uiState = uiState.copy(
                         trains = trains,
                     )
+                    centerMapOnTrains()
                 },
                 {
                     Timber.e(it, "Could not load trains")
                     // TODO handle exception
                 })
+    }
+
+    private fun createBitMapDescriptor(icon: Bitmap, size: Int): BitmapDescriptor {
+        val bitmap = Bitmap.createScaledBitmap(icon, icon.width / size, icon.height / size, true)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 }

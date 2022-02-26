@@ -25,12 +25,19 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import androidx.annotation.DrawableRes
 import androidx.annotation.NonNull
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.CameraPositionState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.util.MapUtil.chicagoPosition
@@ -75,6 +82,19 @@ object GoogleMapUtil {
         return num in inf..sup
     }
 }
+
+@Composable
+fun DebugView(cameraPositionState: CameraPositionState) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.Center
+    ) {
+        val moving = if (cameraPositionState.isMoving) "moving" else "not moving"
+        Text(text = "Camera is $moving")
+        Text(text = "Camera position is ${cameraPositionState.position}")
+    }
+}
+
 
 @NonNull
 fun Position.toLatLng(): LatLng {
