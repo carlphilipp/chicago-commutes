@@ -57,6 +57,7 @@ import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.GoogleMapUtil
+import fr.cph.chicago.util.GoogleMapUtil.getBitmapDescriptor
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.Util
@@ -146,9 +147,9 @@ class NearbyFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                     uiSettings.isMapToolbarEnabled = false
                 }
 
-                val bitmapDescriptorBus = createStop(context, R.drawable.bus_stop_icon)
-                val bitmapDescriptorTrain = createStop(context, R.drawable.train_station_icon)
-                val bitmapDescriptorBike = createStop(context, R.drawable.bike_station_icon)
+                val bitmapDescriptorBus = getBitmapDescriptor(context, R.drawable.bus_stop_icon)
+                val bitmapDescriptorTrain = getBitmapDescriptor(context, R.drawable.train_station_icon)
+                val bitmapDescriptorBike = getBitmapDescriptor(context, R.drawable.bike_station_icon)
 
                 busStops
                     .forEach { busStop ->
@@ -194,20 +195,6 @@ class NearbyFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 googleMap.setOnMarkerClickListener(OnMarkerClickListener(markerDataHolder, this@NearbyFragment))
                 googleMap.setOnCameraMoveListener { binding.searchAreaButton.visibility = View.VISIBLE }
             }
-        }
-    }
-
-    private fun createStop(context: Context?, @DrawableRes icon: Int): BitmapDescriptor {
-        return if (context != null) {
-            val px = context.resources.getDimensionPixelSize(R.dimen.icon_shadow_2)
-            val bitMapBusStation = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bitMapBusStation)
-            val shape = ContextCompat.getDrawable(context, icon)!!
-            shape.setBounds(0, 0, px, bitMapBusStation.height)
-            shape.draw(canvas)
-            BitmapDescriptorFactory.fromBitmap(bitMapBusStation)
-        } else {
-            BitmapDescriptorFactory.defaultMarker()
         }
     }
 

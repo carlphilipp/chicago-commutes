@@ -53,7 +53,7 @@ import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.composable.common.ShowLocationNotFoundSnackBar
 import fr.cph.chicago.core.composable.permissions.NearbyLocationPermissionView
 import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.util.GoogleMapUtil.createStop
+import fr.cph.chicago.util.GoogleMapUtil.getBitmapDescriptor
 import fr.cph.chicago.util.toLatLng
 import timber.log.Timber
 
@@ -144,9 +144,9 @@ fun NearbyGoogleMapView(
             mainViewModel.setShowNearbyDetails(false)
         }
     ) {
-        val bitmapDescriptorTrain = createStop(context, R.drawable.train_station_icon)
-        val bitmapDescriptorBus = createStop(context, R.drawable.bus_stop_icon)
-        val bitmapDescriptorBike = createStop(context, R.drawable.bike_station_icon)
+        val bitmapDescriptorTrain = getBitmapDescriptor(context, R.drawable.train_station_icon)
+        val bitmapDescriptorBus = getBitmapDescriptor(context, R.drawable.bus_stop_icon)
+        val bitmapDescriptorBike = getBitmapDescriptor(context, R.drawable.bike_station_icon)
 
         uiState.nearbyTrainStations.forEach { trainStation ->
             Marker(

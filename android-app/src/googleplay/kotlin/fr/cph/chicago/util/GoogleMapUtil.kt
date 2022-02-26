@@ -55,7 +55,7 @@ object GoogleMapUtil {
         return (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED)
     }
 
-    fun createStop(context: Context?, @DrawableRes icon: Int): BitmapDescriptor {
+    fun getBitmapDescriptor(context: Context?, @DrawableRes icon: Int): BitmapDescriptor {
         return if (context != null) {
             val px = context.resources.getDimensionPixelSize(R.dimen.icon_shadow_2)
             val bitMapBusStation = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888)
