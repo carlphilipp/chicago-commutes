@@ -1,8 +1,8 @@
 package fr.cph.chicago.core.composable.permissions
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
@@ -15,7 +15,8 @@ import com.google.android.gms.location.LocationSettingsResponse
 import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.tasks.Task
 import fr.cph.chicago.core.composable.MainViewModel
-import fr.cph.chicago.core.composable.screen.LocationViewModel
+import fr.cph.chicago.core.composable.common.LocationViewModel
+import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.util.GoogleMapUtil
 import timber.log.Timber
 
@@ -49,7 +50,7 @@ fun NearbyLocationPermissionView(
                     gpsSettingTask.addOnSuccessListener { locationSettingsResponse ->
                         val settingsStates = locationSettingsResponse.locationSettingsStates
                         if (settingsStates!!.isLocationPresent && settingsStates.isLocationUsable) {
-                            mainViewModel.refreshUserLocation(context = context)
+                            refreshUserLocation(context = context, mainViewModel = mainViewModel)
                         } else {
                             mainViewModel.setDefaultUserLocation()
                         }
@@ -66,7 +67,22 @@ fun NearbyLocationPermissionView(
             }
         }
     } else {
-        mainViewModel.refreshUserLocation(context = context)
+        refreshUserLocation(context = context, mainViewModel = mainViewModel)
+    }
+}
+
+@SuppressLint("MissingPermission")
+private fun refreshUserLocation(context: Context, mainViewModel: MainViewModel) {
+    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+    fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+        if (location != null) {
+            val position = Position(location.latitude, location.longitude)
+            mainViewModel.setNearbyIsMyLocationEnabled(true)
+            mainViewModel.setCurrentUserLocation(position)
+            mainViewModel.loadNearbyStations(position)
+        } else {
+            mainViewModel.setDefaultUserLocation()
+        }
     }
 }
 

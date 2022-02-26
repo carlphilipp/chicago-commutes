@@ -19,10 +19,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModel
-import com.google.android.gms.location.LocationServices
+//import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.lifecycle.HiltViewModel
-import fr.cph.chicago.core.composable.screen.LocationViewModel
-import fr.cph.chicago.core.composable.screen.NearbyResult
+import fr.cph.chicago.core.composable.common.LocationViewModel
+import fr.cph.chicago.core.composable.common.NearbyResult
 import fr.cph.chicago.core.composable.screen.SettingsViewModel
 import fr.cph.chicago.core.composable.screen.screens
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
@@ -236,19 +236,8 @@ class MainViewModel @Inject constructor(
         uiState = uiState.copy(startMarketFailed = false)
     }
 
-    @SuppressLint("MissingPermission")
-    fun refreshUserLocation(context: Context) {
-        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-            if (location != null) {
-                val position = Position(location.latitude, location.longitude)
-                uiState = uiState.copy(nearbyIsMyLocationEnabled = true)
-                setCurrentUserLocation(position)
-                loadNearbyStations(position)
-            } else {
-                setDefaultUserLocation()
-            }
-        }
+    fun setNearbyIsMyLocationEnabled(value: Boolean) {
+        uiState = uiState.copy(nearbyIsMyLocationEnabled = value)
     }
 
     fun setDefaultUserLocation() {
@@ -340,14 +329,14 @@ class MainViewModel @Inject constructor(
     }
 
 
-    private fun setCurrentUserLocation(position: Position, zoom: Float = 16f) {
+    fun setCurrentUserLocation(position: Position, zoom: Float = 16f) {
         uiState = uiState.copy(
             nearbyMapCenterLocation = position,
             nearbyZoomIn = zoom,
         )
     }
 
-    private fun loadNearbyStations(position: Position) {
+    fun loadNearbyStations(position: Position) {
         val trainStationAround = trainService.readNearbyStation(position = position)
         val busStopsAround = busService.busStopsAround(position = position)
         val bikeStationsAround = mapUtil.readNearbyStation(position = position, store.state.bikeStations)

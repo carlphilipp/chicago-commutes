@@ -40,8 +40,8 @@ import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.toComposeColor
-import fr.cph.chicago.toLatLng
 import fr.cph.chicago.util.MapUtil.chicagoPosition
+import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
