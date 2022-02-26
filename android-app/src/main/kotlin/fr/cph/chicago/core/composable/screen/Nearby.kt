@@ -84,7 +84,7 @@ fun Nearby(
         modifier = modifier.fillMaxWidth(),
         snackbarHost = { SnackbarHost(hostState = mainViewModel.uiState.snackbarHostState) { data -> Snackbar(snackbarData = data) } },
         content = {
-            GoogleMapView(
+            NearbyGoogleMapView(
                 onMapLoaded = { isMapLoaded = true },
                 mainViewModel = mainViewModel,
             )
@@ -124,7 +124,7 @@ fun Nearby(
 }
 
 @Composable
-fun GoogleMapView(
+fun NearbyGoogleMapView(
     modifier: Modifier = Modifier,
     onMapLoaded: () -> Unit,
     mainViewModel: MainViewModel,
