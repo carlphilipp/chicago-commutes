@@ -30,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,6 +59,7 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.composable.TopBar
 import fr.cph.chicago.core.composable.common.LoadingBar
 import fr.cph.chicago.core.composable.common.LoadingCircle
+import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.composable.settingsViewModel
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.Position
@@ -107,6 +109,9 @@ fun TrainMapView(
     viewModel: GoogleMapTrainViewModel,
 ) {
     val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
+    val scope = rememberCoroutineScope()
+    var isMapLoaded by remember { mutableStateOf(false) }
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -118,7 +123,6 @@ fun TrainMapView(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) { data -> Snackbar(snackbarData = data) } },
         content = {
 
-            var isMapLoaded by remember { mutableStateOf(false) }
 
             GoogleMapTrainMapView(
                 viewModel = viewModel,
@@ -131,6 +135,15 @@ fun TrainMapView(
             )
 
             LoadingCircle(show = !isMapLoaded)
+
+            if (viewModel.uiState.showError) {
+                ShowErrorMessageSnackBar(
+                    scope = scope,
+                    snackbarHostState = snackbarHostState,
+                    showErrorMessage = viewModel.uiState.showError,
+                    onComplete = { viewModel.showError(false) }
+                )
+            }
         }
     )
 }
@@ -334,6 +347,7 @@ fun InfoWindowsDetails(
 
 data class GoogleMapTrainUiState(
     val isLoading: Boolean = false,
+    val showError: Boolean = false,
 
     val line: TrainLine = TrainLine.NA,
     val polyLine: List<LatLng> = listOf(),
@@ -370,6 +384,10 @@ class GoogleMapTrainViewModel @Inject constructor(
         loadTrains()
         loadStations()
         return this
+    }
+
+    fun showError(showError: Boolean) {
+        uiState = uiState.copy(showError = showError)
     }
 
     fun loadIcons() {
@@ -477,9 +495,12 @@ class GoogleMapTrainViewModel @Inject constructor(
                         trainLoadAll = loadAll,
                         isLoading = false,
                     )
+
                 },
                 { throwable ->
-                    // TODO
+                    Timber.e(throwable, "Could not load train etas")
+                    showError(true)
+                    uiState = uiState.copy(isLoading = false)
                 }
             )
     }
@@ -502,9 +523,10 @@ class GoogleMapTrainViewModel @Inject constructor(
                         polyLine = trainStationPattern.map { it.position.toLatLng() }
                     )
                 },
-                {
-                    Timber.e(it, "Could not load train patterns")
-                    // TODO handle exception
+                { throwable ->
+                    Timber.e(throwable, "Could not load train patterns")
+                    showError(true)
+                    uiState = uiState.copy(isLoading = false)
                 }
             )
     }
@@ -519,7 +541,9 @@ class GoogleMapTrainViewModel @Inject constructor(
                     )
                 },
                 { throwable ->
-                    // TODO
+                    Timber.e(throwable, "Could not load stations")
+                    showError(true)
+                    uiState = uiState.copy(isLoading = false)
                 }
             )
     }
@@ -540,8 +564,10 @@ class GoogleMapTrainViewModel @Inject constructor(
                 },
                 {
                     Timber.e(it, "Could not load trains")
-                    // TODO handle exception
-                })
+                    showError(true)
+                    uiState = uiState.copy(isLoading = false)
+                }
+            )
     }
 
     private fun createBitMapDescriptor(icon: Bitmap, size: Int): BitmapDescriptor {

@@ -40,14 +40,14 @@ import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import org.apache.commons.lang3.StringUtils
+import timber.log.Timber
 import java.math.BigInteger
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.Callable
 import kotlin.collections.set
-import org.apache.commons.lang3.StringUtils
-import timber.log.Timber
 
 object TrainService {
 

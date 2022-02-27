@@ -324,20 +324,29 @@ fun ShowErrorMessageSnackBar(
     snackbarHostState: SnackbarHostState,
     showErrorMessage: Boolean,
     message: String = "Something went wrong, try again later",
+    onComplete: () -> Unit = {},
 ) {
     ShowSnackBar(
         scope = scope,
         snackbarHostState = snackbarHostState,
         element = showErrorMessage,
-        message = message
+        message = message,
+        onComplete = onComplete,
     )
 }
 
 @Composable
-fun ShowSnackBar(scope: CoroutineScope, snackbarHostState: SnackbarHostState, element: Boolean, message: String) {
+fun ShowSnackBar(
+    scope: CoroutineScope,
+    snackbarHostState: SnackbarHostState,
+    element: Boolean,
+    message: String,
+    onComplete: () -> Unit = {},
+) {
     LaunchedEffect(element) {
         scope.launch {
             snackbarHostState.showSnackbar(message = message, withDismissAction = true)
+            onComplete()
         }
     }
 }
