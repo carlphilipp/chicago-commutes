@@ -127,7 +127,7 @@ fun TrainFavoriteCard(modifier: Modifier = Modifier, trainStation: TrainStation,
             },
             mapOnClick = {
                 if (trainStation.lines.size == 1) {
-                    val line = trainStation.lines.iterator().next()
+                    val line = trainStation.lines.first()
                     startTrainMapActivity(
                         context = context,
                         trainLine = line
@@ -339,7 +339,7 @@ fun startBusDetailActivity(context: Context, busDetailsDTO: BusDetailsDTO) {
 
 private fun startTrainMapActivity(context: Context, trainLine: TrainLine) {
     val extras = Bundle()
-    val intent = Intent(context.applicationContext, TrainMapComposable::class.java)
+    val intent = Intent(context, TrainMapComposable::class.java)
     extras.putString(context.getString(R.string.bundle_train_line), trainLine.toTextString())
     intent.putExtras(extras)
     startActivity(context, intent, null)

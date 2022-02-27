@@ -81,19 +81,17 @@ fun Nearby(
                 mainViewModel = mainViewModel,
             )
             // FIXME: refactor that into a component (see TrainMapComposable.kt)
-            if (!isMapLoaded) {
-                AnimatedVisibility(
-                    modifier = Modifier.fillMaxSize(),
-                    visible = !isMapLoaded,
-                    enter = EnterTransition.None,
-                    exit = fadeOut()
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .background(MaterialTheme.colorScheme.background)
-                            .wrapContentSize()
-                    )
-                }
+            AnimatedVisibility(
+                modifier = Modifier.fillMaxSize(),
+                visible = !isMapLoaded,
+                enter = EnterTransition.None,
+                exit = fadeOut()
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.background)
+                        .wrapContentSize()
+                )
             }
             if (mainViewModel.uiState.nearbyShowLocationError) {
                 mainViewModel.setShowLocationError(false)

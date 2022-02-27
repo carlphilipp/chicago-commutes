@@ -75,7 +75,6 @@ import fr.cph.chicago.util.GoogleMapUtil.isIn
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.toLatLng
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.apache.commons.lang3.StringUtils
@@ -83,8 +82,6 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class TrainMapComposable : ComponentActivity() {
-
-    private val snackbarHostState = mutableStateOf(SnackbarHostState())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,7 +96,6 @@ class TrainMapComposable : ComponentActivity() {
             ChicagoCommutesTheme(settingsViewModel = settingsViewModel) {
                 TrainMapView(
                     viewModel = viewModel,
-                    snackbarHostState = snackbarHostState.value,
                 )
             }
         }
@@ -111,8 +107,8 @@ class TrainMapComposable : ComponentActivity() {
 fun TrainMapView(
     modifier: Modifier = Modifier,
     viewModel: GoogleMapTrainViewModel,
-    snackbarHostState: SnackbarHostState,
 ) {
+    val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -129,19 +125,17 @@ fun TrainMapView(
                 onMapLoaded = { isMapLoaded = true },
             )
             // FIXME: refactor that into a component (see Nearby.kt)
-            if (!isMapLoaded) {
-                AnimatedVisibility(
-                    modifier = Modifier.fillMaxSize(),
-                    visible = !isMapLoaded,
-                    enter = EnterTransition.None,
-                    exit = fadeOut()
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .background(MaterialTheme.colorScheme.background)
-                            .wrapContentSize()
-                    )
-                }
+            AnimatedVisibility(
+                modifier = Modifier.fillMaxSize(),
+                visible = !isMapLoaded,
+                enter = EnterTransition.None,
+                exit = fadeOut()
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.background)
+                        .wrapContentSize()
+                )
             }
         }
     )
@@ -172,15 +166,16 @@ fun GoogleMapTrainMapView(
             onMapLoaded()
             viewModel.loadIcons()
         },
-        onMapClick = {
-            //mainViewModel.setShowNearbyDetails(false)
-        }
     ) {
-        TrainLineLayer(viewModel = viewModel)
+        TrainLineLayer(
+            viewModel = viewModel,
+        )
+
         TrainStationsMarkers(
             viewModel = viewModel,
             cameraPositionState = cameraPositionState,
         )
+
         TrainsOnMapLayer(
             viewModel = viewModel,
             cameraPositionState = cameraPositionState,
@@ -257,6 +252,7 @@ fun TrainsOnMapLayer(
     }
 }
 
+// FIXME: Should be re-usable with train
 @Composable
 fun InfoWindowsDetails(
     showView: Boolean,
@@ -300,7 +296,9 @@ fun InfoWindowsDetails(
                         Timber.i("Found: ${trainEta.trainStation.name} ${trainEta.timeLeftDueDelay} index: ${index}")
                         if (index == viewModel.uiState.trainEtas.size - 1 && trainEta.trainStation.name == App.instance.getString(R.string.bus_all_results)) {
                             Row(
-                                modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 10.dp),
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
@@ -379,20 +377,28 @@ class GoogleMapTrainViewModel @Inject constructor(
     }
 
     fun loadIcons() {
-        val trainBitmap = BitmapFactory.decodeResource(App.instance.resources, R.drawable.train)
-        val bitmapDescSmall = createBitMapDescriptor(trainBitmap, 9)
-        val bitmapDescMedium = createBitMapDescriptor(trainBitmap, 5)
-        val bitmapDescLarge = createBitMapDescriptor(trainBitmap, 3)
-        val stationIcon = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(App.instance.resources, colorDrawable()))
-        uiState = uiState.copy(
-            trainIcon = bitmapDescSmall,
-            trainIconSmall = bitmapDescSmall,
-            trainIconMedium = bitmapDescMedium,
-            trainIconLarge = bitmapDescLarge,
-            stationIcon = stationIcon,
-        )
+        Single.fromCallable {
+            val trainBitmap = BitmapFactory.decodeResource(App.instance.resources, R.drawable.train)
+            val bitmapDescSmall = createBitMapDescriptor(trainBitmap, 9)
+            val bitmapDescMedium = createBitMapDescriptor(trainBitmap, 5)
+            val bitmapDescLarge = createBitMapDescriptor(trainBitmap, 3)
+            val stationIcon = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(App.instance.resources, colorDrawable()))
+            listOf(bitmapDescSmall, bitmapDescMedium, bitmapDescLarge, stationIcon)
+        }
+            .observeOn(Schedulers.computation())
+            .subscribeOn(Schedulers.computation())
+            .subscribe { result ->
+                uiState = uiState.copy(
+                    trainIcon = result[0],
+                    trainIconSmall = result[0],
+                    trainIconMedium = result[1],
+                    trainIconLarge = result[2],
+                    stationIcon = result[3],
+                )
+            }
     }
 
+    // FIXME: It looks like a BS algo, that should be more simple than that
     fun updateIconOnZoomChange(newZoom: Float) {
         if (newZoom != uiState.zoom) {
             val oldZoom = uiState.zoom
@@ -464,7 +470,7 @@ class GoogleMapTrainViewModel @Inject constructor(
 
     fun loadTrainEtas(train: Train, loadAll: Boolean) {
         trainService.trainEtas(train.runNumber.toString(), loadAll)
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(Schedulers.computation())
             .subscribe(
                 { trainEtas ->
                     uiState = uiState.copy(
@@ -489,14 +495,13 @@ class GoogleMapTrainViewModel @Inject constructor(
 
     private fun loadPositions() {
         trainService.readPatterns(uiState.line)
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(Schedulers.computation())
             .subscribe(
                 { trainStationPattern ->
-                    Timber.i("Found ${trainStationPattern.size} patterns")
+                    Timber.i("Current thread subscribe %s ", Thread.currentThread().name)
                     uiState = uiState.copy(
                         polyLine = trainStationPattern.map { it.position.toLatLng() }
                     )
-
                 },
                 {
                     Timber.e(it, "Could not load train patterns")
@@ -507,8 +512,7 @@ class GoogleMapTrainViewModel @Inject constructor(
 
     private fun loadStations() {
         Single.fromCallable { trainService.getStationsForLine(uiState.line) }
-            .subscribeOn(Schedulers.computation())
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(Schedulers.computation())
             .subscribe(
                 { trainStations ->
                     uiState = uiState.copy(
@@ -526,7 +530,6 @@ class GoogleMapTrainViewModel @Inject constructor(
             .observeOn(Schedulers.computation())
             .subscribe(
                 { trains: List<Train> ->
-                    Timber.i("Found ${trains.size} trains")
                     uiState = uiState.copy(
                         trains = trains,
                     )
@@ -534,7 +537,6 @@ class GoogleMapTrainViewModel @Inject constructor(
                         centerMapOnTrains()
                         uiState = uiState.copy(shouldMoveCamera = false)
                     }
-
                 },
                 {
                     Timber.e(it, "Could not load trains")
@@ -556,7 +558,7 @@ class GoogleMapTrainViewModel @Inject constructor(
             TrainLine.PINK -> R.drawable.pink_marker_no_shade
             TrainLine.PURPLE -> R.drawable.purple_marker_no_shade
             TrainLine.RED -> R.drawable.red_marker_no_shade
-            TrainLine.YELLOW -> R.drawable.yellow_marker
+            TrainLine.YELLOW -> R.drawable.yellow_marker_no_shade
             TrainLine.NA -> R.drawable.red_marker_no_shade
         }
     }
