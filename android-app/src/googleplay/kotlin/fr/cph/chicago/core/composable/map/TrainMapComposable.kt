@@ -6,11 +6,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,9 +17,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -60,6 +56,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.composable.TopBar
+import fr.cph.chicago.core.composable.common.LoadingBar
+import fr.cph.chicago.core.composable.common.LoadingCircle
 import fr.cph.chicago.core.composable.settingsViewModel
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.Position
@@ -119,24 +117,20 @@ fun TrainMapView(
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) { data -> Snackbar(snackbarData = data) } },
         content = {
+
             var isMapLoaded by remember { mutableStateOf(false) }
+
             GoogleMapTrainMapView(
                 viewModel = viewModel,
                 onMapLoaded = { isMapLoaded = true },
             )
-            // FIXME: refactor that into a component (see Nearby.kt)
-            AnimatedVisibility(
-                modifier = Modifier.fillMaxSize(),
-                visible = !isMapLoaded,
-                enter = EnterTransition.None,
-                exit = fadeOut()
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background)
-                        .wrapContentSize()
-                )
-            }
+
+            LoadingBar(
+                show = viewModel.uiState.isLoading,
+                color = viewModel.uiState.line.toComposeColor(),
+            )
+
+            LoadingCircle(show = !isMapLoaded)
         }
     )
 }
@@ -339,6 +333,8 @@ fun InfoWindowsDetails(
 }
 
 data class GoogleMapTrainUiState(
+    val isLoading: Boolean = false,
+
     val line: TrainLine = TrainLine.NA,
     val polyLine: List<LatLng> = listOf(),
     val trains: List<Train> = listOf(),
@@ -462,6 +458,7 @@ class GoogleMapTrainViewModel @Inject constructor(
     }
 
     fun reloadData() {
+        uiState = uiState.copy(isLoading = true)
         loadTrains()
         if (uiState.polyLine.isEmpty()) {
             loadPositions()
@@ -469,6 +466,7 @@ class GoogleMapTrainViewModel @Inject constructor(
     }
 
     fun loadTrainEtas(train: Train, loadAll: Boolean) {
+        uiState = uiState.copy(isLoading = true)
         trainService.trainEtas(train.runNumber.toString(), loadAll)
             .observeOn(Schedulers.computation())
             .subscribe(
@@ -477,6 +475,7 @@ class GoogleMapTrainViewModel @Inject constructor(
                         train = train,
                         trainEtas = trainEtas,
                         trainLoadAll = loadAll,
+                        isLoading = false,
                     )
                 },
                 { throwable ->
@@ -532,6 +531,7 @@ class GoogleMapTrainViewModel @Inject constructor(
                 { trains: List<Train> ->
                     uiState = uiState.copy(
                         trains = trains,
+                        isLoading = false,
                     )
                     if (uiState.shouldMoveCamera) {
                         centerMapOnTrains()

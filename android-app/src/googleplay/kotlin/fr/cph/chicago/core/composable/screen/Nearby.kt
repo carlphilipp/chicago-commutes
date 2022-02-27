@@ -47,6 +47,7 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.composable.MainViewModel
+import fr.cph.chicago.core.composable.common.LoadingCircle
 import fr.cph.chicago.core.composable.common.LocationViewModel
 import fr.cph.chicago.core.composable.common.NearbyResult
 import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
@@ -80,19 +81,9 @@ fun Nearby(
                 onMapLoaded = { isMapLoaded = true },
                 mainViewModel = mainViewModel,
             )
-            // FIXME: refactor that into a component (see TrainMapComposable.kt)
-            AnimatedVisibility(
-                modifier = Modifier.fillMaxSize(),
-                visible = !isMapLoaded,
-                enter = EnterTransition.None,
-                exit = fadeOut()
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background)
-                        .wrapContentSize()
-                )
-            }
+
+            LoadingCircle(show = !isMapLoaded)
+
             if (mainViewModel.uiState.nearbyShowLocationError) {
                 mainViewModel.setShowLocationError(false)
                 ShowLocationNotFoundSnackBar(

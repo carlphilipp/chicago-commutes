@@ -7,6 +7,7 @@ import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -20,7 +21,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.with
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -41,18 +41,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Map
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -70,7 +69,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
@@ -79,7 +77,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -91,11 +88,11 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Position
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.functions.Consumer
-import java.util.Locale
-import kotlin.math.min
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apache.commons.lang3.StringUtils
+import java.util.Locale
+import kotlin.math.min
 
 private val googleStreetClient = GoogleStreetClient
 
@@ -159,7 +156,7 @@ fun AnimatedText(modifier: Modifier = Modifier, text: String, style: TextStyle =
 fun AnimatedPlaceHolderList(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
-    size : Int = 10,
+    size: Int = 10,
 ) {
     val transition = rememberInfiniteTransition()
     val translateAnim by transition.animateFloat(
@@ -570,6 +567,39 @@ fun ZoomableImage(
                         translationY = offsetY.value
                     }
                 }
+        )
+    }
+}
+
+@Composable
+fun LoadingBar(
+    modifier: Modifier = Modifier,
+    show: Boolean,
+    color: Color,
+) {
+    if (show) {
+        LinearProgressIndicator(
+            modifier = modifier.fillMaxWidth(),
+            color = color,
+        )
+    }
+}
+
+@Composable
+fun LoadingCircle(
+    modifier: Modifier = Modifier,
+    show: Boolean
+) {
+    AnimatedVisibility(
+        modifier = modifier.fillMaxSize(),
+        visible = show,
+        enter = EnterTransition.None,
+        exit = fadeOut()
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background)
+                .wrapContentSize()
         )
     }
 }
