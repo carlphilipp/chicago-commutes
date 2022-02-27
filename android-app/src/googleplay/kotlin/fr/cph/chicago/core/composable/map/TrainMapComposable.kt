@@ -7,10 +7,20 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -18,13 +28,20 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -47,6 +64,7 @@ import fr.cph.chicago.core.composable.settingsViewModel
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Train
+import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.service.TrainService
@@ -60,9 +78,9 @@ import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import javax.inject.Inject
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
+import javax.inject.Inject
 
 class TrainMapComposable : ComponentActivity() {
 
@@ -168,7 +186,13 @@ fun GoogleMapTrainMapView(
             cameraPositionState = cameraPositionState,
         )
     }
+
     DebugView(cameraPositionState = cameraPositionState)
+
+    InfoWindowsDetails(
+        showView = viewModel.uiState.trainEtas.isNotEmpty(),
+        viewModel = viewModel
+    )
 }
 
 @Composable
@@ -208,15 +232,110 @@ fun TrainsOnMapLayer(
 
     if (viewModel.uiState.trainIcon != null) {
         viewModel.uiState.trains.forEach { train ->
+
+            // It seems that it does not get refreshed when the state change.
+            // I think it's normal as it's an image that is displayed in the
+            // original SDK. This won't probably be fixed. Instead, we can
+            // just display a floating box like in nearby
+            // Reference in case it's getting fixed: https://github.com/googlemaps/android-maps-compose/issues/46
             Marker(
+                title = "To ${train.destName}",
                 position = train.position.toLatLng(),
                 icon = viewModel.uiState.trainIcon,
                 rotation = train.heading.toFloat(),
                 flat = true,
                 anchor = Offset(0.5f, 0.5f),
-                title = "To ${train.destName}",
-                snippet = train.runNumber.toString(),
+                onClick = {
+                    viewModel.loadTrainEtas(train, false)
+                    false
+                },
+                onInfoWindowClose = {
+                    viewModel.resetDetails()
+                }
             )
+        }
+    }
+}
+
+@Composable
+fun InfoWindowsDetails(
+    showView: Boolean,
+    viewModel: GoogleMapTrainViewModel,
+) {
+    Box(Modifier.fillMaxSize()) {
+        Surface(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(start = 50.dp, end = 50.dp, bottom = 50.dp)
+                .clip(RoundedCornerShape(20.dp))
+                .clickable(
+                    enabled = true,
+                    onClick = { viewModel.loadTrainEtas(viewModel.uiState.train, true) }
+                ),
+        ) {
+            AnimatedVisibility(
+                visible = showView,
+                enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 300)),
+            ) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 10.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = "To: ${viewModel.uiState.train.destName}",
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    viewModel.uiState.trainEtas.forEachIndexed { index, trainEta ->
+                        Timber.i("Found: ${trainEta.trainStation.name} ${trainEta.timeLeftDueDelay} index: ${index}")
+                        if (index == viewModel.uiState.trainEtas.size - 1 && trainEta.trainStation.name == App.instance.getString(R.string.bus_all_results)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Text(
+                                    text = trainEta.trainStation.name,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            }
+                        } else {
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
+                                    .fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = trainEta.trainStation.name,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                                Text(
+                                    text = trainEta.timeLeftDueDelay,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -236,6 +355,9 @@ data class GoogleMapTrainUiState(
     val trainIconSmall: BitmapDescriptor? = null,
     val trainIconMedium: BitmapDescriptor? = null,
     val trainIconLarge: BitmapDescriptor? = null,
+    val train: Train = Train(),
+    val trainEtas: List<TrainEta> = listOf(),
+    val trainLoadAll: Boolean = false,
 
     val stationIcon: BitmapDescriptor? = null,
     val showStationIcon: Boolean = false,
@@ -295,7 +417,7 @@ class GoogleMapTrainViewModel @Inject constructor(
 
     fun showHideStations(newZoom: Float) {
         Timber.d("showHideStations $newZoom and ${uiState.zoom}")
-        if ( newZoom >= 14f && !uiState.showStationIcon ) {
+        if (newZoom >= 14f && !uiState.showStationIcon) {
             uiState = uiState.copy(
                 showStationIcon = true
             )
@@ -338,6 +460,31 @@ class GoogleMapTrainViewModel @Inject constructor(
         if (uiState.polyLine.isEmpty()) {
             loadPositions()
         }
+    }
+
+    fun loadTrainEtas(train: Train, loadAll: Boolean) {
+        trainService.trainEtas(train.runNumber.toString(), loadAll)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { trainEtas ->
+                    uiState = uiState.copy(
+                        train = train,
+                        trainEtas = trainEtas,
+                        trainLoadAll = loadAll,
+                    )
+                },
+                { throwable ->
+                    // TODO
+                }
+            )
+    }
+
+    fun resetDetails() {
+        uiState = uiState.copy(
+            train = Train(),
+            trainEtas = listOf(),
+            trainLoadAll = false,
+        )
     }
 
     private fun loadPositions() {

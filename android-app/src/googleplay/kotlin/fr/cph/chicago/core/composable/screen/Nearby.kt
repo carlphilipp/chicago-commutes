@@ -222,7 +222,7 @@ private fun SearchThisAreaButton(mainViewModel: MainViewModel, cameraPositionSta
 }
 
 @Composable
-private fun MapStationDetailsView(showView: Boolean, title: String, image: ImageVector, arrivals: NearbyResult) {
+fun MapStationDetailsView(showView: Boolean, title: String, image: ImageVector, arrivals: NearbyResult) {
     Box(Modifier.fillMaxSize()) {
         Surface(
             modifier = Modifier
