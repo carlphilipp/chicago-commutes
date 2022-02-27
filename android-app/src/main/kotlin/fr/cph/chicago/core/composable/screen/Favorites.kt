@@ -44,12 +44,15 @@ import androidx.core.content.ContextCompat.startActivity
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
+import fr.cph.chicago.core.activity.map.BusMapActivity
+import fr.cph.chicago.core.adapter.FavoritesAdapter
 import fr.cph.chicago.core.composable.BikeStationComposable
 import fr.cph.chicago.core.composable.BusStationComposable
 import fr.cph.chicago.core.composable.MainViewModel
 import fr.cph.chicago.core.composable.TrainStationComposable
 import fr.cph.chicago.core.composable.common.AnimatedText
 import fr.cph.chicago.core.composable.common.ColoredBox
+import fr.cph.chicago.core.composable.map.BusMapComposable
 import fr.cph.chicago.core.composable.map.TrainMapComposable
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BikeStation.Companion.DEFAULT_AVAILABLE
@@ -183,13 +186,35 @@ fun BusFavoriteCard(modifier: Modifier = Modifier, util: Util = Util, busRoute: 
             }
         }
         val context = LocalContext.current
-        FooterCard(detailsOnClick = {
-            if (busDetailsDTOs.size == 1) {
-                startBusDetailActivity(context, busDetailsDTOs[0])
-            } else {
-                showDialog = true
+        FooterCard(
+            detailsOnClick = {
+                if (busDetailsDTOs.size == 1) {
+                    startBusDetailActivity(context, busDetailsDTOs[0])
+                } else {
+                    showDialog = true
+                }
+            },
+            mapOnClick = {
+                val busArrivalDTO = Favorites.getBusArrivalsMapped(busRoute.id) //FIXME
+                for ((stopName, boundMap) in busArrivalDTO.entries) {
+                    val stopNameTrimmed = Util.trimBusStopNameIfNeeded(stopName) // FIXME
+                    for ((key, value) in boundMap) {
+                        val (_, _, _, stopId, _, routeId, boundTitle) = value.iterator().next()
+                        val busDirectionEnum: BusDirection = BusDirection.fromString(boundTitle)
+                        val busDetails = BusDetailsDTO(routeId, busDirectionEnum.shortUpperCase, boundTitle, stopId, busRoute.name, stopName)
+                        busDetailsDTOs.add(busDetails)
+
+                    }
+                }
+                val extras = Bundle()
+                val intent = Intent(context, BusMapComposable::class.java)
+                extras.putString(context.getString(R.string.bundle_bus_route_id), busRoute.id)
+                extras.putStringArray(context.getString(R.string.bundle_bus_bounds), busDetailsDTOs.map { it.bound }.toSet().toTypedArray())
+                intent.putExtras(extras)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(context, intent, null)
             }
-        })
+        )
         BusDetailDialog(
             show = showDialog,
             busDetailsDTOs = busDetailsDTOs,

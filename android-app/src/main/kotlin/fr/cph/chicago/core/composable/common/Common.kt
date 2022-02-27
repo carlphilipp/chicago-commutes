@@ -584,7 +584,7 @@ fun ZoomableImage(
 fun LoadingBar(
     modifier: Modifier = Modifier,
     show: Boolean,
-    color: Color,
+    color: Color = MaterialTheme.colorScheme.primary,
 ) {
     if (show) {
         LinearProgressIndicator(

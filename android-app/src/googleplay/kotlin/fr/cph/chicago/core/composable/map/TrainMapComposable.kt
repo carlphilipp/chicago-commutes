@@ -189,7 +189,7 @@ fun GoogleMapTrainMapView(
         )
     }
 
-    DebugView(cameraPositionState = cameraPositionState)
+    //DebugView(cameraPositionState = cameraPositionState)
 
     InfoWindowsDetails(
         showView = viewModel.uiState.trainEtas.isNotEmpty(),
