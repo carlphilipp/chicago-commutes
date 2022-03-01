@@ -181,6 +181,7 @@ object BusService {
         return loadBusPattern(busRouteId, arrayOf(bound)).map { busPatterns -> busPatterns[0] }
     }
 
+    // FIXME: Remove bounds from param and remove comment
     fun loadBusPattern(busRouteId: String, bounds: Array<String>): Single<List<BusPattern>> {
         return ctaClient.getBusPatterns(busRouteId)
             .map { response ->
@@ -195,11 +196,11 @@ object BusService {
                                 .map { pt -> BusStopPattern(Position(pt.lat, pt.lon), pt.typ, pt.stpnm ?: StringUtils.EMPTY) }
                                 .toMutableList())
                     }
-                    .filter { pattern ->
+                    /*.filter { pattern ->
                         val directionIgnoreCase = pattern.direction.lowercase()
                         val boundIgnoreCase = bounds.map { bound -> bound.lowercase() }
                         boundIgnoreCase.contains(directionIgnoreCase)
-                    }
+                    }*/
             }
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.computation())

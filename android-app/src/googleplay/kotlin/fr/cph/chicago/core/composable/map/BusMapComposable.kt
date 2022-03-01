@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -28,18 +29,22 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
+import fr.cph.chicago.core.activity.map.BusMapActivity
 import fr.cph.chicago.core.composable.TopBar
 import fr.cph.chicago.core.composable.common.LoadingBar
 import fr.cph.chicago.core.composable.common.LoadingCircle
 import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
+import fr.cph.chicago.core.composable.mainViewModel
 import fr.cph.chicago.core.composable.settingsViewModel
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.BusPattern
+import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.DebugView
 import fr.cph.chicago.util.GoogleMapUtil.defaultZoom
@@ -182,10 +187,13 @@ fun GoogleMapBusMapView(
 fun BusLineLayer(
     viewModel: GoogleMapBusViewModel,
 ) {
-    Polyline(
-        points = viewModel.uiState.polyLine,
-        width = 9f,
-    )
+    viewModel.uiState.busPatterns.forEachIndexed { index, busPattern ->
+        Polyline(
+            points = busPattern.busStopsPatterns.map { it.position.toLatLng() },
+            width = 7f,
+            color = viewModel.uiState.colors[index]
+        )
+    }
 }
 
 @Composable
@@ -193,16 +201,23 @@ fun BusStopsMarkers(
     viewModel: GoogleMapBusViewModel,
     cameraPositionState: CameraPositionState,
 ) {
-    viewModel.showHideStations(cameraPositionState.position.zoom)
+    viewModel.showHideStops(cameraPositionState.position.zoom)
 
-/*    viewModel.uiState.stations.forEach { trainStation ->
-        Marker(
-            position = trainStation.stops[0].position.toLatLng(),
-            icon = viewModel.uiState.stationIcon,
-            title = trainStation.name,
-            visible = viewModel.uiState.showStationIcon,
-        )
-    }*/
+    viewModel.uiState.busPatterns.forEachIndexed { index, busPattern ->
+        busPattern.busStopsPatterns
+            .filter { busStopPattern -> busStopPattern.type == "S" }
+            .forEach { busStopPattern ->
+                if(viewModel.uiState.stopIcons.isNotEmpty()) {
+                    Marker(
+                        position = busStopPattern.position.toLatLng(),
+                        icon = viewModel.uiState.stopIcons[index],
+                        title = busStopPattern.stopName,
+                        visible = viewModel.uiState.showStopIcon,
+                        snippet = busPattern.direction,
+                    )
+                }
+            }
+    }
 }
 
 @Composable
@@ -236,24 +251,24 @@ fun BusOnMapLayer(
 data class GoogleMapBusUiState(
     val isLoading: Boolean = false,
     val showError: Boolean = false,
+    val colors: List<Color> = TrainLine.values().map { Color(it.color) }.dropLast(1),
+    val stopIcons: List<BitmapDescriptor> = listOf(),
 
     //val busId: Int = 0,
     val busRouteId: String = StringUtils.EMPTY,
-    val bounds: Array<String> = arrayOf(),
 
-    val polyLine: List<LatLng> = listOf(),
+    val busPatterns: List<BusPattern> = listOf(),
 
     val zoom: Float = defaultZoom,
     val shouldMoveCamera: Boolean = true,
     val moveCamera: LatLng? = null,
     val moveCameraZoom: Float? = null,
 
-    val stopIcon: BitmapDescriptor? = null,
     val busIcon: BitmapDescriptor? = null,
     val busIconSmall: BitmapDescriptor? = null,
     val busIconMedium: BitmapDescriptor? = null,
     val busIconLarge: BitmapDescriptor? = null,
-    val showStationIcon: Boolean = false,
+    val showStopIcon: Boolean = false,
 )
 
 @HiltViewModel
@@ -263,11 +278,9 @@ class GoogleMapBusViewModel @Inject constructor(
     var uiState by mutableStateOf(GoogleMapBusUiState())
         private set
 
-    fun initModel(/*busId: Int, */busRouteId: String, bounds: Array<String>): GoogleMapBusViewModel {
+    fun initModel(busRouteId: String, bounds: Array<String>): GoogleMapBusViewModel {
         uiState = uiState.copy(
-            //busId = busId,
             busRouteId = busRouteId,
-            bounds = bounds,
         )
         loadPatterns()
         return this
@@ -281,16 +294,15 @@ class GoogleMapBusViewModel @Inject constructor(
 /*            val busDirections = busService.loadBusDirectionsSingle(uiState.busRouteId).blockingGet()
             bounds = busDirections.busDirections.map { busDirection -> busDirection.text }.toTypedArray()*/
 
-            busService.loadBusPattern(uiState.busRouteId, uiState.bounds).blockingGet().forEach { patterns.add(it) }
+            busService.loadBusPattern(uiState.busRouteId, arrayOf<String>()).blockingGet().forEach { patterns.add(it) }
             patterns
         }
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.computation())
             .subscribe(
                 { result ->
-                    val polyLine: List<LatLng> = result.flatMap { it.busStopsPatterns.map { it.position.toLatLng() } }
                     uiState = uiState.copy(
-                        polyLine = polyLine,
+                        busPatterns = result,
                         isLoading = false,
                     )
                 },
@@ -308,10 +320,23 @@ class GoogleMapBusViewModel @Inject constructor(
 
     fun reloadData() {
         uiState = uiState.copy(isLoading = true)
-        //loadTrains()
-        if (uiState.polyLine.isEmpty()) {
+        loadBuses()
+        if (uiState.busPatterns.isEmpty()) {
             //loadPositions()
         }
+    }
+
+    fun loadBuses() {
+        busService.busForRouteId(uiState.busRouteId)
+            .observeOn(Schedulers.computation())
+            .subscribe(
+                {
+
+                },
+                {
+
+                }
+            )
     }
 
     fun resetMoveCamera() {
@@ -323,36 +348,60 @@ class GoogleMapBusViewModel @Inject constructor(
 
     fun loadIcons() {
         Single.fromCallable {
-            val trainBitmap = BitmapFactory.decodeResource(App.instance.resources, R.drawable.bus)
-            val bitmapDescSmall = createBitMapDescriptor(trainBitmap, 9)
-            val bitmapDescMedium = createBitMapDescriptor(trainBitmap, 5)
-            val bitmapDescLarge = createBitMapDescriptor(trainBitmap, 3)
-            val stationIcon = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(App.instance.resources, R.drawable.red_marker_no_shade))
-            listOf(bitmapDescSmall, bitmapDescMedium, bitmapDescLarge, stationIcon)
+            val busBitmap = BitmapFactory.decodeResource(App.instance.resources, R.drawable.bus)
+            val bitmapDescSmall = createBitMapDescriptor(busBitmap, 9)
+            val bitmapDescMedium = createBitMapDescriptor(busBitmap, 5)
+            val bitmapDescLarge = createBitMapDescriptor(busBitmap, 3)
+            listOf(
+                bitmapDescSmall,
+                bitmapDescMedium,
+                bitmapDescLarge,
+                BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(App.instance.resources, R.drawable.blue_marker_no_shade)),
+                BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(App.instance.resources, R.drawable.brown_marker_no_shade)),
+                BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(App.instance.resources, R.drawable.green_marker_no_shade)),
+                BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(App.instance.resources, R.drawable.orange_marker_no_shade)),
+                BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(App.instance.resources, R.drawable.pink_marker_no_shade)),
+                BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(App.instance.resources, R.drawable.purple_marker_no_shade)),
+                BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(App.instance.resources, R.drawable.red_marker_no_shade)),
+                BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(App.instance.resources, R.drawable.yellow_marker_no_shade)),
+            )
         }
             .observeOn(Schedulers.computation())
-            .subscribeOn(Schedulers.computation())
+            .subscribeOn(Schedulers.io())
             .subscribe { result ->
                 uiState = uiState.copy(
                     busIcon = result[0],
                     busIconSmall = result[0],
                     busIconMedium = result[1],
                     busIconLarge = result[2],
-                    stopIcon = result[3],
+                    stopIcons = listOf(
+                        result[3],
+                        result[4],
+                        result[5],
+                        result[6],
+                        result[7],
+                        result[8],
+                        result[9],
+                        result[10],
+                    ),
                 )
             }
     }
 
-    fun showHideStations(newZoom: Float) {
+    private val blueIcon: BitmapDescriptor by lazy {
+        BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(App.instance.resources, R.drawable.blue_marker_no_shade))
+    }
+
+    fun showHideStops(newZoom: Float) {
         Timber.d("showHideStations $newZoom and ${uiState.zoom}")
-        if (newZoom >= 14f && !uiState.showStationIcon) {
+        if (newZoom >= 14f && !uiState.showStopIcon) {
             uiState = uiState.copy(
-                showStationIcon = true
+                showStopIcon = true
             )
         }
-        if (newZoom < 14f && uiState.showStationIcon) {
+        if (newZoom < 14f && uiState.showStopIcon) {
             uiState = uiState.copy(
-                showStationIcon = false
+                showStopIcon = false
             )
         }
     }
