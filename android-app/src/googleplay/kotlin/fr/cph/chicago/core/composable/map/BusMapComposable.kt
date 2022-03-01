@@ -84,28 +84,18 @@ import timber.log.Timber
 
 class BusMapComposable : ComponentActivity() {
 
-    companion object {
-        const val ZOOM_ONE_RESULT = 15
-        const val ZOOM_DEFAULT = 11
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val busRouteId: String
-        val bounds: Array<String>
         if (savedInstanceState != null) {
             busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
-            bounds = savedInstanceState.getStringArray(getString(R.string.bundle_bus_bounds)) ?: arrayOf()
         } else {
             busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
-            bounds = intent.getStringArrayExtra(getString(R.string.bundle_bus_bounds)) ?: arrayOf()
         }
 
         val viewModel = GoogleMapBusViewModel().initModel(
-            //busId = busId,
             busRouteId = busRouteId,
-            bounds = bounds,
         )
 
         setContent {
@@ -230,11 +220,12 @@ fun BusStopsMarkers(
 ) {
     viewModel.showHideStops(cameraPositionState.position.zoom)
 
-    viewModel.uiState.busPatterns.forEachIndexed { index, busPattern ->
-        busPattern.busStopsPatterns
-            .filter { busStopPattern -> busStopPattern.type == "S" }
-            .forEach { busStopPattern ->
-                if (viewModel.uiState.stopIcons.isNotEmpty()) {
+    if (viewModel.uiState.stopIcons.isNotEmpty()) {
+        viewModel.uiState.busPatterns.forEachIndexed { index, busPattern ->
+            busPattern.busStopsPatterns
+                .filter { busStopPattern -> busStopPattern.type == "S" }
+                .forEach { busStopPattern ->
+
                     Marker(
                         position = busStopPattern.position.toLatLng(),
                         icon = viewModel.uiState.stopIcons[index],
@@ -243,7 +234,7 @@ fun BusStopsMarkers(
                         snippet = busPattern.direction,
                     )
                 }
-            }
+        }
     }
 }
 
@@ -413,7 +404,7 @@ class GoogleMapBusViewModel @Inject constructor(
     var uiState by mutableStateOf(GoogleMapBusUiState())
         private set
 
-    fun initModel(busRouteId: String, bounds: Array<String>): GoogleMapBusViewModel {
+    fun initModel(busRouteId: String): GoogleMapBusViewModel {
         uiState = uiState.copy(
             busRouteId = busRouteId,
         )
@@ -432,31 +423,6 @@ class GoogleMapBusViewModel @Inject constructor(
         if (uiState.busPatterns.isEmpty()) {
             loadPatterns()
         }
-    }
-
-    fun loadBuses() {
-        busService.busForRouteId(uiState.busRouteId)
-            .observeOn(Schedulers.computation())
-            .subscribeOn(Schedulers.computation())
-            .subscribe(
-                { buses ->
-                    uiState = uiState.copy(
-                        buses = buses,
-                        isLoading = false,
-                    )
-                    if (uiState.shouldMoveCamera) {
-                        centerMapOnBuses()
-                        uiState = uiState.copy(shouldMoveCamera = false)
-                    }
-                },
-                { throwable ->
-                    Timber.e(throwable, "Could not load buses")
-                    uiState = uiState.copy(
-                        isLoading = false,
-                        showError = true,
-                    )
-                }
-            )
     }
 
     fun loadBusEta(bus: Bus, showAll: Boolean) {
@@ -482,10 +448,6 @@ class GoogleMapBusViewModel @Inject constructor(
                     )
                 }
             )
-    }
-
-    fun showHideDetails(value: Boolean) {
-        uiState = uiState.copy(detailsShowAll = value)
     }
 
     fun resetDetails() {
@@ -624,6 +586,32 @@ class GoogleMapBusViewModel @Inject constructor(
             )
     }
 
+    private fun loadBuses() {
+        busService.busForRouteId(uiState.busRouteId)
+            .observeOn(Schedulers.computation())
+            .subscribeOn(Schedulers.computation())
+            .subscribe(
+                { buses ->
+                    uiState = uiState.copy(
+                        buses = buses,
+                        isLoading = false,
+                    )
+                    if (uiState.shouldMoveCamera) {
+                        centerMapOnBuses()
+                        uiState = uiState.copy(shouldMoveCamera = false)
+                    }
+                },
+                { throwable ->
+                    Timber.e(throwable, "Could not load buses")
+                    uiState = uiState.copy(
+                        isLoading = false,
+                        showError = true,
+                    )
+                }
+            )
+    }
+
+    // FIXE: to move to appropriate location
     private fun createBitMapDescriptor(icon: Bitmap, size: Int): BitmapDescriptor {
         val bitmap = Bitmap.createScaledBitmap(icon, icon.width / size, icon.height / size, true)
         return BitmapDescriptorFactory.fromBitmap(bitmap)
