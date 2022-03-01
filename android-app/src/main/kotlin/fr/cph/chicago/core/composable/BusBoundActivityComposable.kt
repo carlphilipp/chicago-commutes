@@ -36,6 +36,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.composable.common.TextFieldMaterial3
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
+import fr.cph.chicago.core.composable.viewmodel.settingsViewModel
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.service.BusService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers

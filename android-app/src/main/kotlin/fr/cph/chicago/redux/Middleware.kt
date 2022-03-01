@@ -56,7 +56,8 @@ internal val baseMiddleware: Middleware<StateType> = { _, _ ->
                             trainFavorites = baseDTO.trainFavorites,
                             busFavorites = baseDTO.busFavorites,
                             busRouteFavorites = baseDTO.busRouteFavorites,
-                            bikeFavorites = baseDTO.bikeFavorites)
+                            bikeFavorites = baseDTO.bikeFavorites,
+                        )
                     }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
@@ -81,7 +82,8 @@ internal val busRoutesAndBikeStationMiddleware: Middleware<StateType> = { _, _ -
                             busRoutesError = busRoutesError,
                             bikeStationsError = bikeStationsError,
                             busRoutes = busRoutes,
-                            bikeStations = bikeStations)
+                            bikeStations = bikeStations
+                        )
                     }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
@@ -135,7 +137,8 @@ internal val favoritesMiddleware: Middleware<StateType> = { _, _ ->
                             trainArrivalDTO = trainArrivals,
                             busArrivalDTO = busArrivals,
                             bikeStations = if (favoritesDTO.bikeError) store.state.bikeStations else favoritesDTO.bikeStations,
-                            bikeError = favoritesDTO.bikeError)
+                            bikeError = favoritesDTO.bikeError
+                        )
                         FavoritesAction(favoritesDTO = newFavorites)
                     }
                     .observeOn(AndroidSchedulers.mainThread())
@@ -155,17 +158,21 @@ internal val trainStationMiddleware: Middleware<StateType> = { _, _ ->
                         TrainStationAction(
                             trainStationId = action.trainStationId,
                             error = false,
-                            trainArrival = trainArrival)
+                            trainArrival = trainArrival
+                        )
                     }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                         { newAction -> next(newAction) },
                         { throwable ->
                             Timber.e(throwable)
-                            next(TrainStationAction(
-                                trainStationId = action.trainStationId,
-                                error = true,
-                                errorMessage = buildErrorMessage(throwable)))
+                            next(
+                                TrainStationAction(
+                                    trainStationId = action.trainStationId,
+                                    error = true,
+                                    errorMessage = buildErrorMessage(throwable)
+                                )
+                            )
                         }
                     )
             } ?: next(action)
@@ -185,9 +192,12 @@ internal val busStopArrivalsMiddleware: Middleware<StateType> = { _, _ ->
                         { newAction -> next(newAction) },
                         { throwable ->
                             Timber.e(throwable)
-                            next(BusStopArrivalsAction(
-                                error = true,
-                                errorMessage = buildErrorMessage(throwable)))
+                            next(
+                                BusStopArrivalsAction(
+                                    error = true,
+                                    errorMessage = buildErrorMessage(throwable)
+                                )
+                            )
                         }
                     )
             } ?: next(action)
@@ -227,9 +237,12 @@ internal val alertMiddleware: Middleware<StateType> = { _, _ ->
                         { newAction -> next(newAction) },
                         { throwable ->
                             Timber.e(throwable)
-                            next(AlertAction(
-                                error = true,
-                                errorMessage = buildErrorMessage(throwable)))
+                            next(
+                                AlertAction(
+                                    error = true,
+                                    errorMessage = buildErrorMessage(throwable)
+                                )
+                            )
                         }
                     )
             } ?: next(action)
@@ -273,7 +286,8 @@ internal val addBusFavorites: Middleware<StateType> = { _, _ ->
                     busStopId = action.busStopId,
                     bound = action.boundTitle,
                     busRouteName = action.busRouteName,
-                    busStopName = action.busStopName)
+                    busStopName = action.busStopName
+                )
                     .observeOn(Schedulers.computation())
                     .map { favorites ->
                         val favoritesBusRoute = busService.extractBusRouteFavorites(favorites)
@@ -282,7 +296,8 @@ internal val addBusFavorites: Middleware<StateType> = { _, _ ->
                             busStopId = action.busStopId,
                             boundTitle = action.boundTitle,
                             busFavorites = favorites,
-                            busRouteFavorites = favoritesBusRoute)
+                            busRouteFavorites = favoritesBusRoute
+                        )
                     }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ newAction -> next(newAction) }, { error -> Timber.e(error) })
@@ -298,7 +313,8 @@ internal val removeBusFavorites: Middleware<StateType> = { _, _ ->
                 preferenceService.removeBusFromFavorites(
                     busRouteId = action.busRouteId,
                     busStopId = action.busStopId,
-                    bound = action.boundTitle)
+                    bound = action.boundTitle
+                )
                     .observeOn(Schedulers.computation())
                     .map { favorites ->
                         val favoritesBusRoute = busService.extractBusRouteFavorites(favorites)
@@ -307,7 +323,8 @@ internal val removeBusFavorites: Middleware<StateType> = { _, _ ->
                             busStopId = action.busStopId,
                             boundTitle = action.boundTitle,
                             busFavorites = favorites,
-                            busRouteFavorites = favoritesBusRoute)
+                            busRouteFavorites = favoritesBusRoute
+                        )
                     }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ newAction -> next(newAction) }, { error -> Timber.e(error) })

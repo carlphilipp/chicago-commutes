@@ -121,7 +121,7 @@ fun TrainFavoriteCard(modifier: Modifier = Modifier, trainStation: TrainStation,
                 // Start train station activity
                 val extras = Bundle()
                 val intent = Intent(context, TrainStationComposable::class.java)
-                extras.putString(context.getString(R.string.bundle_train_stationId), trainStation.id.toString())
+                extras.putString(context.getString(R.string.bundle_train_stationId), trainStation.id)
                 intent.putExtras(extras)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(context, intent, null)

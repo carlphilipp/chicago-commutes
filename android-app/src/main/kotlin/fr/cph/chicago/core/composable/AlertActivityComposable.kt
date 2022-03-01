@@ -27,10 +27,11 @@ import androidx.lifecycle.ViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import fr.cph.chicago.core.composable.common.AnimatedErrorView
 import fr.cph.chicago.core.composable.common.AnimatedPlaceHolderList
-import fr.cph.chicago.core.composable.common.ErrorView
 import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
+import fr.cph.chicago.core.composable.viewmodel.settingsViewModel
 import fr.cph.chicago.core.model.dto.RouteAlertsDTO
 import fr.cph.chicago.service.AlertService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -110,17 +111,18 @@ fun AlertDetails(
                             }
                         }
                     } else {
-                        ErrorView(
+                        AnimatedErrorView(
                             onClick = {
                                 viewModel.loadAlertDetails()
                             }
                         )
                         if (uiState.showErrorSnackBar) {
-                            viewModel.resetShowErrorSnackBar()
+
                             ShowErrorMessageSnackBar(
                                 scope = scope,
                                 snackbarHostState = uiState.snackbarHostState,
-                                showErrorMessage = uiState.showErrorSnackBar
+                                showErrorMessage = uiState.showErrorSnackBar,
+                                onComplete = { viewModel.resetShowErrorSnackBar() }
                             )
                         }
                     }

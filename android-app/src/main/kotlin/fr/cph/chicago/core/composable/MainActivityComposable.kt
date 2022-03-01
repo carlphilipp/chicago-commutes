@@ -1,6 +1,5 @@
 package fr.cph.chicago.core.composable
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -19,13 +18,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModel
-//import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.core.composable.common.LocationViewModel
 import fr.cph.chicago.core.composable.common.NearbyResult
 import fr.cph.chicago.core.composable.screen.SettingsViewModel
 import fr.cph.chicago.core.composable.screen.screens
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
+import fr.cph.chicago.core.composable.viewmodel.mainViewModel
+import fr.cph.chicago.core.composable.viewmodel.settingsViewModel
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.BusStop
@@ -54,15 +54,11 @@ import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
+import java.util.Calendar
+import javax.inject.Inject
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import java.util.Calendar
-import javax.inject.Inject
-
-val mainViewModel = MainViewModel()
-val settingsViewModel = SettingsViewModel().initModel()
-val locationViewModel = LocationViewModel()
 
 class MainActivityComposable : ComponentActivity() {
 

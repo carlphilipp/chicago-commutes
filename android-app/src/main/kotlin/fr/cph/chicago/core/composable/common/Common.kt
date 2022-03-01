@@ -88,11 +88,11 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Position
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.functions.Consumer
+import java.util.Locale
+import kotlin.math.min
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apache.commons.lang3.StringUtils
-import java.util.Locale
-import kotlin.math.min
 
 private val googleStreetClient = GoogleStreetClient
 
@@ -295,12 +295,19 @@ fun ShimmerLargeItem(
 }
 
 @Composable
-fun ShowFavoriteSnackBar(scope: CoroutineScope, snackbarHostState: SnackbarHostState, isFavorite: Boolean) {
+fun ShowFavoriteSnackBar(
+    scope: CoroutineScope,
+    snackbarHostState: SnackbarHostState,
+    isFavorite: Boolean,
+    onComplete: () -> Unit,
+
+    ) {
     ShowSnackBar(
         scope = scope,
         snackbarHostState = snackbarHostState,
         element = isFavorite,
         message = if (isFavorite) "Added to favorites" else "Removed from favorites",
+        onComplete = onComplete,
     )
 }
 
@@ -309,12 +316,14 @@ fun ShowLocationNotFoundSnackBar(
     scope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
     showErrorMessage: Boolean,
+    onComplete: () -> Unit,
 ) {
     ShowErrorMessageSnackBar(
         scope = scope,
         snackbarHostState = snackbarHostState,
         showErrorMessage = showErrorMessage,
-        message = "Location could not be found"
+        message = "Location could not be found",
+        onComplete = onComplete,
     )
 }
 
@@ -324,7 +333,7 @@ fun ShowErrorMessageSnackBar(
     snackbarHostState: SnackbarHostState,
     showErrorMessage: Boolean,
     message: String = "Something went wrong, try again later",
-    onComplete: () -> Unit = {},
+    onComplete: () -> Unit,
 ) {
     ShowSnackBar(
         scope = scope,
@@ -341,7 +350,7 @@ fun ShowSnackBar(
     snackbarHostState: SnackbarHostState,
     element: Boolean,
     message: String,
-    onComplete: () -> Unit = {},
+    onComplete: () -> Unit,
 ) {
     LaunchedEffect(element) {
         scope.launch {
@@ -491,9 +500,30 @@ fun StationDetailsTitleIconView(
 }
 
 @Composable
-fun ErrorView(
+fun AnimatedErrorView(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    visible: Boolean = true,
+    onClick: () -> Unit,
+    text: String = "Something went wrong, try again",
+) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
+        exit = fadeOut(animationSpec = tween(durationMillis = 300)),
+    ) {
+        ErrorView(
+            modifier = modifier,
+            onClick = onClick,
+            text = text,
+        )
+    }
+}
+
+@Composable
+private fun ErrorView(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    text: String,
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -504,9 +534,14 @@ fun ErrorView(
             painter = painterResource(R.drawable.error),
             contentDescription = "Error image"
         )
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Spacer(modifier = Modifier.padding(10.dp))
         FilledTonalButton(onClick = onClick) {
             Text(
-                text = "Reload"
+                text = "Retry"
             )
         }
     }

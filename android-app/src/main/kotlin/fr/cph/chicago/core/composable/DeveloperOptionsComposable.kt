@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
+import fr.cph.chicago.core.composable.viewmodel.settingsViewModel
 import fr.cph.chicago.core.model.dto.PreferenceDTO
 import fr.cph.chicago.service.PreferenceService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -115,9 +116,11 @@ fun DeveloperOptions(viewModel: DeveloperOptionsViewModel) {
 @Composable
 fun CacheDetail(viewModel: DeveloperOptionsViewModel) {
     viewModel.uiState.preferences.forEach { preference ->
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.primaryContainer)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.primaryContainer)
+        ) {
             Text(
                 text = preference.name.value,
                 style = MaterialTheme.typography.titleMedium,

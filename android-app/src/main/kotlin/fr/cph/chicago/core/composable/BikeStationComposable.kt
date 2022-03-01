@@ -46,6 +46,7 @@ import fr.cph.chicago.core.composable.common.StationDetailsTitleIconView
 import fr.cph.chicago.core.composable.common.loadGoogleStreet
 import fr.cph.chicago.core.composable.common.openMapApplication
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
+import fr.cph.chicago.core.composable.viewmodel.settingsViewModel
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BikeStation.Companion.DEFAULT_AVAILABLE
 import fr.cph.chicago.core.model.Position
@@ -58,11 +59,11 @@ import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.TimeUtil
+import java.util.Calendar
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import java.util.Calendar
-import javax.inject.Inject
 
 class BikeStationComposable : ComponentActivity() {
 
@@ -321,20 +322,25 @@ fun BikeStationView(
     }
 
     if (uiState.applyFavorite) {
-        viewModel.resetApplyFavorite()
         ShowFavoriteSnackBar(
             scope = scope,
             snackbarHostState = viewModel.uiState.snackbarHostState,
             isFavorite = viewModel.uiState.isFavorite,
+            onComplete = {
+                viewModel.resetApplyFavorite()
+            }
         )
     }
 
     if (uiState.showErrorMessage) {
-        viewModel.resetShowErrorMessage()
+
         ShowErrorMessageSnackBar(
             scope = scope,
             snackbarHostState = viewModel.uiState.snackbarHostState,
-            showErrorMessage = uiState.showErrorMessage
+            showErrorMessage = uiState.showErrorMessage,
+            onComplete = {
+                viewModel.resetShowErrorMessage()
+            }
         )
     }
 

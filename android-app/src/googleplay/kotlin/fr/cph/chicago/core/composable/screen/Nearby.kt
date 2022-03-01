@@ -80,11 +80,12 @@ fun Nearby(
             LoadingCircle(show = !isMapLoaded)
 
             if (mainViewModel.uiState.nearbyShowLocationError) {
-                mainViewModel.setShowLocationError(false)
+
                 ShowLocationNotFoundSnackBar(
                     scope = scope,
                     snackbarHostState = mainViewModel.uiState.snackbarHostState,
-                    showErrorMessage = mainViewModel.uiState.nearbyShowLocationError
+                    showErrorMessage = mainViewModel.uiState.nearbyShowLocationError,
+                    onComplete = { mainViewModel.setShowLocationError(false) }
                 )
             }
             if (mainViewModel.uiState.nearbyDetailsError) {

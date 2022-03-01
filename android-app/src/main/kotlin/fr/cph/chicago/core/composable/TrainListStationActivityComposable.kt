@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.R
 import fr.cph.chicago.core.composable.common.ColoredBox
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
+import fr.cph.chicago.core.composable.viewmodel.settingsViewModel
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.service.TrainService
@@ -58,9 +59,11 @@ fun TrainLineStops(title: String, trainStations: List<TrainStation>) {
         Scaffold(
             //snackbarHost = { SnackbarHost(hostState = snackbarHostState) { data -> Snackbar(snackbarData = data) } },
             content = {
-                LazyColumn(modifier = Modifier
-                    .padding(start = 10.dp, end = 10.dp)
-                    .fillMaxSize()) {
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(start = 10.dp, end = 10.dp)
+                        .fillMaxSize()
+                ) {
                     items(trainStations.size) { index ->
                         val station = trainStations[index]
                         TextButton(onClick = {

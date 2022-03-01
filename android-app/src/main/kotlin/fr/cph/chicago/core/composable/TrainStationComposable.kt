@@ -54,6 +54,7 @@ import fr.cph.chicago.core.composable.common.StationDetailsTitleIconView
 import fr.cph.chicago.core.composable.common.loadGoogleStreet
 import fr.cph.chicago.core.composable.common.openMapApplication
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
+import fr.cph.chicago.core.composable.viewmodel.settingsViewModel
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Stop
 import fr.cph.chicago.core.model.TrainEta
@@ -320,20 +321,24 @@ fun TrainStationView(
     }
 
     if (uiState.applyFavorite) {
-        viewModel.resetApplyFavorite()
         ShowFavoriteSnackBar(
             scope = scope,
             snackbarHostState = viewModel.uiState.snackbarHostState,
             isFavorite = viewModel.uiState.isFavorite,
+            onComplete = {
+                viewModel.resetApplyFavorite()
+            }
         )
     }
 
     if (uiState.showErrorMessage) {
-        viewModel.resetShowErrorMessage()
         ShowErrorMessageSnackBar(
             scope = scope,
             snackbarHostState = viewModel.uiState.snackbarHostState,
-            showErrorMessage = uiState.showErrorMessage
+            showErrorMessage = uiState.showErrorMessage,
+            onComplete = {
+                viewModel.resetShowErrorMessage()
+            }
         )
     }
 

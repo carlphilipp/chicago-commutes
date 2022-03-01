@@ -2,16 +2,12 @@ package fr.cph.chicago.core.composable.screen
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -43,10 +39,9 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.composable.AlertActivityComposable
 import fr.cph.chicago.core.composable.MainViewModel
+import fr.cph.chicago.core.composable.common.AnimatedErrorView
 import fr.cph.chicago.core.composable.common.AnimatedPlaceHolderList
 import fr.cph.chicago.core.composable.common.ColoredBox
-import fr.cph.chicago.core.composable.common.ErrorView
-import fr.cph.chicago.core.composable.common.LargeImagePlaceHolderAnimated
 import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.composable.common.TextFieldMaterial3
 import fr.cph.chicago.core.model.dto.AlertType
@@ -103,9 +98,9 @@ fun Alerts(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
                                         extras.putString("routeId", alert.id)
                                         extras.putString(
                                             "title", if (alert.alertType === AlertType.TRAIN)
-                                            alert.routeName
-                                        else
-                                            "${alert.id} - ${alert.routeName}"
+                                                alert.routeName
+                                            else
+                                                "${alert.id} - ${alert.routeName}"
                                         )
                                         intent.putExtras(extras)
                                         startActivity(context, intent, null)
@@ -157,17 +152,19 @@ fun Alerts(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
                             }
                         }
                     } else {
-                        ErrorView(
+                        AnimatedErrorView(
                             onClick = {
                                 mainViewModel.loadAlerts()
                             }
                         )
                         if (uiState.routeAlertShowError) {
-                            mainViewModel.resetAlertsShowError()
                             ShowErrorMessageSnackBar(
                                 scope = scope,
                                 snackbarHostState = uiState.snackbarHostState,
-                                showErrorMessage = uiState.routeAlertShowError
+                                showErrorMessage = uiState.routeAlertShowError,
+                                onComplete = {
+                                    mainViewModel.resetAlertsShowError()
+                                }
                             )
                         }
                     }

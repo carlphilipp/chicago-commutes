@@ -31,7 +31,7 @@ import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.R
 import fr.cph.chicago.core.composable.BikeStationComposable
 import fr.cph.chicago.core.composable.MainViewModel
-import fr.cph.chicago.core.composable.common.ErrorView
+import fr.cph.chicago.core.composable.common.AnimatedErrorView
 import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.composable.common.TextFieldMaterial3
 import fr.cph.chicago.core.model.BikeStation
@@ -92,17 +92,19 @@ fun Divvy(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
                     }
                 }
             } else {
-                ErrorView(
+                AnimatedErrorView(
                     onClick = {
                         mainViewModel.loadBikeStations()
                     }
                 )
                 if (mainViewModel.uiState.bikeStationsShowError) {
-                    mainViewModel.resetBikeStationsShowError()
                     ShowErrorMessageSnackBar(
                         scope = scope,
                         snackbarHostState = mainViewModel.uiState.snackbarHostState,
-                        showErrorMessage = mainViewModel.uiState.bikeStationsShowError
+                        showErrorMessage = mainViewModel.uiState.bikeStationsShowError,
+                        onComplete = {
+                            mainViewModel.resetBikeStationsShowError()
+                        }
                     )
                 }
             }

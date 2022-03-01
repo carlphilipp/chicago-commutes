@@ -43,7 +43,7 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.map.BusMapActivity
 import fr.cph.chicago.core.composable.BusBoundActivityComposable
 import fr.cph.chicago.core.composable.MainViewModel
-import fr.cph.chicago.core.composable.common.ErrorView
+import fr.cph.chicago.core.composable.common.AnimatedErrorView
 import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.composable.common.TextFieldMaterial3
 import fr.cph.chicago.core.model.BusDirections
@@ -111,17 +111,19 @@ fun Bus(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
                     }
                 }
             } else {
-                ErrorView(
+                AnimatedErrorView(
                     onClick = {
                         mainViewModel.loadBusRoutes()
                     }
                 )
                 if (mainViewModel.uiState.busRoutesShowError) {
-                    mainViewModel.resetBusRoutesShowError()
                     ShowErrorMessageSnackBar(
                         scope = scope,
                         snackbarHostState = mainViewModel.uiState.snackbarHostState,
-                        showErrorMessage = mainViewModel.uiState.busRoutesShowError
+                        showErrorMessage = mainViewModel.uiState.busRoutesShowError,
+                        onComplete = {
+                            mainViewModel.resetBusRoutesShowError()
+                        }
                     )
                 }
             }
