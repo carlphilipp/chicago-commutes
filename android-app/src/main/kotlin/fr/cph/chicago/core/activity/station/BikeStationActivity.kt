@@ -113,7 +113,7 @@ class BikeStationActivity : StationActivity(), StoreSubscriber<State> {
             else -> {
                 state.bikeStations
                     .filter { station -> bikeStation.id == station.id }
-                    .elementAtOrElse(0) { BikeStation.buildDefaultBikeStationWithName("error") }
+                    .elementAtOrElse(0) { BikeStation.buildDefaultBikeStationWithName(name = "error") }
                     .also { station ->
                         if (station.name != "error") {
                             refreshStation(station)

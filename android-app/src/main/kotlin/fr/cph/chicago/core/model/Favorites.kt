@@ -31,7 +31,6 @@ import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.Util
-import java.math.BigInteger
 import java.util.Calendar
 import java.util.Date
 import java.util.TreeMap
@@ -53,10 +52,10 @@ object Favorites {
     private val util = Util
     private val timeUtil = TimeUtil
 
-    private var trainFavorites = listOf<BigInteger>()
+    private var trainFavorites = listOf<String>()
     private var busFavorites = listOf<String>()
     private var busRouteFavorites = listOf<String>()
-    private var bikeFavorites = listOf<BigInteger>()
+    private var bikeFavorites = listOf<String>()
 
     val time = mutableStateOf(LastUpdate(timeUtil.formatTimeDifference(store.state.lastFavoritesUpdate, Calendar.getInstance().time)))
 
@@ -92,7 +91,7 @@ object Favorites {
     }
 
     @Deprecated("Use getTrainArrivalByStopDirection instead")
-    fun getTrainArrivalByLine(stationId: BigInteger, trainLine: TrainLine): Map<String, MutableList<String>> {
+    fun getTrainArrivalByLine(stationId: String, trainLine: TrainLine): Map<String, MutableList<String>> {
         return store.state.trainArrivalsDTO.trainsArrivals
             .getOrElse(stationId) { TrainArrival.buildEmptyTrainArrival() }
             .getEtas(trainLine)
@@ -111,7 +110,7 @@ object Favorites {
             }
     }
 
-    fun getTrainArrivalByStopDirection(stationId: BigInteger, trainLine: TrainLine): Map<StopDirection, MutableList<String>> {
+    fun getTrainArrivalByStopDirection(stationId: String, trainLine: TrainLine): Map<StopDirection, MutableList<String>> {
         return store.state.trainArrivalsDTO.trainsArrivals
             .getOrElse(stationId) { TrainArrival.buildEmptyTrainArrival() }
             .getEtas(trainLine)

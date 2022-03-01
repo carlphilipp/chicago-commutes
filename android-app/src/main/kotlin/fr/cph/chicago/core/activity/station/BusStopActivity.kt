@@ -46,7 +46,6 @@ import fr.cph.chicago.util.Color
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.math.BigInteger
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
@@ -66,7 +65,7 @@ class BusStopActivity : StationActivity(), StoreSubscriber<State> {
     private lateinit var busRouteId: String
     private lateinit var bound: String
     private lateinit var boundTitle: String
-    private var busStopId: BigInteger = BigInteger.ZERO
+    private var busStopId: String = StringUtils.EMPTY
     private lateinit var busStopName: String
     private lateinit var busRouteName: String
     private lateinit var action: BusStopArrivalsAction
@@ -87,7 +86,7 @@ class BusStopActivity : StationActivity(), StoreSubscriber<State> {
             favoritesImageContainer = binding.header.favorites.favoritesImageContainer
         )
 
-        busStopId = BigInteger(intent.getStringExtra(getString(R.string.bundle_bus_stop_id)) ?: "0")
+        busStopId = intent.getStringExtra(getString(R.string.bundle_bus_stop_id)) ?: StringUtils.EMPTY
         busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
         bound = intent.getStringExtra(getString(R.string.bundle_bus_bound)) ?: StringUtils.EMPTY
         boundTitle = intent.getStringExtra(getString(R.string.bundle_bus_bound_title)) ?: StringUtils.EMPTY
@@ -200,7 +199,7 @@ class BusStopActivity : StationActivity(), StoreSubscriber<State> {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        busStopId = BigInteger(savedInstanceState.getString(getString(R.string.bundle_bus_stop_id)) ?: "0")
+        busStopId = savedInstanceState.getString(getString(R.string.bundle_bus_stop_id)) ?: StringUtils.EMPTY
         busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
         bound = savedInstanceState.getString(getString(R.string.bundle_bus_bound)) ?: StringUtils.EMPTY
         boundTitle = savedInstanceState.getString(getString(R.string.bundle_bus_bound_title)) ?: StringUtils.EMPTY

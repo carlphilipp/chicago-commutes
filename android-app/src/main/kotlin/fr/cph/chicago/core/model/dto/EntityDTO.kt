@@ -24,22 +24,21 @@ import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.TrainArrival
-import java.math.BigInteger
 import java.util.TreeMap
 import org.apache.commons.lang3.StringUtils
 
 data class BaseDTO(
     val trainArrivalsDTO: TrainArrivalDTO,
     val busArrivalsDTO: BusArrivalDTO,
-    val trainFavorites: List<BigInteger>,
+    val trainFavorites: List<String>,
     val busFavorites: List<String>,
     val busRouteFavorites: List<String>,
-    val bikeFavorites: List<BigInteger>
+    val bikeFavorites: List<String>
 )
 
 data class BusArrivalDTO(val busArrivals: List<BusArrival>, val error: Boolean)
 
-data class TrainArrivalDTO(val trainsArrivals: MutableMap<BigInteger, TrainArrival>, val error: Boolean)
+data class TrainArrivalDTO(val trainsArrivals: MutableMap<String, TrainArrival>, val error: Boolean)
 
 data class FirstLoadDTO(
     val busRoutesError: Boolean,

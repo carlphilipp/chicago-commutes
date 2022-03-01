@@ -53,7 +53,7 @@ internal class BusStopCsvProcessor : RowProcessor {
             val latitude = row[4]!!.toDouble() // stop_lat
             val longitude = row[5]!!.toDouble() // stop_lon
             val busStop = BusStop(
-                id = row[0]!!.toBigInteger(),
+                id = row[0]!!,
                 name = row[2]!!,
                 description = if (row[3] == null) StringUtils.EMPTY else row[3]!!,
                 position = Position(latitude, longitude)

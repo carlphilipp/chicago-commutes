@@ -61,7 +61,6 @@ import fr.cph.chicago.util.TimeUtil
 import kotlinx.coroutines.CoroutineScope
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import java.math.BigInteger
 import java.util.Calendar
 import javax.inject.Inject
 
@@ -224,7 +223,7 @@ class BikeStationViewModel @Inject constructor(
         return canLoadGoogleMapImage() && !uiState.isGoogleStreetImageLoading && !uiState.showGoogleStreetImage
     }
 
-    private fun isFavorite(id: BigInteger): Boolean {
+    private fun isFavorite(id: String): Boolean {
         return preferenceService.isBikeStationFavorite(id)
     }
 

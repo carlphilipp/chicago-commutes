@@ -68,9 +68,9 @@ import fr.cph.chicago.redux.TrainStationAction
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
-import java.math.BigInteger
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
+import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
@@ -79,7 +79,7 @@ class TrainStationComposable : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val stationId = BigInteger(intent.extras?.getString(getString(R.string.bundle_train_stationId), "0")!!)
+        val stationId = intent.extras?.getString(getString(R.string.bundle_train_stationId), "0") ?: StringUtils.EMPTY
         val viewModel = TrainStationViewModel().initModel(stationId)
         store.dispatch(TrainStationAction(stationId))
 
@@ -115,7 +115,7 @@ class TrainStationViewModel @Inject constructor(
     var uiState by mutableStateOf(TrainStationUiState())
         private set
 
-    fun initModel(stationId: BigInteger): TrainStationViewModel {
+    fun initModel(stationId: String): TrainStationViewModel {
         val trainStation = trainService.getStation(stationId)
         val isFavorite = isFavorite(stationId)
 
@@ -224,7 +224,7 @@ class TrainStationViewModel @Inject constructor(
         )
     }
 
-    private fun isFavorite(trainStationId: BigInteger): Boolean {
+    private fun isFavorite(trainStationId: String): Boolean {
         return preferenceService.isTrainStationFavorite(trainStationId)
     }
 
@@ -352,7 +352,7 @@ fun TrainStationView(
 }
 
 data class StopStationUiState(
-    val stationId: BigInteger,
+    val stationId: String,
     val line: TrainLine,
     val stop: Stop,
     val trainEtas: Map<String, List<String>> = mapOf(),
@@ -362,7 +362,7 @@ data class StopStationUiState(
 )
 
 class TrainStopViewModel(
-    stationId: BigInteger,
+    stationId: String,
     line: TrainLine,
     stop: Stop,
     showStationName: Boolean,

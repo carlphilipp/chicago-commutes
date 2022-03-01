@@ -27,7 +27,6 @@ import fr.cph.chicago.core.model.dto.BusArrivalDTO
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
-import java.math.BigInteger
 import java.util.Date
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StateType
@@ -44,10 +43,10 @@ data class State(
     val lastFavoritesUpdate: Date = Date(), // Field displayed in favorites
 
     // Favorites
-    val trainFavorites: List<BigInteger> = listOf(),
+    val trainFavorites: List<String> = listOf(),
     val busFavorites: List<String> = listOf(),
     val busRouteFavorites: List<String> = listOf(),
-    val bikeFavorites: List<BigInteger> = listOf(),
+    val bikeFavorites: List<String> = listOf(),
 
     // Trains and Buses arrivals
     val trainArrivalsDTO: TrainArrivalDTO = TrainArrivalDTO(mutableMapOf(), false),

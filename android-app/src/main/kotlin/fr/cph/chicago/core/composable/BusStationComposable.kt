@@ -63,7 +63,6 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.PreferenceService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.math.BigInteger
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import org.apache.commons.lang3.StringUtils
@@ -74,7 +73,7 @@ class BusStationComposable : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val busStopId = BigInteger(intent.getStringExtra(getString(R.string.bundle_bus_stop_id)) ?: "0")
+        val busStopId = intent.getStringExtra(getString(R.string.bundle_bus_stop_id)) ?: StringUtils.EMPTY
         val busStopName = intent.getStringExtra(getString(R.string.bundle_bus_stop_name)) ?: StringUtils.EMPTY
 
         val busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
@@ -139,7 +138,7 @@ class BusStationViewModel @Inject constructor(
         defaultedArrivals["Unknown"] = mutableListOf()
         uiState = uiState.copy(
             busDetails = busDetails,
-            isFavorite = isFavorite(busRouteId = busDetails.busRouteId, busStopId = busDetails.stopId, boundTitle = busDetails.boundTitle),
+            isFavorite = isFavorite(busRouteId = busDetails.busRouteId, busStopId = busDetails.stopId.toString(), boundTitle = busDetails.boundTitle),
             busArrivalStopDTO = BusArrivalStopDTO(underlying = defaultedArrivals)
         )
 
@@ -184,11 +183,11 @@ class BusStationViewModel @Inject constructor(
         uiState = uiState.copy(isRefreshing = false)
     }
 
-    fun switchFavorite(busRouteId: String, busStopId: Int, boundTitle: String, busRouteName: String, busStopName: String) {
+    fun switchFavorite(busRouteId: String, busStopId: String, boundTitle: String, busRouteName: String, busStopName: String) {
         if (isFavorite(busRouteId = busRouteId, busStopId = busStopId, boundTitle = boundTitle)) {
-            store.dispatch(RemoveBusFavoriteAction(busRouteId, busStopId.toString(), boundTitle))
+            store.dispatch(RemoveBusFavoriteAction(busRouteId, busStopId, boundTitle))
         } else {
-            store.dispatch(AddBusFavoriteAction(busRouteId, busStopId.toString(), boundTitle, busRouteName, busStopName))
+            store.dispatch(AddBusFavoriteAction(busRouteId, busStopId, boundTitle, busRouteName, busStopName))
         }
     }
 
@@ -198,7 +197,7 @@ class BusStationViewModel @Inject constructor(
         store.dispatch(
             BusStopArrivalsAction(
                 busRouteId = uiState.busDetails.busRouteId,
-                busStopId = BigInteger(uiState.busDetails.stopId.toString()),
+                busStopId = uiState.busDetails.stopId.toString(),
                 bound = uiState.busDetails.bound,
                 boundTitle = uiState.busDetails.boundTitle
             )
@@ -260,7 +259,7 @@ class BusStationViewModel @Inject constructor(
 
     private fun loadStopPositionAndGoogleStreetImage() {
         // Load bus position and google street image
-        busService.getStopPosition(uiState.busDetails.busRouteId, uiState.busDetails.boundTitle, uiState.busDetails.stopId.toBigInteger())
+        busService.getStopPosition(uiState.busDetails.busRouteId, uiState.busDetails.boundTitle, uiState.busDetails.stopId.toString())
             .observeOn(Schedulers.computation())
             .doOnSuccess { position -> loadGoogleStreetImage(position) }
             .observeOn(AndroidSchedulers.mainThread())
@@ -277,8 +276,8 @@ class BusStationViewModel @Inject constructor(
                 })
     }
 
-    private fun isFavorite(busRouteId: String, busStopId: Int, boundTitle: String): Boolean {
-        return preferenceService.isStopFavorite(busRouteId, BigInteger(busStopId.toString()), boundTitle)
+    private fun isFavorite(busRouteId: String, busStopId: String, boundTitle: String): Boolean {
+        return preferenceService.isStopFavorite(busRouteId, busStopId, boundTitle)
     }
 
     fun onStart() {
@@ -327,7 +326,7 @@ fun BusStationView(
                             onFavoriteClick = {
                                 viewModel.switchFavorite(
                                     boundTitle = uiState.busDetails.boundTitle,
-                                    busStopId = uiState.busDetails.stopId,
+                                    busStopId = uiState.busDetails.stopId.toString(),
                                     busRouteId = uiState.busDetails.busRouteId,
                                     busRouteName = uiState.busDetails.routeName,
                                     busStopName = uiState.busDetails.stopName
