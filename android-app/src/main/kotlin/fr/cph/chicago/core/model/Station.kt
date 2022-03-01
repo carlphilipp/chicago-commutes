@@ -19,6 +19,4 @@
 
 package fr.cph.chicago.core.model
 
-import java.math.BigInteger
-
-abstract class Station(val id: BigInteger, val name: String)
+abstract class Station(val id: String, val name: String)

@@ -40,7 +40,6 @@ import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.math.BigInteger
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -61,8 +60,8 @@ object TrainService {
     fun loadFavoritesTrain(): Single<TrainArrivalDTO> {
         return singleFromCallable(
             Callable {
-                val trainParams: Set<BigInteger> = preferencesService.getFavoritesTrainParams()
-                var trainArrivals = mutableMapOf<BigInteger, TrainArrival>()
+                val trainParams: Set<String> = preferencesService.getFavoritesTrainParams()
+                var trainArrivals = mutableMapOf<String, TrainArrival>()
                 val list = trainParams.toList()
                 if (list.size < 5) {
                     trainArrivals = getTrainArrivals(trainParams).blockingGet()
@@ -72,7 +71,7 @@ object TrainService {
                     var end = 4
                     while (end < size + 1) {
                         val subList = list.subList(start, end)
-                        val paramsTemp = mutableSetOf<BigInteger>()
+                        val paramsTemp = mutableSetOf<String>()
                         for (sub in subList) {
                             paramsTemp.add(sub)
                         }
@@ -114,7 +113,7 @@ object TrainService {
             }
     }
 
-    fun loadStationTrainArrival(stationId: BigInteger): Single<TrainArrival> {
+    fun loadStationTrainArrival(stationId: String): Single<TrainArrival> {
         return getTrainArrivals(mutableSetOf(stationId))
             .observeOn(Schedulers.computation())
             .map { trainArrivals -> trainArrivals.getOrElse(stationId, { TrainArrival.buildEmptyTrainArrival() }) }
@@ -136,7 +135,7 @@ object TrainService {
                 if (!loadAll && trainEta.size > 7) {
                     trainEta = trainEta.subList(0, 6)
                     val currentDate = Calendar.getInstance().time
-                    val fakeStation = TrainStation(BigInteger.ZERO, App.instance.getString(R.string.bus_all_results), ArrayList())
+                    val fakeStation = TrainStation(StringUtils.EMPTY, App.instance.getString(R.string.bus_all_results), ArrayList())
                     // Add a fake TrainEta cell to alert the user about the fact that only a part of the result is displayed
                     val eta = TrainEta.buildFakeEtaWith(fakeStation, currentDate, currentDate, app = false, delay = false)
                     trainEta.add(eta)
@@ -162,7 +161,7 @@ object TrainService {
             }
     }
 
-    fun getStation(id: BigInteger): TrainStation {
+    fun getStation(id: String): TrainStation {
         return trainRepository.getStation(id)
     }
 
@@ -227,13 +226,13 @@ object TrainService {
             .observeOn(Schedulers.computation())
     }
 
-    private fun getTrainArrivals(stationsIds: Set<BigInteger>): Single<MutableMap<BigInteger, TrainArrival>> {
+    private fun getTrainArrivals(stationsIds: Set<String>): Single<MutableMap<String, TrainArrival>> {
         return ctaClient.getTrainArrivals(stationsIds.map { it.toString() })
             .map { trainArrivalResponse -> getTrainArrivalsInternal(trainArrivalResponse) }
     }
 
-    private fun getTrainArrivalsInternal(trainArrivalResponse: TrainArrivalResponse): MutableMap<BigInteger, TrainArrival> {
-        val result = mutableMapOf<BigInteger, TrainArrival>()
+    private fun getTrainArrivalsInternal(trainArrivalResponse: TrainArrivalResponse): MutableMap<String, TrainArrival> {
+        val result = mutableMapOf<String, TrainArrival>()
         if (trainArrivalResponse.ctatt.eta == null) {
             val error = trainArrivalResponse.ctatt.errNm
             Timber.e("Error: %s", error)
@@ -243,14 +242,15 @@ object TrainService {
             .ctatt
             .eta
             .map { eta ->
-                val station = getStation(BigInteger(eta.staId))
+                val station = getStation(eta.staId)
                 val stop = getStop(eta.stpId.toInt())
                 stop.description = eta.stpDe
                 val routeName = TrainLine.fromXmlString(eta.rt)
                 val destinationName =
                     if ("See train".equals(eta.destNm, ignoreCase = true) && stop.description.contains("Loop") && routeName == TrainLine.GREEN ||
                         "See train".equals(eta.destNm, ignoreCase = true) && stop.description.contains("Loop") && routeName == TrainLine.BROWN ||
-                        "Loop, Midway".equals(eta.destNm, ignoreCase = true) && routeName == TrainLine.BROWN)
+                        "Loop, Midway".equals(eta.destNm, ignoreCase = true) && routeName == TrainLine.BROWN
+                    )
                         "Loop"
                     else
                         eta.destNm
@@ -263,7 +263,8 @@ object TrainService {
                     predictionDate = simpleDateFormatTrain.parseNotNull(eta.prdt),
                     arrivalDepartureDate = simpleDateFormatTrain.parseNotNull(eta.arrT),
                     isApp = eta.isApp.toBoolean(),
-                    isDly = eta.isDly.toBoolean())
+                    isDly = eta.isDly.toBoolean()
+                )
                 trainEta
             }
             .filter { (station, stop, line) -> preferencesService.getTrainFilter(station.id, line, stop.direction) }

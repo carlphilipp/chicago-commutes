@@ -21,7 +21,6 @@ package fr.cph.chicago.core.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import java.math.BigInteger
 import org.apache.commons.lang3.StringUtils
 
 /**
@@ -31,7 +30,7 @@ import org.apache.commons.lang3.StringUtils
  * @version 1
  */
 class BusStop(
-    id: BigInteger,
+    id: String,
     name: String,
     val description: String,
     val position: Position) : Comparable<BusStop>, Parcelable, Station(id, name) {
@@ -50,7 +49,7 @@ class BusStop(
     }
 
     private constructor(source: Parcel) : this(
-        id = BigInteger(source.readString()!!),
+        id = source.readString() ?: StringUtils.EMPTY,
         name = source.readString() ?: StringUtils.EMPTY,
         description = source.readString() ?: StringUtils.EMPTY,
         position = source.readParcelable<Position>(Position::class.java.classLoader) ?: Position())
@@ -70,7 +69,7 @@ class BusStop(
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeString(id.toString())
+        dest.writeString(id)
         dest.writeString(name)
         dest.writeString(description)
         dest.writeParcelable(position, flags)

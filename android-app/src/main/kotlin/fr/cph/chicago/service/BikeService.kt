@@ -27,7 +27,6 @@ import fr.cph.chicago.rx.RxUtil.handleMapError
 import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.math.BigInteger
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 import timber.log.Timber
 
@@ -41,7 +40,7 @@ object BikeService {
         return loadAllBikeStations()
     }
 
-    fun findBikeStation(id: BigInteger): Single<BikeStation> {
+    fun findBikeStation(id: String): Single<BikeStation> {
         return loadAllBikeStations()
             .toObservable()
             .flatMapIterable { station -> station }
@@ -64,7 +63,7 @@ object BikeService {
             .subscribeOn(Schedulers.computation())
     }
 
-    fun createEmptyBikeStation(bikeStationId: BigInteger): BikeStation {
+    fun createEmptyBikeStation(bikeStationId: String): BikeStation {
         val stationName = preferenceService.getBikeRouteNameMapping(bikeStationId)
         return BikeStation.buildDefaultBikeStationWithName(stationName, bikeStationId)
     }
@@ -77,7 +76,7 @@ object BikeService {
             for ((key, stationInfo) in info) {
                 val stationStatus = stat[key] ?: DivvyStationStatus("", 0, 0)
                 res.add(BikeStation(
-                    id = stationInfo.id.toBigInteger(),
+                    id = stationInfo.id,
                     name = stationInfo.name,
                     availableDocks = stationStatus.availableDocks,
                     availableBikes = stationStatus.availableBikes,

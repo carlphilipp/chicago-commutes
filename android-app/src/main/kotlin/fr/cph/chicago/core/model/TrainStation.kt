@@ -22,7 +22,6 @@ package fr.cph.chicago.core.model
 import android.os.Parcel
 import android.os.Parcelable
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import java.math.BigInteger
 import java.util.TreeMap
 import java.util.TreeSet
 import org.apache.commons.lang3.StringUtils
@@ -34,13 +33,14 @@ import org.apache.commons.lang3.StringUtils
  * @version 1
  */
 class TrainStation(
-    id: BigInteger,
+    id: String,
     name: String,
-    var stops: List<Stop>) : Comparable<TrainStation>, Parcelable, Station(id, name) {
+    var stops: List<Stop>
+) : Comparable<TrainStation>, Parcelable, Station(id, name) {
 
     companion object {
         fun buildEmptyStation(): TrainStation {
-            return TrainStation(BigInteger.ZERO, StringUtils.EMPTY, mutableListOf())
+            return TrainStation(StringUtils.EMPTY, StringUtils.EMPTY, mutableListOf())
         }
 
         @JvmField
@@ -56,9 +56,10 @@ class TrainStation(
     }
 
     private constructor(source: Parcel) : this(
-        id = BigInteger(source.readString()!!),
+        id = source.readString() ?: StringUtils.EMPTY,
         name = source.readString() ?: StringUtils.EMPTY,
-        stops = source.createTypedArrayList(Stop.CREATOR) ?: listOf())
+        stops = source.createTypedArrayList(Stop.CREATOR) ?: listOf()
+    )
 
     val lines: Set<TrainLine>
         get() {

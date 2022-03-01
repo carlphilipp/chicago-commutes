@@ -22,23 +22,23 @@ package fr.cph.chicago.core.model
 import android.os.Parcel
 import android.os.Parcelable
 import org.apache.commons.lang3.StringUtils
-import java.math.BigInteger
 
 class BikeStation(
-    id: BigInteger,
+    id: String,
     name: String,
     val availableDocks: Int,
     val availableBikes: Int,
     val latitude: Double,
     val longitude: Double,
-    val address: String) : Parcelable, Station(id, name) {
+    val address: String
+) : Parcelable, Station(id, name) {
 
     companion object {
         fun buildUnknownStation(): BikeStation {
             return buildDefaultBikeStationWithName("Unknown")
         }
 
-        fun buildDefaultBikeStationWithName(name: String, id : BigInteger = BigInteger.ZERO): BikeStation {
+        fun buildDefaultBikeStationWithName(name: String, id: String = StringUtils.EMPTY): BikeStation {
             return BikeStation(id, name, -1, -1, 0.0, 0.0, StringUtils.EMPTY)
         }
 
@@ -55,20 +55,21 @@ class BikeStation(
     }
 
     private constructor(source: Parcel) : this(
-        id = BigInteger(source.readString()!!),
+        id = source.readString() ?: StringUtils.EMPTY,
         name = source.readString() ?: StringUtils.EMPTY,
         availableDocks = source.readInt(),
         availableBikes = source.readInt(),
         latitude = source.readDouble(),
         longitude = source.readDouble(),
-        address = source.readString() ?: StringUtils.EMPTY)
+        address = source.readString() ?: StringUtils.EMPTY
+    )
 
     override fun describeContents(): Int {
         return 0
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeString(id.toString())
+        dest.writeString(id)
         dest.writeString(name)
         dest.writeInt(availableDocks)
         dest.writeInt(availableBikes)

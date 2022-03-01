@@ -28,7 +28,6 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
-import java.math.BigInteger
 import java.util.Date
 import java.util.TreeMap
 import org.apache.commons.lang3.StringUtils
@@ -47,10 +46,10 @@ object Favorites {
     private val preferenceService = PreferenceService
     private val util = Util
 
-    private var trainFavorites = listOf<BigInteger>()
+    private var trainFavorites = listOf<String>()
     private var busFavorites = listOf<String>()
     private var busRouteFavorites = listOf<String>()
-    private var bikeFavorites = listOf<BigInteger>()
+    private var bikeFavorites = listOf<String>()
 
     /**
      * Get the size of the current model
@@ -83,7 +82,7 @@ object Favorites {
         }
     }
 
-    fun getTrainArrivalByLine(stationId: BigInteger, trainLine: TrainLine): Map<String, String> {
+    fun getTrainArrivalByLine(stationId: String, trainLine: TrainLine): Map<String, String> {
         return store.state.trainArrivalsDTO.trainsArrivals
             .getOrElse(stationId, { TrainArrival.buildEmptyTrainArrival() })
             .getEtas(trainLine)

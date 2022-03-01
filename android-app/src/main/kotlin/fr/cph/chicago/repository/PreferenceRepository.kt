@@ -38,7 +38,6 @@ import fr.cph.chicago.repository.PrefType.TRAIN
 import fr.cph.chicago.repository.PrefType.TRAIN_FILTER
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
-import java.math.BigInteger
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -118,7 +117,7 @@ object PreferenceRepository {
     }
 
     // Trains
-    fun saveTrainFavorites(favorites: Set<BigInteger>) {
+    fun saveTrainFavorites(favorites: Set<String>) {
         val sharedPref = getPrivatePreferences()
         val editor = sharedPref.edit()
         val set = favorites.map { it.toString() }.toSet()
@@ -127,32 +126,32 @@ object PreferenceRepository {
         editor.apply()
     }
 
-    fun getTrainFavorites(): Set<BigInteger> {
+    fun getTrainFavorites(): Set<String> {
         val sharedPref = getPrivatePreferences()
         val setPref = sharedPref.getStringSet(TRAIN.value, LinkedHashSet()) ?: setOf()
         Timber.v("Read train favorites : %s", setPref)
         return setPref
             .asSequence()
-            .map { BigInteger(it) }
+            //.map { String(it) }
             .map { trainService.getStation(it) }
             .sorted()
             .map { it.id }
             .toSet()
     }
 
-    fun saveTrainFilter(stationId: BigInteger, line: TrainLine, direction: TrainDirection) {
+    fun saveTrainFilter(stationId: String, line: TrainLine, direction: TrainDirection) {
         val sharedPref = getPrivatePreferencesTrainFilter()
         val editor = sharedPref.edit()
         editor.putBoolean(stationId.toString() + "_" + line + "_" + direction, false)
         editor.apply()
     }
 
-    fun getTrainFilter(stationId: BigInteger, line: TrainLine, direction: TrainDirection): Boolean {
+    fun getTrainFilter(stationId: String, line: TrainLine, direction: TrainDirection): Boolean {
         val sharedPref = getPrivatePreferencesTrainFilter()
         return sharedPref.getBoolean(stationId.toString() + "_" + line + "_" + direction, true)
     }
 
-    fun removeTrainFilter(stationId: BigInteger, line: TrainLine, direction: TrainDirection) {
+    fun removeTrainFilter(stationId: String, line: TrainLine, direction: TrainDirection) {
         val sharedPref = getPrivatePreferencesTrainFilter()
         val editor = sharedPref.edit()
         editor.remove(stationId.toString() + "_" + line + "_" + direction)
@@ -236,42 +235,42 @@ object PreferenceRepository {
     }
 
     // Bikes
-    fun saveBikeFavorites(favorites: Set<BigInteger>) {
+    fun saveBikeFavorites(favorites: Set<String>) {
         val sharedPref = getPrivatePreferences()
         val editor = sharedPref.edit()
-        val set = favorites.map { it.toString() }.toSet()
+        val set = favorites.map { it }.toSet()
         Timber.v("Put bike favorites: %s", set)
         editor.putStringSet(BIKE.value, set)
         editor.apply()
     }
 
-    fun getBikeFavorites(): Set<BigInteger> {
+    fun getBikeFavorites(): Set<String> {
         val sharedPref = getPrivatePreferences()
         val setPref = sharedPref.getStringSet(BIKE.value, LinkedHashSet()) ?: setOf()
         Timber.v("Read bike favorites : %s", setPref)
-        return setPref.map { it.toBigInteger() }.sorted().toSet()
+        return setPref.map { it }.sorted().toSet()
     }
 
-    fun addBikeRouteNameMapping(bikeId: BigInteger, bikeName: String) {
+    fun addBikeRouteNameMapping(bikeId: String, bikeName: String) {
         val sharedPref = getPrivatePreferencesBikeMapping()
         val editor = sharedPref.edit()
-        editor.putString(bikeId.toString(), bikeName)
+        editor.putString(bikeId, bikeName)
         Timber.v("Add bike name mapping : %s => %s", bikeId, bikeName)
         editor.apply()
     }
 
-    fun getBikeRouteNameMapping(bikeId: BigInteger): String {
+    fun getBikeRouteNameMapping(bikeId: String): String {
         val sharedPref = getPrivatePreferencesBikeMapping()
-        val bikeName = sharedPref.getString(bikeId.toString(), StringUtils.EMPTY)!!
+        val bikeName = sharedPref.getString(bikeId, StringUtils.EMPTY)!!
         Timber.v("Get bike name mapping : %s => %s", bikeId, bikeName)
         return bikeName
     }
 
-    fun removeBikeRouteNameMapping(bikeId: BigInteger) {
+    fun removeBikeRouteNameMapping(bikeId: String) {
         val sharedPref = getPrivatePreferencesBikeMapping()
         val editor = sharedPref.edit()
-        editor.remove(bikeId.toString())
-        Timber.v("Delete bike name mapping : %s", bikeId.toString())
+        editor.remove(bikeId)
+        Timber.v("Delete bike name mapping : %s", bikeId)
         editor.apply()
     }
 

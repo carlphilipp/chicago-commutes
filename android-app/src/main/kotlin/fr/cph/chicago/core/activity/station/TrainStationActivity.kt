@@ -47,7 +47,6 @@ import fr.cph.chicago.redux.TrainStationAction
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Color
-import java.math.BigInteger
 import java.util.Random
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
@@ -64,7 +63,7 @@ class TrainStationActivity : StationActivity(), StoreSubscriber<State> {
     private lateinit var trainStation: TrainStation
     private lateinit var binding: ActivityStationBinding
 
-    private var stationId: BigInteger = BigInteger.ZERO
+    private var stationId: String = StringUtils.EMPTY
     private var ids: MutableMap<String, Int> = mutableMapOf()
     private var randomTrainLine = TrainLine.NA
 
@@ -85,9 +84,9 @@ class TrainStationActivity : StationActivity(), StoreSubscriber<State> {
             )
 
             // Get train station id from bundle
-            stationId = BigInteger(intent.extras?.getString(getString(R.string.bundle_train_stationId), "0")!!)
+            stationId = intent.extras?.getString(getString(R.string.bundle_train_stationId), "0")!!
 
-            if (stationId != BigInteger.ZERO) {
+            if (stationId != StringUtils.EMPTY) {
                 // Get trainStation
                 trainStation = TrainService.getStation(stationId)
                 position = trainStation.stops[0].position
@@ -210,7 +209,7 @@ class TrainStationActivity : StationActivity(), StoreSubscriber<State> {
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        stationId = BigInteger(savedInstanceState.getString(getString(R.string.bundle_train_stationId))!!)
+        stationId = savedInstanceState.getString(getString(R.string.bundle_train_stationId))!!
         position = savedInstanceState.getParcelable(getString(R.string.bundle_position)) as Position? ?: Position()
     }
 

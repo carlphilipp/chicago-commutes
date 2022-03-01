@@ -45,7 +45,6 @@ import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.math.BigInteger
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.Callable
@@ -75,7 +74,7 @@ object BusService {
                     params.put(REQUEST_STOP_ID, favoritesBusParams.get(REQUEST_STOP_ID).joinToString(separator = ","))
                     getBusArrivals(
                         routes = favoritesBusParams.get(REQUEST_ROUTE).toList(),
-                        stopIds = favoritesBusParams.get(REQUEST_STOP_ID).map { it.toBigInteger() }.toList()
+                        stopIds = favoritesBusParams.get(REQUEST_STOP_ID).map { it }.toList()
                     )
                 }
             }
@@ -91,7 +90,7 @@ object BusService {
                 }
                 busStopsResponse.bustimeResponse.stops!!.map { stop ->
                     BusStop(
-                        id = stop.stpid.toBigInteger(),
+                        id = stop.stpid,
                         name = WordUtils.capitalizeFully(stop.stpnm),
                         description = stop.stpnm,
                         position = Position(stop.lat, stop.lon))
@@ -238,7 +237,7 @@ object BusService {
             .subscribeOn(Schedulers.computation())
     }
 
-    fun loadBusArrivals(busRouteId: String, busStopId: BigInteger, bound: String, boundTitle: String): Single<BusArrivalStopDTO> {
+    fun loadBusArrivals(busRouteId: String, busStopId: String, bound: String, boundTitle: String): Single<BusArrivalStopDTO> {
         return getBusArrivals(listOf(busStopId), listOf(busRouteId))
             .map { busArrivals ->
                 busArrivals
@@ -258,7 +257,7 @@ object BusService {
             .distinct()
     }
 
-    private fun getBusArrivals(stopIds: List<BigInteger>? = null, routes: List<String>? = null, busId: String? = null): Single<List<BusArrival>> {
+    private fun getBusArrivals(stopIds: List<String>? = null, routes: List<String>? = null, busId: String? = null): Single<List<BusArrival>> {
         return ctaClient.getBusArrivals(stopIds?.map { it.toString() }, routes, busId)
             .map { result ->
                 when (result.bustimeResponse.prd) {
