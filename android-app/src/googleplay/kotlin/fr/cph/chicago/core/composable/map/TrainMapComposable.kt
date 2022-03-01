@@ -125,7 +125,11 @@ fun TrainMapView(
 
             GoogleMapTrainMapView(
                 viewModel = viewModel,
-                onMapLoaded = { isMapLoaded = true },
+                onMapLoaded = {
+                    Timber.i("Map loaded")
+                    isMapLoaded = true
+                    //viewModel.loadTrains()
+                },
             )
 
             LoadingBar(
@@ -381,7 +385,7 @@ class GoogleMapTrainViewModel @Inject constructor(
     fun initModel(line: TrainLine): GoogleMapTrainViewModel {
         uiState = uiState.copy(line = line)
         loadPositions()
-        loadTrains()
+        //loadTrains()
         loadStations()
         return this
     }
@@ -450,6 +454,7 @@ class GoogleMapTrainViewModel @Inject constructor(
     }
 
     fun centerMapOnTrains() {
+        Timber.i("Center map on train")
         val position: Position
         val zoom: Float
         if (uiState.trains.size == 1) {
@@ -463,8 +468,8 @@ class GoogleMapTrainViewModel @Inject constructor(
             zoom = 11f
         }
         uiState = uiState.copy(
-            moveCamera = LatLng(position.latitude, position.longitude),
-            moveCameraZoom = zoom,
+            //moveCamera = LatLng(position.latitude, position.longitude),
+            //moveCameraZoom = zoom,
         )
     }
 
@@ -481,6 +486,29 @@ class GoogleMapTrainViewModel @Inject constructor(
         if (uiState.polyLine.isEmpty()) {
             loadPositions()
         }
+    }
+
+    fun loadTrains() {
+        trainService.trainLocations(uiState.line.toTextString())
+            .observeOn(Schedulers.computation())
+            .subscribeOn(Schedulers.computation())
+            .subscribe(
+                { trains: List<Train> ->
+                    uiState = uiState.copy(
+                        trains = trains,
+                        isLoading = false,
+                    )
+                    if (uiState.shouldMoveCamera) {
+                        centerMapOnTrains()
+                        uiState = uiState.copy(shouldMoveCamera = false)
+                    }
+                },
+                {
+                    Timber.e(it, "Could not load trains")
+                    showError(true)
+                    uiState = uiState.copy(isLoading = false)
+                }
+            )
     }
 
     fun loadTrainEtas(train: Train, loadAll: Boolean) {
@@ -542,29 +570,6 @@ class GoogleMapTrainViewModel @Inject constructor(
                 },
                 { throwable ->
                     Timber.e(throwable, "Could not load stations")
-                    showError(true)
-                    uiState = uiState.copy(isLoading = false)
-                }
-            )
-    }
-
-    private fun loadTrains() {
-        trainService.trainLocations(uiState.line.toTextString())
-            .observeOn(Schedulers.computation())
-            .subscribeOn(Schedulers.computation())
-            .subscribe(
-                { trains: List<Train> ->
-                    uiState = uiState.copy(
-                        trains = trains,
-                        isLoading = false,
-                    )
-                    if (uiState.shouldMoveCamera) {
-                        centerMapOnTrains()
-                        uiState = uiState.copy(shouldMoveCamera = false)
-                    }
-                },
-                {
-                    Timber.e(it, "Could not load trains")
                     showError(true)
                     uiState = uiState.copy(isLoading = false)
                 }

@@ -40,6 +40,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat.startActivity
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -163,7 +165,7 @@ fun BusFavoriteCard(modifier: Modifier = Modifier, util: Util = Util, busRoute: 
         val busDetailsDTOs = mutableListOf<BusDetailsDTO>()
         val busArrivalDTO = Favorites.getBusArrivalsMapped(busRoute.id)
         for ((stopName, boundMap) in busArrivalDTO.entries) {
-            val stopNameTrimmed = util.trimBusStopNameIfNeeded(stopName)
+            val stopNameTrimmed = stopName//FIXME: not sure if that's needed? util.trimBusStopNameIfNeeded(stopName)
             for ((key, value) in boundMap) {
                 val (_, _, _, stopId, _, _, boundTitle) = value.iterator().next()
                 val busDetailsDTO = BusDetailsDTO(
@@ -460,15 +462,15 @@ fun FooterCard(modifier: Modifier = Modifier, detailsOnClick: () -> Unit = {}, m
 
 @Composable
 fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA, destination: String, direction: String? = null, arrivals: List<String>) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
-            .fillMaxWidth()
-    ) {
+    ConstraintLayout(modifier = modifier.fillMaxWidth()) {
+        val (left, right, box) = createRefs()
         Row(
             verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.constrainAs(left) {
+                start.linkTo(anchor = parent.start, margin = 12.dp)
+                end.linkTo(anchor = right.start)
+                width = Dimension.fillToConstraints
+            }
         ) {
             ColoredBox(color = trainLine.toComposeColor())
             Column(modifier = Modifier.padding(horizontal = 10.dp)) {
@@ -488,7 +490,14 @@ fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA,
                 }
             }
         }
-        Row {
+        Row(
+            modifier = Modifier.constrainAs(right) {
+                start.linkTo(anchor = left.end)
+                end.linkTo(anchor = parent.end, margin = 12.dp)
+                width = Dimension.wrapContent
+                centerVerticallyTo(left)
+            }
+        ) {
             arrivals.forEach {
                 var currentTime by remember { mutableStateOf(it) }
                 var color = Color.Unspecified
@@ -507,4 +516,39 @@ fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA,
             }
         }
     }
+/*
+    ConstraintLayout(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(Color.Red)
+    ) {
+        val (left, *//*middle,*//* right) = createRefs()
+
+        Text(
+            modifier = Modifier.constrainAs(left) {
+                start.linkTo(parent.start)
+                end.linkTo(right.start)
+                baseline.linkTo(right.baseline)
+                width = Dimension.preferredWrapContent
+            },
+
+            text = "Text left1 left2 left3 left4 left5 left 6 left9 left10 left11 left12",
+            style = MaterialTheme.typography.titleSmall,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+
+        Text(
+            modifier = Modifier.constrainAs(right) {
+                start.linkTo(left.end)
+                end.linkTo(parent.end)
+                baseline.linkTo(left.baseline)
+                width = Dimension.preferredWrapContent
+            },
+            text = "Text right 1, right 2, right 3, right 4",
+            maxLines = 1,
+            style = MaterialTheme.typography.titleSmall,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }*/
 }
