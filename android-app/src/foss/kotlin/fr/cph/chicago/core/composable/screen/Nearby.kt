@@ -11,5 +11,5 @@ fun Nearby(
     mainViewModel: MainViewModel,
     locationViewModel: LocationViewModel,
 ) {
-    // TODO
+    // TODO with OSM
 }

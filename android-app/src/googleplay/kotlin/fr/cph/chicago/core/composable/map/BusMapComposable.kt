@@ -87,11 +87,10 @@ class BusMapComposable : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val busRouteId: String
-        if (savedInstanceState != null) {
-            busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
+        val busRouteId = if (savedInstanceState != null) {
+            savedInstanceState.getString(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
         } else {
-            busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
+            intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
         }
 
         val viewModel = GoogleMapBusViewModel().initModel(
@@ -611,7 +610,7 @@ class GoogleMapBusViewModel @Inject constructor(
             )
     }
 
-    // FIXE: to move to appropriate location
+    // FIXME: to move to appropriate location
     private fun createBitMapDescriptor(icon: Bitmap, size: Int): BitmapDescriptor {
         val bitmap = Bitmap.createScaledBitmap(icon, icon.width / size, icon.height / size, true)
         return BitmapDescriptorFactory.fromBitmap(bitmap)

@@ -44,8 +44,6 @@ import androidx.core.content.ContextCompat.startActivity
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
-import fr.cph.chicago.core.activity.map.BusMapActivity
-import fr.cph.chicago.core.adapter.FavoritesAdapter
 import fr.cph.chicago.core.composable.BikeStationComposable
 import fr.cph.chicago.core.composable.BusStationComposable
 import fr.cph.chicago.core.composable.MainViewModel
