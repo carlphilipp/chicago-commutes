@@ -69,7 +69,6 @@ import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.toComposeColor
-import fr.cph.chicago.util.DebugView
 import fr.cph.chicago.util.GoogleMapUtil.defaultZoom
 import fr.cph.chicago.util.GoogleMapUtil.isIn
 import fr.cph.chicago.util.MapUtil
@@ -77,9 +76,9 @@ import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import javax.inject.Inject
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
-import javax.inject.Inject
 
 class TrainMapComposable : ComponentActivity() {
 
@@ -191,7 +190,7 @@ fun GoogleMapTrainMapView(
 
     //DebugView(cameraPositionState = cameraPositionState)
 
-    InfoWindowsDetails(
+    InfoWindowsDetailsTrain(
         showView = viewModel.uiState.trainEtas.isNotEmpty(),
         viewModel = viewModel
     )
@@ -247,6 +246,7 @@ fun TrainsOnMapLayer(
                 rotation = train.heading.toFloat(),
                 flat = true,
                 anchor = Offset(0.5f, 0.5f),
+                zIndex = 1f,
                 onClick = {
                     viewModel.loadTrainEtas(train, false)
                     false
@@ -259,9 +259,9 @@ fun TrainsOnMapLayer(
     }
 }
 
-// FIXME: Should be re-usable with train
+// FIXME: Should be re-usable with bus
 @Composable
-fun InfoWindowsDetails(
+fun InfoWindowsDetailsTrain(
     showView: Boolean,
     viewModel: GoogleMapTrainViewModel,
 ) {
@@ -551,6 +551,7 @@ class GoogleMapTrainViewModel @Inject constructor(
     private fun loadTrains() {
         trainService.trainLocations(uiState.line.toTextString())
             .observeOn(Schedulers.computation())
+            .subscribeOn(Schedulers.computation())
             .subscribe(
                 { trains: List<Train> ->
                     uiState = uiState.copy(

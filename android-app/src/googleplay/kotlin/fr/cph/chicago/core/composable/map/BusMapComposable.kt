@@ -5,19 +5,41 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -35,42 +57,47 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.activity.map.BusMapActivity
 import fr.cph.chicago.core.composable.TopBar
 import fr.cph.chicago.core.composable.common.LoadingBar
 import fr.cph.chicago.core.composable.common.LoadingCircle
 import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
-import fr.cph.chicago.core.composable.mainViewModel
 import fr.cph.chicago.core.composable.settingsViewModel
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
+import fr.cph.chicago.core.model.Bus
+import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusPattern
+import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.service.BusService
-import fr.cph.chicago.util.DebugView
 import fr.cph.chicago.util.GoogleMapUtil.defaultZoom
+import fr.cph.chicago.util.GoogleMapUtil.isIn
+import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.toLatLng
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import javax.inject.Inject
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
-import javax.inject.Inject
 
 class BusMapComposable : ComponentActivity() {
+
+    companion object {
+        const val ZOOM_ONE_RESULT = 15
+        const val ZOOM_DEFAULT = 11
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //val busId: Int
         val busRouteId: String
         val bounds: Array<String>
         if (savedInstanceState != null) {
-            //  busId = savedInstanceState.getInt(getString(R.string.bundle_bus_id))
             busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
             bounds = savedInstanceState.getStringArray(getString(R.string.bundle_bus_bounds)) ?: arrayOf()
         } else {
-            //busId = intent.getIntExtra(getString(R.string.bundle_bus_id), 0)
             busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
             bounds = intent.getStringArrayExtra(getString(R.string.bundle_bus_bounds)) ?: arrayOf()
         }
@@ -175,12 +202,12 @@ fun GoogleMapBusMapView(
         )
     }
 
-    DebugView(cameraPositionState = cameraPositionState)
+    //DebugView(cameraPositionState = cameraPositionState)
 
-    /*InfoWindowsDetails(
-        showView = viewModel.uiState.trainEtas.isNotEmpty(),
+    InfoWindowsDetailsBus(
+        showView = viewModel.uiState.busArrivals.isNotEmpty(),
         viewModel = viewModel
-    )*/
+    )
 }
 
 @Composable
@@ -207,7 +234,7 @@ fun BusStopsMarkers(
         busPattern.busStopsPatterns
             .filter { busStopPattern -> busStopPattern.type == "S" }
             .forEach { busStopPattern ->
-                if(viewModel.uiState.stopIcons.isNotEmpty()) {
+                if (viewModel.uiState.stopIcons.isNotEmpty()) {
                     Marker(
                         position = busStopPattern.position.toLatLng(),
                         icon = viewModel.uiState.stopIcons[index],
@@ -227,17 +254,18 @@ fun BusOnMapLayer(
 ) {
     viewModel.updateIconOnZoomChange(cameraPositionState.position.zoom)
 
-/*    if (viewModel.uiState.trainIcon != null) {
-        viewModel.uiState.trains.forEach { train ->
+    if (viewModel.uiState.busIcon != null) {
+        viewModel.uiState.buses.forEach { bus ->
             Marker(
-                title = "To ${train.destName}",
-                position = train.position.toLatLng(),
-                icon = viewModel.uiState.trainIcon,
-                rotation = train.heading.toFloat(),
+                title = "To ${bus.destination}",
+                position = bus.position.toLatLng(),
+                icon = viewModel.uiState.busIcon,
+                rotation = bus.heading.toFloat(),
                 flat = true,
                 anchor = Offset(0.5f, 0.5f),
+                zIndex = 1f,
                 onClick = {
-                    viewModel.loadTrainEtas(train, false)
+                    viewModel.loadBusEta(bus, false)
                     false
                 },
                 onInfoWindowClose = {
@@ -245,8 +273,111 @@ fun BusOnMapLayer(
                 }
             )
         }
-    }*/
+    }
 }
+
+// FIXME: Should be re-usable with train
+@Composable
+fun InfoWindowsDetailsBus(
+    showView: Boolean,
+    viewModel: GoogleMapBusViewModel,
+) {
+    Box(Modifier.fillMaxSize()) {
+        Surface(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(50.dp)
+                .clip(RoundedCornerShape(20.dp))
+                .clickable(
+                    enabled = true,
+                    onClick = {
+                        viewModel.loadBusEta(viewModel.uiState.detailsBus, true)
+                    }
+                ),
+        ) {
+            AnimatedVisibility(
+                visible = showView,
+                enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 300)),
+            ) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 10.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = "To: ${viewModel.uiState.detailsBus.destination}",
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    val max = if (viewModel.uiState.detailsShowAll) {
+                        viewModel.uiState.busArrivals.size - 1
+                    } else {
+                        6
+                    }
+                    for (i in 0..max) {
+                        val busArrival = viewModel.uiState.busArrivals[i]
+                        BusEtaView(stopName = busArrival.stopName, eta = busArrival.timeLeftDueDelay)
+                    }
+                    if (!viewModel.uiState.detailsShowAll && max >= 6) {
+                        DisplayAllResultsRowView()
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun BusEtaView(stopName: String, eta: String) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = stopName,
+            style = MaterialTheme.typography.titleSmall,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        Text(
+            text = eta,
+            style = MaterialTheme.typography.bodyMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+@Composable
+fun DisplayAllResultsRowView() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 10.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = "Display all results",
+            style = MaterialTheme.typography.titleSmall,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
 
 data class GoogleMapBusUiState(
     val isLoading: Boolean = false,
@@ -254,10 +385,11 @@ data class GoogleMapBusUiState(
     val colors: List<Color> = TrainLine.values().map { Color(it.color) }.dropLast(1),
     val stopIcons: List<BitmapDescriptor> = listOf(),
 
-    //val busId: Int = 0,
     val busRouteId: String = StringUtils.EMPTY,
 
+    val buses: List<Bus> = listOf(),
     val busPatterns: List<BusPattern> = listOf(),
+    val busArrivals: List<BusArrival> = listOf(),
 
     val zoom: Float = defaultZoom,
     val shouldMoveCamera: Boolean = true,
@@ -269,6 +401,9 @@ data class GoogleMapBusUiState(
     val busIconMedium: BitmapDescriptor? = null,
     val busIconLarge: BitmapDescriptor? = null,
     val showStopIcon: Boolean = false,
+
+    val detailsBus: Bus = Bus(),
+    val detailsShowAll: Boolean = false,
 )
 
 @HiltViewModel
@@ -283,35 +418,8 @@ class GoogleMapBusViewModel @Inject constructor(
             busRouteId = busRouteId,
         )
         loadPatterns()
+        loadBuses()
         return this
-    }
-
-    fun loadPatterns() {
-        Observable.fromCallable {
-            val patterns: MutableList<BusPattern> = mutableListOf()
-
-            // Search for directions
-/*            val busDirections = busService.loadBusDirectionsSingle(uiState.busRouteId).blockingGet()
-            bounds = busDirections.busDirections.map { busDirection -> busDirection.text }.toTypedArray()*/
-
-            busService.loadBusPattern(uiState.busRouteId, arrayOf<String>()).blockingGet().forEach { patterns.add(it) }
-            patterns
-        }
-            .subscribeOn(Schedulers.io())
-            .observeOn(Schedulers.computation())
-            .subscribe(
-                { result ->
-                    uiState = uiState.copy(
-                        busPatterns = result,
-                        isLoading = false,
-                    )
-                },
-                { throwable ->
-                    Timber.e(throwable, "Could not load train etas")
-                    showError(true)
-                    uiState = uiState.copy(isLoading = false)
-                }
-            )
     }
 
     fun showError(showError: Boolean) {
@@ -322,21 +430,88 @@ class GoogleMapBusViewModel @Inject constructor(
         uiState = uiState.copy(isLoading = true)
         loadBuses()
         if (uiState.busPatterns.isEmpty()) {
-            //loadPositions()
+            loadPatterns()
         }
     }
 
     fun loadBuses() {
         busService.busForRouteId(uiState.busRouteId)
             .observeOn(Schedulers.computation())
+            .subscribeOn(Schedulers.computation())
             .subscribe(
-                {
-
+                { buses ->
+                    uiState = uiState.copy(
+                        buses = buses,
+                        isLoading = false,
+                    )
+                    if (uiState.shouldMoveCamera) {
+                        centerMapOnBuses()
+                        uiState = uiState.copy(shouldMoveCamera = false)
+                    }
                 },
-                {
-
+                { throwable ->
+                    Timber.e(throwable, "Could not load buses")
+                    uiState = uiState.copy(
+                        isLoading = false,
+                        showError = true,
+                    )
                 }
             )
+    }
+
+    fun loadBusEta(bus: Bus, showAll: Boolean) {
+        uiState = uiState.copy(
+            isLoading = true,
+            detailsBus = bus,
+            detailsShowAll = showAll,
+        )
+        busService.loadFollowBus(bus.id.toString())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { busArrivals ->
+                    uiState = uiState.copy(
+                        busArrivals = busArrivals,
+                        isLoading = false,
+                    )
+                },
+                { throwable ->
+                    Timber.e(throwable, "Could not load bus eta")
+                    uiState = uiState.copy(
+                        isLoading = false,
+                        showError = true,
+                    )
+                }
+            )
+    }
+
+    fun showHideDetails(value: Boolean) {
+        uiState = uiState.copy(detailsShowAll = value)
+    }
+
+    fun resetDetails() {
+        uiState = uiState.copy(
+            busArrivals = listOf(),
+        )
+    }
+
+    // FIXME: this is duplicated code
+    private fun centerMapOnBuses() {
+        val position: Position
+        val zoom: Float
+        if (uiState.buses.size == 1) {
+            position = if (uiState.buses[0].position.latitude == 0.0 && uiState.buses[0].position.longitude == 0.0)
+                chicagoPosition
+            else
+                uiState.buses[0].position
+            zoom = 15f
+        } else {
+            position = MapUtil.getBestPosition(uiState.buses.map { it.position })
+            zoom = 11f
+        }
+        uiState = uiState.copy(
+            moveCamera = LatLng(position.latitude, position.longitude),
+            moveCameraZoom = zoom,
+        )
     }
 
     fun resetMoveCamera() {
@@ -367,7 +542,7 @@ class GoogleMapBusViewModel @Inject constructor(
             )
         }
             .observeOn(Schedulers.computation())
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.computation())
             .subscribe { result ->
                 uiState = uiState.copy(
                     busIcon = result[0],
@@ -388,10 +563,6 @@ class GoogleMapBusViewModel @Inject constructor(
             }
     }
 
-    private val blueIcon: BitmapDescriptor by lazy {
-        BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(App.instance.resources, R.drawable.blue_marker_no_shade))
-    }
-
     fun showHideStops(newZoom: Float) {
         Timber.d("showHideStations $newZoom and ${uiState.zoom}")
         if (newZoom >= 14f && !uiState.showStopIcon) {
@@ -407,25 +578,50 @@ class GoogleMapBusViewModel @Inject constructor(
     }
 
     fun updateIconOnZoomChange(newZoom: Float) {
-/*        if (newZoom != uiState.zoom) {
+        if (newZoom != uiState.zoom) {
             val oldZoom = uiState.zoom
-            if (GoogleMapUtil.isIn(newZoom, 12.9f, 11f) && !GoogleMapUtil.isIn(oldZoom, 12.9f, 11f)) {
+            if (isIn(newZoom, 12.9f, 11f) && !isIn(oldZoom, 12.9f, 11f)) {
                 uiState = uiState.copy(
-                    trainIcon = uiState.trainIconSmall,
+                    busIcon = uiState.busIconSmall,
                     zoom = newZoom,
                 )
-            } else if (GoogleMapUtil.isIn(newZoom, 14.9f, 13f) && !GoogleMapUtil.isIn(oldZoom, 14.9f, 13f)) {
+            } else if (isIn(newZoom, 14.9f, 13f) && !isIn(oldZoom, 14.9f, 13f)) {
                 uiState = uiState.copy(
-                    trainIcon = uiState.trainIconMedium,
+                    busIcon = uiState.busIconMedium,
                     zoom = newZoom,
                 )
-            } else if (GoogleMapUtil.isIn(newZoom, 21f, 15f) && !GoogleMapUtil.isIn(oldZoom, 21f, 15f)) {
+            } else if (isIn(newZoom, 21f, 15f) && !isIn(oldZoom, 21f, 15f)) {
                 uiState = uiState.copy(
-                    trainIcon = uiState.trainIconLarge,
+                    busIcon = uiState.busIconLarge,
                     zoom = newZoom,
                 )
             }
-        }*/
+        }
+    }
+
+    private fun loadPatterns() {
+        Observable.fromCallable {
+            val patterns: MutableList<BusPattern> = mutableListOf()
+            busService.loadBusPattern(uiState.busRouteId, arrayOf<String>()).blockingGet().forEach { patterns.add(it) }
+            patterns
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.computation())
+            .subscribe(
+                { result ->
+                    uiState = uiState.copy(
+                        busPatterns = result,
+                        isLoading = false,
+                    )
+                },
+                { throwable ->
+                    Timber.e(throwable, "Could not load route pattern")
+                    uiState = uiState.copy(
+                        isLoading = false,
+                        showError = true,
+                    )
+                }
+            )
     }
 
     private fun createBitMapDescriptor(icon: Bitmap, size: Int): BitmapDescriptor {
