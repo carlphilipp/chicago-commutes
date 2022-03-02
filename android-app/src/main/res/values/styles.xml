@@ -17,52 +17,6 @@
 -->
 
 <resources>
-
-    <!-- Day Theme -->
-    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/lightPrimaryColor</item> <!-- Top action bar color -->
-        <item name="colorPrimaryDark">@color/lightPrimaryColorDark</item> <!-- Top status color -->
-        <item name="colorSecondary">@color/lightPrimaryColorDark</item> <!-- Floating button background -->
-        <item name="colorAccent">@color/lightColorAccent</item> <!-- Search bar / some windows -->
-        <item name="android:textColorPrimary">@color/lightColorTextPrimary</item>
-        <item name="android:textColorSecondary">@color/lightColorTextSecondary</item>
-        <item name="android:navigationBarColor">@color/lightPrimaryColorDarker</item>
-        <item name="favoriteCardBackground">@color/white</item>
-        <item name="streetViewBackground">@color/white</item>
-        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
-        <item name="android:windowBackground">@drawable/bg_selector_light</item>
-        <item name="iconTint">@color/grey_5</item>
-        <item name="textAppearance">@style/AppTextAppearanceLight</item>
-        <item name="iconStationTint">@color/grey_5</item>
-        <item name="popupBackground">@drawable/bg_selector_popup_light</item>
-        <item name="alertDialogTheme">@style/AlertDialogLight</item>
+    <style name="Theme.ChicagoCommutes" parent="Theme.Material3.Light">
     </style>
-
-    <style name="AppTextAppearanceLight" parent="@android:style/TextAppearance">
-        <item name="android:textColor">@color/grey_5</item>
-        <item name="android:textSize">14sp</item>
-    </style>
-
-    <style name="AlertDialogLight" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorAccent">@color/lightPrimaryColorDark</item>
-    </style>
-
-    <!-- Arrow style -->
-    <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
-        <item name="spinBars">true</item>
-        <item name="color">@android:color/white</item>
-    </style>
-
-    <!-- Alert Dialog -->
-    <style name="AlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog.Centered">
-
-    </style>
-
-    <style name="Theme.ComposeTheming" parent="Theme.Material3.DayNight.NoActionBar">
-        <!--<item name="android:statusBarColor">@color/status_bar</item>-->
-    </style>
-
-    <style name="Theme.Material3.DayNight.NoActionBar" parent="@android:style/Theme.Material.Light.NoActionBar" />
-
-
 </resources>

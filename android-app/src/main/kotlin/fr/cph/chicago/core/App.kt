@@ -27,12 +27,10 @@ import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.WindowManager
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.color.DynamicColors
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.ErrorActivity
-import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.service.PreferenceService
 import io.reactivex.rxjava3.plugins.RxJavaPlugins
 import timber.log.Timber
@@ -84,22 +82,7 @@ class App : Application() {
             startErrorActivity()
         }
 
-        themeSetup()
-
         super.onCreate()
-    }
-
-    fun themeSetup() {
-        when (preferenceService.getTheme()) {
-            Theme.AUTO -> {
-                when {
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-                    else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
-                }
-            }
-            Theme.LIGHT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            Theme.DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        }
     }
 
     val screenWidth: Int by lazy {

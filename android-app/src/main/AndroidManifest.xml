@@ -17,7 +17,8 @@
 
 -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="fr.cph.chicago">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="fr.cph.chicago">
 
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -35,17 +36,16 @@
         android:configChanges="uiMode"
         android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/current_app_name"
-        android:usesCleartextTraffic="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ComposeTheming">
+        android:theme="@style/Theme.ChicagoCommutes"
+        android:usesCleartextTraffic="true">
+
         <activity
             android:name=".core.activity.BaseActivity"
             android:alwaysRetainTaskState="true"
-            android:screenOrientation="portrait"
             android:exported="true"
-            android:theme="@style/Theme.ComposeTheming">
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -71,104 +71,83 @@
         <activity
             android:name=".core.activity.ErrorActivity"
             android:configChanges="uiMode"
+            android:exported="false"
             android:label="@string/bus_bound_activity"
-            android:screenOrientation="portrait"
-            android:exported="false"
-            android:theme="@style/Theme.ComposeTheming"/>
-<!--        <activity
-            android:name=".core.activity.SearchActivity"
-            android:configChanges="uiMode"
-            android:label="@string/search_title"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait"
-            android:exported="false"
-            android:theme="@style/Theme.ComposeTheming">
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
+            android:screenOrientation="portrait" /> <!-- android:theme="@style/Theme.ComposeTheming" -->
+        <!--        <activity
+                    android:name=".core.activity.SearchActivity"
+                    android:configChanges="uiMode"
+                    android:label="@string/search_title"
+                    android:launchMode="singleTop"
+                    android:screenOrientation="portrait"
+                    android:exported="false"
+                    android:theme="@style/Theme.ComposeTheming">
+                    <intent-filter>
+                        <action android:name="android.intent.action.SEARCH" />
+                    </intent-filter>
 
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
-        </activity>-->
+                    <meta-data
+                        android:name="android.app.searchable"
+                        android:resource="@xml/searchable" />
+                </activity>-->
         <activity
             android:name=".core.composable.MainActivityComposable"
             android:configChanges="uiMode"
-            android:label="@string/developer_options"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.ComposeTheming"
-            android:exported="false"/>
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".core.composable.TrainStationComposable"
             android:configChanges="uiMode"
-            android:label="@string/developer_options"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.ComposeTheming"
-            android:exported="false"/>
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".core.composable.TrainListStationActivityComposable"
             android:configChanges="uiMode"
-            android:label="@string/developer_options"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.ComposeTheming"
-            android:exported="false"/>
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".core.composable.BusBoundActivityComposable"
             android:configChanges="uiMode"
-            android:label="@string/developer_options"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.ComposeTheming"
-            android:exported="false"/>
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".core.composable.BusStationComposable"
             android:configChanges="uiMode"
-            android:label="@string/developer_options"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.ComposeTheming"
-            android:exported="false"/>
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".core.composable.BikeStationComposable"
             android:configChanges="uiMode"
-            android:label="@string/developer_options"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.ComposeTheming"
-            android:exported="false"/>
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".core.composable.DeveloperOptionsComposable"
             android:configChanges="uiMode"
-            android:label="@string/developer_options"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.ComposeTheming"
-            android:exported="false"/>
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".core.composable.AlertActivityComposable"
             android:configChanges="uiMode"
-            android:label="@string/developer_options"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.ComposeTheming"
-            android:exported="false"/>
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".core.composable.map.TrainMapActivity"
             android:configChanges="uiMode"
-            android:label="@string/developer_options"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.ComposeTheming"
-            android:exported="false"/>
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".core.composable.map.BusMapActivity"
             android:configChanges="uiMode"
-            android:label="@string/developer_options"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.ComposeTheming"
-            android:exported="false"/>
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <uses-library
             android:name="org.apache.http.legacy"

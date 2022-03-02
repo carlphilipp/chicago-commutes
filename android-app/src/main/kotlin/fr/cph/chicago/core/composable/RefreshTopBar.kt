@@ -1,6 +1,5 @@
 package fr.cph.chicago.core.composable
 
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -15,13 +14,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun TopBar(title: String, openDrawer: () -> Unit) {
+fun TopBar(title: String, openDrawer: () -> Unit, onSearch: () -> Unit, showSearch: Boolean = false) {
     CenterAlignedTopAppBar(
         title = {
             Text(
@@ -38,14 +36,13 @@ fun TopBar(title: String, openDrawer: () -> Unit) {
             }
         },
         actions = {
-            val context = LocalContext.current
-            IconButton(onClick = {
-                Toast.makeText(context, "Search", Toast.LENGTH_SHORT).show()
-            }) {
-                Icon(
-                    imageVector = Icons.Filled.Search,
-                    contentDescription = "Search"
-                )
+            if (showSearch) {
+                IconButton(onClick = onSearch) {
+                    Icon(
+                        imageVector = Icons.Filled.Search,
+                        contentDescription = "Search"
+                    )
+                }
             }
         },
     )
@@ -53,7 +50,7 @@ fun TopBar(title: String, openDrawer: () -> Unit) {
 
 // TODO refactor
 @Composable
-fun TopBar(title: String, showRefresh: Boolean = false, onRefresh: () -> Unit = {}) {
+fun RefreshTopBar(title: String, showRefresh: Boolean = false, onRefresh: () -> Unit = {}) {
     val activity = LocalLifecycleOwner.current as ComponentActivity
     CenterAlignedTopAppBar(
         title = {

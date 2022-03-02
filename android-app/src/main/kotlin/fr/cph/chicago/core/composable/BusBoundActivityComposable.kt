@@ -120,7 +120,7 @@ fun BusBoundView(
 
     Scaffold(
         modifier = modifier,
-        topBar = { TopBar("$busRouteId - $boundTitle") },
+        topBar = { RefreshTopBar("$busRouteId - $boundTitle") },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) { data -> Snackbar(snackbarData = data) } },
         content = {
             SwipeRefresh(

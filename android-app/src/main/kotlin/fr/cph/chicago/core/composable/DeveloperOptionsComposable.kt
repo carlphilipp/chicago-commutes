@@ -85,7 +85,7 @@ class DeveloperOptionsViewModel(private val preferenceService: PreferenceService
 @Composable
 fun DeveloperOptions(viewModel: DeveloperOptionsViewModel) {
     Scaffold(
-        topBar = { TopBar("Developer Options") },
+        topBar = { RefreshTopBar("Developer Options") },
         content = {
             Column(
                 modifier = Modifier

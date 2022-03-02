@@ -57,7 +57,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.composable.TopBar
+import fr.cph.chicago.core.composable.RefreshTopBar
 import fr.cph.chicago.core.composable.common.LoadingBar
 import fr.cph.chicago.core.composable.common.LoadingCircle
 import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
@@ -115,7 +115,7 @@ fun TrainMapView(
     Scaffold(
         modifier = modifier,
         topBar = {
-            TopBar(
+            RefreshTopBar(
                 title = viewModel.uiState.line.toStringWithLine(),
                 showRefresh = true,
                 onRefresh = { viewModel.reloadData() })

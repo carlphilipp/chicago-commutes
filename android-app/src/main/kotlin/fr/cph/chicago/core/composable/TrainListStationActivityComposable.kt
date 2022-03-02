@@ -54,7 +54,7 @@ class TrainListStationActivityComposable : ComponentActivity() {
 fun TrainLineStops(title: String, trainStations: List<TrainStation>) {
     val context = LocalContext.current
     Column {
-        TopBar(title)
+        RefreshTopBar(title)
         Scaffold(
             //snackbarHost = { SnackbarHost(hostState = snackbarHostState) { data -> Snackbar(snackbarData = data) } },
             content = {

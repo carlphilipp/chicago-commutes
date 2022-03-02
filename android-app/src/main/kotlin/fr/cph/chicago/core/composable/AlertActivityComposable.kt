@@ -65,7 +65,7 @@ fun AlertDetails(
     val uiState = viewModel.uiState
     val scope = rememberCoroutineScope()
     Scaffold(
-        topBar = { TopBar(title = uiState.title) },
+        topBar = { RefreshTopBar(title = uiState.title) },
         snackbarHost = { SnackbarHost(hostState = uiState.snackbarHostState) { data -> Snackbar(snackbarData = data) } },
         content = {
             SwipeRefresh(
