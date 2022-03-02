@@ -119,7 +119,6 @@ class MainViewModel @Inject constructor(
     private val trainService: TrainService = TrainService,
     private val busService: BusService = BusService,
     private val bikeService: BikeService = BikeService,
-    private val util: Util = Util,
     private val mapUtil: MapUtil = MapUtil,
 ) : ViewModel(), StoreSubscriber<State> {
     var uiState by mutableStateOf(MainUiState())
@@ -131,7 +130,7 @@ class MainViewModel @Inject constructor(
     }
 
     override fun newState(state: State) {
-        Timber.i("new state ${state.alertStatus}")
+        Timber.d("new state")
         Favorites.refreshFavorites()
         if (state.busRoutesStatus == Status.SUCCESS) {
             uiState = uiState.copy(

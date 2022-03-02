@@ -55,7 +55,8 @@
                 android:name="error"
                 android:value="false" />
         </activity>
-        <activity
+        <!-- to delete when global search is done -->
+        <!--<activity
             android:name=".core.activity.MainActivity"
             android:alwaysRetainTaskState="true"
             android:configChanges="uiMode"
@@ -66,35 +67,7 @@
             <meta-data
                 android:name="android.app.default_searchable"
                 android:value="fr.cph.chicago.activity.SearchActivity" />
-        </activity>
-        <activity
-            android:name=".core.activity.station.TrainStationActivity"
-            android:configChanges="uiMode"
-            android:label="@string/station_activity"
-            android:screenOrientation="portrait"
-            android:exported="false"
-            android:theme="@style/Theme.ComposeTheming"/>
-        <activity
-            android:name=".core.activity.TrainListStationActivity"
-            android:configChanges="uiMode"
-            android:label="@string/train_station_activity"
-            android:screenOrientation="portrait"
-            android:exported="false"
-            android:theme="@style/Theme.ComposeTheming"/>
-        <activity
-            android:name=".core.activity.BusBoundActivity"
-            android:configChanges="uiMode"
-            android:label="@string/train_station_activity"
-            android:screenOrientation="portrait"
-            android:exported="false"
-            android:theme="@style/Theme.ComposeTheming"/>
-        <activity
-            android:name=".core.activity.station.BusStopActivity"
-            android:configChanges="uiMode"
-            android:label="@string/bus_bound_activity"
-            android:screenOrientation="portrait"
-            android:exported="false"
-            android:theme="@style/Theme.ComposeTheming"/>
+        </activity>-->
         <activity
             android:name=".core.activity.ErrorActivity"
             android:configChanges="uiMode"
@@ -102,7 +75,7 @@
             android:screenOrientation="portrait"
             android:exported="false"
             android:theme="@style/Theme.ComposeTheming"/>
-        <activity
+<!--        <activity
             android:name=".core.activity.SearchActivity"
             android:configChanges="uiMode"
             android:label="@string/search_title"
@@ -117,43 +90,7 @@
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
-        </activity>
-        <activity
-            android:name=".core.activity.station.BikeStationActivity"
-            android:configChanges="uiMode"
-            android:label="@string/bike_activity"
-            android:screenOrientation="portrait"
-            android:exported="false"
-            android:theme="@style/Theme.ComposeTheming"/>
-        <activity
-            android:name=".core.activity.map.BusMapActivity"
-            android:configChanges="uiMode"
-            android:label="@string/map_activity"
-            android:screenOrientation="portrait"
-            android:exported="false"
-            android:theme="@style/Theme.ComposeTheming"/>
-        <activity
-            android:name=".core.activity.map.TrainMapActivity"
-            android:configChanges="uiMode"
-            android:label="@string/map_activity"
-            android:screenOrientation="portrait"
-            android:exported="false"
-            android:theme="@style/Theme.ComposeTheming"/>
-        <activity
-            android:name=".core.activity.AlertActivity"
-            android:configChanges="uiMode"
-            android:label="@string/cta_alert"
-            android:screenOrientation="portrait"
-            android:exported="false"
-            android:theme="@style/Theme.ComposeTheming"/>
-        <activity
-            android:name=".core.activity.DeveloperOptionsActivity"
-            android:configChanges="uiMode"
-            android:label="@string/developer_options"
-            android:screenOrientation="portrait"
-            android:exported="false"
-            android:theme="@style/Theme.ComposeTheming"/>
-
+        </activity>-->
         <activity
             android:name=".core.composable.MainActivityComposable"
             android:configChanges="uiMode"
@@ -218,7 +155,7 @@
             android:exported="false"/>
 
         <activity
-            android:name=".core.composable.map.TrainMapComposable"
+            android:name=".core.composable.map.TrainMapActivity"
             android:configChanges="uiMode"
             android:label="@string/developer_options"
             android:screenOrientation="portrait"
@@ -226,7 +163,7 @@
             android:exported="false"/>
 
         <activity
-            android:name=".core.composable.map.BusMapComposable"
+            android:name=".core.composable.map.BusMapActivity"
             android:configChanges="uiMode"
             android:label="@string/developer_options"
             android:screenOrientation="portrait"

@@ -24,7 +24,7 @@ import android.content.Intent
 import android.net.Uri
 import android.view.View
 import java.util.Locale
-
+// FIXME: delete or re-use code
 class GoogleStreetOnClickListener(latitude: Double, longitude: Double) : GoogleMapListener(latitude, longitude) {
 
     override fun onClick(v: View) {

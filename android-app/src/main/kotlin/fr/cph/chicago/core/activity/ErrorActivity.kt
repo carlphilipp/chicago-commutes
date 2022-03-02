@@ -31,6 +31,7 @@ import fr.cph.chicago.databinding.ErrorBinding
  * @author Carl-Philipp Harmant
  * @version 1
  */
+// FIXME: See how that can be redone with compose
 class ErrorActivity : Activity() {
 
     private lateinit var binding: ErrorBinding

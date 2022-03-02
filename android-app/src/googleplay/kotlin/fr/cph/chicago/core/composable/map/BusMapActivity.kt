@@ -82,7 +82,7 @@ import javax.inject.Inject
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
-class BusMapComposable : ComponentActivity() {
+class BusMapActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

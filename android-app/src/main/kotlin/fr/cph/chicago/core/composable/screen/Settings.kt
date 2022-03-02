@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.core.activity.BaseActivity
-import fr.cph.chicago.core.activity.DeveloperOptionsActivity
 import fr.cph.chicago.core.composable.DeveloperOptionsComposable
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.redux.ResetStateAction

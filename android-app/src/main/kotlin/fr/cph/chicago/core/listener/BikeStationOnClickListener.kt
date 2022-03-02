@@ -23,13 +23,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import fr.cph.chicago.R
-import fr.cph.chicago.core.activity.station.BikeStationActivity
+import fr.cph.chicago.core.composable.BikeStationComposable
 import fr.cph.chicago.core.model.BikeStation
 
 class BikeStationOnClickListener(private val station: BikeStation) : View.OnClickListener {
 
     override fun onClick(view: View) {
-        val intent = Intent(view.context, BikeStationActivity::class.java)
+        val intent = Intent(view.context, BikeStationComposable::class.java)
         val extras = Bundle()
         extras.putParcelable(view.context.getString(R.string.bundle_bike_station), station)
         intent.putExtras(extras)

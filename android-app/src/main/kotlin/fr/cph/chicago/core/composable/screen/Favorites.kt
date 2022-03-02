@@ -52,8 +52,8 @@ import fr.cph.chicago.core.composable.MainViewModel
 import fr.cph.chicago.core.composable.TrainStationComposable
 import fr.cph.chicago.core.composable.common.AnimatedText
 import fr.cph.chicago.core.composable.common.ColoredBox
-import fr.cph.chicago.core.composable.map.BusMapComposable
-import fr.cph.chicago.core.composable.map.TrainMapComposable
+import fr.cph.chicago.core.composable.map.BusMapActivity
+import fr.cph.chicago.core.composable.map.TrainMapActivity
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BikeStation.Companion.DEFAULT_AVAILABLE
 import fr.cph.chicago.core.model.BusRoute
@@ -207,7 +207,7 @@ fun BusFavoriteCard(modifier: Modifier = Modifier, util: Util = Util, busRoute: 
                     }
                 }
                 val extras = Bundle()
-                val intent = Intent(context, BusMapComposable::class.java)
+                val intent = Intent(context, BusMapActivity::class.java)
                 extras.putString(context.getString(R.string.bundle_bus_route_id), busRoute.id)
                 extras.putStringArray(context.getString(R.string.bundle_bus_bounds), busDetailsDTOs.map { it.bound }.toSet().toTypedArray())
                 intent.putExtras(extras)
@@ -364,7 +364,7 @@ fun startBusDetailActivity(context: Context, busDetailsDTO: BusDetailsDTO) {
 
 private fun startTrainMapActivity(context: Context, trainLine: TrainLine) {
     val extras = Bundle()
-    val intent = Intent(context, TrainMapComposable::class.java)
+    val intent = Intent(context, TrainMapActivity::class.java)
     extras.putString(context.getString(R.string.bundle_train_line), trainLine.toTextString())
     intent.putExtras(extras)
     startActivity(context, intent, null)

@@ -31,11 +31,9 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import fr.cph.chicago.R
 import fr.cph.chicago.core.listener.BikeStationOnClickListener
-import fr.cph.chicago.core.listener.TrainOnClickListener
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.TrainStation
-import fr.cph.chicago.rx.BusDirectionObserver
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.Util
@@ -97,7 +95,7 @@ class SearchAdapter(private val context: Context) : BaseAdapter() {
                     .map { layoutUtil.createColoredRoundForMultiple(it) }
                     .forEach { stationColorView.addView(it) }
 
-                view.setOnClickListener(TrainOnClickListener(parent, station.id, station.lines))
+                //view.setOnClickListener(TrainOnClickListener(parent, station.id, station.lines))
             }
             position < trains.size + busRoutes.size -> {
                 val busRoute = getItem(position) as BusRoute
@@ -113,7 +111,8 @@ class SearchAdapter(private val context: Context) : BaseAdapter() {
                         .doOnError { error ->
                             util.handleConnectOrParserException(error, loadingTextView)
                             Timber.e(error, "Error while getting bus directions")
-                        }.subscribe(BusDirectionObserver(v, parent, loadingTextView, busRoute))
+                        }
+                        //.subscribe(BusDirectionObserver(v, parent, loadingTextView, busRoute))
                 }
             }
             else -> {
