@@ -17,9 +17,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.R
-import fr.cph.chicago.core.composable.MainViewModel
 import fr.cph.chicago.core.composable.TrainListStationActivityComposable
 import fr.cph.chicago.core.composable.common.ColoredBox
+import fr.cph.chicago.core.composable.viewmodel.MainViewModel
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.toComposeColor
 

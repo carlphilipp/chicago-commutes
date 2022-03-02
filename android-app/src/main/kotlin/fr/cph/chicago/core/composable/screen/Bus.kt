@@ -41,11 +41,11 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.R
 import fr.cph.chicago.core.composable.BusBoundActivityComposable
-import fr.cph.chicago.core.composable.MainViewModel
 import fr.cph.chicago.core.composable.common.AnimatedErrorView
 import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.composable.common.TextFieldMaterial3
 import fr.cph.chicago.core.composable.map.BusMapActivity
+import fr.cph.chicago.core.composable.viewmodel.MainViewModel
 import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.service.BusService

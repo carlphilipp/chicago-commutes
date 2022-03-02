@@ -41,13 +41,13 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import fr.cph.chicago.R
-import fr.cph.chicago.core.composable.MainViewModel
 import fr.cph.chicago.core.composable.common.LoadingCircle
 import fr.cph.chicago.core.composable.common.LocationViewModel
 import fr.cph.chicago.core.composable.common.NearbyResult
 import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.composable.common.ShowLocationNotFoundSnackBar
 import fr.cph.chicago.core.composable.permissions.NearbyLocationPermissionView
+import fr.cph.chicago.core.composable.viewmodel.MainViewModel
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.util.GoogleMapUtil.getBitmapDescriptor
 import fr.cph.chicago.util.toLatLng

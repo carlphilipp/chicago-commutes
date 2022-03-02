@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import fr.cph.chicago.core.composable.MainViewModel
+import fr.cph.chicago.core.composable.viewmodel.MainViewModel
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable

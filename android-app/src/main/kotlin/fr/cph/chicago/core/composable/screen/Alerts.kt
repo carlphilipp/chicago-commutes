@@ -38,12 +38,12 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.composable.AlertActivityComposable
-import fr.cph.chicago.core.composable.MainViewModel
 import fr.cph.chicago.core.composable.common.AnimatedErrorView
 import fr.cph.chicago.core.composable.common.AnimatedPlaceHolderList
 import fr.cph.chicago.core.composable.common.ColoredBox
 import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.composable.common.TextFieldMaterial3
+import fr.cph.chicago.core.composable.viewmodel.MainViewModel
 import fr.cph.chicago.core.model.dto.AlertType
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 

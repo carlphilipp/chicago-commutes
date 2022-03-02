@@ -48,12 +48,12 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.composable.BikeStationComposable
 import fr.cph.chicago.core.composable.BusStationComposable
-import fr.cph.chicago.core.composable.MainViewModel
 import fr.cph.chicago.core.composable.TrainStationComposable
 import fr.cph.chicago.core.composable.common.AnimatedText
 import fr.cph.chicago.core.composable.common.ColoredBox
 import fr.cph.chicago.core.composable.map.BusMapActivity
 import fr.cph.chicago.core.composable.map.TrainMapActivity
+import fr.cph.chicago.core.composable.viewmodel.MainViewModel
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BikeStation.Companion.DEFAULT_AVAILABLE
 import fr.cph.chicago.core.model.BusRoute

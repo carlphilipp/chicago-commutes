@@ -30,10 +30,10 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.R
 import fr.cph.chicago.core.composable.BikeStationComposable
-import fr.cph.chicago.core.composable.MainViewModel
 import fr.cph.chicago.core.composable.common.AnimatedErrorView
 import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.composable.common.TextFieldMaterial3
+import fr.cph.chicago.core.composable.viewmodel.MainViewModel
 import fr.cph.chicago.core.model.BikeStation
 
 @OptIn(ExperimentalMaterial3Api::class)

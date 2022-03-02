@@ -14,8 +14,8 @@ import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsResponse
 import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.tasks.Task
-import fr.cph.chicago.core.composable.MainViewModel
 import fr.cph.chicago.core.composable.common.LocationViewModel
+import fr.cph.chicago.core.composable.viewmodel.MainViewModel
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.util.GoogleMapUtil
 import timber.log.Timber
