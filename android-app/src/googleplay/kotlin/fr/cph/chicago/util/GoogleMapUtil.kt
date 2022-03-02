@@ -48,7 +48,7 @@ object GoogleMapUtil {
         LatLng(chicagoPosition.latitude, chicagoPosition.longitude)
     }
 
-    val defaultZoom = 11f
+    const val defaultZoom = 10f
 
     @Throws(SecurityException::class)
     fun centerMap(mapFragment: SupportMapFragment, zoomIn: Boolean, position: Position?) {

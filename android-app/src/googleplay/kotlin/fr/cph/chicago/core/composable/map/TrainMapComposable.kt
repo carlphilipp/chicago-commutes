@@ -27,6 +27,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -76,6 +77,7 @@ import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
@@ -128,7 +130,9 @@ fun TrainMapView(
                 onMapLoaded = {
                     Timber.i("Map loaded")
                     isMapLoaded = true
-                    //viewModel.loadTrains()
+                    // Google map must be loaded to be able to run these methods
+                    viewModel.loadIcons()
+                    viewModel.loadTrains()
                 },
             )
 
@@ -158,13 +162,18 @@ fun GoogleMapTrainMapView(
     onMapLoaded: () -> Unit,
 ) {
     val uiState = viewModel.uiState
+    val scope = rememberCoroutineScope()
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)
     }
     if (uiState.moveCamera != null && uiState.moveCameraZoom != null) {
         Timber.d("Move camera to ${uiState.moveCamera} with zoom ${uiState.zoom}")
-        cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(uiState.moveCamera, uiState.moveCameraZoom))
-        viewModel.resetMoveCamera()
+
+        LaunchedEffect(key1 = uiState.moveCamera, block = {
+            scope.launch {
+                cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(uiState.moveCamera, uiState.moveCameraZoom));
+            }
+        })
     }
 
     GoogleMap(
@@ -174,7 +183,7 @@ fun GoogleMapTrainMapView(
         uiSettings = MapUiSettings(compassEnabled = false, myLocationButtonEnabled = false),
         onMapLoaded = {
             onMapLoaded()
-            viewModel.loadIcons()
+
         },
     ) {
         TrainLineLayer(
@@ -385,7 +394,6 @@ class GoogleMapTrainViewModel @Inject constructor(
     fun initModel(line: TrainLine): GoogleMapTrainViewModel {
         uiState = uiState.copy(line = line)
         loadPositions()
-        //loadTrains()
         loadStations()
         return this
     }
@@ -468,8 +476,8 @@ class GoogleMapTrainViewModel @Inject constructor(
             zoom = 11f
         }
         uiState = uiState.copy(
-            //moveCamera = LatLng(position.latitude, position.longitude),
-            //moveCameraZoom = zoom,
+            moveCamera = LatLng(position.latitude, position.longitude),
+            moveCameraZoom = zoom,
         )
     }
 
@@ -546,7 +554,6 @@ class GoogleMapTrainViewModel @Inject constructor(
             .observeOn(Schedulers.computation())
             .subscribe(
                 { trainStationPattern ->
-                    Timber.i("Current thread subscribe %s ", Thread.currentThread().name)
                     uiState = uiState.copy(
                         polyLine = trainStationPattern.map { it.position.toLatLng() }
                     )
