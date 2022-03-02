@@ -3,14 +3,16 @@ package fr.cph.chicago.core.composable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -31,27 +33,29 @@ import fr.cph.chicago.core.composable.screen.screens
 @Composable
 fun Drawer(modifier: Modifier = Modifier, currentScreen: DrawerScreens, onDestinationClicked: (route: DrawerScreens) -> Unit) {
     // FIXME: Make this component scrollable
-    Column(modifier = modifier) {
-        Box {
-            Image(
-                painter = painterResource(R.drawable.header),
-                contentDescription = "Chicago Skyline",
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(170.dp),
-            )
-            Text(
-                text = "Chicago Commutes",
-                color = Color.White,
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(20.dp),
-            )
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        item {
+            Box {
+                Image(
+                    painter = painterResource(R.drawable.header),
+                    contentDescription = "Chicago Skyline",
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(170.dp),
+                )
+                Text(
+                    text = "Chicago Commutes",
+                    color = Color.White,
+                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(20.dp),
+                )
+            }
         }
 
-        screens.forEach { screen ->
+        items(screens) { screen ->
             val backgroundColor = if (screen.route == currentScreen.route) {
                 MaterialTheme.colorScheme.secondaryContainer
             } else {
