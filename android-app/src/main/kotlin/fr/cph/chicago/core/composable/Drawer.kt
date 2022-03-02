@@ -32,7 +32,6 @@ import fr.cph.chicago.core.composable.screen.screens
 
 @Composable
 fun Drawer(modifier: Modifier = Modifier, currentScreen: DrawerScreens, onDestinationClicked: (route: DrawerScreens) -> Unit) {
-    // FIXME: Make this component scrollable
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item {
             Box {
