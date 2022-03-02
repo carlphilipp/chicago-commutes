@@ -24,7 +24,6 @@ import com.univocity.parsers.common.processor.RowProcessor
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.service.BusService
-import org.apache.commons.lang3.StringUtils
 
 internal class BusStopCsvProcessor : RowProcessor {
 
@@ -55,7 +54,7 @@ internal class BusStopCsvProcessor : RowProcessor {
             val busStop = BusStop(
                 id = row[0]!!,
                 name = row[2]!!,
-                description = if (row[3] == null) StringUtils.EMPTY else row[3]!!,
+                description = if (row[3] == null) "" else row[3]!!,
                 position = Position(latitude, longitude)
             )
             rows.add(busStop)

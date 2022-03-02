@@ -25,7 +25,6 @@ import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.TrainArrival
 import java.util.TreeMap
-import org.apache.commons.lang3.StringUtils
 
 data class BaseDTO(
     val trainArrivalsDTO: TrainArrivalDTO,
@@ -57,12 +56,12 @@ data class FavoritesDTO(
 data class BusFavoriteDTO(val routeId: String, val stopId: String, val bound: String)
 
 data class BusDetailsDTO(
-    val busRouteId: String = StringUtils.EMPTY,
-    val bound: String = StringUtils.EMPTY,
-    val boundTitle: String = StringUtils.EMPTY,
+    val busRouteId: String = "",
+    val bound: String = "",
+    val boundTitle: String = "",
     val stopId: Int = 0,
-    val routeName: String = StringUtils.EMPTY,
-    val stopName: String = StringUtils.EMPTY,
+    val routeName: String = "",
+    val stopName: String = "",
 )
 
 // destination -> list of bus arrival
@@ -96,7 +95,7 @@ class BusArrivalRouteDTO(
             if (key1.matches(busRouteIdRegex) && key2.matches(busRouteIdRegex)) {
                 key1.toInt().compareTo(key2.toInt())
             } else {
-                key1.replace(busRouteIdRegex, StringUtils.EMPTY).toInt().compareTo(key2.replace(busRouteIdRegex, StringUtils.EMPTY).toInt())
+                key1.replace(busRouteIdRegex, "").toInt().compareTo(key2.replace(busRouteIdRegex, "").toInt())
             }
         }
     }

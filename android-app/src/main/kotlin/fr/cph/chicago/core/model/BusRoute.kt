@@ -21,7 +21,6 @@ package fr.cph.chicago.core.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import org.apache.commons.lang3.StringUtils
 
 /**
  * Bus route entity
@@ -49,8 +48,8 @@ data class BusRoute(val id: String, val name: String) : Parcelable {
     }
 
     private constructor(source: Parcel) : this(
-        id = source.readString() ?: StringUtils.EMPTY,
-        name = source.readString() ?: StringUtils.EMPTY
+        id = source.readString() ?: "",
+        name = source.readString() ?: ""
     )
 
     override fun describeContents(): Int {

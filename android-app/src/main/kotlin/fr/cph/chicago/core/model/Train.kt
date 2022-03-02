@@ -19,11 +19,9 @@
 
 package fr.cph.chicago.core.model
 
-import org.apache.commons.lang3.StringUtils
-
 data class Train(
     val runNumber: Int = 0,
-    val destName: String = StringUtils.EMPTY,
+    val destName: String = "",
     val app: Boolean = false,
     val position: Position = Position(),
     val heading: Int = 0)

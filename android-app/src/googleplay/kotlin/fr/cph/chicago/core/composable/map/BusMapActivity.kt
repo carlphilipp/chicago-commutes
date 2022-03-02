@@ -79,7 +79,6 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
-import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
 class BusMapActivity : ComponentActivity() {
@@ -88,9 +87,9 @@ class BusMapActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val busRouteId = if (savedInstanceState != null) {
-            savedInstanceState.getString(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
+            savedInstanceState.getString(getString(R.string.bundle_bus_route_id)) ?: ""
         } else {
-            intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
+            intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: ""
         }
 
         val viewModel = GoogleMapBusViewModel().initModel(
@@ -375,7 +374,7 @@ data class GoogleMapBusUiState(
     val colors: List<Color> = TrainLine.values().map { Color(it.color) }.dropLast(1),
     val stopIcons: List<BitmapDescriptor> = listOf(),
 
-    val busRouteId: String = StringUtils.EMPTY,
+    val busRouteId: String = "",
 
     val buses: List<Bus> = listOf(),
     val busPatterns: List<BusPattern> = listOf(),

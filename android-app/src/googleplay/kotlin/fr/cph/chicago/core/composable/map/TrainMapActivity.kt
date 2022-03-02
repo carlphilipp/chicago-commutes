@@ -79,7 +79,6 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
 class TrainMapActivity : ComponentActivity() {
@@ -87,9 +86,9 @@ class TrainMapActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val line = if (savedInstanceState != null)
-            savedInstanceState.getString(getString(R.string.bundle_train_line)) ?: StringUtils.EMPTY
+            savedInstanceState.getString(getString(R.string.bundle_train_line)) ?: ""
         else
-            intent.getStringExtra(getString(R.string.bundle_train_line)) ?: StringUtils.EMPTY
+            intent.getStringExtra(getString(R.string.bundle_train_line)) ?: ""
         val trainLine = TrainLine.fromXmlString(line)
         val viewModel = GoogleMapTrainViewModel().initModel(line = trainLine)
 

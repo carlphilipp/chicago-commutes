@@ -26,7 +26,6 @@ import java.io.Serializable
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
-import org.apache.commons.lang3.StringUtils
 
 /**
  * TrainEta entity
@@ -48,7 +47,7 @@ data class TrainEta(
         private const val serialVersionUID = 0L
 
         fun buildFakeEtaWith(trainStation: TrainStation, arrivalDepartureDate: Date, predictionDate: Date, app: Boolean, delay: Boolean): TrainEta {
-            return TrainEta(trainStation, Stop.buildEmptyStop(), TrainLine.NA, StringUtils.EMPTY, predictionDate, arrivalDepartureDate, app, delay)
+            return TrainEta(trainStation, Stop.buildEmptyStop(), TrainLine.NA, "", predictionDate, arrivalDepartureDate, app, delay)
         }
 
         @JvmField
@@ -67,8 +66,8 @@ data class TrainEta(
         trainStation = source.readParcelable<TrainStation>(TrainStation::class.java.classLoader)
             ?: TrainStation.buildEmptyStation(),
         stop = source.readParcelable<Stop>(Stop::class.java.classLoader) ?: Stop.buildEmptyStop(),
-        routeName = TrainLine.fromXmlString(source.readString() ?: StringUtils.EMPTY),
-        destName = source.readString() ?: StringUtils.EMPTY,
+        routeName = TrainLine.fromXmlString(source.readString() ?: ""),
+        destName = source.readString() ?: "",
         predictionDate = Date(source.readLong()),
         arrivalDepartureDate = Date(source.readLong()),
         isApp = source.readString()?.toBoolean() ?: false,

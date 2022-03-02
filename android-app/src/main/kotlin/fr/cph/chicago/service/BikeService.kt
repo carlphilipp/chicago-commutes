@@ -28,7 +28,6 @@ import fr.cph.chicago.util.Util
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.Date
-import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 import timber.log.Timber
 
 object BikeService {
@@ -57,7 +56,7 @@ object BikeService {
         return Single
             .fromCallable {
                 store.state.bikeStations
-                    .filter { station -> containsIgnoreCase(station.name, query) || containsIgnoreCase(station.address, query) }
+                    .filter { station -> station.name.contains(other = query, ignoreCase = true) || station.address.contains(other = query, ignoreCase = true) }
                     .distinct()
                     .sortedWith(util.bikeStationComparator)
             }

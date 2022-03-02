@@ -24,7 +24,6 @@ import android.os.Parcelable
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
-import org.apache.commons.lang3.StringUtils
 
 /**
  * Bus Arrival entity
@@ -34,7 +33,7 @@ import org.apache.commons.lang3.StringUtils
  */
 data class BusArrival(
     val timeStamp: Date,
-    val errorMessage: String = StringUtils.EMPTY,
+    val errorMessage: String = "",
     val stopName: String,
     val stopId: Int,
     val busId: Int,
@@ -61,19 +60,19 @@ data class BusArrival(
 
     private constructor(source: Parcel) : this(
         timeStamp = Date(source.readLong()),
-        errorMessage = source.readString() ?: StringUtils.EMPTY,
-        stopName = source.readString() ?: StringUtils.EMPTY,
+        errorMessage = source.readString() ?: "",
+        stopName = source.readString() ?: "",
         stopId = source.readInt(),
         busId = source.readInt(),
-        routeId = source.readString() ?: StringUtils.EMPTY,
-        routeDirection = source.readString() ?: StringUtils.EMPTY,
-        busDestination = source.readString() ?: StringUtils.EMPTY,
+        routeId = source.readString() ?: "",
+        routeDirection = source.readString() ?: "",
+        busDestination = source.readString() ?: "",
         predictionTime = Date(source.readLong()),
         isDelay = source.readString()!!.toBoolean())
 
     val timeLeftMinutes: String
         get() {
-            return if (StringUtils.EMPTY == errorMessage) {
+            return if ("" == errorMessage) {
                 val time = predictionTime.time - timeStamp.time
                 String.format(Locale.ENGLISH, "%d min", TimeUnit.MILLISECONDS.toMinutes(time))
             } else {

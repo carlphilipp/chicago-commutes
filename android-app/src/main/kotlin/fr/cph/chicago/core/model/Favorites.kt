@@ -35,7 +35,6 @@ import java.util.Calendar
 import java.util.Date
 import java.util.TreeMap
 import kotlin.random.Random
-import org.apache.commons.lang3.StringUtils
 
 /**
  * Vehicle Arrival. Hold data for favorites adapter.
@@ -173,7 +172,7 @@ object Favorites {
                     ?: stopId.toString()
 
                 if (!busArrivalDTO.containsStopNameAndBound(stopName, bound)) {
-                    val busArrival = BusArrival(Date(), "added bus", stopName, stopId, 0, routeIdFav, bound, StringUtils.EMPTY, Date(), false)
+                    val busArrival = BusArrival(Date(), "added bus", stopName, stopId, 0, routeIdFav, bound, "", Date(), false)
                     busArrivalDTO.addBusArrival(busArrival)
                 }
             }

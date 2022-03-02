@@ -43,7 +43,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.regex.Pattern
-import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
 /**
@@ -261,7 +260,7 @@ object PreferenceRepository {
 
     fun getBikeRouteNameMapping(bikeId: String): String {
         val sharedPref = getPrivatePreferencesBikeMapping()
-        val bikeName = sharedPref.getString(bikeId, StringUtils.EMPTY)!!
+        val bikeName = sharedPref.getString(bikeId, "")!!
         Timber.v("Get bike name mapping : %s => %s", bikeId, bikeName)
         return bikeName
     }

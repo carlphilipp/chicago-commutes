@@ -28,16 +28,15 @@ import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import java.util.Date
-import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StateType
 
 data class State(
     // Can be useful to force an update
-    val random: String = StringUtils.EMPTY,
+    val random: String = "",
     // Api keys
-    val ctaTrainKey: String = StringUtils.EMPTY,
-    val ctaBusKey: String = StringUtils.EMPTY,
-    val googleStreetKey: String = StringUtils.EMPTY,
+    val ctaTrainKey: String = "",
+    val ctaBusKey: String = "",
+    val googleStreetKey: String = "",
 
     val status: Status = Status.UNKNOWN,
     val lastFavoritesUpdate: Date = Date(), // Field displayed in favorites

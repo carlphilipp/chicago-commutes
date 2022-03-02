@@ -40,7 +40,6 @@ import fr.cph.chicago.core.composable.viewmodel.settingsViewModel
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.service.BusService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
 private val busService = BusService
@@ -57,10 +56,10 @@ class BusBoundActivityComposable : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
-        busRouteName = intent.getStringExtra(getString(R.string.bundle_bus_route_name)) ?: StringUtils.EMPTY
-        bound = intent.getStringExtra(getString(R.string.bundle_bus_bound)) ?: StringUtils.EMPTY
-        boundTitle = intent.getStringExtra(getString(R.string.bundle_bus_bound_title)) ?: StringUtils.EMPTY
+        busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: ""
+        busRouteName = intent.getStringExtra(getString(R.string.bundle_bus_route_name)) ?: ""
+        bound = intent.getStringExtra(getString(R.string.bundle_bus_bound)) ?: ""
+        boundTitle = intent.getStringExtra(getString(R.string.bundle_bus_bound_title)) ?: ""
 
         loadData()
 

@@ -45,7 +45,6 @@ import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.Callable
 import kotlin.collections.set
-import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
 object TrainService {
@@ -135,7 +134,7 @@ object TrainService {
                 if (!loadAll && trainEta.size > 7) {
                     trainEta = trainEta.subList(0, 6)
                     val currentDate = Calendar.getInstance().time
-                    val fakeStation = TrainStation(StringUtils.EMPTY, App.instance.getString(R.string.bus_all_results), ArrayList())
+                    val fakeStation = TrainStation("", App.instance.getString(R.string.bus_all_results), ArrayList())
                     // Add a fake TrainEta cell to alert the user about the fact that only a part of the result is displayed
                     val eta = TrainEta.buildFakeEtaWith(fakeStation, currentDate, currentDate, app = false, delay = false)
                     trainEta.add(eta)
@@ -218,7 +217,7 @@ object TrainService {
             .fromCallable {
                 trainRepository.allStations.entries
                     .flatMap { mutableEntry -> mutableEntry.value }
-                    .filter { station -> StringUtils.containsIgnoreCase(station.name, query) }
+                    .filter { station -> station.name.contentEquals(other = query, ignoreCase = true) }
                     .distinct()
                     .sorted()
             }

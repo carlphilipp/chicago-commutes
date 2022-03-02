@@ -51,9 +51,6 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.Callable
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
-import org.apache.commons.lang3.StringUtils
-import org.apache.commons.lang3.StringUtils.containsIgnoreCase
-import org.apache.commons.text.WordUtils
 import timber.log.Timber
 
 object BusService {
@@ -93,7 +90,7 @@ object BusService {
                 busStopsResponse.bustimeResponse.stops!!.map { stop ->
                     BusStop(
                         id = stop.stpid,
-                        name = WordUtils.capitalizeFully(stop.stpnm),
+                        name = stop.stpnm.uppercase(),
                         description = stop.stpnm,
                         position = Position(stop.lat, stop.lon)
                     )
@@ -110,7 +107,7 @@ object BusService {
                 busStopsResponse.bustimeResponse.stops!!.map { stop ->
                     BusStop(
                         id = stop.stpid,
-                        name = WordUtils.capitalizeFully(stop.stpnm),
+                        name = stop.stpnm.uppercase(),
                         description = stop.stpnm,
                         position = Position(stop.lat, stop.lon)
                     )
@@ -192,7 +189,7 @@ object BusService {
                         BusPattern(
                             direction = ptr.rtdir,
                             busStopsPatterns = ptr.pt
-                                .map { pt -> BusStopPattern(Position(pt.lat, pt.lon), pt.typ, pt.stpnm ?: StringUtils.EMPTY) }
+                                .map { pt -> BusStopPattern(Position(pt.lat, pt.lon), pt.typ, pt.stpnm ?: "") }
                                 .toMutableList())
                     }
                 /*.filter { pattern ->
@@ -255,7 +252,7 @@ object BusService {
         return Single
             .fromCallable {
                 store.state.busRoutes
-                    .filter { (id, name) -> containsIgnoreCase(id, query) || containsIgnoreCase(name, query) }
+                    .filter { (id, name) -> id.contentEquals(other = query, ignoreCase = true) || name.contentEquals(other = query, ignoreCase = true) }
                     .distinct()
                     .sortedWith(util.busStopComparatorByName)
             }
@@ -308,7 +305,7 @@ object BusService {
                             .map { prd ->
                                 BusArrival(
                                     timeStamp = simpleDateFormatBus.parseNotNull(prd.tmstmp),
-                                    stopName = WordUtils.capitalizeFully(prd.stpnm),
+                                    stopName = prd.stpnm.uppercase(),
                                     stopId = prd.stpid.toInt(),
                                     busId = prd.vid.toInt(),
                                     routeId = prd.rt,

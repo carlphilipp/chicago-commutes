@@ -26,7 +26,6 @@ import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.entity.AlertsRouteResponse
 import fr.cph.chicago.entity.AlertsRoutesResponse
 import io.reactivex.rxjava3.core.Single
-import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -75,7 +74,7 @@ object AlertService {
                             RouteAlertsDTO(
                                 id = alert.alertId,
                                 headLine = alert.headline,
-                                description = alert.shortDescription.replace("\r\n", StringUtils.EMPTY),
+                                description = alert.shortDescription.replace("\r\n", ""),
                                 impact = alert.impact,
                                 severityScore = alert.severityScore.toInt(),
                                 start = formatDate(alert.eventStart),
@@ -86,7 +85,7 @@ object AlertService {
     }
 
     private fun formatDate(str: String?): String {
-        if (str == null) return StringUtils.EMPTY
+        if (str == null) return ""
         return try {
             displayFormat.format(formatWithSeconds.parse(str)!!)
         } catch (p: ParseException) {

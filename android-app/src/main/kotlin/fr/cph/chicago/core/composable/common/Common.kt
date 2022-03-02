@@ -87,14 +87,22 @@ import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Position
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.functions.Consumer
+import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 import kotlin.math.min
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.apache.commons.lang3.StringUtils
 
 private val googleStreetClient = GoogleStreetClient
+
+fun runWithDelay(delay: Long, timeUnit: TimeUnit, disableLoading: () -> Unit) {
+    Single.timer(delay, timeUnit)
+        .subscribeOn(Schedulers.computation())
+        .subscribe({ disableLoading() }) {}
+}
 
 fun openMapApplication(context: Context, scope: CoroutineScope, snackbarHostState: SnackbarHostState, latitude: Double, longitude: Double) {
     val uri = String.format(Locale.ENGLISH, "geo:%f,%f", latitude, longitude)
@@ -440,7 +448,7 @@ fun StationDetailsImageView(
 fun StationDetailsTitleIconView(
     modifier: Modifier = Modifier,
     title: String,
-    subTitle: String = StringUtils.EMPTY,
+    subTitle: String = "",
     isFavorite: Boolean,
     onFavoriteClick: () -> Unit,
     onMapClick: () -> Unit,
@@ -468,7 +476,7 @@ fun StationDetailsTitleIconView(
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
-                if (subTitle != StringUtils.EMPTY) {
+                if (subTitle != "") {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center

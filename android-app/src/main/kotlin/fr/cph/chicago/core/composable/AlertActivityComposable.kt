@@ -36,15 +36,14 @@ import fr.cph.chicago.core.model.dto.RouteAlertsDTO
 import fr.cph.chicago.service.AlertService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
-import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
 
 class AlertActivityComposable : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val routeId = intent.getStringExtra("routeId") ?: StringUtils.EMPTY
-        val title = intent.getStringExtra("title") ?: StringUtils.EMPTY
+        val routeId = intent.getStringExtra("routeId") ?: ""
+        val title = intent.getStringExtra("title") ?: ""
         val viewModel = AlertDetailsViewModel().initModel(routeId = routeId, title = title)
 
         setContent {
@@ -101,7 +100,7 @@ fun AlertDetails(
                                         text = "From: " + alert.start,
                                         style = MaterialTheme.typography.bodySmall
                                     )
-                                    if (alert.end != StringUtils.EMPTY) {
+                                    if (alert.end != "") {
                                         Text(
                                             text = "To: " + alert.end,
                                             style = MaterialTheme.typography.bodySmall
@@ -133,8 +132,8 @@ fun AlertDetails(
 }
 
 data class AlertDetailsUiState(
-    val routeId: String = StringUtils.EMPTY,
-    val title: String = StringUtils.EMPTY,
+    val routeId: String = "",
+    val title: String = "",
     val isRefreshing: Boolean = false,
     val routeAlertsDTOS: List<RouteAlertsDTO> = listOf(),
     val isError: Boolean = false,

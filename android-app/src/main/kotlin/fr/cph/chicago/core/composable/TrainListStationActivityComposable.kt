@@ -26,7 +26,6 @@ import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.toComposeColor
-import org.apache.commons.lang3.StringUtils
 
 private val trainService = TrainService
 
@@ -34,7 +33,7 @@ class TrainListStationActivityComposable : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val lineParam = if (savedInstanceState != null) savedInstanceState.getString(getString(R.string.bundle_train_line))
-            ?: StringUtils.EMPTY else intent.getStringExtra(getString(R.string.bundle_train_line)) ?: StringUtils.EMPTY
+            ?: "" else intent.getStringExtra(getString(R.string.bundle_train_line)) ?: ""
         val trainLine = TrainLine.fromString(lineParam)
         val title = trainLine.toStringWithLine()
         val trainStations: List<TrainStation> = trainService.getStationsForLine(trainLine)

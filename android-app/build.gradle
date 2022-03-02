@@ -203,7 +203,6 @@ dependencies {
 
     // Tools
     implementation(Lib.commons_collections4)
-    implementation(Lib.commons_text)
     implementation(Lib.sliding_up_panel)
     implementation(Lib.univocity)
     implementation(Lib.easypermissions)

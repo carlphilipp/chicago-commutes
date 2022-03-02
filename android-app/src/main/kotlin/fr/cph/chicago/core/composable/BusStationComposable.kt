@@ -66,7 +66,6 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
-import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
@@ -74,14 +73,14 @@ class BusStationComposable : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val busStopId = intent.getStringExtra(getString(R.string.bundle_bus_stop_id)) ?: StringUtils.EMPTY
-        val busStopName = intent.getStringExtra(getString(R.string.bundle_bus_stop_name)) ?: StringUtils.EMPTY
+        val busStopId = intent.getStringExtra(getString(R.string.bundle_bus_stop_id)) ?: ""
+        val busStopName = intent.getStringExtra(getString(R.string.bundle_bus_stop_name)) ?: ""
 
-        val busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: StringUtils.EMPTY
-        val busRouteName = intent.getStringExtra(getString(R.string.bundle_bus_route_name)) ?: StringUtils.EMPTY
+        val busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: ""
+        val busRouteName = intent.getStringExtra(getString(R.string.bundle_bus_route_name)) ?: ""
 
-        val bound = intent.getStringExtra(getString(R.string.bundle_bus_bound)) ?: StringUtils.EMPTY
-        val boundTitle = intent.getStringExtra(getString(R.string.bundle_bus_bound_title)) ?: StringUtils.EMPTY
+        val bound = intent.getStringExtra(getString(R.string.bundle_bus_bound)) ?: ""
+        val boundTitle = intent.getStringExtra(getString(R.string.bundle_bus_bound_title)) ?: ""
 
         val busDetails = BusDetailsDTO(
             busRouteId = busRouteId,

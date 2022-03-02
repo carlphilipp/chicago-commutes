@@ -24,7 +24,6 @@ import android.os.Parcelable
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import java.util.TreeMap
 import java.util.TreeSet
-import org.apache.commons.lang3.StringUtils
 
 /**
  * Train station entity
@@ -40,7 +39,7 @@ class TrainStation(
 
     companion object {
         fun buildEmptyStation(): TrainStation {
-            return TrainStation(StringUtils.EMPTY, StringUtils.EMPTY, mutableListOf())
+            return TrainStation("", "", mutableListOf())
         }
 
         @JvmField
@@ -56,8 +55,8 @@ class TrainStation(
     }
 
     private constructor(source: Parcel) : this(
-        id = source.readString() ?: StringUtils.EMPTY,
-        name = source.readString() ?: StringUtils.EMPTY,
+        id = source.readString() ?: "",
+        name = source.readString() ?: "",
         stops = source.createTypedArrayList(Stop.CREATOR) ?: listOf()
     )
 

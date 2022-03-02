@@ -19,11 +19,9 @@
 
 package fr.cph.chicago.core.model
 
-import org.apache.commons.lang3.StringUtils
-
 open class Bus(
     val id: Int = 0,
     val position: Position = Position(),
     val heading: Int = 0,
-    val destination: String = StringUtils.EMPTY
+    val destination: String = ""
 )

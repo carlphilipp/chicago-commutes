@@ -21,7 +21,6 @@ package fr.cph.chicago.core.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import org.apache.commons.lang3.StringUtils
 
 /**
  * Bus stop entity
@@ -49,9 +48,9 @@ class BusStop(
     }
 
     private constructor(source: Parcel) : this(
-        id = source.readString() ?: StringUtils.EMPTY,
-        name = source.readString() ?: StringUtils.EMPTY,
-        description = source.readString() ?: StringUtils.EMPTY,
+        id = source.readString() ?: "",
+        name = source.readString() ?: "",
+        description = source.readString() ?: "",
         position = source.readParcelable<Position>(Position::class.java.classLoader) ?: Position())
 
     override fun toString(): String {

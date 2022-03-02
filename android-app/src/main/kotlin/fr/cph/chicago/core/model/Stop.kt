@@ -23,7 +23,6 @@ import android.os.Parcel
 import android.os.Parcelable
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import org.apache.commons.lang3.StringUtils
 
 /**
  * Stop entity
@@ -41,7 +40,7 @@ data class Stop(
 
     companion object {
         fun buildEmptyStop(): Stop {
-            return Stop(0, StringUtils.EMPTY, TrainDirection.UNKNOWN, Position(), false, setOf())
+            return Stop(0, "", TrainDirection.UNKNOWN, Position(), false, setOf())
         }
 
         @JvmField
@@ -58,8 +57,8 @@ data class Stop(
 
     private constructor(source: Parcel) : this(
         id = source.readInt(),
-        description = source.readString() ?: StringUtils.EMPTY,
-        direction = TrainDirection.fromString(source.readString() ?: StringUtils.EMPTY),
+        description = source.readString() ?: "",
+        direction = TrainDirection.fromString(source.readString() ?: ""),
         position = source.readParcelable<Position>(Position::class.java.classLoader) ?: Position(),
         ada = source.readString()!!.toBoolean(),
         lines = source.createStringArrayList()?.map { TrainLine.fromXmlString(it) }?.toSet()

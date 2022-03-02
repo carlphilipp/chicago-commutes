@@ -71,7 +71,6 @@ import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
-import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
@@ -80,7 +79,7 @@ class TrainStationComposable : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val stationId = intent.extras?.getString(getString(R.string.bundle_train_stationId), "0") ?: StringUtils.EMPTY
+        val stationId = intent.extras?.getString(getString(R.string.bundle_train_stationId), "0") ?: ""
         val viewModel = TrainStationViewModel().initModel(stationId)
         store.dispatch(TrainStationAction(stationId))
 

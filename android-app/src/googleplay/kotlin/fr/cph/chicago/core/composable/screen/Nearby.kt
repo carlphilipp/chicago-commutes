@@ -46,13 +46,16 @@ import fr.cph.chicago.core.composable.common.LocationViewModel
 import fr.cph.chicago.core.composable.common.NearbyResult
 import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.composable.common.ShowLocationNotFoundSnackBar
+import fr.cph.chicago.core.composable.common.runWithDelay
 import fr.cph.chicago.core.composable.permissions.NearbyLocationPermissionView
 import fr.cph.chicago.core.composable.viewmodel.MainViewModel
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.util.GoogleMapUtil.getBitmapDescriptor
 import fr.cph.chicago.util.toLatLng
+import java.util.concurrent.TimeUnit
 import timber.log.Timber
 
+// FIXME: handle zoom right after permissions has been approved or denied
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Nearby(
@@ -60,8 +63,16 @@ fun Nearby(
     mainViewModel: MainViewModel,
     locationViewModel: LocationViewModel,
 ) {
-    var isMapLoaded by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    var isMapLoaded by remember { mutableStateOf(false) }
+    // Show map after 5 seconds. This is needed because there is no callback from the sdk to know if the map can be loaded or not.
+    // Meaning that we can have a situation where the onMapLoaded method is never triggered, while the map view has been populated
+    // with some error messages from the google sdk like: "Play store needs to be updated"
+    if (!isMapLoaded) {
+        runWithDelay(5L, TimeUnit.SECONDS) {
+            isMapLoaded = true
+        }
+    }
 
     NearbyLocationPermissionView(
         mainViewModel = mainViewModel,
@@ -113,7 +124,7 @@ fun NearbyGoogleMapView(
     }
     //cameraPositionState.position = CameraPosition.fromLatLngZoom(uiState.nearbyMapCenterLocation.toLatLng(), uiState.nearbyZoomIn)
 
-    Timber.i("Set location: ${uiState.nearbyMapCenterLocation.toLatLng()}")
+    Timber.d("Set location: ${uiState.nearbyMapCenterLocation.toLatLng()}")
 
     GoogleMap(
         modifier = modifier,

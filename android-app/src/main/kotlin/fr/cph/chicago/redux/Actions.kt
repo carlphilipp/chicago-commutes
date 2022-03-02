@@ -28,7 +28,6 @@ import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.core.model.dto.FavoritesDTO
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
-import org.apache.commons.lang3.StringUtils
 import org.rekotlin.Action
 
 data class ResetStateAction(val unit: Unit = Unit) : Action
@@ -81,7 +80,7 @@ data class ResetBikeStationFavoritesAction(val unit: Unit = Unit) : Action
 
 // Train station activity
 data class TrainStationAction(
-    val trainStationId: String = StringUtils.EMPTY,
+    val trainStationId: String = "",
     val trainArrival: TrainArrival = TrainArrival(),
     val error: Boolean = false,
     val errorMessage: Int = R.string.message_something_went_wrong
@@ -90,10 +89,10 @@ data class TrainStationAction(
 // Bus stop activity
 data class BusStopArrivalsAction(
     // input
-    val busRouteId: String = StringUtils.EMPTY,
-    val busStopId: String = StringUtils.EMPTY,
-    val bound: String = StringUtils.EMPTY,
-    val boundTitle: String = StringUtils.EMPTY,
+    val busRouteId: String = "",
+    val busStopId: String = "",
+    val bound: String = "",
+    val boundTitle: String = "",
     // output
     val busArrivalStopDTO: BusArrivalStopDTO = BusArrivalStopDTO(),
     val error: Boolean = false,
@@ -114,12 +113,12 @@ data class AlertAction(
 ) : Action
 
 data class AddTrainFavoriteAction(
-    val id: String = StringUtils.EMPTY,
+    val id: String = "",
     val trainFavorites: List<String> = listOf()
 ) : Action
 
 data class RemoveTrainFavoriteAction(
-    val id: String =StringUtils.EMPTY,
+    val id: String = "",
     val trainFavorites: List<String> = listOf()
 ) : Action
 
@@ -132,30 +131,30 @@ data class ResetBikeStationStatusAction(val unit: Unit = Unit) : Action
 data class ResetAlertsStatusAction(val unit: Unit = Unit) : Action
 
 data class AddBusFavoriteAction(
-    val busRouteId: String = StringUtils.EMPTY,
-    val busStopId: String = StringUtils.EMPTY,
-    val boundTitle: String = StringUtils.EMPTY,
-    val busRouteName: String = StringUtils.EMPTY,
-    val busStopName: String = StringUtils.EMPTY,
+    val busRouteId: String = "",
+    val busStopId: String = "",
+    val boundTitle: String = "",
+    val busRouteName: String = "",
+    val busStopName: String = "",
     val busFavorites: List<String> = listOf(),
     val busRouteFavorites: List<String> = listOf()
 ) : Action
 
 data class RemoveBusFavoriteAction(
-    val busRouteId: String = StringUtils.EMPTY,
-    val busStopId: String = StringUtils.EMPTY,
-    val boundTitle: String = StringUtils.EMPTY,
+    val busRouteId: String = "",
+    val busStopId: String = "",
+    val boundTitle: String = "",
     val busFavorites: List<String> = listOf(),
     val busRouteFavorites: List<String> = listOf()
 ) : Action
 
 data class AddBikeFavoriteAction(
-    val id: String = StringUtils.EMPTY,
-    val stationName: String = StringUtils.EMPTY,
+    val id: String = "",
+    val stationName: String = "",
     val bikeFavorites: List<String> = listOf()
 ) : Action
 
 data class RemoveBikeFavoriteAction(
-    val id: String = StringUtils.EMPTY,
+    val id: String = "",
     val bikeFavorites: List<String> = listOf()
 ) : Action

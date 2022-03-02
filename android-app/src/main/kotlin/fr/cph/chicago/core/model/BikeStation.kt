@@ -22,7 +22,6 @@ package fr.cph.chicago.core.model
 import android.os.Parcel
 import android.os.Parcelable
 import java.util.Date
-import org.apache.commons.lang3.StringUtils
 
 class BikeStation(
     id: String,
@@ -42,8 +41,8 @@ class BikeStation(
             return buildDefaultBikeStationWithName(name = "Unknown")
         }
 
-        fun buildDefaultBikeStationWithName(id: String = StringUtils.EMPTY, name: String): BikeStation {
-            return BikeStation(id, name, DEFAULT_AVAILABLE, DEFAULT_AVAILABLE, 0.0, 0.0, StringUtils.EMPTY, Date())
+        fun buildDefaultBikeStationWithName(id: String = "", name: String): BikeStation {
+            return BikeStation(id, name, DEFAULT_AVAILABLE, DEFAULT_AVAILABLE, 0.0, 0.0, "", Date())
         }
 
         @JvmField
@@ -59,13 +58,13 @@ class BikeStation(
     }
 
     private constructor(source: Parcel) : this(
-        id = source.readString() ?: StringUtils.EMPTY,
-        name = source.readString() ?: StringUtils.EMPTY,
+        id = source.readString() ?: "",
+        name = source.readString() ?: "",
         availableDocks = source.readInt(),
         availableBikes = source.readInt(),
         latitude = source.readDouble(),
         longitude = source.readDouble(),
-        address = source.readString() ?: StringUtils.EMPTY,
+        address = source.readString() ?: "",
         lastReported = Date(source.readLong())
     )
 
