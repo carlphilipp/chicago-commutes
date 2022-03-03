@@ -71,7 +71,6 @@ import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.RealmConfig
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.lang.RuntimeException
 import javax.inject.Inject
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
@@ -87,16 +86,6 @@ class BaseActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        Single.just(true)
-            .subscribe(
-                {
-                    throw RuntimeException()
-                },
-                {
-
-                }
-            )
 
         val viewModel = BaseViewModel()
 
