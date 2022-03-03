@@ -15,14 +15,13 @@ fun ChicagoCommutesTheme(
     settingsViewModel: SettingsViewModel,
     content: @Composable () -> Unit
 ) {
-    // FIXME: Add an option for disabling dynamic color
     val isDarkTheme = when (settingsViewModel.uiState.theme) {
         Theme.AUTO -> isSystemInDarkTheme()
         Theme.LIGHT -> false
         Theme.DARK -> true
     }
 
-    val dynamicColor = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    val dynamicColor = settingsViewModel.uiState.dynamicColorEnabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
     val colorScheme = when {
         dynamicColor && isDarkTheme -> {
             dynamicDarkColorScheme(LocalContext.current)

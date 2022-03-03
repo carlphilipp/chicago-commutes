@@ -2,6 +2,7 @@ package fr.cph.chicago.core.composable.screen
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
@@ -154,38 +156,47 @@ fun Settings(modifier: Modifier = Modifier, viewModel: SettingsViewModel, util: 
 fun ThemeChangerDialog(viewModel: SettingsViewModel) {
     var currentThemeState by remember { mutableStateOf(viewModel.uiState.theme) }
     currentThemeState = viewModel.uiState.theme
+    var currentDynamicColor by remember { mutableStateOf(viewModel.uiState.dynamicColorEnabled) }
+    currentDynamicColor = viewModel.uiState.dynamicColorEnabled
 
     AlertDialog(
         modifier = Modifier.padding(horizontal = 50.dp),
         onDismissRequest = { viewModel.showThemeChangerDialog(false) },
         // FIXME workaround because the dialog do not resize after loading. Issue: https://issuetracker.google.com/issues/194911971?pli=1
         properties = DialogProperties(usePlatformDefaultWidth = false),
-        title = {
-            Text(
-                text = "Theme change",
-            )
-        },
+        title = { Text(text = "Theme change") },
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Theme.values().forEach { theme ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable {
-                                currentThemeState = theme
-                            },
+                            .clickable { currentThemeState = theme },
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         RadioButton(
-                            modifier = Modifier.padding(10.dp),
+                            // modifier = Modifier.padding(10.dp),
                             selected = theme == currentThemeState,
-                            onClick = {
-                                currentThemeState = theme
-                            }
+                            onClick = { currentThemeState = theme }
                         )
                         Text(
                             text = theme.description,
                             style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    Divider(thickness = 2.dp)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Checkbox(
+                            checked = currentDynamicColor,
+                            onCheckedChange = { currentDynamicColor = !currentDynamicColor }
+                        )
+                        Text(
+                            text = "Enable dynamic colors"
                         )
                     }
                 }
@@ -195,6 +206,7 @@ fun ThemeChangerDialog(viewModel: SettingsViewModel) {
             FilledTonalButton(
                 onClick = {
                     viewModel.setTheme(currentThemeState)
+                    viewModel.setDynamicColor(currentDynamicColor)
                     viewModel.showThemeChangerDialog(false)
                 },
             ) {
@@ -283,6 +295,7 @@ data class SettingsState(
     val theme: Theme = Theme.AUTO,
     val showThemeChangerDialog: Boolean = false,
     val showClearCacheDialog: Boolean = false,
+    val dynamicColorEnabled: Boolean = false,
 )
 
 class SettingsViewModel(private val preferenceService: PreferenceService = PreferenceService, private val realmConfig: RealmConfig = RealmConfig) {
@@ -296,6 +309,11 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
 
     fun setTheme(theme: Theme) {
         preferenceService.saveTheme(theme)
+        refreshCurrentTheme()
+    }
+
+    fun setDynamicColor(value: Boolean) {
+        preferenceService.saveDynamicColor(value)
         refreshCurrentTheme()
     }
 
@@ -333,7 +351,8 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
 
     private fun refreshCurrentTheme() {
         uiState = uiState.copy(
-            theme = preferenceService.getTheme()
+            theme = preferenceService.getTheme(),
+            dynamicColorEnabled = preferenceService.getDynamicColor(),
         )
     }
 }
