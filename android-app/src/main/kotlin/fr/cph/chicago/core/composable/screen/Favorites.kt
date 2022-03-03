@@ -46,9 +46,6 @@ import androidx.core.content.ContextCompat.startActivity
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
-import fr.cph.chicago.core.composable.BikeStationComposable
-import fr.cph.chicago.core.composable.BusStationComposable
-import fr.cph.chicago.core.composable.TrainStationComposable
 import fr.cph.chicago.core.composable.common.AnimatedText
 import fr.cph.chicago.core.composable.common.ColoredBox
 import fr.cph.chicago.core.composable.map.BusMapActivity
@@ -66,6 +63,9 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.toComposeColor
 import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.Util
+import fr.cph.chicago.util.startBikeStationActivity
+import fr.cph.chicago.util.startBusDetailActivity
+import fr.cph.chicago.util.startTrainStationActivity
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -119,15 +119,7 @@ fun TrainFavoriteCard(modifier: Modifier = Modifier, trainStation: TrainStation,
 
         val context = LocalContext.current
         FooterCard(
-            detailsOnClick = {
-                // Start train station activity
-                val extras = Bundle()
-                val intent = Intent(context, TrainStationComposable::class.java)
-                extras.putString(context.getString(R.string.bundle_train_stationId), trainStation.id)
-                intent.putExtras(extras)
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(context, intent, null)
-            },
+            detailsOnClick = { startTrainStationActivity(context, trainStation) },
             mapOnClick = {
                 if (trainStation.lines.size == 1) {
                     val line = trainStation.lines.first()
@@ -149,7 +141,7 @@ fun TrainFavoriteCard(modifier: Modifier = Modifier, trainStation: TrainStation,
 }
 
 @Composable
-fun BusFavoriteCard(modifier: Modifier = Modifier, util: Util = Util, busRoute: BusRoute, lastUpdate: LastUpdate) {
+fun BusFavoriteCard(modifier: Modifier = Modifier, busRoute: BusRoute, lastUpdate: LastUpdate) {
 
     var showDialog by remember { mutableStateOf(false) }
 
@@ -347,21 +339,6 @@ fun BusDetailDialog(show: Boolean, busDetailsDTOs: List<BusDetailsDTO>, hideDial
     }
 }
 
-fun startBusDetailActivity(context: Context, busDetailsDTO: BusDetailsDTO) {
-    val intent = Intent(context, BusStationComposable::class.java)
-    val extras = Bundle()
-    extras.putString(context.getString(R.string.bundle_bus_stop_id), busDetailsDTO.stopId.toString())
-    extras.putString(context.getString(R.string.bundle_bus_route_id), busDetailsDTO.busRouteId)
-    extras.putString(context.getString(R.string.bundle_bus_route_name), busDetailsDTO.routeName)
-    extras.putString(context.getString(R.string.bundle_bus_bound), busDetailsDTO.bound)
-    extras.putString(context.getString(R.string.bundle_bus_bound_title), busDetailsDTO.boundTitle)
-    extras.putString(context.getString(R.string.bundle_bus_stop_name), busDetailsDTO.stopName)
-
-    intent.putExtras(extras)
-    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    startActivity(context, intent, null)
-}
-
 private fun startTrainMapActivity(context: Context, trainLine: TrainLine) {
     val extras = Bundle()
     val intent = Intent(context, TrainMapActivity::class.java)
@@ -381,12 +358,7 @@ fun BikeFavoriteCard(modifier: Modifier = Modifier, bikeStation: BikeStation, la
         val context = LocalContext.current
         FooterCard(
             detailsOnClick = {
-                val intent = Intent(context, BikeStationComposable::class.java)
-                val extras = Bundle()
-                extras.putParcelable(context.getString(R.string.bundle_bike_station), bikeStation)
-                intent.putExtras(extras)
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(context, intent, null)
+                startBikeStationActivity(context = context, bikeStation = bikeStation)
             }
         )
     }
@@ -516,39 +488,4 @@ fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA,
             }
         }
     }
-/*
-    ConstraintLayout(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(Color.Red)
-    ) {
-        val (left, *//*middle,*//* right) = createRefs()
-
-        Text(
-            modifier = Modifier.constrainAs(left) {
-                start.linkTo(parent.start)
-                end.linkTo(right.start)
-                baseline.linkTo(right.baseline)
-                width = Dimension.preferredWrapContent
-            },
-
-            text = "Text left1 left2 left3 left4 left5 left 6 left9 left10 left11 left12",
-            style = MaterialTheme.typography.titleSmall,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-
-        Text(
-            modifier = Modifier.constrainAs(right) {
-                start.linkTo(left.end)
-                end.linkTo(parent.end)
-                baseline.linkTo(left.baseline)
-                width = Dimension.preferredWrapContent
-            },
-            text = "Text right 1, right 2, right 3, right 4",
-            maxLines = 1,
-            style = MaterialTheme.typography.titleSmall,
-            overflow = TextOverflow.Ellipsis,
-        )
-    }*/
 }

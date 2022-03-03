@@ -1,6 +1,5 @@
 package fr.cph.chicago.core.composable
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -30,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.startActivity
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
@@ -38,7 +36,9 @@ import fr.cph.chicago.core.composable.common.TextFieldMaterial3
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.composable.viewmodel.settingsViewModel
 import fr.cph.chicago.core.model.BusStop
+import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.service.BusService
+import fr.cph.chicago.util.startBusDetailActivity
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 
@@ -145,26 +145,19 @@ fun BusBoundView(
                                 .fillMaxWidth()
                                 .padding(horizontal = 20.dp),
                             onClick = {
-                                val intent = Intent(context, BusStationComposable::class.java)
-
-                                val extras = with(Bundle()) {
-                                    putString(context.getString(R.string.bundle_bus_stop_id), busStop.id.toString())
-                                    putString(context.getString(R.string.bundle_bus_stop_name), busStop.name)
-                                    putString(context.getString(R.string.bundle_bus_route_id), busRouteId)
-                                    putString(context.getString(R.string.bundle_bus_route_name), busRouteName)
-                                    putString(context.getString(R.string.bundle_bus_bound), bound)
-                                    putString(context.getString(R.string.bundle_bus_bound_title), boundTitle)
-                                    putDouble(context.getString(R.string.bundle_bus_latitude), busStop.position.latitude)
-                                    putDouble(context.getString(R.string.bundle_bus_longitude), busStop.position.longitude)
-                                    this
-                                }
-
-                                intent.putExtras(extras)
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                startActivity(context, intent, null)
+                                startBusDetailActivity(
+                                    context = context,
+                                    busDetailsDTO = BusDetailsDTO(
+                                        stopId = busStop.id.toInt(),
+                                        stopName = busStop.name,
+                                        bound = bound,
+                                        boundTitle = boundTitle,
+                                        busRouteId = busRouteId,
+                                        routeName = busRouteName,
+                                    )
+                                )
                             },
-
-                            ) {
+                        ) {
                             Row(
                                 horizontalArrangement = Arrangement.Start,
                                 verticalAlignment = Alignment.CenterVertically,

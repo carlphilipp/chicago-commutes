@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -45,10 +46,12 @@ import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.toComposeColor
+import fr.cph.chicago.util.startBikeStationActivity
+import fr.cph.chicago.util.startTrainStationActivity
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
 
 class SearchActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,10 +71,10 @@ class SearchActivity : ComponentActivity() {
 @Composable
 private fun SearchView(viewModel: SearchViewModel) {
     val uiState = viewModel.uiState
+    val context = LocalContext.current
     Scaffold(
         topBar = {
             SearchTopBar(
-                viewModel = viewModel,
                 onValueChange = { textFieldValue ->
                     viewModel.updateText(textFieldValue)
                     viewModel.search(textFieldValue.text)
@@ -117,7 +120,8 @@ private fun SearchView(viewModel: SearchViewModel) {
                             SearchRow(
                                 imageVector = Icons.Filled.Train,
                                 title = trainStation.name,
-                                colors = trainStation.lines.map { line -> line.toComposeColor() }
+                                colors = trainStation.lines.map { line -> line.toComposeColor() },
+                                onClick = { startTrainStationActivity(context, trainStation) }
                             )
                         }
                     }
@@ -125,7 +129,10 @@ private fun SearchView(viewModel: SearchViewModel) {
                         Row {
                             SearchRow(
                                 imageVector = Icons.Filled.DirectionsBus,
-                                title = busRoute.id + " " + busRoute.name
+                                title = busRoute.id + " " + busRoute.name,
+                                onClick = {
+
+                                }
                             )
                         }
                     }
@@ -133,7 +140,8 @@ private fun SearchView(viewModel: SearchViewModel) {
                         Row {
                             SearchRow(
                                 imageVector = Icons.Filled.DirectionsBike,
-                                title = bikeStation.name
+                                title = bikeStation.name,
+                                onClick = { startBikeStationActivity(context, bikeStation) }
                             )
                         }
                     }
@@ -148,14 +156,14 @@ private fun SearchRow(
     imageVector: ImageVector,
     title: String,
     colors: List<Color> = listOf(),
+    onClick: () -> Unit,
 ) {
     TextButton(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
-        onClick = {
-
-        }) {
+        onClick = onClick
+    ) {
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxWidth()

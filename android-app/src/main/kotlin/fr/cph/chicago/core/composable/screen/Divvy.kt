@@ -35,6 +35,7 @@ import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.composable.common.TextFieldMaterial3
 import fr.cph.chicago.core.composable.viewmodel.MainViewModel
 import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.util.startBikeStationActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,14 +68,7 @@ fun Divvy(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 20.dp),
-                            onClick = {
-                                val intent = Intent(context, BikeStationComposable::class.java)
-                                val extras = Bundle()
-                                extras.putParcelable(context.getString(R.string.bundle_bike_station), bikeStation)
-                                intent.putExtras(extras)
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                startActivity(context, intent, null)
-                            }
+                            onClick = { startBikeStationActivity(context = context, bikeStation = bikeStation) }
                         ) {
                             Row(
                                 horizontalArrangement = Arrangement.Start,
