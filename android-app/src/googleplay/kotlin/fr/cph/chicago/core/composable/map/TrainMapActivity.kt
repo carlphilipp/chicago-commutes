@@ -215,7 +215,7 @@ fun TrainLineLayer(
     Polyline(
         points = viewModel.uiState.polyLine,
         color = viewModel.uiState.line.toComposeColor(),
-        width = 9f,
+        width = App.instance.lineWidthGoogleMap,
     )
 }
 

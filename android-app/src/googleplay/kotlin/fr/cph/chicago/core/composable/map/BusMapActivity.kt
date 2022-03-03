@@ -205,7 +205,7 @@ fun BusLineLayer(
     viewModel.uiState.busPatterns.forEachIndexed { index, busPattern ->
         Polyline(
             points = busPattern.busStopsPatterns.map { it.position.toLatLng() },
-            width = 7f,
+            width = App.instance.lineWidthGoogleMap,
             color = viewModel.uiState.colors[index]
         )
     }

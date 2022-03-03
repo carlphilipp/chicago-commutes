@@ -32,8 +32,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
@@ -44,21 +42,8 @@ import fr.cph.chicago.util.MapUtil.chicagoPosition
 
 object GoogleMapUtil {
 
-    val chicago: LatLng by lazy {
-        LatLng(chicagoPosition.latitude, chicagoPosition.longitude)
-    }
-
     const val defaultZoom = 10f
-
-    @Throws(SecurityException::class)
-    fun centerMap(mapFragment: SupportMapFragment, zoomIn: Boolean, position: Position?) {
-        mapFragment.getMapAsync { googleMap ->
-            googleMap.isMyLocationEnabled = true
-            val latLng = if (position != null) LatLng(position.latitude, position.longitude) else chicago
-            val cameraUpdate = if (zoomIn) CameraUpdateFactory.newLatLngZoom(latLng, 16f) else CameraUpdateFactory.newLatLng(latLng)
-            googleMap.moveCamera(cameraUpdate)
-        }
-    }
+    val chicago: LatLng by lazy { LatLng(chicagoPosition.latitude, chicagoPosition.longitude) }
 
     fun checkIfPermissionGranted(context: Context, permission: String): Boolean {
         return (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED)

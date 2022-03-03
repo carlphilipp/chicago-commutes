@@ -31,7 +31,6 @@ import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.color.DynamicColors
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.ErrorActivity
-import fr.cph.chicago.service.PreferenceService
 import io.reactivex.rxjava3.plugins.RxJavaPlugins
 import timber.log.Timber
 import timber.log.Timber.DebugTree
@@ -60,19 +59,17 @@ class App : Application() {
         if (screenWidth > 1080) 7f else if (screenWidth > 480) 4f else 2f
     }
 
-    val lineWidthMapBox: Float by lazy {
-        if (screenWidth > 1080) 2f else if (screenWidth > 480) 1f else 2f
-    }
-
     val streetViewPlaceHolder: Drawable by lazy {
         ResourcesCompat.getDrawable(resources, R.drawable.placeholder_street_view, this.theme)!!
     }
 
     override fun onCreate() {
         instance = this
+        // Enable dynamic color if available
         DynamicColors.applyToActivitiesIfAvailable(this);
+        // Setup Timber
         Timber.plant(DebugTree())
-
+        // Setup RxJava default error handling
         RxJavaPlugins.setErrorHandler { throwable ->
             Timber.e(throwable, "RxError not handled")
             startErrorActivity()
@@ -81,7 +78,7 @@ class App : Application() {
         super.onCreate()
     }
 
-    val screenWidth: Int by lazy {
+    private val screenWidth: Int by lazy {
         when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
                 val windowManager: WindowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
