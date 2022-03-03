@@ -26,8 +26,6 @@ package fr.cph.chicago
  * @version 1
  */
 object Constants {
-    const val GPS_ACCESS = 1
-
     // Base URLs
     const val TRAINS_BASE = "http://lapi.transitchicago.com"
     const val BUSES_BASE = "http://www.ctabustracker.com"
@@ -54,8 +52,6 @@ object Constants {
     const val REQUEST_TYPE = "type"
     const val REQUEST_ROUTE_ID = "routeid"
 
-    // Fragment selection
-    const val SELECTED_ID = "SELECTED_ID"
-
+    // Parsing
     const val STOP_FILE_PATH = "bus_stops.txt"
 }

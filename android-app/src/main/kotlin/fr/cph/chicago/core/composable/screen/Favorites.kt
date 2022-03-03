@@ -43,10 +43,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
+import fr.cph.chicago.core.App
 import fr.cph.chicago.core.composable.common.AnimatedText
 import fr.cph.chicago.core.composable.common.ColoredBox
 import fr.cph.chicago.core.composable.map.BusMapActivity
@@ -475,7 +477,7 @@ fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA,
                 var color = Color.Unspecified
                 if (it == DEFAULT_AVAILABLE.toString()) {
                     currentTime = "?"
-                    color = Color(fr.cph.chicago.util.Color.orange)
+                    color = Color(ContextCompat.getColor(App.instance, R.color.orange))
                 } else {
                     currentTime = it
                 }

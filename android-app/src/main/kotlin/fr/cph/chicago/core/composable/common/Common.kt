@@ -81,6 +81,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
@@ -493,7 +494,7 @@ fun StationDetailsTitleIconView(
                     Icon(
                         imageVector = Icons.Filled.Favorite,
                         contentDescription = "Favorite",
-                        tint = if (isFavorite) Color(fr.cph.chicago.util.Color.yellowLineDark) else LocalContentColor.current,
+                        tint = if (isFavorite) Color(ContextCompat.getColor(App.instance, R.color.yellowLineDark)) else LocalContentColor.current,
                     )
                 }
                 IconButton(onClick = onMapClick) {

@@ -47,8 +47,6 @@ class App : Application() {
     companion object {
         lateinit var instance: App
 
-        private val preferenceService = PreferenceService
-
         fun startErrorActivity() {
             val context = instance.applicationContext
             val intent = Intent(context, ErrorActivity::class.java)
@@ -57,8 +55,6 @@ class App : Application() {
             context.startActivity(intent)
         }
     }
-
-    var refresh: Boolean = false
 
     val lineWidthGoogleMap: Float by lazy {
         if (screenWidth > 1080) 7f else if (screenWidth > 480) 4f else 2f
