@@ -1,6 +1,6 @@
 package fr.cph.chicago.core.composable
 
-import android.widget.Toast
+import android.content.Intent
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalNavigationDrawer
@@ -13,9 +13,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.composable.screen.DrawerScreens
 import kotlinx.coroutines.launch
 
@@ -56,14 +58,18 @@ fun Navigation(screens: List<DrawerScreens>) {
             )
         },
         content = {
-            var showSearch by remember { mutableStateOf(true)}
+            var showSearch by remember { mutableStateOf(true) }
             showSearch = currentScreen.value == DrawerScreens.Favorites
             Scaffold(
                 topBar = {
                     TopBar(
                         title = currentScreen.value.title,
                         openDrawer = { openDrawer() },
-                        onSearch = { Toast.makeText(context, "Search", Toast.LENGTH_SHORT).show() },
+                        onSearch = {
+                            val intent = Intent(context, SearchActivity::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            ContextCompat.startActivity(context, intent, null)
+                        },
                         showSearch = showSearch
                     )
                 }
