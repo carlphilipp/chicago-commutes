@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -97,11 +98,11 @@ fun DrawerButton(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Image(
+                Icon(
                     imageVector = screen.icon,
                     contentDescription = "Icon",
                     modifier = Modifier,
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer),
+                    //colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer),
                 )
                 Spacer(Modifier.width(16.dp))
                 Text(

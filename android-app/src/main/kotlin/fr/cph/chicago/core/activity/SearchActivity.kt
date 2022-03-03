@@ -37,6 +37,7 @@ import androidx.constraintlayout.compose.Dimension
 import fr.cph.chicago.core.composable.SearchTopBar
 import fr.cph.chicago.core.composable.common.ChipMaterial3
 import fr.cph.chicago.core.composable.common.ColoredBox
+import fr.cph.chicago.core.composable.screen.BusRouteDialog
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.composable.viewmodel.settingsViewModel
 import fr.cph.chicago.core.model.BikeStation
@@ -50,8 +51,8 @@ import fr.cph.chicago.util.startBikeStationActivity
 import fr.cph.chicago.util.startTrainStationActivity
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 class SearchActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -131,7 +132,8 @@ private fun SearchView(viewModel: SearchViewModel) {
                                 imageVector = Icons.Filled.DirectionsBus,
                                 title = busRoute.id + " " + busRoute.name,
                                 onClick = {
-
+                                    viewModel.setBusRoute(busRoute)
+                                    viewModel.showBusDialog(true)
                                 }
                             )
                         }
@@ -149,6 +151,14 @@ private fun SearchView(viewModel: SearchViewModel) {
             }
         }
     )
+    if (uiState.showBusDialog) {
+        BusRouteDialog(
+            busRoute = uiState.busRoute,
+            hideDialog = {
+                viewModel.showBusDialog(false)
+            }
+        )
+    }
 }
 
 @Composable
@@ -179,12 +189,12 @@ private fun SearchRow(
             ) {
                 Icon(
                     imageVector = imageVector,
-                    contentDescription = null,
+                    contentDescription = "icon",
                 )
                 Column(modifier = Modifier.padding(horizontal = 10.dp)) {
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.titleSmall,
+                        style = MaterialTheme.typography.bodyLarge,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -214,6 +224,8 @@ data class SearchUiState(
 
     val isBusSelected: Boolean = true,
     val busRoutes: List<BusRoute> = listOf(),
+    val showBusDialog: Boolean = false,
+    val busRoute: BusRoute = BusRoute("", ""),
 
     val isBikeSelected: Boolean = true,
     val bikeStations: List<BikeStation> = listOf(),
@@ -256,23 +268,24 @@ class SearchViewModel @Inject constructor(
 
     fun trainSelect(value: Boolean) {
         uiState = uiState.copy(isTrainSelected = value)
-        if (uiState.searchText.text != "") {
-            search(uiState.searchText.text)
-        }
-
+        search(uiState.searchText.text)
     }
 
     fun busSelect(value: Boolean) {
         uiState = uiState.copy(isBusSelected = value)
-        if (uiState.searchText.text != "") {
-            search(uiState.searchText.text)
-        }
+        search(uiState.searchText.text)
     }
 
     fun bikeSelect(value: Boolean) {
         uiState = uiState.copy(isBikeSelected = value)
-        if (uiState.searchText.text != "") {
-            search(uiState.searchText.text)
-        }
+        search(uiState.searchText.text)
+    }
+
+    fun showBusDialog(value: Boolean) {
+        uiState = uiState.copy(showBusDialog = value)
+    }
+
+    fun setBusRoute(busRoute: BusRoute) {
+        uiState = uiState.copy(busRoute = busRoute)
     }
 }

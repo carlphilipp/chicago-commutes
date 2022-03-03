@@ -137,6 +137,8 @@ fun Bus(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
         })
 }
 
+// FIXME: create model/view, busService should not be there
+// TODO: add show param
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun BusRouteDialog(
