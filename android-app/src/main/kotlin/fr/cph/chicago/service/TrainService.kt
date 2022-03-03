@@ -217,7 +217,7 @@ object TrainService {
             .fromCallable {
                 trainRepository.allStations.entries
                     .flatMap { mutableEntry -> mutableEntry.value }
-                    .filter { station -> station.name.contentEquals(other = query, ignoreCase = true) }
+                    .filter { station -> station.name.contains(other = query, ignoreCase = true) }
                     .distinct()
                     .sorted()
             }

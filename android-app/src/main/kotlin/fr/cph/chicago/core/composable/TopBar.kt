@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fr.cph.chicago.core.activity.SearchViewModel
 import fr.cph.chicago.core.composable.common.TextFieldMaterial3
+import timber.log.Timber
 
 @Composable
 fun TopBar(title: String, openDrawer: () -> Unit, onSearch: () -> Unit, showSearch: Boolean = false) {
@@ -100,6 +101,7 @@ fun SearchTopBar(viewModel: SearchViewModel) {
                 text = searchText,
                 onValueChange = { textFieldValue ->
                     searchText = textFieldValue
+                    Timber.i("Search text: ${searchText.text}")
                     viewModel.search(searchText.text)
                 }
             )

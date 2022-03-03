@@ -252,7 +252,7 @@ object BusService {
         return Single
             .fromCallable {
                 store.state.busRoutes
-                    .filter { (id, name) -> id.contentEquals(other = query, ignoreCase = true) || name.contentEquals(other = query, ignoreCase = true) }
+                    .filter { (id, name) -> id.contains(other = query, ignoreCase = true) || name.contains(other = query, ignoreCase = true) }
                     .distinct()
                     .sortedWith(util.busStopComparatorByName)
             }
