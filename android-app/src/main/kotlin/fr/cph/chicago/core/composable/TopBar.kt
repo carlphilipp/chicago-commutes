@@ -92,18 +92,19 @@ fun RefreshTopBar(title: String, showRefresh: Boolean = false, onRefresh: () -> 
 }
 
 @Composable
-fun SearchTopBar(viewModel: SearchViewModel) {
+fun SearchTopBar(viewModel: SearchViewModel, searchText: TextFieldValue, onValueChange: (TextFieldValue) -> Unit) {
     val activity = LocalLifecycleOwner.current as ComponentActivity
-    var searchText by remember { mutableStateOf(TextFieldValue("")) }
+
     CenterAlignedTopAppBar(
         title = {
             TextFieldMaterial3(
                 text = searchText,
-                onValueChange = { textFieldValue ->
-                    searchText = textFieldValue
-                    Timber.i("Search text: ${searchText.text}")
-                    viewModel.search(searchText.text)
-                }
+                onValueChange = onValueChange
+//                onValueChange = { textFieldValue ->
+//                    searchText = textFieldValue
+//                    Timber.i("Search text: ${searchText.text}")
+//                    viewModel.search(searchText.text)
+//                }
             )
         },
         navigationIcon = {
