@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -141,8 +143,9 @@ fun Alerts(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
                                         }
 
                                         if ("Normal Service" != alert.routeStatus) {
+                                            Icons.Filled.Warning
                                             Image(
-                                                painter = painterResource(R.drawable.ic_action_alert_warning),
+                                                imageVector = Icons.Filled.Warning,
                                                 contentDescription = "alert",
                                                 colorFilter = ColorFilter.tint(Color.Red),
                                             )

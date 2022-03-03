@@ -20,7 +20,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        jcenter() // Need to migrate to new version of Mapbox to remove that
+        jcenter() // TODO: Need to replace/remove redux as it's only in jcenter :(
         // Needed for PhotoView
         maven(url = "https://jitpack.io")
     }

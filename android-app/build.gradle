@@ -5,7 +5,7 @@ plugins {
     id("com.github.ben-manes.versions")
 }
 
-// Waiting for https://github.com/realm/realm-java/issues/7062 to be implemented to remove that line
+// FIXME: Waiting for https://github.com/realm/realm-java/issues/7062 to be implemented to remove that line
 apply plugin: 'realm-android'
 
 android {
@@ -161,6 +161,7 @@ dependencies {
     implementation(Lib.kotlin_reflect)
 
     // Jetpack
+    // FIXME clean reorganize new dependencies
     def composeVersion = "1.2.0-alpha04"
     implementation("androidx.compose.runtime:runtime:" + composeVersion)
     implementation("androidx.compose.ui:ui:" + composeVersion)
@@ -173,9 +174,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling:" + composeVersion)
     implementation("androidx.compose.runtime:runtime-livedata:" + composeVersion)
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0")
-
     implementation 'androidx.work:work-runtime-ktx:2.7.1'
-
     implementation("androidx.activity:activity-compose:1.4.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1")
     implementation("com.google.accompanist:accompanist-appcompat-theme:0.20.3")
@@ -221,14 +220,7 @@ dependencies {
     googleplayImplementation("com.google.maps.android:maps-compose:1.2.0")
 
     // Foss flavor
-    fossImplementation(Lib.mapbox)
-    fossImplementation(Lib.mapbox_annotation)
-    fossImplementation(Lib.mapbox_marker_view)
-    fossImplementation(Lib.mapbox_location)
-    // Lib needed to patch an issue with SDK 30
-    // References: https://github.com/mapbox/mapbox-gl-native-android/issues/425 and https://github.com/mapbox/mapbox-events-android/issues/482
-    // TODO: This should not be needed once released in the mapbox android SDK.
-    fossImplementation(Lib.mapbox_telemetry)
+    // Add OSM
 
     testImplementation(Lib.junit) { exclude group: "org.hamcrest", module: "hamcrest-core" }
     testImplementation(Lib.mockito) { exclude group: "org.hamcrest", module: "hamcrest-core" }
