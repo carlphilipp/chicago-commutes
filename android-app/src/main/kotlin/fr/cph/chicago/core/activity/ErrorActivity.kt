@@ -19,11 +19,15 @@
 
 package fr.cph.chicago.core.activity
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import fr.cph.chicago.databinding.ErrorBinding
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat.startActivity
+import fr.cph.chicago.core.composable.common.AnimatedErrorView
+import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
+import fr.cph.chicago.core.composable.viewmodel.settingsViewModel
 
 /**
  * BusArrivalError activity that can be thrown from anywhere in the app
@@ -31,20 +35,21 @@ import fr.cph.chicago.databinding.ErrorBinding
  * @author Carl-Philipp Harmant
  * @version 1
  */
-// FIXME: See how that can be redone with compose
-class ErrorActivity : Activity() {
-
-    private lateinit var binding: ErrorBinding
+class ErrorActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ErrorBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        binding.failureLayout.visibility = View.VISIBLE
-        binding.retryButton.setOnClickListener {
-            val intent = Intent(this@ErrorActivity, BaseActivity::class.java)
-            finish()
-            startActivity(intent)
+        setContent {
+            ChicagoCommutesTheme(settingsViewModel = settingsViewModel) {
+                val context = LocalContext.current
+                AnimatedErrorView(
+                    onClick = {
+                        val intent = Intent(this@ErrorActivity, BaseActivity::class.java)
+                        finish()
+                        startActivity(context, intent, null)
+                    }
+                )
+            }
         }
     }
 }
