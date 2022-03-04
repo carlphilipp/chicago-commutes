@@ -27,8 +27,9 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -50,8 +51,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.toolingGraphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModel
@@ -138,11 +144,18 @@ private fun LoadingView(modifier: Modifier = Modifier, show: Boolean) {
         visible = show,
         exit = fadeOut(animationSpec = tween(durationMillis = 300)),
     ) {
-        Image(
-            modifier = modifier.fillMaxSize(),
-            painter = painterResource(R.drawable.skyline),
-            contentDescription = "Chicago Skyline",
-            contentScale = ContentScale.FillBounds,
+        // Re-implemented Icon because the scale is not an option for some reason
+        val vec = ImageVector.vectorResource(id = R.drawable.skyline_vector)
+        Box(
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.primaryContainer)
+                .toolingGraphicsLayer()
+                .paint(
+                    painter = rememberVectorPainter(vec),
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onTertiaryContainer),
+                    contentScale = ContentScale.FillBounds
+                )
         )
         Column(
             modifier = modifier.fillMaxSize(),
@@ -161,6 +174,7 @@ private fun LoadingView(modifier: Modifier = Modifier, show: Boolean) {
                 Text(
                     text = "Loading...",
                     style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
             }
             Column(
