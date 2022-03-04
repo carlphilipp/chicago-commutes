@@ -29,9 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat.startActivity
+import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.BaseActivity
 import fr.cph.chicago.core.composable.DeveloperOptionsComposable
 import fr.cph.chicago.core.model.Theme
@@ -59,7 +61,7 @@ fun Settings(modifier: Modifier = Modifier, viewModel: SettingsViewModel, util: 
                 Row(modifier = cellModifier) {
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            text = "Theme",
+                            text = stringResource(id = R.string.preferences_data_theme_title),
                             style = MaterialTheme.typography.titleMedium,
                         )
                         Spacer(modifier = Modifier.height(5.dp))
@@ -81,16 +83,16 @@ fun Settings(modifier: Modifier = Modifier, viewModel: SettingsViewModel, util: 
                 Row(modifier = cellModifier) {
                     Column {
                         Text(
-                            text = "Data cache",
+                            text = stringResource(id = R.string.preferences_data_cache_title),
                             style = MaterialTheme.typography.titleMedium,
                         )
                         Spacer(modifier = Modifier.height(5.dp))
                         Text(
-                            text = "Clear cache",
+                            text = stringResource(id = R.string.preferences_clear_cache_title),
                             style = MaterialTheme.typography.bodyMedium,
                         )
                         Text(
-                            text = "Remove all cache data",
+                            text = stringResource(id = R.string.preferences_clear_cache_desc),
                             style = MaterialTheme.typography.bodySmall,
                         )
                     }
@@ -110,12 +112,12 @@ fun Settings(modifier: Modifier = Modifier, viewModel: SettingsViewModel, util: 
                 Row(modifier = cellModifier) {
                     Column {
                         Text(
-                            text = "Developer options",
+                            text = stringResource(id = R.string.preferences_developer_options),
                             style = MaterialTheme.typography.titleMedium,
                         )
                         Spacer(modifier = Modifier.height(5.dp))
                         Text(
-                            text = "Show developer options",
+                            text = stringResource(id = R.string.preferences_developer_options_show),
                             style = MaterialTheme.typography.bodyMedium,
                         )
                     }
@@ -129,12 +131,12 @@ fun Settings(modifier: Modifier = Modifier, viewModel: SettingsViewModel, util: 
             Row(modifier = cellModifier) {
                 Column {
                     Text(
-                        text = "About",
+                        text = stringResource(id = R.string.preferences_about_title),
                         style = MaterialTheme.typography.titleMedium,
                     )
                     Spacer(modifier = Modifier.height(5.dp))
                     Text(
-                        text = "Version ${util.getCurrentVersion()}",
+                        text = stringResource(id = R.string.preferences_version) + " ${util.getCurrentVersion()}",
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }

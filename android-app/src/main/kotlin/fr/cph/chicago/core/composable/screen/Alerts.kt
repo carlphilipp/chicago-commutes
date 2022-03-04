@@ -39,6 +39,7 @@ import androidx.core.content.ContextCompat.startActivity
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
+import fr.cph.chicago.core.App
 import fr.cph.chicago.core.composable.AlertActivityComposable
 import fr.cph.chicago.core.composable.common.AnimatedErrorView
 import fr.cph.chicago.core.composable.common.AnimatedPlaceHolderList
@@ -97,9 +98,9 @@ fun Alerts(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
                                     onClick = {
                                         val intent = Intent(context, AlertActivityComposable::class.java)
                                         val extras = Bundle()
-                                        extras.putString("routeId", alert.id)
-                                        extras.putString(
-                                            "title", if (alert.alertType === AlertType.TRAIN)
+                                        extras.putString(App.instance.getString(R.string.bundle_alerts_route_id), alert.id)
+                                        extras.putString(App.instance.getString(R.string.bundle_title),
+                                            if (alert.alertType === AlertType.TRAIN)
                                                 alert.routeName
                                             else
                                                 "${alert.id} - ${alert.routeName}"

@@ -57,6 +57,7 @@ import androidx.compose.ui.graphics.toolingGraphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
@@ -172,7 +173,7 @@ private fun LoadingView(modifier: Modifier = Modifier, show: Boolean) {
                 CircularProgressIndicator()
                 Spacer(modifier = Modifier.padding(20.dp))
                 Text(
-                    text = "Loading...",
+                    text = stringResource(id = R.string.progress_message),
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )

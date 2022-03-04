@@ -27,6 +27,8 @@ import androidx.lifecycle.ViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import fr.cph.chicago.R
+import fr.cph.chicago.core.App
 import fr.cph.chicago.core.composable.common.AnimatedErrorView
 import fr.cph.chicago.core.composable.common.AnimatedPlaceHolderList
 import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
@@ -42,8 +44,8 @@ class AlertActivityComposable : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val routeId = intent.getStringExtra("routeId") ?: ""
-        val title = intent.getStringExtra("title") ?: ""
+        val routeId = intent.getStringExtra(App.instance.getString(R.string.bundle_alerts_route_id)) ?: ""
+        val title = intent.getStringExtra(App.instance.getString(R.string.bundle_title)) ?: ""
         val viewModel = AlertDetailsViewModel().initModel(routeId = routeId, title = title)
 
         setContent {

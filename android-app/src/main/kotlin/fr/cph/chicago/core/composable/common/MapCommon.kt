@@ -1,6 +1,8 @@
 package fr.cph.chicago.core.composable.common
 
 import androidx.lifecycle.ViewModel
+import fr.cph.chicago.R
+import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.LastUpdate
@@ -16,7 +18,7 @@ class LocationViewModel : ViewModel() {
 }
 
 class NearbyResult(
-    val lastUpdate: LastUpdate = LastUpdate("now"),
+    val lastUpdate: LastUpdate = LastUpdate(App.instance.getString(R.string.time_now)),
     val arrivals: TreeMap<NearbyDetailsArrivals, MutableList<String>> = TreeMap<NearbyDetailsArrivals, MutableList<String>>()
 ) {
     companion object {
@@ -61,11 +63,11 @@ class NearbyResult(
         fun toArrivals(bikeStation: BikeStation): TreeMap<NearbyDetailsArrivals, MutableList<String>> {
             val result = TreeMap<NearbyDetailsArrivals, MutableList<String>>()
             result[NearbyDetailsArrivals(
-                destination = "Available bikes",
+                destination = App.instance.getString(R.string.bike_available_bikes),
                 trainLine = TrainLine.NA,
             )] = mutableListOf(bikeStation.availableBikes.toString())
             result[NearbyDetailsArrivals(
-                destination = "Available docks",
+                destination = App.instance.getString(R.string.bike_available_docks),
                 trainLine = TrainLine.NA
             )] = mutableListOf(bikeStation.availableDocks.toString())
 

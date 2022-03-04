@@ -76,6 +76,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -316,7 +317,7 @@ fun ShowFavoriteSnackBar(
         scope = scope,
         snackbarHostState = snackbarHostState,
         element = isFavorite,
-        message = if (isFavorite) "Added to favorites" else "Removed from favorites",
+        message = if (isFavorite) stringResource(id = R.string.message_add_fav) else stringResource(id = R.string.message_remove_fav),
         onComplete = onComplete,
     )
 }
@@ -332,7 +333,7 @@ fun ShowLocationNotFoundSnackBar(
         scope = scope,
         snackbarHostState = snackbarHostState,
         showErrorMessage = showErrorMessage,
-        message = "Location could not be found",
+        message = stringResource(id = R.string.error_location),
         onComplete = onComplete,
     )
 }
@@ -342,7 +343,7 @@ fun ShowErrorMessageSnackBar(
     scope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
     showErrorMessage: Boolean,
-    message: String = "Something went wrong, try again later",
+    message: String = stringResource(id = R.string.error_message),
     onComplete: () -> Unit,
 ) {
     ShowSnackBar(
@@ -551,7 +552,7 @@ private fun ErrorView(
         Spacer(modifier = Modifier.padding(10.dp))
         FilledTonalButton(onClick = onClick) {
             Text(
-                text = "Retry"
+                text = stringResource(id = R.string.error_button)
             )
         }
     }

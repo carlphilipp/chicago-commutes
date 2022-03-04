@@ -12,20 +12,70 @@ import androidx.compose.material.icons.filled.Train
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import fr.cph.chicago.R
+import fr.cph.chicago.core.App
 import fr.cph.chicago.core.composable.viewmodel.locationViewModel
 import fr.cph.chicago.core.composable.viewmodel.mainViewModel
 import fr.cph.chicago.core.composable.viewmodel.settingsViewModel
 
 sealed class DrawerScreens(val title: String, val route: String, val icon: ImageVector, val component: @Composable () -> Unit) {
-    object Favorites : DrawerScreens("Favorites", "fav", Icons.Filled.Favorite, { Favorites(mainViewModel = mainViewModel) })
-    object Train : DrawerScreens("Train", "train", Icons.Filled.Train, { Train() })
-    object Bus : DrawerScreens("Bus", "bus", Icons.Filled.DirectionsBus, { Bus(mainViewModel = mainViewModel) })
-    object Divvy : DrawerScreens("Divvy", "divvy", Icons.Filled.DirectionsBike, { Divvy(mainViewModel = mainViewModel) })
-    object Nearby : DrawerScreens("Nearby", "nearby", Icons.Filled.NearMe, { Nearby(mainViewModel = mainViewModel, locationViewModel = locationViewModel) })
-    object Map : DrawerScreens("CTA map", "map", Icons.Filled.Map, { Map() })
-    object Alerts : DrawerScreens("CTA alerts", "alerts", Icons.Filled.Warning, { Alerts(mainViewModel = mainViewModel) })
-    object Rate : DrawerScreens("Rate this app", "rate", Icons.Filled.StarRate, { Rate(mainViewModel = mainViewModel) })
-    object Settings : DrawerScreens("Settings", "settings", Icons.Filled.Settings, { Settings(viewModel = settingsViewModel) })
+    object Favorites : DrawerScreens(
+        title = App.instance.getString(R.string.menu_favorites),
+        route = "fav",
+        icon = Icons.Filled.Favorite,
+        component = { Favorites(mainViewModel = mainViewModel) }
+    )
+
+    object Train : DrawerScreens(
+        title = App.instance.getString(R.string.menu_train),
+        route = "train",
+        icon = Icons.Filled.Train,
+        component = { Train() }
+    )
+
+    object Bus : DrawerScreens(
+        title = App.instance.getString(R.string.menu_bus),
+        route = "bus",
+        icon = Icons.Filled.DirectionsBus,
+        { Bus(mainViewModel = mainViewModel) }
+    )
+
+    object Divvy : DrawerScreens(
+        title = App.instance.getString(R.string.menu_divvy),
+        route = "divvy",
+        icon = Icons.Filled.DirectionsBike,
+        component = { Divvy(mainViewModel = mainViewModel) }
+    )
+
+    object Nearby : DrawerScreens(
+        title = App.instance.getString(R.string.menu_nearby),
+        route = "nearby",
+        icon = Icons.Filled.NearMe,
+        component = { Nearby(mainViewModel = mainViewModel, locationViewModel = locationViewModel) })
+
+    object Map : DrawerScreens(
+        title = App.instance.getString(R.string.menu_cta_map),
+        route = "map",
+        icon = Icons.Filled.Map,
+        component = { Map() })
+
+    object Alerts : DrawerScreens(
+        title = App.instance.getString(R.string.menu_cta_alert),
+        route = "alerts",
+        icon = Icons.Filled.Warning,
+        component = { Alerts(mainViewModel = mainViewModel) })
+
+    object Rate : DrawerScreens(
+        title = App.instance.getString(R.string.menu_rate),
+        route = "rate",
+        icon = Icons.Filled.StarRate,
+        component = { Rate(mainViewModel = mainViewModel) })
+
+    object Settings : DrawerScreens(
+        title = App.instance.getString(R.string.menu_settings),
+        route = "settings",
+        icon = Icons.Filled.Settings,
+        component = { Settings(viewModel = settingsViewModel) })
 }
 
 val screens = listOf(

@@ -54,41 +54,12 @@
                 android:name="error"
                 android:value="false" />
         </activity>
-        <!-- to delete when global search is done -->
-        <!--<activity
-            android:name=".core.activity.MainActivity"
-            android:alwaysRetainTaskState="true"
-            android:configChanges="uiMode"
-            android:hardwareAccelerated="true"
-            android:screenOrientation="portrait"
-            android:exported="false"
-            android:theme="@style/Theme.ComposeTheming">
-            <meta-data
-                android:name="android.app.default_searchable"
-                android:value="fr.cph.chicago.activity.SearchActivity" />
-        </activity>-->
         <activity
             android:name=".core.activity.ErrorActivity"
             android:configChanges="uiMode"
             android:exported="false"
             android:label="@string/bus_bound_activity"
-            android:screenOrientation="portrait" /> <!-- android:theme="@style/Theme.ComposeTheming" -->
-        <!--        <activity
-                    android:name=".core.activity.SearchActivity"
-                    android:configChanges="uiMode"
-                    android:label="@string/search_title"
-                    android:launchMode="singleTop"
-                    android:screenOrientation="portrait"
-                    android:exported="false"
-                    android:theme="@style/Theme.ComposeTheming">
-                    <intent-filter>
-                        <action android:name="android.intent.action.SEARCH" />
-                    </intent-filter>
-
-                    <meta-data
-                        android:name="android.app.searchable"
-                        android:resource="@xml/searchable" />
-                </activity>-->
+            android:screenOrientation="portrait" />
         <activity
             android:name=".core.composable.MainActivityComposable"
             android:configChanges="uiMode"

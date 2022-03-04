@@ -19,7 +19,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import fr.cph.chicago.R
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.composable.viewmodel.settingsViewModel
 import fr.cph.chicago.core.model.dto.PreferenceDTO
@@ -85,7 +87,7 @@ class DeveloperOptionsViewModel(private val preferenceService: PreferenceService
 @Composable
 fun DeveloperOptions(viewModel: DeveloperOptionsViewModel) {
     Scaffold(
-        topBar = { RefreshTopBar("Developer Options") },
+        topBar = { RefreshTopBar(title = stringResource(id = R.string.preferences_developer_options)) },
         content = {
             Column(
                 modifier = Modifier
@@ -95,11 +97,11 @@ fun DeveloperOptions(viewModel: DeveloperOptionsViewModel) {
                 Row(modifier = Modifier.padding(15.dp)) {
                     Column {
                         Text(
-                            text = "Data cache",
+                            text = stringResource(id = R.string.preferences_data_cache_title),
                             style = MaterialTheme.typography.titleMedium,
                         )
                         Text(
-                            text = "Show cache",
+                            text = stringResource(id = R.string.developer_show_cache),
                             style = MaterialTheme.typography.bodyMedium,
                         )
                         if (viewModel.uiState.showCache) {

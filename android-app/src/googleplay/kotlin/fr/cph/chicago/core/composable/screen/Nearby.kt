@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -212,7 +213,7 @@ private fun SearchThisAreaButton(mainViewModel: MainViewModel, cameraPositionSta
                 zoom = cameraPositionState.position.zoom
             )
         }) {
-            Text(text = "Search this area")
+            Text(text = stringResource(id = R.string.search_area))
         }
     }
 }

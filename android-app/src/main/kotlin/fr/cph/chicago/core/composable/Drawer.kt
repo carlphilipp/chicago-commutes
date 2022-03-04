@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import fr.cph.chicago.R
 import fr.cph.chicago.core.composable.screen.DrawerScreens
@@ -45,7 +46,7 @@ fun Drawer(modifier: Modifier = Modifier, currentScreen: DrawerScreens, onDestin
                         .height(170.dp),
                 )
                 Text(
-                    text = "Chicago Commutes",
+                    text = stringResource(id = R.string.current_app_name),
                     color = Color.White,
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier
