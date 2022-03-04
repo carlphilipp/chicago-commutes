@@ -32,8 +32,7 @@ data class DivvyStationInformation(
     @JsonProperty("lat")
     val latitude: Double,
     @JsonProperty("lon")
-    val longitude: Double,
-    val capacity: Int)
+    val longitude: Double)
 
 data class StationStatusResponse(val data: DataStationStatusResponse)
 
