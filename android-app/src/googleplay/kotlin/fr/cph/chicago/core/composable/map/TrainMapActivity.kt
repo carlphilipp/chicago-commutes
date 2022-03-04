@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -311,8 +312,8 @@ fun InfoWindowsDetailsTrain(
                         )
                     }
                     viewModel.uiState.trainEtas.forEachIndexed { index, trainEta ->
-                        Timber.i("Found: ${trainEta.trainStation.name} ${trainEta.timeLeftDueDelay} index: ${index}")
-                        if (index == viewModel.uiState.trainEtas.size - 1 && trainEta.trainStation.name == App.instance.getString(R.string.bus_all_results)) {
+                        Timber.i("Found: ${trainEta.trainStation.name} ${trainEta.timeLeftDueDelay} index: $index")
+                        if (index == viewModel.uiState.trainEtas.size - 1 && trainEta.trainStation.name == stringResource(R.string.bus_all_results)) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()

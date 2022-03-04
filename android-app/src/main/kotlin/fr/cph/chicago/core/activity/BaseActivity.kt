@@ -205,7 +205,7 @@ class BaseViewModel @Inject constructor(
                 val defaultSettingsAction = DefaultSettingsAction(
                     ctaTrainKey = uiState.context.getString(R.string.cta_train_key),
                     ctaBusKey = uiState.context.getString(R.string.cta_bus_key),
-                    googleStreetKey = App.instance.applicationContext.getString(R.string.google_maps_api_key)
+                    googleStreetKey = uiState.context.getString(R.string.google_maps_api_key)
                 )
                 store.dispatch(defaultSettingsAction)
                 store.dispatch(BaseAction())

@@ -427,7 +427,7 @@ fun StationDetailsImageView(
                 Modifier.fillMaxWidth()
             }
             Image(
-                bitmap = App.instance.streetViewPlaceHolder.toBitmap().asImageBitmap(),
+                painter = painterResource(R.drawable.placeholder_street_view),
                 contentDescription = "Place holder",
                 contentScale = ContentScale.Crop,
                 modifier = imageModifier

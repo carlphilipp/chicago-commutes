@@ -130,7 +130,7 @@ object PreferenceRepository {
     fun saveTrainFavorites(favorites: Set<String>) {
         val sharedPref = getPrivatePreferences()
         val editor = sharedPref.edit()
-        val set = favorites.map { it.toString() }.toSet()
+        val set = favorites.map { it}.toSet()
         Timber.v("Put train favorites: %s", favorites)
         editor.putStringSet(TRAIN.value, set)
         editor.apply()
@@ -142,7 +142,6 @@ object PreferenceRepository {
         Timber.v("Read train favorites : %s", setPref)
         return setPref
             .asSequence()
-            //.map { String(it) }
             .map { trainService.getStation(it) }
             .sorted()
             .map { it.id }
@@ -152,19 +151,19 @@ object PreferenceRepository {
     fun saveTrainFilter(stationId: String, line: TrainLine, direction: TrainDirection) {
         val sharedPref = getPrivatePreferencesTrainFilter()
         val editor = sharedPref.edit()
-        editor.putBoolean(stationId.toString() + "_" + line + "_" + direction, false)
+        editor.putBoolean(stationId + "_" + line + "_" + direction, false)
         editor.apply()
     }
 
     fun getTrainFilter(stationId: String, line: TrainLine, direction: TrainDirection): Boolean {
         val sharedPref = getPrivatePreferencesTrainFilter()
-        return sharedPref.getBoolean(stationId.toString() + "_" + line + "_" + direction, true)
+        return sharedPref.getBoolean(stationId + "_" + line + "_" + direction, true)
     }
 
     fun removeTrainFilter(stationId: String, line: TrainLine, direction: TrainDirection) {
         val sharedPref = getPrivatePreferencesTrainFilter()
         val editor = sharedPref.edit()
-        editor.remove(stationId.toString() + "_" + line + "_" + direction)
+        editor.remove(stationId + "_" + line + "_" + direction)
         editor.apply()
     }
 
