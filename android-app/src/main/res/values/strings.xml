@@ -87,4 +87,10 @@
     <!-- Developer Options -->
     <string name="developer_show_cache">Show cache</string>
 
+    <!-- Messages -->
+    <string name="message_something_went_wrong">Oops, something went wrong!</string>
+    <string name="message_add_fav">Added to favorites!</string>
+    <string name="message_remove_fav">Removed from favorites!</string>
+    <string name="message_connect_error">Sorry, network connection issues</string>
+
 </resources>
