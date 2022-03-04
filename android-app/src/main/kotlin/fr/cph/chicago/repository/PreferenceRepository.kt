@@ -117,7 +117,7 @@ object PreferenceRepository {
 
     fun getDynamicColor(): Boolean {
         val sharedPref = getPrivatePreferences()
-        return sharedPref.getBoolean(PrefType.DYNAMIC_COLOR.value, false)
+        return sharedPref.getBoolean(PrefType.DYNAMIC_COLOR.value, true)
     }
 
     fun saveDynamicColor(enabled: Boolean) {
