@@ -234,7 +234,7 @@ fun ClearCacheDialog(viewModel: SettingsViewModel) {
     val activity = (context as ComponentActivity)
     AlertDialog(
         modifier = Modifier.padding(horizontal = 50.dp),
-        onDismissRequest = {},
+        onDismissRequest = { viewModel.showClearCache(false) },
         // FIXME workaround because the dialog do not resize after loading. Issue: https://issuetracker.google.com/issues/194911971?pli=1
         properties = DialogProperties(usePlatformDefaultWidth = false),
         title = {
