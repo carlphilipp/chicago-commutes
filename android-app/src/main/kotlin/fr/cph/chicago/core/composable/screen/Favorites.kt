@@ -432,7 +432,7 @@ fun FooterCard(modifier: Modifier = Modifier, detailsOnClick: () -> Unit = {}, m
 
 @Composable
 fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA, destination: String, direction: String? = null, arrivals: List<String>) {
-    ConstraintLayout(modifier = modifier.fillMaxWidth()) {
+    ConstraintLayout(modifier = modifier.fillMaxWidth().padding(vertical = 8.dp)) {
         val (left, right) = createRefs()
         Row(
             verticalAlignment = Alignment.CenterVertically,
