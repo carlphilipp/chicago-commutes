@@ -15,32 +15,23 @@ class RefreshTaskLifecycleEventObserver : LifecycleEventObserver {
     private var refreshTask: Observable<Long> = refreshTask()
     private var disposable: Disposable = refreshTask.subscribeWith(CustomerDisposableObserver())
 
-    init {
-        Timber.i("Create new RefreshTaskLifecycleEventObserver")
-    }
-
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         when (event) {
             Lifecycle.Event.ON_PAUSE -> {
-                Timber.i("on pause")
                 disposable.dispose()
             }
             Lifecycle.Event.ON_STOP -> {
-                Timber.i("on stop")
                 disposable.dispose()
             }
             Lifecycle.Event.ON_RESUME -> {
-                Timber.i("on resume")
                 disposable.run {
                     if (this.isDisposed) {
-                        Timber.i("on resume isDisposed")
                         refreshTask = refreshTask()
                         disposable = refreshTask.subscribeWith(CustomerDisposableObserver())
                     }
                 }
             }
             Lifecycle.Event.ON_DESTROY -> {
-                Timber.i("on destroy")
                 disposable.dispose()
             }
             else -> {}

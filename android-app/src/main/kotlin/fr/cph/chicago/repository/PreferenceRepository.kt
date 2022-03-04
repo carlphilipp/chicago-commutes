@@ -76,10 +76,10 @@ object PreferenceRepository {
             if (prefType == null) {
                 Timber.w("Preference not found ${it.key}")
             } else {
-                if (it.value is String) {
-                    preferencesDTO.addPreference(prefType, setOf(it.value))
-                } else {
-                    preferencesDTO.addPreference(prefType, it.value as Set<String>)
+                when (it.value) {
+                    is String -> preferencesDTO.addPreference(prefType, setOf(it.value))
+                    is Boolean -> preferencesDTO.addPreference(prefType, it.value as Boolean)
+                    else -> preferencesDTO.addPreference(prefType, it.value as Set<String>)
                 }
             }
         }
@@ -130,7 +130,7 @@ object PreferenceRepository {
     fun saveTrainFavorites(favorites: Set<String>) {
         val sharedPref = getPrivatePreferences()
         val editor = sharedPref.edit()
-        val set = favorites.map { it}.toSet()
+        val set = favorites.map { it }.toSet()
         Timber.v("Put train favorites: %s", favorites)
         editor.putStringSet(TRAIN.value, set)
         editor.apply()
