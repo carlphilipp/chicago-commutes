@@ -306,15 +306,15 @@ object PreferenceRepository {
     }
 
     private fun getPrivatePreferencesBusStopMapping(): SharedPreferences {
-        return App.instance.getSharedPreferences(BUS_STOP_NAME_MAPPING.name, MODE_PRIVATE)
+        return App.instance.getSharedPreferences(BUS_STOP_NAME_MAPPING.value, MODE_PRIVATE)
     }
 
     private fun getPrivatePreferencesBusRouteMapping(): SharedPreferences {
-        return App.instance.getSharedPreferences(BUS_ROUTE_NAME_MAPPING.name, MODE_PRIVATE)
+        return App.instance.getSharedPreferences(BUS_ROUTE_NAME_MAPPING.value, MODE_PRIVATE)
     }
 
     private fun getPrivatePreferencesBikeMapping(): SharedPreferences {
-        return App.instance.getSharedPreferences(BIKE_NAME_MAPPING.name, MODE_PRIVATE)
+        return App.instance.getSharedPreferences(BIKE_NAME_MAPPING.value, MODE_PRIVATE)
     }
 
     private fun getPrivatePreferencesTrainFilter(): SharedPreferences {
