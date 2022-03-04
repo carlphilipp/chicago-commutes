@@ -4,11 +4,18 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 
-val ShimmerColorShades = listOf(
-    Color.LightGray.copy(0.9f),
-    Color.LightGray.copy(0.2f),
-    Color.LightGray.copy(0.9f),
-)
+val blue_line = Color(0xFF009eda)
+val brown_line = Color(0xFF663300)
+val green_line = Color(0xFF009900)
+val orange_line = Color(0xFFff8000)
+val pink_line = Color(0xFFcc0066)
+val purple_line = Color(0xFF660066)
+val red_line = Color(0xFFff0000)
+val yellow_line = Color(0xFFfdd835)
+val default_line = Color(0xFF000000)
+
+val favorite_yellow = Color(0xFFFFD000)
+val bike_orange = Color(0xFFff8000)
 
 val md_theme_light_primary = Color(0xFF315da8)
 val md_theme_light_onPrimary = Color(0xFFffffff)

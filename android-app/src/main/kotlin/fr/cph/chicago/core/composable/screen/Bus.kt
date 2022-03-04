@@ -49,6 +49,7 @@ import fr.cph.chicago.core.composable.viewmodel.MainViewModel
 import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.service.BusService
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -158,6 +159,7 @@ fun BusRouteDialog(
             },
             { error ->
                 // TODO: handle error
+                Timber.e(error, "Could not load bus directions")
                 isLoading = false
             }
         )

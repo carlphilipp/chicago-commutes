@@ -371,7 +371,7 @@ fun DisplayAllResultsRowView() {
 data class GoogleMapBusUiState(
     val isLoading: Boolean = false,
     val showError: Boolean = false,
-    val colors: List<Color> = TrainLine.values().map { Color(it.color) }.dropLast(1),
+    val colors: List<Color> = TrainLine.values().map { it.color }.dropLast(1),
     val stopIcons: List<BitmapDescriptor> = listOf(),
 
     val busRouteId: String = "",
@@ -562,7 +562,7 @@ class GoogleMapBusViewModel @Inject constructor(
     private fun loadPatterns() {
         Observable.fromCallable {
             val patterns: MutableList<BusPattern> = mutableListOf()
-            busService.loadBusPattern(uiState.busRouteId, arrayOf<String>()).blockingGet().forEach { patterns.add(it) }
+            busService.loadBusPattern(uiState.busRouteId).blockingGet().forEach { patterns.add(it) }
             patterns
         }
             .subscribeOn(Schedulers.io())

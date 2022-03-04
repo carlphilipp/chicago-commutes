@@ -53,6 +53,7 @@ import fr.cph.chicago.core.composable.common.AnimatedText
 import fr.cph.chicago.core.composable.common.ColoredBox
 import fr.cph.chicago.core.composable.map.BusMapActivity
 import fr.cph.chicago.core.composable.map.TrainMapActivity
+import fr.cph.chicago.core.composable.theme.bike_orange
 import fr.cph.chicago.core.composable.viewmodel.MainViewModel
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BikeStation.Companion.DEFAULT_AVAILABLE
@@ -63,7 +64,6 @@ import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.toComposeColor
 import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.Util
 import fr.cph.chicago.util.startBikeStationActivity
@@ -91,7 +91,7 @@ fun Favorites(mainViewModel: MainViewModel) {
                         when (val model = Favorites.getObject(index)) {
                             is TrainStation -> TrainFavoriteCard(trainStation = model, lastUpdate = lastUpdate)
                             is BusRoute -> BusFavoriteCard(busRoute = model, lastUpdate = lastUpdate)
-                            is BikeStation -> BikeFavoriteCard(bikeStation = model, lastUpdate = lastUpdate)
+                            is BikeStation -> BikeFavoriteCard(bikeStation = model)
                         }
                     }
                 }
@@ -351,7 +351,7 @@ private fun startTrainMapActivity(context: Context, trainLine: TrainLine) {
 }
 
 @Composable
-fun BikeFavoriteCard(modifier: Modifier = Modifier, bikeStation: BikeStation, lastUpdate: LastUpdate) {
+fun BikeFavoriteCard(modifier: Modifier = Modifier, bikeStation: BikeStation) {
     FavoriteCardWrapper(modifier = modifier) {
         HeaderCard(name = bikeStation.name, image = Icons.Filled.DirectionsBike, lastUpdate = LastUpdate(TimeUtil.formatTimeDifference(bikeStation.lastReported, Calendar.getInstance().time)))
 
@@ -446,7 +446,7 @@ fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA,
                 width = Dimension.fillToConstraints
             }
         ) {
-            ColoredBox(color = trainLine.toComposeColor())
+            ColoredBox(color = trainLine.color)
             Column(modifier = Modifier.padding(horizontal = 10.dp)) {
                 Text(
                     text = destination,
@@ -477,7 +477,7 @@ fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA,
                 var color = Color.Unspecified
                 if (it == DEFAULT_AVAILABLE.toString()) {
                     currentTime = "?"
-                    color = Color(ContextCompat.getColor(App.instance, R.color.orange))
+                    color = bike_orange
                 } else {
                     currentTime = it
                 }

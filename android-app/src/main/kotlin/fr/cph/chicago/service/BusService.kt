@@ -173,12 +173,7 @@ object BusService {
             .subscribeOn(Schedulers.computation())
     }
 
-    fun loadBusPattern(busRouteId: String, bound: String): Single<BusPattern> {
-        return loadBusPattern(busRouteId, arrayOf(bound)).map { busPatterns -> busPatterns[0] }
-    }
-
-    // FIXME: Remove bounds from param and remove comment
-    fun loadBusPattern(busRouteId: String, bounds: Array<String>): Single<List<BusPattern>> {
+    fun loadBusPattern(busRouteId: String): Single<List<BusPattern>> {
         return ctaClient.getBusPatterns(busRouteId)
             .map { response ->
                 if (response.bustimeResponse.ptr == null) throw CtaException(response)
@@ -192,11 +187,6 @@ object BusService {
                                 .map { pt -> BusStopPattern(Position(pt.lat, pt.lon), pt.typ, pt.stpnm ?: "") }
                                 .toMutableList())
                     }
-                /*.filter { pattern ->
-                    val directionIgnoreCase = pattern.direction.lowercase()
-                    val boundIgnoreCase = bounds.map { bound -> bound.lowercase() }
-                    boundIgnoreCase.contains(directionIgnoreCase)
-                }*/
             }
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.computation())

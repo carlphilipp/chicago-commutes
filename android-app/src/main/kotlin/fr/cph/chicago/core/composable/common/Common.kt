@@ -86,6 +86,7 @@ import androidx.core.graphics.drawable.toBitmap
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.App
+import fr.cph.chicago.core.composable.theme.favorite_yellow
 import fr.cph.chicago.core.model.Position
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
@@ -494,7 +495,7 @@ fun StationDetailsTitleIconView(
                     Icon(
                         imageVector = Icons.Filled.Favorite,
                         contentDescription = "Favorite",
-                        tint = if (isFavorite) Color(ContextCompat.getColor(App.instance, R.color.yellowLineDark)) else LocalContentColor.current,
+                        tint = if (isFavorite) favorite_yellow else LocalContentColor.current,
                     )
                 }
                 IconButton(onClick = onMapClick) {

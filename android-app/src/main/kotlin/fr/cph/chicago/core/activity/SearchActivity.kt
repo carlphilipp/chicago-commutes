@@ -46,7 +46,6 @@ import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
-import fr.cph.chicago.toComposeColor
 import fr.cph.chicago.util.startBikeStationActivity
 import fr.cph.chicago.util.startTrainStationActivity
 import io.reactivex.rxjava3.core.Single
@@ -121,7 +120,7 @@ private fun SearchView(viewModel: SearchViewModel) {
                             SearchRow(
                                 imageVector = Icons.Filled.Train,
                                 title = trainStation.name,
-                                colors = trainStation.lines.map { line -> line.toComposeColor() },
+                                colors = trainStation.lines.map { line -> line.color },
                                 onClick = { startTrainStationActivity(context, trainStation) }
                             )
                         }

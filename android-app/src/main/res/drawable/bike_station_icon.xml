@@ -110,8 +110,8 @@
                 android:color="@android:color/transparent" />
             <gradient
                 android:angle="90"
-                android:endColor="@color/greenLineDark"
-                android:startColor="@color/greenLineDark" />
+                android:endColor="#388E3C"
+                android:startColor="#388E3C" />
             <size
                 android:width="@dimen/icon_main"
                 android:height="@dimen/icon_main" />

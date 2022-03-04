@@ -231,6 +231,12 @@ dependencyLocking {
     lockAllConfigurations()
 }
 
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+    }
+}
+
 task currentVersion {
     doLast {
         def android = project.extensions.findByName("android")

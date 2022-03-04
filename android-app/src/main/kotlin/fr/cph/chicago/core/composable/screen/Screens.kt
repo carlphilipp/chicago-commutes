@@ -18,7 +18,7 @@ import fr.cph.chicago.core.composable.viewmodel.settingsViewModel
 
 sealed class DrawerScreens(val title: String, val route: String, val icon: ImageVector, val component: @Composable () -> Unit) {
     object Favorites : DrawerScreens("Favorites", "fav", Icons.Filled.Favorite, { Favorites(mainViewModel = mainViewModel) })
-    object Train : DrawerScreens("Train", "train", Icons.Filled.Train, { Train(mainViewModel = mainViewModel) })
+    object Train : DrawerScreens("Train", "train", Icons.Filled.Train, { Train() })
     object Bus : DrawerScreens("Bus", "bus", Icons.Filled.DirectionsBus, { Bus(mainViewModel = mainViewModel) })
     object Divvy : DrawerScreens("Divvy", "divvy", Icons.Filled.DirectionsBike, { Divvy(mainViewModel = mainViewModel) })
     object Nearby : DrawerScreens("Nearby", "nearby", Icons.Filled.NearMe, { Nearby(mainViewModel = mainViewModel, locationViewModel = locationViewModel) })

@@ -69,7 +69,6 @@ import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.service.TrainService
-import fr.cph.chicago.toComposeColor
 import fr.cph.chicago.util.GoogleMapUtil.defaultZoom
 import fr.cph.chicago.util.GoogleMapUtil.isIn
 import fr.cph.chicago.util.MapUtil
@@ -137,7 +136,7 @@ fun TrainMapView(
 
             LoadingBar(
                 show = viewModel.uiState.isLoading,
-                color = viewModel.uiState.line.toComposeColor(),
+                color = viewModel.uiState.line.color,
             )
 
             LoadingCircle(show = !isMapLoaded)
@@ -214,7 +213,7 @@ fun TrainLineLayer(
 ) {
     Polyline(
         points = viewModel.uiState.polyLine,
-        color = viewModel.uiState.line.toComposeColor(),
+        color = viewModel.uiState.line.color,
         width = App.instance.lineWidthGoogleMap,
     )
 }

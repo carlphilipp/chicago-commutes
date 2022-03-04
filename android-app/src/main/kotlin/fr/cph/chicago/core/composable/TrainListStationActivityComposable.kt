@@ -23,7 +23,6 @@ import fr.cph.chicago.core.composable.viewmodel.settingsViewModel
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.service.TrainService
-import fr.cph.chicago.toComposeColor
 import fr.cph.chicago.util.startTrainStationActivity
 
 private val trainService = TrainService
@@ -71,7 +70,7 @@ fun TrainLineStops(title: String, trainStations: List<TrainStation>) {
                                 modifier = Modifier.weight(1f),
                             )
                             station.lines.forEach { line ->
-                                ColoredBox(modifier = Modifier.padding(start = 5.dp), color = line.toComposeColor())
+                                ColoredBox(modifier = Modifier.padding(start = 5.dp), color = line.color)
                             }
                         }
                     }

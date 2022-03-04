@@ -110,8 +110,8 @@
                 android:color="@android:color/transparent" />
             <gradient
                 android:angle="90"
-                android:endColor="@color/busStops"
-                android:startColor="@color/busStops" />
+                android:endColor="#084179"
+                android:startColor="#084179" />
             <size
                 android:width="@dimen/icon_main"
                 android:height="@dimen/icon_main" />

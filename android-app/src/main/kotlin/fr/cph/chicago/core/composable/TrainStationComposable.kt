@@ -286,7 +286,7 @@ fun TrainStationView(
                                 modifier = Modifier.fillMaxWidth(),
                             ) {
                                 Surface(
-                                    color = Color(line.color),
+                                    color = line.color,
                                     shadowElevation = 1.dp,
                                     shape = RoundedCornerShape(15.0.dp),
                                 ) {
@@ -442,8 +442,8 @@ fun TrainStop(
             checked = isFiltered,
             onCheckedChange = { isChecked -> viewModel.switchFiltering(isChecked = isChecked) },
             colors = CheckboxDefaults.colors(
-                checkedColor = Color(stopUiState.line.color),
-                uncheckedColor = Color(stopUiState.line.color),
+                checkedColor = stopUiState.line.color,
+                uncheckedColor = stopUiState.line.color,
             ),
         )
         Column {
