@@ -34,7 +34,6 @@
         android:name=".core.App"
         android:allowBackup="true"
         android:configChanges="uiMode"
-        android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"

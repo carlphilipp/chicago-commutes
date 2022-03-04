@@ -222,7 +222,7 @@ object TrainRepository {
             .map { it.value }
             .fold(TreeMap()) { accumulator, station ->
                 // Accumulate train station in the map
-                station.lines.forEach { trainLine -> (accumulator.getOrPut(trainLine, { mutableListOf() }) as MutableList).add(station) }
+                station.lines.forEach { trainLine -> (accumulator.getOrPut(trainLine) { mutableListOf() } as MutableList).add(station) }
                 // Sort stations by name
                 accumulator.values.forEach { stations -> (stations as MutableList).sortBy { it.name } }
                 accumulator

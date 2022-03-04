@@ -51,6 +51,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.Callable
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
+import org.apache.commons.text.WordUtils
 import timber.log.Timber
 
 object BusService {
@@ -90,7 +91,7 @@ object BusService {
                 busStopsResponse.bustimeResponse.stops!!.map { stop ->
                     BusStop(
                         id = stop.stpid,
-                        name = stop.stpnm.uppercase(),
+                        name = WordUtils.capitalizeFully(stop.stpnm),
                         description = stop.stpnm,
                         position = Position(stop.lat, stop.lon)
                     )
@@ -107,7 +108,7 @@ object BusService {
                 busStopsResponse.bustimeResponse.stops!!.map { stop ->
                     BusStop(
                         id = stop.stpid,
-                        name = stop.stpnm.uppercase(),
+                        name = WordUtils.capitalizeFully(stop.stpnm),
                         description = stop.stpnm,
                         position = Position(stop.lat, stop.lon)
                     )
@@ -295,7 +296,7 @@ object BusService {
                             .map { prd ->
                                 BusArrival(
                                     timeStamp = simpleDateFormatBus.parseNotNull(prd.tmstmp),
-                                    stopName = prd.stpnm.uppercase(),
+                                    stopName = WordUtils.capitalizeFully(prd.stpnm),
                                     stopId = prd.stpid.toInt(),
                                     busId = prd.vid.toInt(),
                                     routeId = prd.rt,

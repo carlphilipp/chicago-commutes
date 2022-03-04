@@ -186,6 +186,8 @@ dependencies {
     implementation("androidx.hilt:hilt-work:1.0.0")
     kapt("androidx.hilt:hilt-compiler:1.0.0")
 
+    implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
+
     // Google
     implementation(Lib.material)
 

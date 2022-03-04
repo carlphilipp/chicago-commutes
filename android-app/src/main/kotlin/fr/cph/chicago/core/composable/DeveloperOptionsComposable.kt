@@ -60,7 +60,7 @@ class DeveloperOptionsViewModel(private val preferenceService: PreferenceService
         uiState = uiState.copy(showCache = !uiState.showCache)
     }
 
-    fun getAllFavorites() {
+    private fun getAllFavorites() {
         preferenceService.getAllFavorites()
             .observeOn(Schedulers.computation())
             .map { favorites -> favorites.preferences }
