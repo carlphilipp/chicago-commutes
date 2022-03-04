@@ -47,12 +47,12 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.annotations.NonNull
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.text.SimpleDateFormat
-import java.util.Locale
-import java.util.concurrent.Callable
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.text.WordUtils
 import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.concurrent.Callable
 
 object BusService {
 

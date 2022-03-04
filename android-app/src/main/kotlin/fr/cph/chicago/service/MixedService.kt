@@ -93,10 +93,8 @@ object MixedService {
         // Bus online favorites
         val busArrivals = favoritesBusArrivalDTO().observeOn(Schedulers.computation())
         // Bikes online all stations
-        val bikeStationsObservable = bikeService.allBikeStations().observeOn(Schedulers.computation()).onErrorReturn(handleListError())
-        return Single.zip(
-            busArrivals, trainArrivals, bikeStationsObservable
-        ) { busArrivalDTO, trainArrivalsDTO, bikeStations ->
+        val bikeStationsObs = bikeService.allBikeStations().observeOn(Schedulers.computation()).onErrorReturn(handleListError())
+        return Single.zip(busArrivals, trainArrivals, bikeStationsObs) { busArrivalDTO, trainArrivalsDTO, bikeStations ->
             FavoritesDTO(trainArrivalsDTO, busArrivalDTO, bikeStations.isEmpty(), bikeStations)
         }
     }
