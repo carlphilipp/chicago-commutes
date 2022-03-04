@@ -155,8 +155,6 @@ object BusService {
                     .forEach { busDirections.addBusDirection(it) }
                 busDirections
             }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun busRoutes(): Single<List<BusRoute>> {

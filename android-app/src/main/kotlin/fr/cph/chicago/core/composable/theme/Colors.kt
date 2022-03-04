@@ -14,7 +14,7 @@ val red_line = Color(0xFFff0000)
 val yellow_line = Color(0xFFfdd835)
 val default_line = Color(0xFF000000)
 
-val favorite_yellow = Color(0xFFFFD000)
+val favorite_yellow = Color(0xFFE2B800)
 val bike_orange = Color(0xFFff8000)
 
 val md_theme_light_primary = Color(0xFF315da8)

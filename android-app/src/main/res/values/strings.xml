@@ -51,7 +51,11 @@
     <string name="add_fav">Add favorites from the</string>
     <string name="add_fav2">train/bus/bike menu</string>
 
+    <!-- Train -->
+    <string name="train_choose_line">Choose a train line</string>
+
     <!-- Bus -->
+    <string name="bus_choose_stop">Choose a bus stop</string>
     <string name="bus_all_results">Display all results</string>
 
     <!-- Error -->

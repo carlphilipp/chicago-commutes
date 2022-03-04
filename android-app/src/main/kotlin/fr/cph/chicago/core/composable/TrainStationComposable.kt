@@ -444,6 +444,7 @@ fun TrainStop(
             colors = CheckboxDefaults.colors(
                 checkedColor = stopUiState.line.color,
                 uncheckedColor = stopUiState.line.color,
+                checkmarkColor = Color.White,
             ),
         )
         Column {

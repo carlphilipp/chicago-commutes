@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsBus
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ElevatedCard
@@ -35,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -228,7 +230,7 @@ fun TrainDetailDialog(show: Boolean, trainLines: Set<TrainLine>, hideDialog: () 
             title = {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                     Text(
-                        text = "Choose a train line",
+                        text = stringResource(id = R.string.train_choose_line),
                         style = MaterialTheme.typography.titleMedium,
                     )
                 }
@@ -254,6 +256,12 @@ fun TrainDetailDialog(show: Boolean, trainLines: Set<TrainLine>, hideDialog: () 
                                 hideDialog()
                             },
                         ) {
+                            Icon(
+                                modifier = Modifier.padding(end = 10.dp),
+                                imageVector = Icons.Default.Map,
+                                contentDescription = null,
+                                tint = trainLine.color,
+                            )
                             Text(
                                 text = trainLine.toStringWithLine(),
                                 style = MaterialTheme.typography.bodyMedium,
@@ -290,7 +298,7 @@ fun BusDetailDialog(show: Boolean, busDetailsDTOs: List<BusDetailsDTO>, hideDial
             title = {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                     Text(
-                        text = "Choose a bus stop",
+                        text = stringResource(id = R.string.bus_choose_stop),
                         style = MaterialTheme.typography.titleMedium,
                     )
                 }
@@ -432,7 +440,11 @@ fun FooterCard(modifier: Modifier = Modifier, detailsOnClick: () -> Unit = {}, m
 
 @Composable
 fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA, destination: String, direction: String? = null, arrivals: List<String>) {
-    ConstraintLayout(modifier = modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+    ConstraintLayout(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
         val (left, right) = createRefs()
         Row(
             verticalAlignment = Alignment.CenterVertically,

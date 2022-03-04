@@ -123,13 +123,12 @@ fun TrainMapView(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) { data -> Snackbar(snackbarData = data) } },
         content = {
 
-
             GoogleMapTrainMapView(
                 viewModel = viewModel,
                 onMapLoaded = {
                     Timber.i("Map loaded")
                     isMapLoaded = true
-                    // Google map must be loaded to be able to run these methods
+                    // Google Map must be loaded to be able to run these methods
                     viewModel.loadIcons()
                     viewModel.loadTrains()
                 },
