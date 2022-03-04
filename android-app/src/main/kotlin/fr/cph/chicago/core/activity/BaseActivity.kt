@@ -150,7 +150,7 @@ private fun LoadingView(modifier: Modifier = Modifier, show: Boolean) {
         Box(
             Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.primaryContainer)
+                .background(MaterialTheme.colorScheme.background)
                 .toolingGraphicsLayer()
                 .paint(
                     painter = rememberVectorPainter(vec),
