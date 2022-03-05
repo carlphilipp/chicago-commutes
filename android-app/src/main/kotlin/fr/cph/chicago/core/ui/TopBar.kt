@@ -1,4 +1,4 @@
-package fr.cph.chicago.core.composable
+package fr.cph.chicago.core.ui
 
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.padding

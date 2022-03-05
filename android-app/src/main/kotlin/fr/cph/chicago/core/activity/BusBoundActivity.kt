@@ -31,7 +31,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import fr.cph.chicago.R
-import fr.cph.chicago.core.composable.RefreshTopBar
+import fr.cph.chicago.core.ui.RefreshTopBar
 import fr.cph.chicago.core.ui.common.AnimatedErrorView
 import fr.cph.chicago.core.ui.common.AnimatedPlaceHolderList
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar

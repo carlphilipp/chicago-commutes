@@ -34,7 +34,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import fr.cph.chicago.core.composable.SearchTopBar
+import fr.cph.chicago.core.ui.SearchTopBar
 import fr.cph.chicago.core.ui.common.ChipMaterial3
 import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.ui.screen.BusRouteDialog

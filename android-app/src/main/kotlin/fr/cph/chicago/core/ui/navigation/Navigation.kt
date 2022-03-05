@@ -19,7 +19,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.ui.Drawer
-import fr.cph.chicago.core.composable.TopBar
+import fr.cph.chicago.core.ui.TopBar
 import fr.cph.chicago.core.ui.screen.DrawerScreens
 import kotlinx.coroutines.launch
 

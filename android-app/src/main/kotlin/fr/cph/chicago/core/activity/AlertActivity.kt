@@ -29,7 +29,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.composable.RefreshTopBar
+import fr.cph.chicago.core.ui.RefreshTopBar
 import fr.cph.chicago.core.model.dto.RouteAlertsDTO
 import fr.cph.chicago.core.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.ui.common.AnimatedErrorView

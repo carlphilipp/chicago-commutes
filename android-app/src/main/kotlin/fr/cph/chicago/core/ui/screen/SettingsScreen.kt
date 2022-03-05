@@ -42,13 +42,11 @@ import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.RealmConfig
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.Util
-import timber.log.Timber
 
 @Composable
 fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel, util: Util = Util) {
     val uiState = viewModel.uiState
     val context = LocalContext.current
-    Timber.d("Current theme: ${uiState.theme}")
 
     LazyColumn(modifier = modifier.fillMaxWidth()) {
         val cellModifier = Modifier.padding(15.dp)

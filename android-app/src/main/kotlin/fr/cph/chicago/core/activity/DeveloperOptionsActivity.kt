@@ -22,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import fr.cph.chicago.R
-import fr.cph.chicago.core.composable.RefreshTopBar
+import fr.cph.chicago.core.ui.RefreshTopBar
 import fr.cph.chicago.core.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.dto.PreferenceDTO
 import fr.cph.chicago.core.viewmodel.settingsViewModel
