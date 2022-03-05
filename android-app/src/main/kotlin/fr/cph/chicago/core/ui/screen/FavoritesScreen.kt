@@ -12,9 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsBus
-import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Train
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -28,16 +26,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -54,7 +49,9 @@ import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.theme.bike_orange
 import fr.cph.chicago.core.ui.common.AnimatedText
+import fr.cph.chicago.core.ui.common.BusDetailDialog
 import fr.cph.chicago.core.ui.common.ColoredBox
+import fr.cph.chicago.core.ui.common.TrainDetailDialog
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.startBikeStationActivity
@@ -209,146 +206,17 @@ fun BusFavoriteCard(
     }
 }
 
-// FIXME: Consider merging in common with Bus.BusRouteDialog
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun TrainDetailDialog(
-    show: Boolean,
-    trainLines: Set<TrainLine>,
-    hideDialog: () -> Unit
-) {
-    if (show) {
-        val context = LocalContext.current
-        AlertDialog(
-            modifier = Modifier.padding(horizontal = 50.dp),
-            onDismissRequest = hideDialog,
-            // FIXME workaround because the dialog do not resize after loading. Issue: https://issuetracker.google.com/issues/194911971?pli=1
-            properties = DialogProperties(usePlatformDefaultWidth = false),
-            title = {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                    Text(
-                        text = stringResource(id = R.string.train_choose_line),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                }
-            },
-            text = {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    trainLines.forEachIndexed() { index, trainLine ->
-                        val modifier = if (index == trainLines.size - 1) {
-                            Modifier.fillMaxWidth()
-                        } else {
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 5.dp)
-                        }
-                        OutlinedButton(
-                            modifier = modifier,
-                            onClick = {
-                                startTrainMapActivity(context, trainLine)
-                                hideDialog()
-                            },
-                        ) {
-                            Icon(
-                                modifier = Modifier.padding(end = 10.dp),
-                                imageVector = Icons.Default.Map,
-                                contentDescription = null,
-                                tint = trainLine.color,
-                            )
-                            Text(
-                                text = trainLine.toStringWithLine(),
-                                style = MaterialTheme.typography.bodyMedium,
-                                textAlign = TextAlign.Center,
-                            )
-                        }
-                    }
-
-                }
-            },
-            confirmButton = {},
-            dismissButton = {
-                FilledTonalButton(onClick = { hideDialog() }) {
-                    Text(
-                        text = stringResource(id = R.string.dismiss),
-                    )
-                }
-            },
-        )
-    }
-}
-
-// FIXME: Consider merging in common with Bus.BusRouteDialog
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun BusDetailDialog(show: Boolean, busDetailsDTOs: List<BusDetailsDTO>, hideDialog: () -> Unit) {
-    if (show) {
-        val context = LocalContext.current
-        AlertDialog(
-            modifier = Modifier.padding(horizontal = 50.dp),
-            onDismissRequest = hideDialog,
-            // FIXME workaround because the dialog do not resize after loading. Issue: https://issuetracker.google.com/issues/194911971?pli=1
-            properties = DialogProperties(usePlatformDefaultWidth = false),
-            title = {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                    Text(
-                        text = stringResource(id = R.string.bus_choose_stop),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                }
-            },
-            text = {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    busDetailsDTOs.forEachIndexed() { index, busDetailsDTO ->
-                        val modifier = if (index == busDetailsDTOs.size - 1) {
-                            Modifier.fillMaxWidth()
-                        } else {
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 5.dp)
-                        }
-                        OutlinedButton(
-                            modifier = modifier,
-                            onClick = {
-                                startBusDetailActivity(context, busDetailsDTO)
-                                hideDialog()
-                            },
-                        ) {
-                            Text(
-                                text = "${busDetailsDTO.stopName} (${busDetailsDTO.bound})",
-                                style = MaterialTheme.typography.bodyMedium,
-                                textAlign = TextAlign.Center,
-                            )
-                        }
-                    }
-
-                }
-            },
-            confirmButton = {},
-            dismissButton = {
-                FilledTonalButton(onClick = { hideDialog() }) {
-                    Text(
-                        text = stringResource(id = R.string.dismiss),
-                    )
-                }
-            },
-        )
-    }
-}
 
 @Composable
 fun BikeFavoriteCard(modifier: Modifier = Modifier, bikeStation: BikeStation) {
     val context = LocalContext.current
 
     FavoriteCardWrapper(modifier = modifier) {
-        HeaderCard(name = bikeStation.name, image = Icons.Filled.DirectionsBike, lastUpdate = LastUpdate(TimeUtil.formatTimeDifference(bikeStation.lastReported, Calendar.getInstance().time)))
+        HeaderCard(
+            name = bikeStation.name,
+            image = Icons.Filled.DirectionsBike,
+            lastUpdate = LastUpdate(TimeUtil.formatTimeDifference(bikeStation.lastReported, Calendar.getInstance().time))
+        )
 
         Arrivals(
             destination = stringResource(id = R.string.bike_available_bikes),
