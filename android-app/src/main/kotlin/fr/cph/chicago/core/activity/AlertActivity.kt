@@ -1,4 +1,4 @@
-package fr.cph.chicago.core.composable
+package fr.cph.chicago.core.activity
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -29,6 +28,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
+import fr.cph.chicago.core.composable.RefreshTopBar
 import fr.cph.chicago.core.composable.common.AnimatedErrorView
 import fr.cph.chicago.core.composable.common.AnimatedPlaceHolderList
 import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
@@ -39,8 +39,9 @@ import fr.cph.chicago.service.AlertService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
 import timber.log.Timber
+import androidx.compose.foundation.lazy.items
 
-class AlertActivityComposable : ComponentActivity() {
+class AlertActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

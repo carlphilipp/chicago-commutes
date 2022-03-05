@@ -1,4 +1,4 @@
-package fr.cph.chicago.core.composable
+package fr.cph.chicago.core.activity
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,6 +8,8 @@ import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.graphics.vector.ImageVector
+import fr.cph.chicago.core.composable.Navigation
+import fr.cph.chicago.core.composable.RefreshTaskLifecycleEventObserver
 import fr.cph.chicago.core.composable.common.NearbyResult
 import fr.cph.chicago.core.composable.screen.screens
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
@@ -21,7 +23,7 @@ import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 
-class MainActivityComposable : ComponentActivity() {
+class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

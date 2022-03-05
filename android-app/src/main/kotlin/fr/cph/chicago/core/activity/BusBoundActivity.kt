@@ -1,4 +1,4 @@
-package fr.cph.chicago.core.composable
+package fr.cph.chicago.core.activity
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -31,6 +31,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import fr.cph.chicago.R
+import fr.cph.chicago.core.composable.RefreshTopBar
 import fr.cph.chicago.core.composable.common.AnimatedErrorView
 import fr.cph.chicago.core.composable.common.AnimatedPlaceHolderList
 import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
@@ -43,9 +44,7 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.startBusDetailActivity
 import timber.log.Timber
 
-private val busService = BusService
-
-class BusBoundActivityComposable : ComponentActivity() {
+class BusBoundActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -175,7 +174,8 @@ class BusBoundUiViewModel(
     busRouteId: String,
     busRouteName: String,
     bound: String,
-    boundTitle: String
+    boundTitle: String,
+    private val busService : BusService = BusService,
 ) : ViewModel() {
     var uiState by mutableStateOf(
         BusBoundUiState(

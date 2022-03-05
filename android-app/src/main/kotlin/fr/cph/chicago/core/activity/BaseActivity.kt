@@ -65,7 +65,6 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.composable.MainActivityComposable
 import fr.cph.chicago.core.composable.common.AnimatedErrorView
 import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
@@ -84,7 +83,7 @@ import timber.log.Timber
 
 /**
  * This class represents the base activity of the application It will load the loading screen and then the main
- * activity
+ * activityAlertActivity
  *
  * @author Carl-Philipp Harmant
  * @version 1
@@ -261,7 +260,7 @@ class BaseViewModel @Inject constructor(
 
     private fun startMainActivity() {
         val activity = (uiState.context as ComponentActivity)
-        val intent = Intent(uiState.context, MainActivityComposable::class.java)
+        val intent = Intent(uiState.context, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(activity, intent, null)
         activity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out)

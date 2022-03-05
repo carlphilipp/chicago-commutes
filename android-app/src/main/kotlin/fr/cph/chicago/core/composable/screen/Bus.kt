@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.R
-import fr.cph.chicago.core.composable.BusBoundActivityComposable
+import fr.cph.chicago.core.activity.BusBoundActivity
 import fr.cph.chicago.core.composable.common.AnimatedErrorView
 import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.composable.common.TextFieldMaterial3
@@ -221,7 +221,7 @@ fun BusRouteDialog(
                                         onClick = {
                                             val lBusDirections = foundBusDirections.busDirections
                                             val extras = Bundle()
-                                            val intent = Intent(context, BusBoundActivityComposable::class.java)
+                                            val intent = Intent(context, BusBoundActivity::class.java)
                                             extras.putString(context.getString(R.string.bundle_bus_route_id), busRoute.id)
                                             extras.putString(context.getString(R.string.bundle_bus_route_name), busRoute.name)
                                             extras.putString(context.getString(R.string.bundle_bus_bound), lBusDirections[index].text)

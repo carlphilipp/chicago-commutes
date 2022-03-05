@@ -17,9 +17,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.R
-import fr.cph.chicago.core.composable.TrainListStationActivityComposable
+import fr.cph.chicago.core.activity.TrainListStationActivity
 import fr.cph.chicago.core.composable.common.ColoredBox
-import fr.cph.chicago.core.composable.viewmodel.MainViewModel
 import fr.cph.chicago.core.model.enumeration.TrainLine
 
 @Composable
@@ -34,7 +33,7 @@ fun Train(modifier: Modifier = Modifier) {
                     .padding(horizontal = 20.dp),
                 onClick = {
                     val extras = Bundle()
-                    val intent = Intent(context, TrainListStationActivityComposable::class.java)
+                    val intent = Intent(context, TrainListStationActivity::class.java)
                     extras.putString(context.getString(R.string.bundle_train_line), line.toString())
                     intent.putExtras(extras)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

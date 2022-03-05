@@ -1,4 +1,4 @@
-package fr.cph.chicago.core.composable
+package fr.cph.chicago.core.activity
 
 import android.content.Context
 import android.graphics.drawable.Drawable

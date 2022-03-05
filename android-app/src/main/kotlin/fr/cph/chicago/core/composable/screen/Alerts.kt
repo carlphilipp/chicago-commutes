@@ -39,7 +39,7 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.composable.AlertActivityComposable
+import fr.cph.chicago.core.activity.AlertActivity
 import fr.cph.chicago.core.composable.common.AnimatedErrorView
 import fr.cph.chicago.core.composable.common.AnimatedPlaceHolderList
 import fr.cph.chicago.core.composable.common.ColoredBox
@@ -96,7 +96,7 @@ fun Alerts(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
                                             .fillMaxWidth()
                                             .padding(horizontal = 20.dp),
                                         onClick = {
-                                            val intent = Intent(context, AlertActivityComposable::class.java)
+                                            val intent = Intent(context, AlertActivity::class.java)
                                             val extras = Bundle()
                                             extras.putString(App.instance.getString(R.string.bundle_alerts_route_id), alert.id)
                                             extras.putString(

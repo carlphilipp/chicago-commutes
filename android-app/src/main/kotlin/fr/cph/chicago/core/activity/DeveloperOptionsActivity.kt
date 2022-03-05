@@ -1,4 +1,4 @@
-package fr.cph.chicago.core.composable
+package fr.cph.chicago.core.activity
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import fr.cph.chicago.R
+import fr.cph.chicago.core.composable.RefreshTopBar
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.composable.viewmodel.settingsViewModel
 import fr.cph.chicago.core.model.dto.PreferenceDTO
@@ -31,7 +32,7 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
 
-class DeveloperOptionsComposable : ComponentActivity() {
+class DeveloperOptionsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

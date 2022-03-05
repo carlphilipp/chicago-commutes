@@ -50,7 +50,7 @@ fun TopBar(title: String, openDrawer: () -> Unit, onSearch: () -> Unit, showSear
     )
 }
 
-// TODO refactor
+// TODO refactor and rename cause it does not make sense
 @Composable
 fun RefreshTopBar(title: String, showRefresh: Boolean = false, onRefresh: () -> Unit = {}) {
     val activity = LocalLifecycleOwner.current as ComponentActivity

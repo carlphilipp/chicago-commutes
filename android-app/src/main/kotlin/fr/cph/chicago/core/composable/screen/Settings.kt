@@ -35,7 +35,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.BaseActivity
-import fr.cph.chicago.core.composable.DeveloperOptionsComposable
+import fr.cph.chicago.core.activity.DeveloperOptionsActivity
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.redux.ResetStateAction
 import fr.cph.chicago.redux.store
@@ -105,7 +105,7 @@ fun Settings(modifier: Modifier = Modifier, viewModel: SettingsViewModel, util: 
                 modifier
                     .fillMaxWidth()
                     .clickable {
-                        val intent = Intent(context, DeveloperOptionsComposable::class.java)
+                        val intent = Intent(context, DeveloperOptionsActivity::class.java)
                         startActivity(context, intent, null)
                     }) {
                 // Developer options

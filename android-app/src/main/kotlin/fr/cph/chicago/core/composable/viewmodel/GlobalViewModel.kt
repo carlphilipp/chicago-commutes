@@ -10,7 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import fr.cph.chicago.core.composable.MainUiState
+import fr.cph.chicago.core.activity.MainUiState
 import fr.cph.chicago.core.composable.common.LocationViewModel
 import fr.cph.chicago.core.composable.common.NearbyResult
 import fr.cph.chicago.core.composable.screen.SettingsViewModel
