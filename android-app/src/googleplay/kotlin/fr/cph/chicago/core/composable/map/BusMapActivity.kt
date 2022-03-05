@@ -307,18 +307,19 @@ fun InfoWindowsDetailsBus(
                             textAlign = TextAlign.Center
                         )
                     }
-                    val max = if (viewModel.uiState.detailsShowAll) {
-                        viewModel.uiState.busArrivals.size - 1
-                    } else {
-                        6
-                    }
-                    for (i in 0..max) {
-                        // FIXME: There is a bug here when selecting several buses in the UI
-                        val busArrival = viewModel.uiState.busArrivals[i]
-                        BusEtaView(stopName = busArrival.stopName, eta = busArrival.timeLeftDueDelay)
-                    }
-                    if (!viewModel.uiState.detailsShowAll && max >= 6) {
-                        DisplayAllResultsRowView()
+                    if (viewModel.uiState.busArrivals.isNotEmpty()) {
+                        val max = if (viewModel.uiState.detailsShowAll) {
+                            viewModel.uiState.busArrivals.size - 1
+                        } else {
+                            6
+                        }
+                        for (i in 0..max) {
+                            val busArrival = viewModel.uiState.busArrivals[i]
+                            BusEtaView(stopName = busArrival.stopName, eta = busArrival.timeLeftDueDelay)
+                        }
+                        if (!viewModel.uiState.detailsShowAll && max >= 6) {
+                            DisplayAllResultsRowView()
+                        }
                     }
                 }
             }
