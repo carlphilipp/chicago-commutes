@@ -104,7 +104,7 @@ fun Nearby(
                 ShowErrorMessageSnackBar(
                     scope = scope,
                     snackbarHostState = mainViewModel.uiState.snackbarHostState,
-                    showErrorMessage = mainViewModel.uiState.nearbyDetailsError,
+                    showError = mainViewModel.uiState.nearbyDetailsError,
                     onComplete = { mainViewModel.setNearbyDetailsError(false) }
                 )
             }

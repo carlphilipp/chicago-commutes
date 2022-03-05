@@ -145,7 +145,7 @@ fun TrainMapView(
                 ShowErrorMessageSnackBar(
                     scope = scope,
                     snackbarHostState = snackbarHostState,
-                    showErrorMessage = viewModel.uiState.showError,
+                    showError = viewModel.uiState.showError,
                     onComplete = { viewModel.showError(false) }
                 )
             }

@@ -122,7 +122,7 @@ fun AlertDetails(
                             ShowErrorMessageSnackBar(
                                 scope = scope,
                                 snackbarHostState = uiState.snackbarHostState,
-                                showErrorMessage = uiState.showErrorSnackBar,
+                                showError = uiState.showErrorSnackBar,
                                 onComplete = { viewModel.resetShowErrorSnackBar() }
                             )
                         }

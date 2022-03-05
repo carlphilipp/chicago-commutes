@@ -39,6 +39,7 @@ import fr.cph.chicago.core.composable.common.ChipMaterial3
 import fr.cph.chicago.core.composable.common.ColoredBox
 import fr.cph.chicago.core.composable.screen.BusRouteDialog
 import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
+import fr.cph.chicago.core.composable.viewmodel.mainViewModel
 import fr.cph.chicago.core.composable.viewmodel.settingsViewModel
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
@@ -50,8 +51,8 @@ import fr.cph.chicago.util.startBikeStationActivity
 import fr.cph.chicago.util.startTrainStationActivity
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
 
 class SearchActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -150,14 +151,13 @@ private fun SearchView(viewModel: SearchViewModel) {
             }
         }
     )
-    if (uiState.showBusDialog) {
-        BusRouteDialog(
-            busRoute = uiState.busRoute,
-            hideDialog = {
-                viewModel.showBusDialog(false)
-            }
-        )
-    }
+    BusRouteDialog(
+        showDialog = uiState.showBusDialog,
+        busRoute = uiState.busRoute,
+        hideDialog = {
+            viewModel.showBusDialog(false)
+        }
+    )
 }
 
 @Composable

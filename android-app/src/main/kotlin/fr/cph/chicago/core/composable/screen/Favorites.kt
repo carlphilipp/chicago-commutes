@@ -49,7 +49,6 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.composable.common.AnimatedText
 import fr.cph.chicago.core.composable.common.ColoredBox
-import fr.cph.chicago.core.composable.map.BusMapActivity
 import fr.cph.chicago.core.composable.map.TrainMapActivity
 import fr.cph.chicago.core.composable.theme.bike_orange
 import fr.cph.chicago.core.composable.viewmodel.MainViewModel
@@ -66,6 +65,7 @@ import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.Util
 import fr.cph.chicago.util.startBikeStationActivity
 import fr.cph.chicago.util.startBusDetailActivity
+import fr.cph.chicago.util.startBusMapActivity
 import fr.cph.chicago.util.startTrainStationActivity
 import java.util.Calendar
 
@@ -196,16 +196,13 @@ fun BusFavoriteCard(modifier: Modifier = Modifier, busRoute: BusRoute, lastUpdat
                         val busDirectionEnum: BusDirection = BusDirection.fromString(boundTitle)
                         val busDetails = BusDetailsDTO(routeId, busDirectionEnum.shortUpperCase, boundTitle, stopId, busRoute.name, stopName)
                         busDetailsDTOs.add(busDetails)
-
                     }
                 }
-                val extras = Bundle()
-                val intent = Intent(context, BusMapActivity::class.java)
-                extras.putString(context.getString(R.string.bundle_bus_route_id), busRoute.id)
-                extras.putStringArray(context.getString(R.string.bundle_bus_bounds), busDetailsDTOs.map { it.bound }.toSet().toTypedArray())
-                intent.putExtras(extras)
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(context, intent, null)
+                startBusMapActivity(
+                    context = context,
+                    busRouteId = busRoute.id,
+                    bounds = busDetailsDTOs.map { it.bound }.toSet().toTypedArray()
+                )
             }
         )
         BusDetailDialog(

@@ -1,7 +1,5 @@
 package fr.cph.chicago.core.composable.screen
 
-import android.content.Intent
-import android.os.Bundle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,9 +25,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.startActivity
-import fr.cph.chicago.R
-import fr.cph.chicago.core.composable.BikeStationComposable
 import fr.cph.chicago.core.composable.common.AnimatedErrorView
 import fr.cph.chicago.core.composable.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.composable.common.TextFieldMaterial3
@@ -95,7 +90,7 @@ fun Divvy(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
                     ShowErrorMessageSnackBar(
                         scope = scope,
                         snackbarHostState = mainViewModel.uiState.snackbarHostState,
-                        showErrorMessage = mainViewModel.uiState.bikeStationsShowError,
+                        showError = mainViewModel.uiState.bikeStationsShowError,
                         onComplete = {
                             mainViewModel.resetBikeStationsShowError()
                         }

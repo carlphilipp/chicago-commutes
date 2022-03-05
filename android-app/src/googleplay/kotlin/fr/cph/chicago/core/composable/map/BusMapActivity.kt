@@ -141,7 +141,7 @@ fun BusMapView(
                 ShowErrorMessageSnackBar(
                     scope = scope,
                     snackbarHostState = snackbarHostState,
-                    showErrorMessage = viewModel.uiState.showError,
+                    showError = viewModel.uiState.showError,
                     onComplete = { viewModel.showError(false) }
                 )
             }
@@ -313,6 +313,7 @@ fun InfoWindowsDetailsBus(
                         6
                     }
                     for (i in 0..max) {
+                        // FIXME: There is a bug here when selecting several buses in the UI
                         val busArrival = viewModel.uiState.busArrivals[i]
                         BusEtaView(stopName = busArrival.stopName, eta = busArrival.timeLeftDueDelay)
                     }

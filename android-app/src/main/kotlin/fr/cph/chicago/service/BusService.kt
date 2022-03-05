@@ -50,6 +50,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.text.WordUtils
 import timber.log.Timber
+import java.lang.RuntimeException
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.Callable
@@ -140,6 +141,7 @@ object BusService {
     fun loadBusDirectionsSingle(busRouteId: String): Single<BusDirections> {
         return ctaClient.getBusDirections(busRouteId)
             .map { response ->
+                throw RuntimeException()
                 if (response.bustimeResponse.directions == null) {
                     throw CtaException(response)
                 } else {

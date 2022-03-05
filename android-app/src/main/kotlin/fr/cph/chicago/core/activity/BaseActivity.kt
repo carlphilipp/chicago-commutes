@@ -124,7 +124,7 @@ fun BaseView(viewModel: BaseViewModel) {
                 ShowErrorMessageSnackBar(
                     scope = scope,
                     snackbarHostState = viewModel.uiState.snackbarHostState,
-                    showErrorMessage = viewModel.uiState.showErrorSnackBar,
+                    showError = viewModel.uiState.showErrorSnackBar,
                     onComplete = {
                         viewModel.showHideSnackBar(false)
                     }

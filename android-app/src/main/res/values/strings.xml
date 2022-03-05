@@ -57,6 +57,7 @@
     <!-- Bus -->
     <string name="bus_choose_stop">Choose a bus stop</string>
     <string name="bus_all_results">Display all results</string>
+    <string name="bus_see_all">See all buses on map</string>
 
     <!-- Error -->
     <string name="error_message">Something went wrong, try again later</string>

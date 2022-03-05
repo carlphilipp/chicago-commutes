@@ -82,11 +82,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
-import fr.cph.chicago.core.App
 import fr.cph.chicago.core.composable.theme.favorite_yellow
 import fr.cph.chicago.core.model.Position
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -332,7 +330,7 @@ fun ShowLocationNotFoundSnackBar(
     ShowErrorMessageSnackBar(
         scope = scope,
         snackbarHostState = snackbarHostState,
-        showErrorMessage = showErrorMessage,
+        showError = showErrorMessage,
         message = stringResource(id = R.string.error_location),
         onComplete = onComplete,
     )
@@ -342,14 +340,14 @@ fun ShowLocationNotFoundSnackBar(
 fun ShowErrorMessageSnackBar(
     scope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
-    showErrorMessage: Boolean,
+    showError: Boolean,
     message: String = stringResource(id = R.string.error_message),
     onComplete: () -> Unit,
 ) {
     ShowSnackBar(
         scope = scope,
         snackbarHostState = snackbarHostState,
-        element = showErrorMessage,
+        element = showError,
         message = message,
         onComplete = onComplete,
     )

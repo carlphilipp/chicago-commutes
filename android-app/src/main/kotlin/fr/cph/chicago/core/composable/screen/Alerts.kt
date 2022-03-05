@@ -31,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -165,7 +164,7 @@ fun Alerts(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
                             ShowErrorMessageSnackBar(
                                 scope = scope,
                                 snackbarHostState = uiState.snackbarHostState,
-                                showErrorMessage = uiState.routeAlertShowError,
+                                showError = uiState.routeAlertShowError,
                                 onComplete = {
                                     mainViewModel.resetAlertsShowError()
                                 }

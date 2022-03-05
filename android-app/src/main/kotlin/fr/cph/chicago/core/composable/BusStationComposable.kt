@@ -395,7 +395,7 @@ fun BusStationView(
         ShowErrorMessageSnackBar(
             scope = scope,
             snackbarHostState = viewModel.uiState.snackbarHostState,
-            showErrorMessage = uiState.showErrorMessage,
+            showError = uiState.showErrorMessage,
             onComplete = {
                 viewModel.resetShowErrorMessage()
             }
