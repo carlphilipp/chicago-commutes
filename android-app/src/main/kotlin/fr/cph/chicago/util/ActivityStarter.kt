@@ -6,7 +6,7 @@ import android.os.Bundle
 import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.R
 import fr.cph.chicago.core.composable.BikeStationComposable
-import fr.cph.chicago.core.composable.BusStationComposable
+import fr.cph.chicago.core.activity.BusStationActivity
 import fr.cph.chicago.core.composable.TrainStationComposable
 import fr.cph.chicago.core.composable.map.BusMapActivity
 import fr.cph.chicago.core.model.BikeStation
@@ -26,7 +26,7 @@ fun startTrainStationActivity(context: Context, trainStation: TrainStation) {
 
 // Buses
 fun startBusDetailActivity(context: Context, busDetailsDTO: BusDetailsDTO) {
-    val intent = Intent(context, BusStationComposable::class.java)
+    val intent = Intent(context, BusStationActivity::class.java)
     val extras = with(Bundle()) {
         putString(context.getString(R.string.bundle_bus_stop_id), busDetailsDTO.stopId.toString())
         putString(context.getString(R.string.bundle_bus_route_id), busDetailsDTO.busRouteId)

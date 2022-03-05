@@ -1,4 +1,4 @@
-package fr.cph.chicago.core.composable
+package fr.cph.chicago.core.activity
 
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -69,7 +69,7 @@ import kotlinx.coroutines.CoroutineScope
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
-class BusStationComposable : ComponentActivity() {
+class BusStationActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,200 +92,13 @@ class BusStationComposable : ComponentActivity() {
         )
 
         val viewModel = BusStationViewModel().initModel(busDetails = busDetails)
-
-        store.dispatch(
-            BusStopArrivalsAction(
-                busRouteId = busRouteId,
-                busStopId = busStopId,
-                bound = bound,
-                boundTitle = boundTitle
-            )
-        )
+        viewModel.loadData()
 
         setContent {
             ChicagoCommutesTheme(settingsViewModel = settingsViewModel) {
                 BusStationView(viewModel = viewModel)
             }
         }
-    }
-}
-
-data class BusStationUiState(
-    val busDetails: BusDetailsDTO = BusDetailsDTO(),
-    val position: Position = Position(),
-    val busArrivalStopDTO: BusArrivalStopDTO = BusArrivalStopDTO(underlying = ArrayMap()),
-    val isFavorite: Boolean = false,
-    val isRefreshing: Boolean = false,
-    val applyFavorite: Boolean = false,
-    val showBusArrivalData: Boolean = false,
-    val googleStreetMapImage: Drawable = ShapeDrawable(),
-    val isGoogleStreetImageLoading: Boolean = true,
-    val showGoogleStreetImage: Boolean = false,
-    val snackbarHostState: SnackbarHostState = SnackbarHostState(),
-    val showErrorMessage: Boolean = false,
-)
-
-@HiltViewModel
-class BusStationViewModel @Inject constructor(
-    private val preferenceService: PreferenceService = PreferenceService,
-    private val busService: BusService = BusService,
-) : ViewModel(), StoreSubscriber<State> {
-    var uiState by mutableStateOf(BusStationUiState())
-        private set
-
-    fun initModel(busDetails: BusDetailsDTO): BusStationViewModel {
-        val defaultedArrivals = ArrayMap<String, MutableList<BusArrival>>()
-        defaultedArrivals["Unknown"] = mutableListOf()
-        uiState = uiState.copy(
-            busDetails = busDetails,
-            isFavorite = isFavorite(busRouteId = busDetails.busRouteId, busStopId = busDetails.stopId.toString(), boundTitle = busDetails.boundTitle),
-            busArrivalStopDTO = BusArrivalStopDTO(underlying = defaultedArrivals)
-        )
-
-        loadStopPositionAndGoogleStreetImage()
-        return this
-    }
-
-    override fun newState(state: State) {
-        Timber.d("new state ${state.busStopStatus}")
-        when (state.busStopStatus) {
-            Status.SUCCESS -> {
-                uiState = uiState.copy(
-                    busArrivalStopDTO = state.busArrivalStopDTO,
-                    showBusArrivalData = true
-                )
-                store.dispatch(ResetBusStationStatusAction())
-            }
-            Status.FAILURE -> {
-                uiState = uiState.copy(
-                    showBusArrivalData = true,
-                    showErrorMessage = true,
-                )
-                store.dispatch(ResetBusStationStatusAction())
-            }
-            Status.ADD_FAVORITES -> {
-                uiState = uiState.copy(
-                    isFavorite = true,
-                    applyFavorite = true,
-                )
-
-                store.dispatch(ResetBusStationStatusAction())
-            }
-            Status.REMOVE_FAVORITES -> {
-                uiState = uiState.copy(
-                    isFavorite = false,
-                    applyFavorite = true,
-                )
-                store.dispatch(ResetBusStationStatusAction())
-            }
-            else -> Timber.d("Status not handled")
-        }
-        uiState = uiState.copy(isRefreshing = false)
-    }
-
-    fun switchFavorite(busRouteId: String, busStopId: String, boundTitle: String, busRouteName: String, busStopName: String) {
-        if (isFavorite(busRouteId = busRouteId, busStopId = busStopId, boundTitle = boundTitle)) {
-            store.dispatch(RemoveBusFavoriteAction(busRouteId, busStopId, boundTitle))
-        } else {
-            store.dispatch(AddBusFavoriteAction(busRouteId, busStopId, boundTitle, busRouteName, busStopName))
-        }
-    }
-
-    fun refresh() {
-        uiState = uiState.copy(isRefreshing = true)
-        Timber.d("Start Refreshing")
-        store.dispatch(
-            BusStopArrivalsAction(
-                busRouteId = uiState.busDetails.busRouteId,
-                busStopId = uiState.busDetails.stopId.toString(),
-                bound = uiState.busDetails.bound,
-                boundTitle = uiState.busDetails.boundTitle
-            )
-        )
-        if (!isPositionSetup()) {
-            Timber.d("Trying to reload stop position and google street image")
-            loadStopPositionAndGoogleStreetImage()
-        } else if (!isGoogleMapImageLoaded()) {
-            Timber.d("Trying to reload google street image")
-            loadGoogleStreetImage(uiState.position)
-        }
-    }
-
-    fun resetApplyFavorite() {
-        uiState = uiState.copy(applyFavorite = false)
-    }
-
-    fun resetShowErrorMessage() {
-        uiState = uiState.copy(showErrorMessage = false)
-    }
-
-    fun openMap(context: Context, scope: CoroutineScope) {
-        openMapApplication(
-            context = context,
-            scope = scope,
-            snackbarHostState = uiState.snackbarHostState,
-            latitude = uiState.position.latitude,
-            longitude = uiState.position.longitude,
-        )
-    }
-
-    private fun loadGoogleStreetImage(position: Position) {
-        loadGoogleStreet(
-            position = position,
-            onSuccess = { drawable ->
-                uiState = uiState.copy(
-                    googleStreetMapImage = drawable,
-                    isGoogleStreetImageLoading = false,
-                    showGoogleStreetImage = true,
-                )
-            },
-            onError = { throwable ->
-                Timber.e(throwable, "Error while loading street view image")
-                uiState = uiState.copy(
-                    isGoogleStreetImageLoading = false,
-                    showGoogleStreetImage = false,
-                )
-            }
-        )
-    }
-
-    private fun isGoogleMapImageLoaded(): Boolean {
-        return !uiState.isGoogleStreetImageLoading && uiState.showGoogleStreetImage
-    }
-
-    private fun isPositionSetup(): Boolean {
-        return uiState.position != Position()
-    }
-
-    private fun loadStopPositionAndGoogleStreetImage() {
-        // Load bus position and google street image
-        busService.getStopPosition(uiState.busDetails.busRouteId, uiState.busDetails.boundTitle, uiState.busDetails.stopId.toString())
-            .observeOn(Schedulers.computation())
-            .doOnSuccess { position -> loadGoogleStreetImage(position) }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { position ->
-                    uiState = uiState.copy(position = Position(position.latitude, position.longitude))
-                },
-                { throwable ->
-                    Timber.e(throwable, "Error while loading bus position and google street image")
-                    uiState = uiState.copy(
-                        isGoogleStreetImageLoading = false,
-                        showGoogleStreetImage = false,
-                    )
-                })
-    }
-
-    private fun isFavorite(busRouteId: String, busStopId: String, boundTitle: String): Boolean {
-        return preferenceService.isStopFavorite(busRouteId, busStopId, boundTitle)
-    }
-
-    fun onStart() {
-        store.subscribe(this)
-    }
-
-    fun onStop() {
-        store.unsubscribe(this)
     }
 }
 
@@ -405,5 +218,188 @@ fun BusStationView(
     DisposableEffect(key1 = viewModel) {
         viewModel.onStart()
         onDispose { viewModel.onStop() }
+    }
+}
+
+data class BusStationUiState(
+    val busDetails: BusDetailsDTO = BusDetailsDTO(),
+    val position: Position = Position(),
+    val busArrivalStopDTO: BusArrivalStopDTO = BusArrivalStopDTO(underlying = ArrayMap()),
+    val isFavorite: Boolean = false,
+    val isRefreshing: Boolean = false,
+    val applyFavorite: Boolean = false,
+    val showBusArrivalData: Boolean = false,
+    val googleStreetMapImage: Drawable = ShapeDrawable(),
+    val isGoogleStreetImageLoading: Boolean = true,
+    val showGoogleStreetImage: Boolean = false,
+    val snackbarHostState: SnackbarHostState = SnackbarHostState(),
+    val showErrorMessage: Boolean = false,
+)
+
+@HiltViewModel
+class BusStationViewModel @Inject constructor(
+    private val preferenceService: PreferenceService = PreferenceService,
+    private val busService: BusService = BusService,
+) : ViewModel(), StoreSubscriber<State> {
+    var uiState by mutableStateOf(BusStationUiState())
+        private set
+
+    fun initModel(busDetails: BusDetailsDTO): BusStationViewModel {
+        val defaultedArrivals = ArrayMap<String, MutableList<BusArrival>>()
+        defaultedArrivals["Unknown"] = mutableListOf()
+        uiState = uiState.copy(
+            busDetails = busDetails,
+            isFavorite = isFavorite(busRouteId = busDetails.busRouteId, busStopId = busDetails.stopId.toString(), boundTitle = busDetails.boundTitle),
+            busArrivalStopDTO = BusArrivalStopDTO(underlying = defaultedArrivals)
+        )
+
+        loadStopPositionAndGoogleStreetImage()
+        return this
+    }
+
+    override fun newState(state: State) {
+        Timber.d("new state ${state.busStopStatus}")
+        when (state.busStopStatus) {
+            Status.SUCCESS -> {
+                uiState = uiState.copy(
+                    busArrivalStopDTO = state.busArrivalStopDTO,
+                    showBusArrivalData = true
+                )
+                store.dispatch(ResetBusStationStatusAction())
+            }
+            Status.FAILURE -> {
+                uiState = uiState.copy(
+                    showBusArrivalData = true,
+                    showErrorMessage = true,
+                )
+                store.dispatch(ResetBusStationStatusAction())
+            }
+            Status.ADD_FAVORITES -> {
+                uiState = uiState.copy(
+                    isFavorite = true,
+                    applyFavorite = true,
+                )
+
+                store.dispatch(ResetBusStationStatusAction())
+            }
+            Status.REMOVE_FAVORITES -> {
+                uiState = uiState.copy(
+                    isFavorite = false,
+                    applyFavorite = true,
+                )
+                store.dispatch(ResetBusStationStatusAction())
+            }
+            else -> Timber.d("Status not handled")
+        }
+        uiState = uiState.copy(isRefreshing = false)
+    }
+
+    fun switchFavorite(busRouteId: String, busStopId: String, boundTitle: String, busRouteName: String, busStopName: String) {
+        if (isFavorite(busRouteId = busRouteId, busStopId = busStopId, boundTitle = boundTitle)) {
+            store.dispatch(RemoveBusFavoriteAction(busRouteId, busStopId, boundTitle))
+        } else {
+            store.dispatch(AddBusFavoriteAction(busRouteId, busStopId, boundTitle, busRouteName, busStopName))
+        }
+    }
+
+    fun loadData() {
+        store.dispatch(
+            BusStopArrivalsAction(
+                busRouteId = uiState.busDetails.busRouteId,
+                busStopId = uiState.busDetails.stopId.toString(),
+                bound = uiState.busDetails.bound,
+                boundTitle = uiState.busDetails.boundTitle
+            )
+        )
+    }
+
+    fun refresh() {
+        uiState = uiState.copy(isRefreshing = true)
+        Timber.d("Start Refreshing")
+        loadData()
+        if (!isPositionSetup()) {
+            Timber.d("Trying to reload stop position and google street image")
+            loadStopPositionAndGoogleStreetImage()
+        } else if (!isGoogleMapImageLoaded()) {
+            Timber.d("Trying to reload google street image")
+            loadGoogleStreetImage(uiState.position)
+        }
+    }
+
+    fun resetApplyFavorite() {
+        uiState = uiState.copy(applyFavorite = false)
+    }
+
+    fun resetShowErrorMessage() {
+        uiState = uiState.copy(showErrorMessage = false)
+    }
+
+    fun openMap(context: Context, scope: CoroutineScope) {
+        openMapApplication(
+            context = context,
+            scope = scope,
+            snackbarHostState = uiState.snackbarHostState,
+            latitude = uiState.position.latitude,
+            longitude = uiState.position.longitude,
+        )
+    }
+
+    private fun loadGoogleStreetImage(position: Position) {
+        loadGoogleStreet(
+            position = position,
+            onSuccess = { drawable ->
+                uiState = uiState.copy(
+                    googleStreetMapImage = drawable,
+                    isGoogleStreetImageLoading = false,
+                    showGoogleStreetImage = true,
+                )
+            },
+            onError = { throwable ->
+                Timber.e(throwable, "Error while loading street view image")
+                uiState = uiState.copy(
+                    isGoogleStreetImageLoading = false,
+                    showGoogleStreetImage = false,
+                )
+            }
+        )
+    }
+
+    private fun isGoogleMapImageLoaded(): Boolean {
+        return !uiState.isGoogleStreetImageLoading && uiState.showGoogleStreetImage
+    }
+
+    private fun isPositionSetup(): Boolean {
+        return uiState.position != Position()
+    }
+
+    private fun loadStopPositionAndGoogleStreetImage() {
+        // Load bus position and google street image
+        busService.getStopPosition(uiState.busDetails.busRouteId, uiState.busDetails.boundTitle, uiState.busDetails.stopId.toString())
+            .observeOn(Schedulers.computation())
+            .doOnSuccess { position -> loadGoogleStreetImage(position) }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { position ->
+                    uiState = uiState.copy(position = Position(position.latitude, position.longitude))
+                },
+                { throwable ->
+                    Timber.e(throwable, "Error while loading bus position and google street image")
+                    uiState = uiState.copy(
+                        isGoogleStreetImageLoading = false,
+                        showGoogleStreetImage = false,
+                    )
+                })
+    }
+
+    private fun isFavorite(busRouteId: String, busStopId: String, boundTitle: String): Boolean {
+        return preferenceService.isStopFavorite(busRouteId, busStopId, boundTitle)
+    }
+
+    fun onStart() {
+        store.subscribe(this)
+    }
+
+    fun onStop() {
+        store.unsubscribe(this)
     }
 }
