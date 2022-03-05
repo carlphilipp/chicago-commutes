@@ -25,9 +25,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat.startActivity
-import fr.cph.chicago.core.composable.common.AnimatedErrorView
-import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
-import fr.cph.chicago.core.composable.viewmodel.settingsViewModel
+import fr.cph.chicago.core.ui.common.AnimatedErrorView
+import fr.cph.chicago.core.theme.ChicagoCommutesTheme
+import fr.cph.chicago.core.viewmodel.settingsViewModel
 
 /**
  * BusArrivalError activity that can be thrown from anywhere in the app

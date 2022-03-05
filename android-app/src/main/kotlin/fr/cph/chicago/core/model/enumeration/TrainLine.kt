@@ -20,15 +20,15 @@
 package fr.cph.chicago.core.model.enumeration
 
 import androidx.compose.ui.graphics.Color
-import fr.cph.chicago.core.composable.theme.blue_line
-import fr.cph.chicago.core.composable.theme.brown_line
-import fr.cph.chicago.core.composable.theme.default_line
-import fr.cph.chicago.core.composable.theme.green_line
-import fr.cph.chicago.core.composable.theme.orange_line
-import fr.cph.chicago.core.composable.theme.pink_line
-import fr.cph.chicago.core.composable.theme.purple_line
-import fr.cph.chicago.core.composable.theme.red_line
-import fr.cph.chicago.core.composable.theme.yellow_line
+import fr.cph.chicago.core.theme.blue_line
+import fr.cph.chicago.core.theme.brown_line
+import fr.cph.chicago.core.theme.default_line
+import fr.cph.chicago.core.theme.green_line
+import fr.cph.chicago.core.theme.orange_line
+import fr.cph.chicago.core.theme.pink_line
+import fr.cph.chicago.core.theme.purple_line
+import fr.cph.chicago.core.theme.red_line
+import fr.cph.chicago.core.theme.yellow_line
 
 /**
  * Enumeration, train line

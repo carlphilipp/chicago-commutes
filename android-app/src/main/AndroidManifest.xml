@@ -108,13 +108,13 @@
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".core.composable.map.TrainMapActivity"
+            android:name=".core.activity.TrainMapActivity"
             android:configChanges="uiMode"
             android:exported="false"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".core.composable.map.BusMapActivity"
+            android:name=".core.activity.BusMapActivity"
             android:configChanges="uiMode"
             android:exported="false"
             android:screenOrientation="portrait" />

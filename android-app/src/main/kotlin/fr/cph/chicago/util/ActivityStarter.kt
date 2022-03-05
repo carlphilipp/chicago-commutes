@@ -8,7 +8,7 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.BikeStationComposable
 import fr.cph.chicago.core.activity.BusStationActivity
 import fr.cph.chicago.core.activity.TrainStationActivity
-import fr.cph.chicago.core.composable.map.BusMapActivity
+import fr.cph.chicago.core.activity.BusMapActivity
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.TrainStation

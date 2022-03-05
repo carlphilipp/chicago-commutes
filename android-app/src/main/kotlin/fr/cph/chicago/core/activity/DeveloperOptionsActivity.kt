@@ -23,9 +23,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import fr.cph.chicago.R
 import fr.cph.chicago.core.composable.RefreshTopBar
-import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
-import fr.cph.chicago.core.composable.viewmodel.settingsViewModel
+import fr.cph.chicago.core.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.dto.PreferenceDTO
+import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.service.PreferenceService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable

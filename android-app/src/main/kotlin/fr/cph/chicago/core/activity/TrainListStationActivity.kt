@@ -22,11 +22,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import fr.cph.chicago.R
 import fr.cph.chicago.core.composable.RefreshTopBar
-import fr.cph.chicago.core.composable.common.ColoredBox
-import fr.cph.chicago.core.composable.theme.ChicagoCommutesTheme
-import fr.cph.chicago.core.composable.viewmodel.settingsViewModel
+import fr.cph.chicago.core.ui.common.ColoredBox
+import fr.cph.chicago.core.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.startTrainStationActivity
 import io.reactivex.rxjava3.core.Single
