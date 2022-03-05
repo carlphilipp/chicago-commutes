@@ -1,6 +1,7 @@
 package fr.cph.chicago.core.composable.screen
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -46,36 +47,37 @@ fun Divvy(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
         snackbarHost = { SnackbarHost(hostState = mainViewModel.uiState.snackbarHostState) { data -> Snackbar(snackbarData = data) } },
         content = {
             if (mainViewModel.uiState.bikeStations.isNotEmpty()) {
-                LazyColumn(modifier = modifier.fillMaxWidth()) {
-                    item {
-                        TextFieldMaterial3(
-                            text = textSearch,
-                            onValueChange = { value ->
-                                textSearch = value
-                                searchBikeStations = mainViewModel.uiState.bikeStations.filter { bikeStation ->
-                                    bikeStation.name.contains(value.text, true)
-                                }
+                Column {
+                    TextFieldMaterial3(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = textSearch,
+                        onValueChange = { value ->
+                            textSearch = value
+                            searchBikeStations = mainViewModel.uiState.bikeStations.filter { bikeStation ->
+                                bikeStation.name.contains(value.text, true)
                             }
-                        )
-                    }
-                    items(searchBikeStations) { bikeStation ->
-                        TextButton(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 20.dp),
-                            onClick = { startBikeStationActivity(context = context, bikeStation = bikeStation) }
-                        ) {
-                            Row(
-                                horizontalArrangement = Arrangement.Start,
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
+                        }
+                    )
+                    LazyColumn(modifier = modifier.fillMaxWidth()) {
+                        items(searchBikeStations) { bikeStation ->
+                            TextButton(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 20.dp),
+                                onClick = { startBikeStationActivity(context = context, bikeStation = bikeStation) }
                             ) {
-                                Text(
-                                    bikeStation.name,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
+                                Row(
+                                    horizontalArrangement = Arrangement.Start,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(
+                                        bikeStation.name,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                    )
+                                }
                             }
                         }
                     }

@@ -77,78 +77,81 @@ fun Alerts(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
                     AnimatedPlaceHolderList(isLoading = uiState.isRefreshing)
                 } else {
                     if (!uiState.routeAlertErrorState) {
-                        LazyColumn(modifier = Modifier.fillMaxSize()) {
-                            item {
-                                TextFieldMaterial3(
-                                    text = textSearch,
-                                    onValueChange = { value ->
-                                        textSearch = value
-                                        searchRoutesAlerts = uiState.routesAlerts.filter { alert ->
-                                            alert.id.contains(value.text, true) || alert.routeName.contains(value.text, true)
+                        Column {
+                            TextFieldMaterial3(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = textSearch,
+                                onValueChange = { value ->
+                                    textSearch = value
+                                    searchRoutesAlerts = uiState.routesAlerts.filter { alert ->
+                                        alert.id.contains(value.text, true) || alert.routeName.contains(value.text, true)
+                                    }
+                                }
+                            )
+                            LazyColumn(modifier = Modifier.fillMaxSize()) {
+
+                                items(searchRoutesAlerts) { alert ->
+                                    TextButton(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 20.dp),
+                                        onClick = {
+                                            val intent = Intent(context, AlertActivityComposable::class.java)
+                                            val extras = Bundle()
+                                            extras.putString(App.instance.getString(R.string.bundle_alerts_route_id), alert.id)
+                                            extras.putString(
+                                                App.instance.getString(R.string.bundle_title),
+                                                if (alert.alertType === AlertType.TRAIN)
+                                                    alert.routeName
+                                                else
+                                                    "${alert.id} - ${alert.routeName}"
+                                            )
+                                            intent.putExtras(extras)
+                                            startActivity(context, intent, null)
                                         }
-                                    }
-                                )
-                            }
-                            items(searchRoutesAlerts) { alert ->
-                                TextButton(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 20.dp),
-                                    onClick = {
-                                        val intent = Intent(context, AlertActivityComposable::class.java)
-                                        val extras = Bundle()
-                                        extras.putString(App.instance.getString(R.string.bundle_alerts_route_id), alert.id)
-                                        extras.putString(App.instance.getString(R.string.bundle_title),
-                                            if (alert.alertType === AlertType.TRAIN)
-                                                alert.routeName
-                                            else
-                                                "${alert.id} - ${alert.routeName}"
-                                        )
-                                        intent.putExtras(extras)
-                                        startActivity(context, intent, null)
-                                    }
-                                ) {
-                                    Row(
-                                        horizontalArrangement = Arrangement.SpaceBetween,
                                     ) {
                                         Row(
-                                            modifier = Modifier.weight(1f),
-                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.SpaceBetween,
                                         ) {
-                                            if (alert.alertType == AlertType.TRAIN) {
-                                                val color = android.graphics.Color.parseColor(alert.routeBackgroundColor)
-                                                ColoredBox(modifier = Modifier.padding(end = 20.dp), color = Color(color))
-                                            } else {
-                                                ColoredBox(modifier = Modifier.padding(end = 20.dp))
-                                            }
-                                            Column {
-                                                val stationName = if (alert.alertType == AlertType.TRAIN) {
-                                                    alert.routeName
+                                            Row(
+                                                modifier = Modifier.weight(1f),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                            ) {
+                                                if (alert.alertType == AlertType.TRAIN) {
+                                                    val color = android.graphics.Color.parseColor(alert.routeBackgroundColor)
+                                                    ColoredBox(modifier = Modifier.padding(end = 20.dp), color = Color(color))
                                                 } else {
-                                                    alert.id + " - " + alert.routeName
+                                                    ColoredBox(modifier = Modifier.padding(end = 20.dp))
                                                 }
-                                                Text(
-                                                    text = stationName,
-                                                    style = MaterialTheme.typography.bodyLarge,
-                                                    maxLines = 1,
-                                                    overflow = TextOverflow.Ellipsis,
-                                                )
-                                                Text(
-                                                    text = alert.routeStatus,
-                                                    style = MaterialTheme.typography.bodyMedium,
-                                                    maxLines = 1,
-                                                    overflow = TextOverflow.Ellipsis,
+                                                Column {
+                                                    val stationName = if (alert.alertType == AlertType.TRAIN) {
+                                                        alert.routeName
+                                                    } else {
+                                                        alert.id + " - " + alert.routeName
+                                                    }
+                                                    Text(
+                                                        text = stationName,
+                                                        style = MaterialTheme.typography.bodyLarge,
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis,
+                                                    )
+                                                    Text(
+                                                        text = alert.routeStatus,
+                                                        style = MaterialTheme.typography.bodyMedium,
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis,
+                                                    )
+                                                }
+                                            }
+
+                                            if ("Normal Service" != alert.routeStatus) {
+                                                Icons.Filled.Warning
+                                                Image(
+                                                    imageVector = Icons.Filled.Warning,
+                                                    contentDescription = "alert",
+                                                    colorFilter = ColorFilter.tint(Color.Red),
                                                 )
                                             }
-                                        }
-
-                                        if ("Normal Service" != alert.routeStatus) {
-                                            Icons.Filled.Warning
-                                            Image(
-                                                imageVector = Icons.Filled.Warning,
-                                                contentDescription = "alert",
-                                                colorFilter = ColorFilter.tint(Color.Red),
-                                            )
                                         }
                                     }
                                 }

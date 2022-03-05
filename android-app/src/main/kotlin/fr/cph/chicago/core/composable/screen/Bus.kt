@@ -67,47 +67,48 @@ fun Bus(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
         snackbarHost = { SnackbarHost(hostState = mainViewModel.uiState.snackbarHostState) { data -> Snackbar(snackbarData = data) } },
         content = {
             if (mainViewModel.uiState.busRoutes.isNotEmpty()) {
-                LazyColumn(
-                    modifier = modifier.fillMaxSize()
-                ) {
-                    item {
-                        TextFieldMaterial3(
-                            text = textSearch,
-                            onValueChange = { value ->
-                                textSearch = value
-                                searchBusRoutes = mainViewModel.uiState.busRoutes.filter { busRoute ->
-                                    busRoute.id.contains(value.text, true) || busRoute.name.contains(value.text, true)
+                Column {
+                    TextFieldMaterial3(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = textSearch,
+                        onValueChange = { value ->
+                            textSearch = value
+                            searchBusRoutes = mainViewModel.uiState.busRoutes.filter { busRoute ->
+                                busRoute.id.contains(value.text, true) || busRoute.name.contains(value.text, true)
+                            }
+                        }
+                    )
+                    LazyColumn(
+                        modifier = modifier.fillMaxSize()
+                    ) {
+                        items(searchBusRoutes) { busRoute ->
+                            TextButton(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 20.dp),
+                                onClick = {
+                                    showDialog = true
+                                    selectedBusRoute = busRoute
                                 }
-                            }
-                        )
-                    }
-                    items(searchBusRoutes) { busRoute ->
-                        TextButton(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 20.dp),
-                            onClick = {
-                                showDialog = true
-                                selectedBusRoute = busRoute
-                            }
-                        ) {
-                            Row(
-                                horizontalArrangement = Arrangement.Start,
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text(
-                                    modifier = Modifier.requiredWidth(50.dp),
-                                    text = busRoute.id,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    maxLines = 1,
-                                )
-                                Text(
-                                    text = busRoute.name,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
+                                Row(
+                                    horizontalArrangement = Arrangement.Start,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(
+                                        modifier = Modifier.requiredWidth(50.dp),
+                                        text = busRoute.id,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        maxLines = 1,
+                                    )
+                                    Text(
+                                        text = busRoute.name,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                    )
+                                }
                             }
                         }
                     }
@@ -195,7 +196,9 @@ fun BusRouteDialog(
                             Row(
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth().padding(bottom = 15.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 15.dp),
                             ) {
                                 CircularProgressIndicator()
                             }
