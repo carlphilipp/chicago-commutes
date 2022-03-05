@@ -85,7 +85,6 @@ class BusBoundActivityComposable : ComponentActivity() {
 
     private fun loadData() {
         busService.loadAllBusStopsForRouteBound(busRouteId, bound)
-            .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { result ->
                     busStops.clear()
