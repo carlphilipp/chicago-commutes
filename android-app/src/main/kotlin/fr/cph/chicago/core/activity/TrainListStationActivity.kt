@@ -1,9 +1,7 @@
 package fr.cph.chicago.core.activity
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,10 +19,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import fr.cph.chicago.R
-import fr.cph.chicago.core.ui.RefreshTopBar
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.theme.ChicagoCommutesTheme
+import fr.cph.chicago.core.ui.RefreshTopBar
 import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.service.TrainService
@@ -33,7 +31,7 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
 
-class TrainListStationActivity : ComponentActivity() {
+class TrainListStationActivity : CustomComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val lineParam = if (savedInstanceState != null) savedInstanceState.getString(getString(R.string.bundle_train_line))
@@ -60,32 +58,30 @@ class TrainListStationActivity : ComponentActivity() {
 @Composable
 fun TrainLineStops(viewModel: TrainListStationViewModel) {
     val context = LocalContext.current
-    Column {
-        RefreshTopBar(viewModel.uiState.title)
-        Scaffold(
-            content = {
-                LazyColumn(
-                    modifier = Modifier
-                        .padding(start = 10.dp, end = 10.dp)
-                        .fillMaxSize()
-                ) {
-                    items(viewModel.uiState.trainStations.size) { index ->
-                        val station = viewModel.uiState.trainStations[index]
-                        TextButton(onClick = { startTrainStationActivity(context, station) }) {
-                            Text(
-                                text = station.name,
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.weight(1f),
-                            )
-                            station.lines.forEach { line ->
-                                ColoredBox(modifier = Modifier.padding(start = 5.dp), color = line.color)
-                            }
+    Scaffold(
+        topBar = { RefreshTopBar(viewModel.uiState.title) },
+        content = {
+            LazyColumn(
+                modifier = Modifier
+                    .padding(start = 10.dp, end = 10.dp)
+                    .fillMaxSize()
+            ) {
+                items(viewModel.uiState.trainStations.size) { index ->
+                    val station = viewModel.uiState.trainStations[index]
+                    TextButton(onClick = { startTrainStationActivity(context, station) }) {
+                        Text(
+                            text = station.name,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.weight(1f),
+                        )
+                        station.lines.forEach { line ->
+                            ColoredBox(modifier = Modifier.padding(start = 5.dp), color = line.color)
                         }
                     }
                 }
             }
-        )
-    }
+        }
+    )
 }
 
 data class TrainListStationUiState(

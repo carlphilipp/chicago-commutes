@@ -38,6 +38,10 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
+import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.model.BikeStation.Companion.DEFAULT_AVAILABLE
+import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.ui.common.AnimatedText
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.ShowFavoriteSnackBar
@@ -45,10 +49,6 @@ import fr.cph.chicago.core.ui.common.StationDetailsImageView
 import fr.cph.chicago.core.ui.common.StationDetailsTitleIconView
 import fr.cph.chicago.core.ui.common.loadGoogleStreet
 import fr.cph.chicago.core.ui.common.openExternalMapApplication
-import fr.cph.chicago.core.theme.ChicagoCommutesTheme
-import fr.cph.chicago.core.model.BikeStation
-import fr.cph.chicago.core.model.BikeStation.Companion.DEFAULT_AVAILABLE
-import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.redux.AddBikeFavoriteAction
 import fr.cph.chicago.redux.BikeStationAction
@@ -65,7 +65,7 @@ import kotlinx.coroutines.CoroutineScope
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
-class BikeStationComposable : ComponentActivity() {
+class BikeStationComposable : CustomComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

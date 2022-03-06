@@ -60,6 +60,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -83,6 +84,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.graphics.drawable.toBitmap
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.model.Position
@@ -96,6 +98,7 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
+import timber.log.Timber
 
 private val googleStreetClient = GoogleStreetClient
 
@@ -403,7 +406,7 @@ fun StationDetailsImageView(
         }
 
         FilledTonalButton(
-            modifier = Modifier.padding(10.dp),
+            modifier = Modifier.padding(20.dp),
             onClick = { activity.finish() },
         ) {
             Icon(

@@ -1,7 +1,9 @@
 package fr.cph.chicago.core.ui
 
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
@@ -20,9 +22,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun TopBar(title: String, openDrawer: () -> Unit, onSearch: () -> Unit, showSearch: Boolean = false) {
     CenterAlignedTopAppBar(
+        modifier = Modifier.statusBarsPadding(),
         title = {
             Text(
                 text = title,
@@ -55,6 +59,7 @@ fun TopBar(title: String, openDrawer: () -> Unit, onSearch: () -> Unit, showSear
 fun RefreshTopBar(title: String, showRefresh: Boolean = false, onRefresh: () -> Unit = {}) {
     val activity = LocalLifecycleOwner.current as ComponentActivity
     CenterAlignedTopAppBar(
+        modifier = Modifier.statusBarsPadding(),
         title = {
             Text(
                 modifier = Modifier.padding(start = 15.dp),
@@ -90,6 +95,7 @@ fun SearchTopBar(searchText: TextFieldValue, onValueChange: (TextFieldValue) -> 
     val activity = LocalLifecycleOwner.current as ComponentActivity
 
     CenterAlignedTopAppBar(
+        modifier = Modifier.statusBarsPadding(),
         title = {
             TextFieldMaterial3(
                 text = searchText,

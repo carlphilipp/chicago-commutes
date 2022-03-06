@@ -8,22 +8,23 @@ import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.graphics.vector.ImageVector
-import fr.cph.chicago.task.RefreshTaskLifecycleEventObserver
-import fr.cph.chicago.core.ui.common.NearbyResult
-import fr.cph.chicago.core.theme.ChicagoCommutesTheme
+import androidx.core.view.WindowCompat
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
+import fr.cph.chicago.core.theme.ChicagoCommutesTheme
+import fr.cph.chicago.core.ui.common.NearbyResult
 import fr.cph.chicago.core.ui.navigation.Navigation
 import fr.cph.chicago.core.ui.screen.screens
 import fr.cph.chicago.core.viewmodel.mainViewModel
 import fr.cph.chicago.core.viewmodel.settingsViewModel
+import fr.cph.chicago.task.RefreshTaskLifecycleEventObserver
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 
-class MainActivity : ComponentActivity() {
+class MainActivity : CustomComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

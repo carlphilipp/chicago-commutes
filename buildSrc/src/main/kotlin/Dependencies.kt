@@ -17,7 +17,7 @@ object Version {
     const val easypermissions =         "3.+"
     const val google_play_maps =        "18.0.2"
     const val google_play_location =    "19.0.1"
-    const val jackson =                 "2.+"
+    const val jackson =                 "2.13.1" // FIXME the update was failing
     const val material =                "1.6.0-alpha02"
     const val okhttp3 =                 "4.10.0-RC1"
     const val photoview =               "2.+"
