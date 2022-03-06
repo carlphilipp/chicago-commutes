@@ -1,6 +1,5 @@
 package fr.cph.chicago.core.activity
 
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -58,18 +57,19 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.ui.RefreshTopBar
-import fr.cph.chicago.core.ui.common.LoadingBar
-import fr.cph.chicago.core.ui.common.LoadingCircle
-import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
-import fr.cph.chicago.core.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.core.theme.ChicagoCommutesTheme
+import fr.cph.chicago.core.ui.RefreshTopBar
+import fr.cph.chicago.core.ui.common.LoadingBar
+import fr.cph.chicago.core.ui.common.LoadingCircle
+import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.service.TrainService
+import fr.cph.chicago.util.GoogleMapUtil.createBitMapDescriptor
 import fr.cph.chicago.util.GoogleMapUtil.defaultZoom
 import fr.cph.chicago.util.GoogleMapUtil.isIn
 import fr.cph.chicago.util.MapUtil
@@ -77,8 +77,8 @@ import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class TrainMapActivity : ComponentActivity() {
@@ -126,7 +126,6 @@ fun TrainMapView(
             GoogleMapTrainMapView(
                 viewModel = viewModel,
                 onMapLoaded = {
-                    Timber.i("Map loaded")
                     isMapLoaded = true
                     // Google Map must be loaded to be able to run these methods
                     viewModel.loadIcons()
@@ -164,11 +163,13 @@ fun GoogleMapTrainMapView(
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)
     }
+    Timber.i("MoveCamera: " + uiState.moveCamera + " moveCameraZoom: " + uiState.moveCameraZoom)
     if (uiState.moveCamera != null && uiState.moveCameraZoom != null) {
-        Timber.d("Move camera to ${uiState.moveCamera} with zoom ${uiState.zoom}")
+        Timber.i("MoveCamera not null to ${uiState.moveCamera} with zoom ${uiState.zoom}")
 
-        LaunchedEffect(key1 = uiState.moveCamera, block = {
+        LaunchedEffect(key1 = uiState, block = {
             scope.launch {
+                Timber.i("MoveCamera in scope to ${uiState.moveCamera} with zoom ${uiState.zoom}")
                 cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(uiState.moveCamera, uiState.moveCameraZoom));
             }
         })
@@ -179,10 +180,7 @@ fun GoogleMapTrainMapView(
         cameraPositionState = cameraPositionState,
         properties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false),
         uiSettings = MapUiSettings(compassEnabled = false, myLocationButtonEnabled = false),
-        onMapLoaded = {
-            onMapLoaded()
-
-        },
+        onMapLoaded = onMapLoaded,
     ) {
         TrainLineLayer(
             viewModel = viewModel,
@@ -225,13 +223,15 @@ fun TrainStationsMarkers(
 ) {
     viewModel.showHideStations(cameraPositionState.position.zoom)
 
-    viewModel.uiState.stations.forEach { trainStation ->
-        Marker(
-            position = trainStation.stops[0].position.toLatLng(),
-            icon = viewModel.uiState.stationIcon,
-            title = trainStation.name,
-            visible = viewModel.uiState.showStationIcon,
-        )
+    if (viewModel.uiState.stationIcon != null) {
+        viewModel.uiState.stations.forEach { trainStation ->
+            Marker(
+                position = trainStation.stops[0].position.toLatLng(),
+                icon = viewModel.uiState.stationIcon,
+                title = trainStation.name,
+                visible = viewModel.uiState.showStationIcon,
+            )
+        }
     }
 }
 
@@ -391,7 +391,7 @@ class GoogleMapTrainViewModel @Inject constructor(
 
     fun initModel(line: TrainLine): GoogleMapTrainViewModel {
         uiState = uiState.copy(line = line)
-        loadPositions()
+        loadPatterns()
         loadStations()
         return this
     }
@@ -460,7 +460,6 @@ class GoogleMapTrainViewModel @Inject constructor(
     }
 
     fun centerMapOnTrains() {
-        Timber.i("Center map on train")
         val position: Position
         val zoom: Float
         if (uiState.trains.size == 1) {
@@ -490,7 +489,7 @@ class GoogleMapTrainViewModel @Inject constructor(
         uiState = uiState.copy(isLoading = true)
         loadTrains()
         if (uiState.polyLine.isEmpty()) {
-            loadPositions()
+            loadPatterns()
         }
     }
 
@@ -547,7 +546,7 @@ class GoogleMapTrainViewModel @Inject constructor(
         )
     }
 
-    private fun loadPositions() {
+    private fun loadPatterns() {
         trainService.readPatterns(uiState.line)
             .observeOn(Schedulers.computation())
             .subscribe(
@@ -579,11 +578,6 @@ class GoogleMapTrainViewModel @Inject constructor(
                     uiState = uiState.copy(isLoading = false)
                 }
             )
-    }
-
-    private fun createBitMapDescriptor(icon: Bitmap, size: Int): BitmapDescriptor {
-        val bitmap = Bitmap.createScaledBitmap(icon, icon.width / size, icon.height / size, true)
-        return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
     private fun colorDrawable(): Int {

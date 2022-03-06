@@ -66,6 +66,11 @@ object GoogleMapUtil {
     fun isIn(num: Float, sup: Float, inf: Float): Boolean {
         return num in inf..sup
     }
+
+    fun createBitMapDescriptor(icon: Bitmap, size: Int): BitmapDescriptor {
+        val bitmap = Bitmap.createScaledBitmap(icon, icon.width / size, icon.height / size, true)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
+    }
 }
 
 @Composable

@@ -37,11 +37,11 @@ import androidx.constraintlayout.compose.Dimension
 import fr.cph.chicago.core.ui.SearchTopBar
 import fr.cph.chicago.core.ui.common.ChipMaterial3
 import fr.cph.chicago.core.ui.common.ColoredBox
-import fr.cph.chicago.core.ui.screen.BusRouteDialog
 import fr.cph.chicago.core.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.TrainStation
+import fr.cph.chicago.core.ui.common.BusRouteDialog
 import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService

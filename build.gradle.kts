@@ -20,7 +20,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        jcenter() // TODO: Need to replace/remove redux as it's only in jcenter :(
+        jcenter() // TODO: Need to replace/remove redux as it's only in jcenter :( https://github.com/ReKotlin/ReKotlin/issues/47
         // Needed for PhotoView
         maven(url = "https://jitpack.io")
     }

@@ -1,6 +1,5 @@
 package fr.cph.chicago.core.activity
 
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -27,6 +26,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,18 +57,19 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.ui.RefreshTopBar
-import fr.cph.chicago.core.ui.common.LoadingBar
-import fr.cph.chicago.core.ui.common.LoadingCircle
-import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
-import fr.cph.chicago.core.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.Bus
 import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.core.theme.ChicagoCommutesTheme
+import fr.cph.chicago.core.ui.RefreshTopBar
+import fr.cph.chicago.core.ui.common.LoadingBar
+import fr.cph.chicago.core.ui.common.LoadingCircle
+import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.service.BusService
+import fr.cph.chicago.util.GoogleMapUtil.createBitMapDescriptor
 import fr.cph.chicago.util.GoogleMapUtil.defaultZoom
 import fr.cph.chicago.util.GoogleMapUtil.isIn
 import fr.cph.chicago.util.MapUtil
@@ -79,6 +80,7 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class BusMapActivity : ComponentActivity() {
@@ -86,11 +88,10 @@ class BusMapActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val busRouteId = if (savedInstanceState != null) {
+        val busRouteId = if (savedInstanceState != null)
             savedInstanceState.getString(getString(R.string.bundle_bus_route_id)) ?: ""
-        } else {
+        else
             intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: ""
-        }
 
         val viewModel = GoogleMapBusViewModel().initModel(
             busRouteId = busRouteId,
@@ -127,10 +128,14 @@ fun BusMapView(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) { data -> Snackbar(snackbarData = data) } },
         content = {
 
-
             GoogleMapBusMapView(
                 viewModel = viewModel,
-                onMapLoaded = { isMapLoaded = true },
+                onMapLoaded = {
+                    isMapLoaded = true
+                    // Google Map must be loaded to be able to run these methods
+                    viewModel.loadIcons()
+                    viewModel.loadBuses()
+                },
             )
 
             LoadingBar(show = viewModel.uiState.isLoading)
@@ -156,13 +161,18 @@ fun GoogleMapBusMapView(
     onMapLoaded: () -> Unit,
 ) {
     val uiState = viewModel.uiState
+    val scope = rememberCoroutineScope()
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)
     }
     if (uiState.moveCamera != null && uiState.moveCameraZoom != null) {
         Timber.d("Move camera to ${uiState.moveCamera} with zoom ${uiState.zoom}")
-        cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(uiState.moveCamera, uiState.moveCameraZoom))
-        viewModel.resetMoveCamera()
+
+        LaunchedEffect(key1 = uiState.moveCamera, block = {
+            scope.launch {
+                cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(uiState.moveCamera, uiState.moveCameraZoom));
+            }
+        })
     }
 
     GoogleMap(
@@ -170,10 +180,7 @@ fun GoogleMapBusMapView(
         cameraPositionState = cameraPositionState,
         properties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false),
         uiSettings = MapUiSettings(compassEnabled = false, myLocationButtonEnabled = false),
-        onMapLoaded = {
-            onMapLoaded()
-            viewModel.loadIcons()
-        },
+        onMapLoaded = onMapLoaded,
     ) {
         BusLineLayer(
             viewModel = viewModel,
@@ -369,7 +376,6 @@ fun DisplayAllResultsRowView() {
     }
 }
 
-
 data class GoogleMapBusUiState(
     val isLoading: Boolean = false,
     val showError: Boolean = false,
@@ -405,11 +411,8 @@ class GoogleMapBusViewModel @Inject constructor(
         private set
 
     fun initModel(busRouteId: String): GoogleMapBusViewModel {
-        uiState = uiState.copy(
-            busRouteId = busRouteId,
-        )
+        uiState = uiState.copy(busRouteId = busRouteId)
         loadPatterns()
-        loadBuses()
         return this
     }
 
@@ -456,7 +459,6 @@ class GoogleMapBusViewModel @Inject constructor(
         )
     }
 
-    // FIXME: this is duplicated code
     private fun centerMapOnBuses() {
         val position: Position
         val zoom: Float
@@ -586,7 +588,7 @@ class GoogleMapBusViewModel @Inject constructor(
             )
     }
 
-    private fun loadBuses() {
+    fun loadBuses() {
         busService.busForRouteId(uiState.busRouteId)
             .observeOn(Schedulers.computation())
             .subscribeOn(Schedulers.computation())
@@ -609,11 +611,5 @@ class GoogleMapBusViewModel @Inject constructor(
                     )
                 }
             )
-    }
-
-    // FIXME: to move to appropriate location
-    private fun createBitMapDescriptor(icon: Bitmap, size: Int): BitmapDescriptor {
-        val bitmap = Bitmap.createScaledBitmap(icon, icon.width / size, icon.height / size, true)
-        return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 }
