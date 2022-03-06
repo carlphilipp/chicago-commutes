@@ -141,7 +141,6 @@ object BusService {
     fun loadBusDirectionsSingle(busRouteId: String): Single<BusDirections> {
         return ctaClient.getBusDirections(busRouteId)
             .map { response ->
-                throw RuntimeException()
                 if (response.bustimeResponse.directions == null) {
                     throw CtaException(response)
                 } else {

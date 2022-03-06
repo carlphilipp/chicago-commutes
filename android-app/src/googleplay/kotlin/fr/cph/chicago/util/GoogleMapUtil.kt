@@ -25,12 +25,29 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import androidx.annotation.DrawableRes
 import androidx.annotation.NonNull
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -66,6 +83,11 @@ object GoogleMapUtil {
     fun isIn(num: Float, sup: Float, inf: Float): Boolean {
         return num in inf..sup
     }
+
+    fun createBitMapDescriptor(icon: Bitmap, size: Int): BitmapDescriptor {
+        val bitmap = Bitmap.createScaledBitmap(icon, icon.width / size, icon.height / size, true)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
+    }
 }
 
 @Composable
@@ -80,6 +102,109 @@ fun DebugView(cameraPositionState: CameraPositionState) {
     }
 }
 
+@Composable
+fun InfoWindowsDetails(
+    showView: Boolean,
+    destination: String,
+    showAll: Boolean,
+    results: List<Pair<String, String>>,
+    onClick: () -> Unit,
+) {
+    Box(Modifier.fillMaxSize()) {
+        Surface(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(start = 50.dp, end = 50.dp, bottom = 50.dp)
+                .clip(RoundedCornerShape(20.dp))
+                .clickable(
+                    enabled = true,
+                    onClick = onClick
+                ),
+        ) {
+            AnimatedVisibility(
+                visible = showView,
+                enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 300)),
+            ) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 10.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = "To: $destination",
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    if (results.isNotEmpty()) {
+                        val max = if (showAll) {
+                            results.size - 1
+                        } else {
+                            6
+                        }
+                        for (i in 0..max) {
+                            val pair = results[i]
+                            EtaView(stopName = pair.first, eta = pair.second)
+                        }
+                        if (!showAll && max >= 6) {
+                            DisplayAllResultsRowView()
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun EtaView(stopName: String, eta: String) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = stopName,
+            style = MaterialTheme.typography.titleSmall,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        Text(
+            text = eta,
+            style = MaterialTheme.typography.bodyMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+@Composable
+private fun DisplayAllResultsRowView() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 10.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = "Display all results",
+            style = MaterialTheme.typography.titleSmall,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
 
 @NonNull
 fun Position.toLatLng(): LatLng {

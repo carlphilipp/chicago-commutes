@@ -13,6 +13,7 @@ object Version {
     const val gradle_version =          "0.41.0"
 
     const val commons_collections4 =    "4.+"
+    const val commons_text =            "1.+"
     const val easypermissions =         "3.+"
     const val google_play_maps =        "18.0.2"
     const val google_play_location =    "19.0.1"
@@ -56,6 +57,7 @@ object Lib {
 
     // Android app
     const val commons_collections4 =        "org.apache.commons:commons-collections4:${Version.commons_collections4}"
+    const val commons_text =                "org.apache.commons:commons-text:${Version.commons_text}"
     const val easypermissions =             "pub.devrel:easypermissions:${Version.easypermissions}"
     const val kotlin =                      "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Version.kotlin}"
     const val kotlin_reflect =              "org.jetbrains.kotlin:kotlin-reflect:${Version.kotlin}"

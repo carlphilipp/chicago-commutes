@@ -21,8 +21,8 @@ package fr.cph.chicago.core.model
 
 import android.os.Parcelable
 import androidx.compose.runtime.mutableStateOf
-import fr.cph.chicago.core.composable.pojo.StopDirection
 import fr.cph.chicago.core.model.dto.BusArrivalStopMappedDTO
+import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.BikeService
@@ -181,3 +181,17 @@ object Favorites {
 }
 
 data class LastUpdate(val value: String, private val random: Int = Random.nextInt())
+
+data class StopDirection(val destination: String, val trainDirection: TrainDirection) : Comparable<StopDirection> {
+    override fun compareTo(other: StopDirection): Int {
+        if (this == other) {
+            return 0;
+        }
+        val dest = this.destination.compareTo(other.destination)
+        return if (dest == 0) {
+            this.trainDirection.compareTo(other.trainDirection)
+        } else {
+            dest
+        }
+    }
+}

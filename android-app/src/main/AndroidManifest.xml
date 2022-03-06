@@ -61,60 +61,60 @@
             android:label="@string/bus_bound_activity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".core.composable.MainActivityComposable"
+            android:name=".core.activity.MainActivity"
             android:configChanges="uiMode"
             android:exported="false"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".core.composable.TrainStationComposable"
+            android:name=".core.activity.TrainStationActivity"
             android:configChanges="uiMode"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".core.composable.TrainListStationActivityComposable"
-            android:configChanges="uiMode"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-
-        <activity
-            android:name=".core.composable.BusBoundActivityComposable"
+            android:name=".core.activity.TrainListStationActivity"
             android:configChanges="uiMode"
             android:exported="false"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".core.composable.BusStationComposable"
+            android:name=".core.activity.BusBoundActivity"
             android:configChanges="uiMode"
             android:exported="false"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".core.composable.BikeStationComposable"
+            android:name=".core.activity.BusStationActivity"
             android:configChanges="uiMode"
             android:exported="false"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".core.composable.DeveloperOptionsComposable"
+            android:name=".core.activity.BikeStationComposable"
             android:configChanges="uiMode"
             android:exported="false"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".core.composable.AlertActivityComposable"
+            android:name=".core.activity.DeveloperOptionsActivity"
             android:configChanges="uiMode"
             android:exported="false"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".core.composable.map.TrainMapActivity"
+            android:name=".core.activity.AlertActivity"
             android:configChanges="uiMode"
             android:exported="false"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".core.composable.map.BusMapActivity"
+            android:name=".core.activity.TrainMapActivity"
+            android:configChanges="uiMode"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".core.activity.BusMapActivity"
             android:configChanges="uiMode"
             android:exported="false"
             android:screenOrientation="portrait" />

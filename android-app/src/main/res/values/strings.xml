@@ -50,6 +50,10 @@
     <string name="no_fav">Welcome to Chicago Commutes!</string>
     <string name="add_fav">Add favorites from the</string>
     <string name="add_fav2">train/bus/bike menu</string>
+    <string name="last_updated">last updated:&#160;</string>
+    <string name="fav_details">Details</string>
+    <string name="fav_show_map">Show map</string>
+    <string name="dismiss">Dismiss</string>
 
     <!-- Train -->
     <string name="train_choose_line">Choose a train line</string>
