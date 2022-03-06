@@ -43,7 +43,7 @@ class NearbyResult(
             val result = TreeMap<NearbyDetailsArrivals, MutableList<String>>()
 
             busArrivalRouteDTO.forEach { entry ->
-                val route = Util.trimBusStopNameIfNeeded(entry.key) // FIXME
+                val route = Util.trimBusStopNameIfNeeded(entry.key)
                 entry.value.forEach { entryBound ->
                     val bound = entryBound.key
                     val arrivals = entryBound.value

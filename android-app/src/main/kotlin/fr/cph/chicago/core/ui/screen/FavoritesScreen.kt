@@ -158,11 +158,9 @@ fun BusFavoriteCard(
             lastUpdate = lastUpdate
         )
 
-        // FIXME: This is some UI logic, should be moved in a view model or something
         val busDetailsDTOs = mutableListOf<BusDetailsDTO>()
         val busArrivalDTO = favorites.getBusArrivalsMapped(busRoute.id)
         for ((stopName, boundMap) in busArrivalDTO.entries) {
-            val stopNameTrimmed = stopName //Not sure if that's needed? util.trimBusStopNameIfNeeded(stopName)
             for ((key, value) in boundMap) {
                 val (_, _, _, stopId, _, _, boundTitle) = value.iterator().next()
                 val busDetailsDTO = BusDetailsDTO(
@@ -176,7 +174,7 @@ fun BusFavoriteCard(
                 busDetailsDTOs.add(busDetailsDTO)
                 val busDirection = BusDirection.fromString(key)
                 Arrivals(
-                    destination = stopNameTrimmed,
+                    destination = stopName,
                     direction = busDirection.shortLowerCase,
                     arrivals = value.map { busArrival -> busArrival.timeLeftDueDelay }
                 )
