@@ -19,6 +19,9 @@
 
 package fr.cph.chicago.util
 
+import android.content.Context
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.BikeStation
@@ -89,6 +92,10 @@ object Util {
         val packageInfo = App.instance.packageManager.getPackageInfo(App.instance.packageName, 0)
         val flavor = App.instance.getString(R.string.app_flavor)
         return "${packageInfo.versionName}-$flavor"
+    }
+
+    fun checkIfPermissionGranted(context: Context, permission: String): Boolean {
+        return (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED)
     }
 
     fun closeQuietly(inputStream: Reader?) {

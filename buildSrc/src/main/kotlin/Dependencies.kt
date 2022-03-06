@@ -28,6 +28,7 @@ object Version {
     const val sliding_up_panel =        "3.+"
     const val timber =                  "4.+"
     const val univocity =               "2.+"
+    const val osmdroid =                "6.1.11"
 
     // Update
     const val commons_io =              "2.+"
@@ -78,6 +79,7 @@ object Lib {
     const val retrofit2_rxjava3 =           "com.squareup.retrofit2:adapter-rxjava3:${Version.retrofit2}"
     const val sliding_up_panel =            "com.sothree.slidinguppanel:library:${Version.sliding_up_panel}"
     const val timber =                      "com.jakewharton.timber:timber:${Version.timber}"
+    const val osmdroid =                    "org.osmdroid:osmdroid-android:${Version.osmdroid}"
 
     // Test
     const val junit =                       "junit:junit:${Version.junit}"
