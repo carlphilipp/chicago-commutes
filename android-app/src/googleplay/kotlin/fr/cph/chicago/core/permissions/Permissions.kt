@@ -20,6 +20,7 @@ import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.util.GoogleMapUtil
 import timber.log.Timber
 
+// TODO: Investigate https://google.github.io/accompanist/permissions/
 @Composable
 fun NearbyLocationPermissionView(
     mainViewModel: MainViewModel,
