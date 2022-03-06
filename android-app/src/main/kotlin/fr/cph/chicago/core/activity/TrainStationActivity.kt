@@ -52,7 +52,7 @@ import fr.cph.chicago.core.ui.common.ShowFavoriteSnackBar
 import fr.cph.chicago.core.ui.common.StationDetailsImageView
 import fr.cph.chicago.core.ui.common.StationDetailsTitleIconView
 import fr.cph.chicago.core.ui.common.loadGoogleStreet
-import fr.cph.chicago.core.ui.common.openMapApplication
+import fr.cph.chicago.core.ui.common.openExternalMapApplication
 import fr.cph.chicago.core.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Stop
@@ -183,7 +183,7 @@ class TrainStationViewModel @Inject constructor(
     }
 
     fun openMap(context: Context, scope: CoroutineScope) {
-        openMapApplication(
+        openExternalMapApplication(
             context = context,
             scope = scope,
             snackbarHostState = uiState.snackbarHostState,

@@ -85,17 +85,17 @@ import androidx.compose.ui.zIndex
 import androidx.core.graphics.drawable.toBitmap
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
-import fr.cph.chicago.core.theme.favorite_yellow
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.theme.favorite_yellow
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.functions.Consumer
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 private val googleStreetClient = GoogleStreetClient
 
@@ -105,7 +105,7 @@ fun runWithDelay(delay: Long, timeUnit: TimeUnit, disableLoading: () -> Unit) {
         .subscribe({ disableLoading() }) {}
 }
 
-fun openMapApplication(context: Context, scope: CoroutineScope, snackbarHostState: SnackbarHostState, latitude: Double, longitude: Double) {
+fun openExternalMapApplication(context: Context, scope: CoroutineScope, snackbarHostState: SnackbarHostState, latitude: Double, longitude: Double) {
     val uri = String.format(Locale.ENGLISH, "geo:%f,%f", latitude, longitude)
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
 
@@ -136,7 +136,12 @@ fun ColoredBox(modifier: Modifier = Modifier, color: Color = Color.Black) {
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun AnimatedText(modifier: Modifier = Modifier, text: String, style: TextStyle = LocalTextStyle.current, color: Color = Color.Unspecified) {
+fun AnimatedText(
+    modifier: Modifier = Modifier,
+    text: String,
+    style: TextStyle = LocalTextStyle.current,
+    color: Color = Color.Unspecified,
+) {
     Row(modifier = modifier) {
         Surface(color = Color.Transparent) {
             AnimatedContent(
@@ -160,33 +165,13 @@ fun AnimatedText(modifier: Modifier = Modifier, text: String, style: TextStyle =
     }
 }
 
-// FIXME: Refactor duplicated code
 @Composable
 fun AnimatedPlaceHolderList(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
     size: Int = 10,
 ) {
-    val transition = rememberInfiniteTransition()
-    val translateAnim by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1000f,
-        animationSpec = infiniteRepeatable(
-            tween(durationMillis = 500, easing = FastOutSlowInEasing),
-            RepeatMode.Reverse
-        )
-    )
-    val colorShades = listOf(
-        MaterialTheme.colorScheme.outline.copy(0.5f),
-        MaterialTheme.colorScheme.outline.copy(0.1f),
-        MaterialTheme.colorScheme.outline.copy(0.5f),
-    )
-    val brush = Brush.linearGradient(
-        colors = colorShades,
-        start = Offset(10f, 10f),
-        end = Offset(translateAnim, translateAnim)
-    )
-
+    val brush = buildBrush()
     Column(modifier = modifier) {
         for (i in 1..size) {
             AnimatedVisibility(
@@ -207,9 +192,18 @@ fun AnimatedPlaceHolderList(
     }
 }
 
-// FIXME: Refactor duplicated code
 @Composable
 fun LargeImagePlaceHolderAnimated() {
+    ShimmerLargeItem(brush = buildBrush())
+}
+
+@Composable
+fun ShimmerAnimation(width: Dp = 150.dp, height: Dp = 150.dp) {
+    ShimmerItem(brush = buildBrush(), width = width, height = height)
+}
+
+@Composable
+private fun buildBrush(): Brush {
     val transition = rememberInfiniteTransition()
     val translateAnim by transition.animateFloat(
         initialValue = 0f,
@@ -219,42 +213,18 @@ fun LargeImagePlaceHolderAnimated() {
             RepeatMode.Reverse
         )
     )
-    val colorShades = listOf(
-        MaterialTheme.colorScheme.outline.copy(0.5f),
-        MaterialTheme.colorScheme.outline.copy(0.1f),
-        MaterialTheme.colorScheme.outline.copy(0.5f),
-    )
-    val brush = Brush.linearGradient(
-        colors = colorShades,
-        start = Offset(10f, 10f),
-        end = Offset(translateAnim, translateAnim)
-    )
-    ShimmerLargeItem(brush = brush)
-}
 
-// FIXME: Refactor duplicated code
-@Composable
-fun ShimmerAnimation(width: Dp = 150.dp, height: Dp = 150.dp) {
-    val transition = rememberInfiniteTransition()
-    val translateAnim by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1000f,
-        animationSpec = infiniteRepeatable(
-            tween(durationMillis = 500/*1200*/, easing = FastOutSlowInEasing),
-            RepeatMode.Reverse
-        )
-    )
     val colorShades = listOf(
         MaterialTheme.colorScheme.outline.copy(0.5f),
         MaterialTheme.colorScheme.outline.copy(0.1f),
         MaterialTheme.colorScheme.outline.copy(0.5f),
     )
-    val brush = Brush.linearGradient(
+
+    return Brush.linearGradient(
         colors = colorShades,
         start = Offset(10f, 10f),
         end = Offset(translateAnim, translateAnim)
     )
-    ShimmerItem(brush = brush, width = width, height = height)
 }
 
 @Composable
@@ -309,8 +279,7 @@ fun ShowFavoriteSnackBar(
     snackbarHostState: SnackbarHostState,
     isFavorite: Boolean,
     onComplete: () -> Unit,
-
-    ) {
+) {
     ShowSnackBar(
         scope = scope,
         snackbarHostState = snackbarHostState,
