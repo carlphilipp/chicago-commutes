@@ -19,9 +19,7 @@
 
 package fr.cph.chicago.service
 
-import fr.cph.chicago.R
 import fr.cph.chicago.client.CtaClient
-import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Stop
 import fr.cph.chicago.core.model.Train
@@ -37,15 +35,13 @@ import fr.cph.chicago.parseNotNull
 import fr.cph.chicago.repository.TrainRepository
 import fr.cph.chicago.rx.RxUtil.handleListError
 import fr.cph.chicago.rx.RxUtil.singleFromCallable
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import timber.log.Timber
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.Callable
 import kotlin.collections.set
-import timber.log.Timber
 
 object TrainService {
 
@@ -118,7 +114,7 @@ object TrainService {
             .map { trainArrivals -> trainArrivals.getOrElse(stationId) { TrainArrival.buildEmptyTrainArrival() } }
     }
 
-    fun trainEtas(runNumber: String, loadAll: Boolean): Single<List<TrainEta>> {
+    fun trainEtas(runNumber: String): Single<List<TrainEta>> {
         return ctaClient.getTrainFollow(runNumber)
             .map { trainArrivalResponse: TrainArrivalResponse ->
                 val arrivals = getTrainArrivalsInternal(trainArrivalResponse)
@@ -130,19 +126,10 @@ object TrainService {
                     }
                 }
                 trainEta.sort()
-
-                if (!loadAll && trainEta.size > 7) {
-                    trainEta = trainEta.subList(0, 6)
-                    val currentDate = Calendar.getInstance().time
-                    val fakeStation = TrainStation("", App.instance.getString(R.string.bus_all_results), ArrayList())
-                    // Add a fake TrainEta cell to alert the user about the fact that only a part of the result is displayed
-                    val eta = TrainEta.buildFakeEtaWith(fakeStation, currentDate, currentDate, app = false, delay = false)
-                    trainEta.add(eta)
-                }
                 trainEta.toList()
             }
             .onErrorReturn(handleListError())
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(Schedulers.computation())
     }
 
     fun trainLocations(line: String): Single<List<Train>> {
@@ -150,7 +137,7 @@ object TrainService {
             .map { trainLocationResponse: TrainLocationResponse ->
                 if (trainLocationResponse.ctatt.route == null) {
                     val error = trainLocationResponse.ctatt.errNm
-                    Timber.e(error)
+                    Timber.e("Could not load train location. Original error message: $error")
                     listOf()
                 } else {
                     trainLocationResponse.ctatt.route!!

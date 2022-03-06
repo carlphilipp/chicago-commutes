@@ -4,27 +4,11 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,14 +16,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -53,7 +32,6 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.Polyline
-import com.google.maps.android.compose.rememberCameraPositionState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
@@ -72,6 +50,7 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.GoogleMapUtil.createBitMapDescriptor
 import fr.cph.chicago.util.GoogleMapUtil.defaultZoom
 import fr.cph.chicago.util.GoogleMapUtil.isIn
+import fr.cph.chicago.util.InfoWindowsDetails
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.toLatLng
@@ -79,9 +58,9 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.inject.Inject
 
 class BusMapActivity : ComponentActivity() {
 
@@ -162,22 +141,19 @@ fun GoogleMapBusMapView(
 ) {
     val uiState = viewModel.uiState
     val scope = rememberCoroutineScope()
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)
-    }
     if (uiState.moveCamera != null && uiState.moveCameraZoom != null) {
         Timber.d("Move camera to ${uiState.moveCamera} with zoom ${uiState.zoom}")
 
-        LaunchedEffect(key1 = uiState.moveCamera, block = {
+        LaunchedEffect(key1 = Unit, block = {
             scope.launch {
-                cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(uiState.moveCamera, uiState.moveCameraZoom));
+                uiState.cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(uiState.moveCamera, uiState.moveCameraZoom));
             }
         })
     }
 
     GoogleMap(
         modifier = modifier,
-        cameraPositionState = cameraPositionState,
+        cameraPositionState = uiState.cameraPositionState,
         properties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false),
         uiSettings = MapUiSettings(compassEnabled = false, myLocationButtonEnabled = false),
         onMapLoaded = onMapLoaded,
@@ -188,20 +164,27 @@ fun GoogleMapBusMapView(
 
         BusStopsMarkers(
             viewModel = viewModel,
-            cameraPositionState = cameraPositionState,
+            cameraPositionState = uiState.cameraPositionState,
         )
 
         BusOnMapLayer(
             viewModel = viewModel,
-            cameraPositionState = cameraPositionState,
+            cameraPositionState = uiState.cameraPositionState,
         )
     }
 
     //DebugView(cameraPositionState = cameraPositionState)
 
-    InfoWindowsDetailsBus(
+    InfoWindowsDetails(
         showView = viewModel.uiState.busArrivals.isNotEmpty(),
-        viewModel = viewModel
+        destination = viewModel.uiState.detailsBus.destination,
+        showAll = viewModel.uiState.detailsShowAll,
+        results = viewModel.uiState.busArrivals.map { busArrival ->
+            Pair(first = busArrival.stopName, second = busArrival.timeLeftDueDelay)
+        },
+        onClick = {
+            viewModel.loadBusEta(viewModel.uiState.detailsBus, true)
+        }
     )
 }
 
@@ -272,115 +255,14 @@ fun BusOnMapLayer(
     }
 }
 
-// FIXME: Should be re-usable with train
-@Composable
-fun InfoWindowsDetailsBus(
-    showView: Boolean,
-    viewModel: GoogleMapBusViewModel,
-) {
-    Box(Modifier.fillMaxSize()) {
-        Surface(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(50.dp)
-                .clip(RoundedCornerShape(20.dp))
-                .clickable(
-                    enabled = true,
-                    onClick = {
-                        viewModel.loadBusEta(viewModel.uiState.detailsBus, true)
-                    }
-                ),
-        ) {
-            AnimatedVisibility(
-                visible = showView,
-                enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
-                exit = fadeOut(animationSpec = tween(durationMillis = 300)),
-            ) {
-                Column(
-                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 10.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = "To: ${viewModel.uiState.detailsBus.destination}",
-                            style = MaterialTheme.typography.titleMedium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                    if (viewModel.uiState.busArrivals.isNotEmpty()) {
-                        val max = if (viewModel.uiState.detailsShowAll) {
-                            viewModel.uiState.busArrivals.size - 1
-                        } else {
-                            6
-                        }
-                        for (i in 0..max) {
-                            val busArrival = viewModel.uiState.busArrivals[i]
-                            BusEtaView(stopName = busArrival.stopName, eta = busArrival.timeLeftDueDelay)
-                        }
-                        if (!viewModel.uiState.detailsShowAll && max >= 6) {
-                            DisplayAllResultsRowView()
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun BusEtaView(stopName: String, eta: String) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
-            .fillMaxWidth()
-    ) {
-        Text(
-            text = stopName,
-            style = MaterialTheme.typography.titleSmall,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-        Text(
-            text = eta,
-            style = MaterialTheme.typography.bodyMedium,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-    }
-}
-
-@Composable
-fun DisplayAllResultsRowView() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 10.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = "Display all results",
-            style = MaterialTheme.typography.titleSmall,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-    }
-}
-
 data class GoogleMapBusUiState(
     val isLoading: Boolean = false,
     val showError: Boolean = false,
     val colors: List<Color> = TrainLine.values().map { it.color }.dropLast(1),
     val stopIcons: List<BitmapDescriptor> = listOf(),
+    val cameraPositionState: CameraPositionState = CameraPositionState(
+        position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)
+    ),
 
     val busRouteId: String = "",
 

@@ -4,27 +4,11 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,14 +16,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -53,7 +31,6 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.Polyline
-import com.google.maps.android.compose.rememberCameraPositionState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
@@ -72,14 +49,15 @@ import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.GoogleMapUtil.createBitMapDescriptor
 import fr.cph.chicago.util.GoogleMapUtil.defaultZoom
 import fr.cph.chicago.util.GoogleMapUtil.isIn
+import fr.cph.chicago.util.InfoWindowsDetails
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.inject.Inject
 
 class TrainMapActivity : ComponentActivity() {
 
@@ -160,24 +138,18 @@ fun GoogleMapTrainMapView(
 ) {
     val uiState = viewModel.uiState
     val scope = rememberCoroutineScope()
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)
-    }
-    Timber.i("MoveCamera: " + uiState.moveCamera + " moveCameraZoom: " + uiState.moveCameraZoom)
-    if (uiState.moveCamera != null && uiState.moveCameraZoom != null) {
-        Timber.i("MoveCamera not null to ${uiState.moveCamera} with zoom ${uiState.zoom}")
 
-        LaunchedEffect(key1 = uiState, block = {
+    if (uiState.moveCamera != null && uiState.moveCameraZoom != null) {
+        LaunchedEffect(key1 = Unit, block = {
             scope.launch {
-                Timber.i("MoveCamera in scope to ${uiState.moveCamera} with zoom ${uiState.zoom}")
-                cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(uiState.moveCamera, uiState.moveCameraZoom));
+                uiState.cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(uiState.moveCamera, uiState.moveCameraZoom));
             }
         })
     }
 
     GoogleMap(
         modifier = modifier,
-        cameraPositionState = cameraPositionState,
+        cameraPositionState = uiState.cameraPositionState,
         properties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false),
         uiSettings = MapUiSettings(compassEnabled = false, myLocationButtonEnabled = false),
         onMapLoaded = onMapLoaded,
@@ -188,20 +160,27 @@ fun GoogleMapTrainMapView(
 
         TrainStationsMarkers(
             viewModel = viewModel,
-            cameraPositionState = cameraPositionState,
+            cameraPositionState = uiState.cameraPositionState,
         )
 
         TrainsOnMapLayer(
             viewModel = viewModel,
-            cameraPositionState = cameraPositionState,
+            cameraPositionState = uiState.cameraPositionState,
         )
     }
 
     //DebugView(cameraPositionState = cameraPositionState)
 
-    InfoWindowsDetailsTrain(
+    InfoWindowsDetails(
         showView = viewModel.uiState.trainEtas.isNotEmpty(),
-        viewModel = viewModel
+        destination = viewModel.uiState.train.destName,
+        showAll = viewModel.uiState.trainLoadAll,
+        results = viewModel.uiState.trainEtas.map { trainEta ->
+            Pair(first = trainEta.trainStation.name, second = trainEta.timeLeftDueDelay)
+        },
+        onClick = {
+            viewModel.loadTrainEtas(viewModel.uiState.train, true)
+        }
     )
 }
 
@@ -270,95 +249,12 @@ fun TrainsOnMapLayer(
     }
 }
 
-// FIXME: Should be re-usable with bus
-@Composable
-fun InfoWindowsDetailsTrain(
-    showView: Boolean,
-    viewModel: GoogleMapTrainViewModel,
-) {
-    Box(Modifier.fillMaxSize()) {
-        Surface(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(start = 50.dp, end = 50.dp, bottom = 50.dp)
-                .clip(RoundedCornerShape(20.dp))
-                .clickable(
-                    enabled = true,
-                    onClick = { viewModel.loadTrainEtas(viewModel.uiState.train, true) }
-                ),
-        ) {
-            AnimatedVisibility(
-                visible = showView,
-                enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
-                exit = fadeOut(animationSpec = tween(durationMillis = 300)),
-            ) {
-                Column(
-                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 10.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = "To: ${viewModel.uiState.train.destName}",
-                            style = MaterialTheme.typography.titleMedium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                    viewModel.uiState.trainEtas.forEachIndexed { index, trainEta ->
-                        Timber.i("Found: ${trainEta.trainStation.name} ${trainEta.timeLeftDueDelay} index: $index")
-                        if (index == viewModel.uiState.trainEtas.size - 1 && trainEta.trainStation.name == stringResource(R.string.bus_all_results)) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 10.dp),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Text(
-                                    text = trainEta.trainStation.name,
-                                    style = MaterialTheme.typography.titleSmall,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                            }
-                        } else {
-                            Row(
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
-                                    .fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = trainEta.trainStation.name,
-                                    style = MaterialTheme.typography.titleSmall,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                                Text(
-                                    text = trainEta.timeLeftDueDelay,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
 data class GoogleMapTrainUiState(
     val isLoading: Boolean = false,
     val showError: Boolean = false,
+    val cameraPositionState: CameraPositionState = CameraPositionState(
+        position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)
+    ),
 
     val line: TrainLine = TrainLine.NA,
     val polyLine: List<LatLng> = listOf(),
@@ -446,7 +342,6 @@ class GoogleMapTrainViewModel @Inject constructor(
     }
 
     fun showHideStations(newZoom: Float) {
-        Timber.d("showHideStations $newZoom and ${uiState.zoom}")
         if (newZoom >= 14f && !uiState.showStationIcon) {
             uiState = uiState.copy(
                 showStationIcon = true
@@ -475,13 +370,6 @@ class GoogleMapTrainViewModel @Inject constructor(
         uiState = uiState.copy(
             moveCamera = LatLng(position.latitude, position.longitude),
             moveCameraZoom = zoom,
-        )
-    }
-
-    fun resetMoveCamera() {
-        uiState = uiState.copy(
-            moveCamera = null,
-            moveCameraZoom = null,
         )
     }
 
@@ -518,7 +406,7 @@ class GoogleMapTrainViewModel @Inject constructor(
 
     fun loadTrainEtas(train: Train, loadAll: Boolean) {
         uiState = uiState.copy(isLoading = true)
-        trainService.trainEtas(train.runNumber.toString(), loadAll)
+        trainService.trainEtas(train.runNumber.toString())
             .observeOn(Schedulers.computation())
             .subscribe(
                 { trainEtas ->
