@@ -10,6 +10,7 @@ import fr.cph.chicago.core.activity.BusStationActivity
 import fr.cph.chicago.core.activity.TrainStationActivity
 import fr.cph.chicago.core.activity.BusMapActivity
 import fr.cph.chicago.core.activity.TrainMapActivity
+import fr.cph.chicago.core.activity.settings.DisplayActivity
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.TrainStation
@@ -72,6 +73,12 @@ fun startBikeStationActivity(context: Context, bikeStation: BikeStation) {
     val extras = Bundle()
     extras.putParcelable(context.getString(R.string.bundle_bike_station), bikeStation)
     intent.putExtras(extras)
+    startActivity(context, intent)
+}
+
+// Settings
+fun startSettingsDisplayActivity(context: Context) {
+    val intent = Intent(context, DisplayActivity::class.java)
     startActivity(context, intent)
 }
 
