@@ -46,20 +46,16 @@ fun ChicagoCommutesTheme(
 }
 
 @Composable
-fun SystemUiSetup(isDarkTheme: Boolean, background: Color) {
+private fun SystemUiSetup(isDarkTheme: Boolean, background: Color) {
     val systemUiController = rememberSystemUiController()
 
     SideEffect {
-/*        systemUiController.setSystemBarsColor(
-            color = Color.Transparent,
-            darkIcons = !isDarkTheme
-        )*/
         systemUiController.setStatusBarColor(
-            color = Color.Transparent,
+            color = background,
             darkIcons = !isDarkTheme
         )
         systemUiController.setNavigationBarColor(
-            color = Color.Transparent,
+            color = background,
             darkIcons = !isDarkTheme
         )
     }
