@@ -1,6 +1,7 @@
 package fr.cph.chicago.core.activity.settings
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
@@ -10,14 +11,19 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.Switch
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.FontDownload
+import androidx.compose.material.icons.outlined.Brightness6
+import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.LightMode
+import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,8 +31,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.google.android.material.switchmaterial.SwitchMaterial
+import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.theme.ChicagoCommutesTheme
+import fr.cph.chicago.core.ui.common.SwitchMaterial3
 import fr.cph.chicago.core.ui.screen.SettingsViewModel
+import fr.cph.chicago.core.ui.screen.ThemeChangerDialog
 import fr.cph.chicago.core.viewmodel.settingsViewModel
 
 class DisplayActivity : ComponentActivity() {
@@ -41,58 +51,155 @@ class DisplayActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DisplaySettingsView(
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel
 ) {
+    val uiState = viewModel.uiState
     val context = LocalContext.current as ComponentActivity
-    Column {
-        LargeTopAppBar(
-            navigationIcon = {
-                IconButton(onClick = { context.finish() }) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = null
+    Scaffold(
+        topBar = {
+            LargeTopAppBar(
+                navigationIcon = {
+                    IconButton(onClick = { context.finish() }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = null
+                        )
+                    }
+                },
+                title = {
+                    Text(
+                        text = "Display"
                     )
-                }
-            },
-            title = {
-                Text(
-                    text = "Display"
-                )
-            },
-        )
+                },
+            )
+        }
+    ) {
         LazyColumn(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp)
         ) {
             item {
+                Text(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    text = "Theme",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                )
                 DisplayElementView(
                     title = "Theme",
-                    description = "Choose theme",
+                    description = "Automatic or choose a color",
                     onClick = {
-
-                    }
+                        Toast.makeText(context, "Todo", Toast.LENGTH_SHORT).show()
+                        //viewModel.showThemeChangerDialog(true)
+                    },
+                    imageVector = Icons.Outlined.Palette
                 )
             }
             item {
-                DisplayElementView(
-                    title = "Dark Mod",
+                Text(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    text = "Appearance",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                DisplayElementSwitchView(
+                    title = "Follow System",
+                    description = "Select dark/light mode based on system",
+                    onClick = {
+                        if (viewModel.uiState.theme != Theme.AUTO) {
+                            viewModel.setTheme(Theme.AUTO)
+                        }
+                    },
+                    imageVector = Icons.Outlined.Brightness6,
+                    isChecked = uiState.theme == Theme.AUTO,
+                )
+                DisplayElementSwitchView(
+                    title = "Light Mode",
                     description = "Enable",
                     onClick = {
-
-                    }
+                        if (viewModel.uiState.theme != Theme.LIGHT) {
+                            viewModel.setTheme(Theme.LIGHT)
+                        }
+                    },
+                    imageVector = Icons.Outlined.LightMode,
+                    isChecked = uiState.theme == Theme.LIGHT,
+                )
+                DisplayElementSwitchView(
+                    title = "Dark Mode",
+                    description = "Enable",
+                    onClick = {
+                        if (viewModel.uiState.theme != Theme.DARK) {
+                            viewModel.setTheme(Theme.DARK)
+                        }
+                    },
+                    imageVector = Icons.Outlined.DarkMode,
+                    isChecked = uiState.theme == Theme.DARK,
                 )
             }
             item {
-                DisplayElementView(
+                Text(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    text = "Fonts",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                DisplayElementSwitchView(
                     title = "Fonts",
                     description = "Choose fonts",
                     onClick = {
 
-                    }
+                    },
+                    imageVector = Icons.Default.FontDownload,
+                    isChecked = false,
+                )
+            }
+        }
+        if (uiState.showThemeChangerDialog) {
+            ThemeChangerDialog(viewModel = viewModel)
+        }
+    }
+}
+
+@Composable
+private fun DisplayElementView(
+    modifier: Modifier = Modifier,
+    imageVector: ImageVector,
+    title: String,
+    description: String,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 15.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                modifier = Modifier.padding(end = 20.dp),
+                imageVector = imageVector,
+                contentDescription = null
+            )
+            Column(
+                modifier = Modifier,
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start,
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodySmall,
                 )
             }
         }
@@ -100,39 +207,59 @@ fun DisplaySettingsView(
 }
 
 @Composable
-fun DisplayElementView(
+private fun DisplayElementSwitchView(
+    modifier: Modifier = Modifier,
+    imageVector: ImageVector,
     title: String,
     description: String,
-    onClick: () -> Unit
+    isChecked: Boolean,
+    onClick: () -> Unit,
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(bottom = 30.dp)
-            .clickable(onClick = onClick),
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically,
+            .clickable(onClick = onClick)
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.Start,
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 15.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
+            Icon(
+                modifier = Modifier.padding(end = 20.dp),
+                imageVector = imageVector,
+                contentDescription = null
             )
-            Text(
-                text = description,
-                style = MaterialTheme.typography.bodySmall,
-            )
+            Column(
+                modifier = Modifier,
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start,
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                SwitchMaterial3(
+                    modifier = Modifier,
+                    onCheckedChange = {
+                        onClick()
+                    },
+                    checked = isChecked,
+                )
+            }
+
         }
-        Switch(
-            modifier = Modifier,
-            onCheckedChange ={
-               true
-            },
-            checked = true
-        )
     }
 }

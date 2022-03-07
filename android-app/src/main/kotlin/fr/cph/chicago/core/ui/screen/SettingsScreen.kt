@@ -13,15 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.DeveloperMode
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.filled.Wallpaper
 import androidx.compose.material.icons.outlined.Brightness6
 import androidx.compose.material.icons.outlined.DeveloperMode
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
@@ -41,7 +35,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -60,7 +53,10 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel, 
     val uiState = viewModel.uiState
     val context = LocalContext.current
 
-    LazyColumn(modifier = modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
+    LazyColumn(
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
         item {
             SettingsElementView(
                 imageVector = Icons.Outlined.Brightness6,
@@ -194,37 +190,39 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel, 
 
 @Composable
 fun SettingsElementView(
+    modifier: Modifier = Modifier,
     imageVector: ImageVector,
     title: String,
     description: String,
     onClick: () -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 30.dp)
-            .clickable(onClick = onClick),
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            modifier = Modifier.padding(end = 20.dp),
-            imageVector = imageVector,
-            contentDescription = null
-        )
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.Start,
+    Row(modifier = modifier.fillMaxWidth().clickable(onClick = onClick)) {
+        Row(
+            modifier = modifier
+                .padding(horizontal = 20.dp, vertical = 15.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
+            Icon(
+                modifier = Modifier.padding(end = 20.dp),
+                imageVector = imageVector,
+                contentDescription = null
             )
-            Text(
-                text = description,
-                style = MaterialTheme.typography.bodySmall,
-            )
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start,
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
         }
     }
 }

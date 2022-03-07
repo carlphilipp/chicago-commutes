@@ -10,6 +10,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -43,6 +44,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.IconToggleButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
@@ -462,6 +464,15 @@ fun StationDetailsTitleIconView(
                 }
             }
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                // FIXME:
+                // See to implement that or find something with some ui animation
+/*                var chec = remember { mutableStateOf(true) }
+                IconToggleButton(checked = chec.value, onCheckedChange = {
+                    chec.value = !chec.value
+                }) {
+                    val tint by animateColorAsState(if (chec.value) Color(0xFFEC407A) else Color(0xFFB0BEC5))
+                    Icon(Icons.Filled.Favorite, contentDescription = "Localized description", tint = tint)
+                }*/
                 IconButton(onClick = onFavoriteClick) {
                     Icon(
                         imageVector = Icons.Filled.Favorite,
