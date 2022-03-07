@@ -2,7 +2,6 @@ package fr.cph.chicago.core.ui.navigation
 
 import android.content.Intent
 import androidx.compose.animation.rememberSplineBasedDecay
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.only
@@ -10,15 +9,14 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -37,6 +35,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.ui.Drawer
+import fr.cph.chicago.core.ui.LargeTopBar
+import fr.cph.chicago.core.ui.MediumTopBar
 import fr.cph.chicago.core.ui.TopBar
 import fr.cph.chicago.core.ui.screen.DrawerScreens
 import fr.cph.chicago.core.viewmodel.settingsViewModel
@@ -79,7 +79,7 @@ fun Navigation(screens: List<DrawerScreens>) {
             )
         },
         content = {
-            // FIXME: this whole thing should be refactored
+            // FIXME: this whole thing should probably be refactored
             val decayAnimationSpec = rememberSplineBasedDecay<Float>()
 
             val settingsViewModel = settingsViewModel
@@ -99,49 +99,46 @@ fun Navigation(screens: List<DrawerScreens>) {
             Scaffold(
                 modifier = Modifier.nestedScroll(settingsViewModel.uiState.scrollBehavior.nestedScrollConnection),
                 topBar = {
-                    // FIXME: Duplicated code
-                    val backgroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors()
-                    val backgroundColor = backgroundColors.containerColor(scrollFraction = settingsViewModel.uiState.scrollBehavior.scrollFraction).value
-                    val foregroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent, scrolledContainerColor = Color.Transparent)
-
-                    Surface(color = backgroundColor) {
-                        if (currentScreen.value == DrawerScreens.Settings) {
-                            LargeTopAppBar(
-                                navigationIcon = {
-                                    IconButton(onClick = { openDrawer() }) {
+                    if (currentScreen.value == DrawerScreens.Settings) {
+                        LargeTopBar(
+                            title = currentScreen.value.title,
+                            scrollBehavior = settingsViewModel.uiState.scrollBehavior,
+                            navigationIcon = {
+                                IconButton(onClick = { openDrawer() }) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Menu,
+                                        contentDescription = "Menu"
+                                    )
+                                }
+                            },
+                        )
+                    } else {
+                        MediumTopBar(
+                            title = currentScreen.value.title,
+                            scrollBehavior = settingsViewModel.uiState.scrollBehavior,
+                            navigationIcon = {
+                                IconButton(onClick = { openDrawer() }) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Menu,
+                                        contentDescription = "Menu"
+                                    )
+                                }
+                            },
+                            actions = {
+                                if (showSearch) {
+                                    IconButton(onClick = {
+                                        val intent = Intent(context, SearchActivity::class.java)
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                        ContextCompat.startActivity(context, intent, null)
+                                    }) {
                                         Icon(
-                                            imageVector = Icons.Filled.Menu,
-                                            contentDescription = "Menu"
+                                            imageVector = Icons.Filled.Search,
+                                            contentDescription = "Search"
                                         )
                                     }
-                                },
-                                title = {
-                                    Text(
-                                        text = currentScreen.value.title
-                                    )
-                                },
-                                colors = foregroundColors,
-                                scrollBehavior = settingsViewModel.uiState.scrollBehavior,
-                                modifier = Modifier.windowInsetsPadding(
-                                    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-                                )
-                            )
-                        } else {
-                            TopBar(
-                                title = currentScreen.value.title,
-                                openDrawer = { openDrawer() },
-                                onSearch = {
-                                    val intent = Intent(context, SearchActivity::class.java)
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                    ContextCompat.startActivity(context, intent, null)
-                                },
-                                showSearch = showSearch,
-                                scrollBehavior = settingsViewModel.uiState.scrollBehavior,
-                                modifier = Modifier.windowInsetsPadding(
-                                    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-                                )
-                            )
-                        }
+                                }
+                            },
+                        )
                     }
                 }
             ) {

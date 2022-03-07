@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import fr.cph.chicago.core.activity.CustomComponentActivity
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.theme.ChicagoCommutesTheme
+import fr.cph.chicago.core.ui.LargeTopBar
 import fr.cph.chicago.core.ui.common.SwitchMaterial3
 import fr.cph.chicago.core.ui.screen.SettingsViewModel
 import fr.cph.chicago.core.ui.screen.ThemeChangerDialog
@@ -79,32 +80,18 @@ fun DisplaySettingsView(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             // FIXME: duplicated code
-            val backgroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors()
-            val backgroundColor = backgroundColors.containerColor(scrollFraction = scrollBehavior.scrollFraction).value
-            val foregroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent, scrolledContainerColor = Color.Transparent)
-
-            Surface(color = backgroundColor) {
-                LargeTopAppBar(
-                    navigationIcon = {
-                        IconButton(onClick = { context.finish() }) {
-                            Icon(
-                                imageVector = Icons.Filled.ArrowBack,
-                                contentDescription = null
-                            )
-                        }
-                    },
-                    title = {
-                        Text(
-                            text = "Display"
+            LargeTopBar(
+                title = "Display",
+                scrollBehavior = scrollBehavior,
+                navigationIcon = {
+                    IconButton(onClick = { context.finish() }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = null
                         )
-                    },
-                    colors = foregroundColors,
-                    scrollBehavior = scrollBehavior,
-                    modifier = Modifier.windowInsetsPadding(
-                        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-                    )
-                )
-            }
+                    }
+                }
+            )
         }
     ) {
         LazyColumn(
