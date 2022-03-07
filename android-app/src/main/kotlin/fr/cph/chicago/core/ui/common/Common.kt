@@ -86,6 +86,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.graphics.drawable.toBitmap
+import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
@@ -129,6 +130,19 @@ fun loadGoogleStreet(position: Position, onSuccess: Consumer<Drawable>, onError:
         .subscribe(onSuccess, onError)
 }
 
+/**
+ * This only works if the insets library is in the classpath and if the component that render this composable is wrapped
+ * by ProvideWindowInsets
+ */
+@Composable
+fun NavigationBarsSpacer() {
+    Spacer(
+        Modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+    )
+}
+
 @Composable
 fun ColoredBox(modifier: Modifier = Modifier, color: Color = Color.Black) {
     Box(
@@ -162,6 +176,7 @@ fun AnimatedText(
                     text = target,
                     style = style,
                     maxLines = 1,
+
                     overflow = TextOverflow.Ellipsis,
                     color = color,
                 )

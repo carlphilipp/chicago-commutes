@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.ui.screen.SettingsViewModel
@@ -18,6 +19,7 @@ fun ChicagoCommutesTheme(
     settingsViewModel: SettingsViewModel,
     content: @Composable () -> Unit
 ) {
+
     val isDarkTheme = when (settingsViewModel.uiState.theme) {
         Theme.AUTO -> isSystemInDarkTheme()
         Theme.LIGHT -> false
@@ -36,26 +38,29 @@ fun ChicagoCommutesTheme(
         else -> LightThemeColors
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = ChicagoCommutesTypography,
-        content = content
-    )
+    ProvideWindowInsets {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = ChicagoCommutesTypography,
+            content = content
+        )
+    }
 
-    SystemUiSetup(isDarkTheme, colorScheme.background)
+    SystemUiSetup(isDarkTheme)
+
 }
 
 @Composable
-private fun SystemUiSetup(isDarkTheme: Boolean, background: Color) {
+private fun SystemUiSetup(isDarkTheme: Boolean) {
     val systemUiController = rememberSystemUiController()
 
     SideEffect {
         systemUiController.setStatusBarColor(
-            color = background,
+            color = Color.Transparent,
             darkIcons = !isDarkTheme
         )
         systemUiController.setNavigationBarColor(
-            color = background,
+            color = Color.Transparent,
             darkIcons = !isDarkTheme
         )
     }

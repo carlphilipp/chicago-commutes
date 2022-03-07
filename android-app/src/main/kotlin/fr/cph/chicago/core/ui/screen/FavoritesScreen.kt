@@ -51,6 +51,7 @@ import fr.cph.chicago.core.theme.bike_orange
 import fr.cph.chicago.core.ui.common.AnimatedText
 import fr.cph.chicago.core.ui.common.BusDetailDialog
 import fr.cph.chicago.core.ui.common.ColoredBox
+import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.common.TrainDetailDialog
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.util.TimeUtil
@@ -89,6 +90,7 @@ fun FavoritesScreen(
                     }
                 }
             }
+            item { NavigationBarsSpacer() }
         }
     }
 }

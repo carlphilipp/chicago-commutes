@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,12 +18,15 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,7 +35,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -45,11 +46,10 @@ import fr.cph.chicago.redux.ResetStateAction
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.RealmConfig
 import fr.cph.chicago.service.PreferenceService
-import fr.cph.chicago.util.Util
 import fr.cph.chicago.util.startSettingsDisplayActivity
 
 @Composable
-fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel, util: Util = Util) {
+fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) {
     val uiState = viewModel.uiState
     val context = LocalContext.current
 
@@ -90,7 +90,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel, 
         item {
             SettingsElementView(
                 imageVector = Icons.Outlined.Info,
-                title = "About",
+                title = "About2",
                 description = "Chicago commutes",
                 onClick = {
 
@@ -100,7 +100,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel, 
         item {
             SettingsElementView(
                 imageVector = Icons.Outlined.Info,
-                title = "About",
+                title = "About2",
                 description = "Chicago commutes",
                 onClick = {
 
@@ -110,7 +110,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel, 
         item {
             SettingsElementView(
                 imageVector = Icons.Outlined.Info,
-                title = "About",
+                title = "About3",
                 description = "Chicago commutes",
                 onClick = {
 
@@ -120,7 +120,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel, 
         item {
             SettingsElementView(
                 imageVector = Icons.Outlined.Info,
-                title = "About",
+                title = "About4",
                 description = "Chicago commutes",
                 onClick = {
 
@@ -130,7 +130,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel, 
         item {
             SettingsElementView(
                 imageVector = Icons.Outlined.Info,
-                title = "About",
+                title = "About5",
                 description = "Chicago commutes",
                 onClick = {
 
@@ -140,7 +140,47 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel, 
         item {
             SettingsElementView(
                 imageVector = Icons.Outlined.Info,
-                title = "About",
+                title = "About6",
+                description = "Chicago commutes",
+                onClick = {
+
+                }
+            )
+        }
+        item {
+            SettingsElementView(
+                imageVector = Icons.Outlined.Info,
+                title = "About7",
+                description = "Chicago commutes",
+                onClick = {
+
+                }
+            )
+        }
+        item {
+            SettingsElementView(
+                imageVector = Icons.Outlined.Info,
+                title = "About8",
+                description = "Chicago commutes",
+                onClick = {
+
+                }
+            )
+        }
+        item {
+            SettingsElementView(
+                imageVector = Icons.Outlined.Info,
+                title = "About9",
+                description = "Chicago commutes",
+                onClick = {
+
+                }
+            )
+        }
+        item {
+            SettingsElementView(
+                imageVector = Icons.Outlined.Info,
+                title = "About10",
                 description = "Chicago commutes",
                 onClick = {
 
@@ -256,7 +296,9 @@ fun SettingsElementView(
     description: String,
     onClick: () -> Unit
 ) {
-    Row(modifier = modifier.fillMaxWidth().clickable(onClick = onClick)) {
+    Row(modifier = modifier
+        .fillMaxWidth()
+        .clickable(onClick = onClick)) {
         Row(
             modifier = modifier
                 .padding(horizontal = 20.dp, vertical = 15.dp)
@@ -427,11 +469,13 @@ fun ClearCacheDialog(viewModel: SettingsViewModel) {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 data class SettingsState(
     val theme: Theme = Theme.AUTO,
     val showThemeChangerDialog: Boolean = false,
     val showClearCacheDialog: Boolean = false,
     val dynamicColorEnabled: Boolean = false,
+    val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
 )
 
 class SettingsViewModel(private val preferenceService: PreferenceService = PreferenceService, private val realmConfig: RealmConfig = RealmConfig) {
@@ -469,6 +513,10 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
         deleteCache(context)
         preferenceService.clearPreferences()
         realmConfig.cleanRealm()
+    }
+
+    fun setScrollBehavior(scrollBehavior: TopAppBarScrollBehavior) {
+        uiState = uiState.copy(scrollBehavior = scrollBehavior)
     }
 
     private fun deleteCache(context: Context?) {

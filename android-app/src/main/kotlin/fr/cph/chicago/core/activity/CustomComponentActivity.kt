@@ -13,7 +13,6 @@ abstract class CustomComponentActivity : ComponentActivity() {
         // Turn off the decor fitting system windows (top and bottom)
         // It means that now we need to handle manually the top padding
         // This allow to have a somewhat fullscreen
-        //WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
     }
-
 }

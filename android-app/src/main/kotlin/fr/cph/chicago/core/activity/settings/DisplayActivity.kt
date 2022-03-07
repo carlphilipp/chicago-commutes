@@ -106,6 +106,7 @@ fun DisplaySettingsView(
                     onClick = {
                         Toast.makeText(context, "Todo", Toast.LENGTH_SHORT).show()
                         //viewModel.showThemeChangerDialog(true)
+
                     },
                     imageVector = Icons.Outlined.Palette
                 )
