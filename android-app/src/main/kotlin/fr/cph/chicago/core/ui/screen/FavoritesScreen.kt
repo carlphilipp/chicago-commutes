@@ -78,7 +78,7 @@ fun FavoritesScreen(
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(favorites.size()) { index ->
                 ElevatedCard(
-                    modifier = Modifier.padding(horizontal = 7.dp, vertical = 7.dp),
+                    modifier = Modifier.padding(horizontal = 15.dp, vertical = 7.dp),
                 ) {
                     Column {
                         when (val model = favorites.getObject(index)) {

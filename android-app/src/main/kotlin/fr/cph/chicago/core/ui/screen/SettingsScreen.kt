@@ -4,18 +4,29 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.DeveloperMode
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Wallpaper
+import androidx.compose.material.icons.outlined.Brightness6
+import androidx.compose.material.icons.outlined.DeveloperMode
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
@@ -28,29 +39,59 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat.startActivity
-import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.BaseActivity
-import fr.cph.chicago.core.activity.DeveloperOptionsActivity
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.redux.ResetStateAction
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.RealmConfig
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.Util
+import fr.cph.chicago.util.startSettingsDisplayActivity
 
 @Composable
 fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel, util: Util = Util) {
     val uiState = viewModel.uiState
     val context = LocalContext.current
 
-    LazyColumn(modifier = modifier.fillMaxWidth()) {
-        val cellModifier = Modifier.padding(15.dp)
+    LazyColumn(modifier = modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
         item {
+            SettingsElementView(
+                imageVector = Icons.Outlined.Brightness6,
+                title = "Display",
+                description = "Theme, dark mode and fonts",
+                onClick = {
+                    startSettingsDisplayActivity(context = context)
+                }
+            )
+        }
+        item {
+            SettingsElementView(
+                imageVector = Icons.Outlined.DeveloperMode,
+                title = "Developer options",
+                description = "Beep boop",
+                onClick = {
+
+                }
+            )
+        }
+        item {
+            SettingsElementView(
+                imageVector = Icons.Outlined.Info,
+                title = "About",
+                description = "Chicago commutes",
+                onClick = {
+
+                }
+            )
+        }
+/*        item {
             // Theme
             Column(
                 modifier
@@ -139,7 +180,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel, 
                     )
                 }
             }
-        }
+        }*/
     }
 
     if (uiState.showThemeChangerDialog) {
@@ -148,6 +189,43 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel, 
 
     if (uiState.showClearCacheDialog) {
         ClearCacheDialog(viewModel = viewModel)
+    }
+}
+
+@Composable
+fun SettingsElementView(
+    imageVector: ImageVector,
+    title: String,
+    description: String,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 30.dp)
+            .clickable(onClick = onClick),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            modifier = Modifier.padding(end = 20.dp),
+            imageVector = imageVector,
+            contentDescription = null
+        )
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.Start,
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
     }
 }
 

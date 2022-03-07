@@ -1,6 +1,7 @@
 package fr.cph.chicago.core.ui
 
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -20,6 +21,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun TopBar(title: String, openDrawer: () -> Unit, onSearch: () -> Unit, showSearch: Boolean = false) {
     CenterAlignedTopAppBar(
@@ -88,7 +90,6 @@ fun RefreshTopBar(title: String, showRefresh: Boolean = false, onRefresh: () -> 
 @Composable
 fun SearchTopBar(searchText: TextFieldValue, onValueChange: (TextFieldValue) -> Unit) {
     val activity = LocalLifecycleOwner.current as ComponentActivity
-
     CenterAlignedTopAppBar(
         title = {
             TextFieldMaterial3(
@@ -103,7 +104,6 @@ fun SearchTopBar(searchText: TextFieldValue, onValueChange: (TextFieldValue) -> 
                     contentDescription = "Back"
                 )
             }
-
         }
     )
 }

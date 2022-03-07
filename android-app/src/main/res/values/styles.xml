@@ -18,6 +18,5 @@
 
 <resources>
     <style name="Theme.ChicagoCommutes" parent="Theme.Material3.Light">
-        <item name="colorPrimaryDark">#000000</item> <!-- Top status color -->
     </style>
 </resources>

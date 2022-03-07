@@ -39,6 +39,11 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
+import fr.cph.chicago.core.model.BusArrival
+import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
+import fr.cph.chicago.core.model.dto.BusDetailsDTO
+import fr.cph.chicago.core.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.ui.common.AnimatedText
 import fr.cph.chicago.core.ui.common.ShimmerAnimation
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
@@ -47,11 +52,6 @@ import fr.cph.chicago.core.ui.common.StationDetailsImageView
 import fr.cph.chicago.core.ui.common.StationDetailsTitleIconView
 import fr.cph.chicago.core.ui.common.loadGoogleStreet
 import fr.cph.chicago.core.ui.common.openExternalMapApplication
-import fr.cph.chicago.core.theme.ChicagoCommutesTheme
-import fr.cph.chicago.core.model.BusArrival
-import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
-import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.redux.AddBusFavoriteAction
 import fr.cph.chicago.redux.BusStopArrivalsAction
@@ -69,7 +69,7 @@ import kotlinx.coroutines.CoroutineScope
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
-class BusStationActivity : ComponentActivity() {
+class BusStationActivity : CustomComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
