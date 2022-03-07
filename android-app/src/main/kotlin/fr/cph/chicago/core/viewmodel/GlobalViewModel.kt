@@ -11,26 +11,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.core.activity.MainUiState
+import fr.cph.chicago.core.model.*
 import fr.cph.chicago.core.ui.common.LocationViewModel
 import fr.cph.chicago.core.ui.common.NearbyResult
 import fr.cph.chicago.core.ui.screen.SettingsViewModel
-import fr.cph.chicago.core.model.BikeStation
-import fr.cph.chicago.core.model.BusStop
-import fr.cph.chicago.core.model.Favorites
-import fr.cph.chicago.core.model.LastUpdate
-import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.core.model.TrainStation
-import fr.cph.chicago.redux.AlertAction
-import fr.cph.chicago.redux.BikeStationAction
-import fr.cph.chicago.redux.BusRoutesAction
-import fr.cph.chicago.redux.BusRoutesAndBikeStationAction
-import fr.cph.chicago.redux.FavoritesAction
-import fr.cph.chicago.redux.ResetAlertsStatusAction
-import fr.cph.chicago.redux.ResetBikeStationFavoritesAction
-import fr.cph.chicago.redux.ResetBusRoutesFavoritesAction
-import fr.cph.chicago.redux.State
-import fr.cph.chicago.redux.Status
-import fr.cph.chicago.redux.store
+import fr.cph.chicago.redux.*
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
@@ -40,7 +25,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import java.util.Calendar
+import java.util.*
 import javax.inject.Inject
 
 val settingsViewModel = SettingsViewModel().initModel()
@@ -64,6 +49,7 @@ abstract class MainViewModel @Inject constructor(
     override fun newState(state: State) {
         Timber.d("new state")
         Favorites.refreshFavorites()
+
         if (state.busRoutesStatus == Status.SUCCESS) {
             uiState = uiState.copy(
                 busRoutes = state.busRoutes,
@@ -159,6 +145,11 @@ abstract class MainViewModel @Inject constructor(
         mainViewModel.setCurrentUserLocation(MapUtil.chicagoPosition)
         mainViewModel.loadNearbyStations(MapUtil.chicagoPosition)
         mainViewModel.setShowLocationError(true)
+    }
+
+    fun loadNearby() {
+        mainViewModel.loadNearbyStations(mainViewModel.uiState.nearbyMapCenterLocation)
+        mainViewModel.setShowLocationError(false)
     }
 
     fun setMapCenterLocationAndLoadNearby(position: Position, zoom: Float) {

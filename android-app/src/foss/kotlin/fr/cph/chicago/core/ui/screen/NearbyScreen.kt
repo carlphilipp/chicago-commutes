@@ -133,10 +133,7 @@ fun NearbyOsmdroidMapView(
             override fun singleTapConfirmedHelper(point: GeoPoint): Boolean {
                 // TODO: remove this workaround after making sure the app view is not
                 // recomposed at each station/stop marker click.
-                mainViewModel.setCurrentUserLocation(
-                    Position(it.mapCenter.latitude, it.mapCenter.longitude),
-                    it.zoomLevelDouble.toFloat()
-                )
+                updateMapCenter(mainViewModel, it)
                 mainViewModel.setShowNearbyDetails(false)
 
                 return false
@@ -179,10 +176,7 @@ fun NearbyOsmdroidMapView(
                 setOnMarkerClickListener { _, _ ->
                     // TODO: remove this workaround after making sure the app view is not
                     // recomposed at each station/stop marker click.
-                    mainViewModel.setCurrentUserLocation(
-                        Position(it.mapCenter.latitude, it.mapCenter.longitude),
-                        it.zoomLevelDouble.toFloat()
-                    )
+                    updateMapCenter(mainViewModel, it)
                     mainViewModel.loadNearbyTrainDetails(trainStation = trainStation)
                     false
                 }
@@ -199,10 +193,7 @@ fun NearbyOsmdroidMapView(
                 setOnMarkerClickListener { _, _ ->
                     // TODO: remove this workaround after making sure the app view is not
                     // recomposed at each station/stop marker click.
-                    mainViewModel.setCurrentUserLocation(
-                        Position(it.mapCenter.latitude, it.mapCenter.longitude),
-                        it.zoomLevelDouble.toFloat()
-                    )
+                    updateMapCenter(mainViewModel, it)
                     mainViewModel.loadNearbyBusDetails(busStop = busStop)
                     false
                 }
@@ -218,10 +209,7 @@ fun NearbyOsmdroidMapView(
                 setOnMarkerClickListener { _, _ ->
                     // TODO: remove this workaround after making sure the app view is not
                     // recomposed at each station/stop marker click.
-                    mainViewModel.setCurrentUserLocation(
-                        Position(it.mapCenter.latitude, it.mapCenter.longitude),
-                        it.zoomLevelDouble.toFloat()
-                    )
+                    updateMapCenter(mainViewModel, it)
                     mainViewModel.loadNearbyBikeDetails(currentBikeStation = bikeStation)
                     false
                 }
@@ -237,8 +225,7 @@ fun NearbyOsmdroidMapView(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        //val position = Position(mapView.mapCenter.latitude, mapView.mapCenter.longitude)
-        //SearchThisAreaButton(mainViewModel = mainViewModel, position, mapView.zoomLevelDouble.toFloat())
+        SearchThisAreaButton(mainViewModel = mainViewModel)
         //DebugView(cameraPositionState)
     }
 
@@ -251,16 +238,13 @@ fun NearbyOsmdroidMapView(
 }
 
 @Composable
-private fun SearchThisAreaButton(mainViewModel: MainViewModel, position: Position, zoom: Float) {
+private fun SearchThisAreaButton(mainViewModel: MainViewModel) {
     AnimatedVisibility(
         visible = true,
         enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
     ) {
         ElevatedButton(onClick = {
-            mainViewModel.setMapCenterLocationAndLoadNearby(
-                position = position,
-                zoom = zoom
-            )
+            mainViewModel.loadNearby()
         }) {
             Text(text = stringResource(id = R.string.search_area))
         }
@@ -295,5 +279,12 @@ fun MapStationDetailsView(showView: Boolean, title: String, image: ImageVector, 
             }
         }
     }
+}
+
+fun updateMapCenter(mainViewModel: MainViewModel, mapView: MapView) {
+    mainViewModel.setCurrentUserLocation(
+        Position(mapView.mapCenter.latitude, mapView.mapCenter.longitude),
+        mapView.zoomLevelDouble.toFloat()
+    )
 }
 
