@@ -41,12 +41,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.core.activity.BaseActivity
+import fr.cph.chicago.core.activity.settings.DisplayActivity
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.redux.ResetStateAction
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.RealmConfig
 import fr.cph.chicago.service.PreferenceService
-import fr.cph.chicago.util.startSettingsDisplayActivity
+import fr.cph.chicago.util.startSettingsActivity
 
 @Composable
 fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) {
@@ -63,7 +64,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                 title = "Display",
                 description = "Theme, dark mode and fonts",
                 onClick = {
-                    startSettingsDisplayActivity(context = context)
+                    startSettingsActivity(context = context, clazz = DisplayActivity::class.java)
                 }
             )
         }
@@ -296,9 +297,11 @@ fun SettingsElementView(
     description: String,
     onClick: () -> Unit
 ) {
-    Row(modifier = modifier
-        .fillMaxWidth()
-        .clickable(onClick = onClick)) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+    ) {
         Row(
             modifier = modifier
                 .padding(horizontal = 20.dp, vertical = 15.dp)

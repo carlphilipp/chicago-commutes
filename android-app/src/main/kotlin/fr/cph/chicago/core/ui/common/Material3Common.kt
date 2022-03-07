@@ -54,7 +54,7 @@ fun SwitchMaterial3(
             checkedThumbColor = MaterialTheme.colorScheme.secondary,
             checkedTrackColor = MaterialTheme.colorScheme.secondary,
             checkedTrackAlpha = 0.54f,
-            uncheckedThumbColor = MaterialTheme.colorScheme.surface,
+            uncheckedThumbColor = MaterialTheme.colorScheme.surfaceVariant,
             uncheckedTrackColor = MaterialTheme.colorScheme.onSurface,
             uncheckedTrackAlpha = 0.38f,
             disabledCheckedThumbColor = MaterialTheme.colorScheme.secondary

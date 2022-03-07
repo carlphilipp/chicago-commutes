@@ -48,7 +48,6 @@ fun ChicagoCommutesTheme(
     }
 
     SystemUiSetup(isDarkTheme)
-
 }
 
 @Composable

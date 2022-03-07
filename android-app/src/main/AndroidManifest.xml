@@ -131,6 +131,12 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".core.activity.settings.ThemeChooserActivity"
+            android:configChanges="uiMode"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
