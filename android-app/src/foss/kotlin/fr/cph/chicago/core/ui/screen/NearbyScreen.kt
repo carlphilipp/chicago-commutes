@@ -1,6 +1,7 @@
 package fr.cph.chicago.core.ui.screen
 
 import android.preference.PreferenceManager
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -18,14 +19,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import fr.cph.chicago.R
-import fr.cph.chicago.core.permissions.NearbyLocationPermissionView
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.permissions.NearbyLocationPermissionView
 import fr.cph.chicago.core.ui.common.*
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import org.osmdroid.config.Configuration
+import org.osmdroid.events.MapEventsReceiver
+import org.osmdroid.events.MapListener
+import org.osmdroid.events.ScrollEvent
+import org.osmdroid.events.ZoomEvent
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
 import timber.log.Timber
@@ -119,21 +125,64 @@ fun NearbyOsmdroidMapView(
             it.overlays.add(this)
         }
 
-        it.controller.setZoom(17.0)
+        it.controller.setZoom(mainViewModel.uiState.nearbyZoomIn.toDouble())
         val center = mainViewModel.uiState.nearbyMapCenterLocation
         it.controller.setCenter(GeoPoint(center.latitude, center.longitude))
 
-        it.setOnClickListener { // TODO: check that it behaves as map click
-            mainViewModel.setShowNearbyDetails(false)
+        val mapEventsReceiver = object : MapEventsReceiver {
+            override fun singleTapConfirmedHelper(point: GeoPoint): Boolean {
+                // TODO: remove this workaround after making sure the app view is not
+                // recomposed at each station/stop marker click.
+                mainViewModel.setCurrentUserLocation(
+                    Position(it.mapCenter.latitude, it.mapCenter.longitude),
+                    it.zoomLevelDouble.toFloat()
+                )
+                mainViewModel.setShowNearbyDetails(false)
+
+                return false
+            }
+
+            override fun longPressHelper(point: GeoPoint): Boolean {
+                return false
+            }
+
         }
+        it.overlays.add(0, MapEventsOverlay(mapEventsReceiver))
+
+        it.addMapListener(object : MapListener {
+            override fun onScroll(event: ScrollEvent): Boolean {
+                val point = it.projection.fromPixels(event.x, event.y)
+                /*mainViewModel.setCurrentUserLocation(
+                    Position(point.latitude, point.longitude),
+                    it.zoomLevelDouble.toFloat()
+                )*/
+
+                return false
+            }
+
+            override fun onZoom(event: ZoomEvent): Boolean {
+                /*mainViewModel.setCurrentUserLocation(
+                    Position(it.mapCenter.latitude, it.mapCenter.longitude),
+                    event.zoomLevel.toFloat()
+                )*/
+
+                return false
+            }
+        })
 
         uiState.nearbyTrainStations.forEach { trainStation ->
             val trainPosition = trainStation.stops[0].position
             Marker(it).apply {
                 position = GeoPoint(trainPosition.latitude, trainPosition.longitude)
                 title = trainStation.name
-                setDefaultIcon() // TODO: icon = bitmapDescriptorTrain
+                icon = AppCompatResources.getDrawable(context, R.drawable.train_station_icon)
                 setOnMarkerClickListener { _, _ ->
+                    // TODO: remove this workaround after making sure the app view is not
+                    // recomposed at each station/stop marker click.
+                    mainViewModel.setCurrentUserLocation(
+                        Position(it.mapCenter.latitude, it.mapCenter.longitude),
+                        it.zoomLevelDouble.toFloat()
+                    )
                     mainViewModel.loadNearbyTrainDetails(trainStation = trainStation)
                     false
                 }
@@ -146,8 +195,14 @@ fun NearbyOsmdroidMapView(
             Marker(it).apply {
                 position = GeoPoint(busPosition.latitude, busPosition.longitude)
                 title = busStop.name
-                setDefaultIcon() // TODO: icon = bitmapDescriptorBus
+                icon = AppCompatResources.getDrawable(context, R.drawable.bus_stop_icon)
                 setOnMarkerClickListener { _, _ ->
+                    // TODO: remove this workaround after making sure the app view is not
+                    // recomposed at each station/stop marker click.
+                    mainViewModel.setCurrentUserLocation(
+                        Position(it.mapCenter.latitude, it.mapCenter.longitude),
+                        it.zoomLevelDouble.toFloat()
+                    )
                     mainViewModel.loadNearbyBusDetails(busStop = busStop)
                     false
                 }
@@ -159,8 +214,14 @@ fun NearbyOsmdroidMapView(
             Marker(it).apply {
                 position = GeoPoint(bikeStation.latitude, bikeStation.longitude)
                 title = bikeStation.name
-                setDefaultIcon() // TODO: icon = bitmapDescriptorBike
+                icon = AppCompatResources.getDrawable(context, R.drawable.bike_station_icon)
                 setOnMarkerClickListener { _, _ ->
+                    // TODO: remove this workaround after making sure the app view is not
+                    // recomposed at each station/stop marker click.
+                    mainViewModel.setCurrentUserLocation(
+                        Position(it.mapCenter.latitude, it.mapCenter.longitude),
+                        it.zoomLevelDouble.toFloat()
+                    )
                     mainViewModel.loadNearbyBikeDetails(currentBikeStation = bikeStation)
                     false
                 }
