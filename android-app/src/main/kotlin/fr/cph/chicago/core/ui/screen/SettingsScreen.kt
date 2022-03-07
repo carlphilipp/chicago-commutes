@@ -87,6 +87,66 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel, 
                 }
             )
         }
+        item {
+            SettingsElementView(
+                imageVector = Icons.Outlined.Info,
+                title = "About",
+                description = "Chicago commutes",
+                onClick = {
+
+                }
+            )
+        }
+        item {
+            SettingsElementView(
+                imageVector = Icons.Outlined.Info,
+                title = "About",
+                description = "Chicago commutes",
+                onClick = {
+
+                }
+            )
+        }
+        item {
+            SettingsElementView(
+                imageVector = Icons.Outlined.Info,
+                title = "About",
+                description = "Chicago commutes",
+                onClick = {
+
+                }
+            )
+        }
+        item {
+            SettingsElementView(
+                imageVector = Icons.Outlined.Info,
+                title = "About",
+                description = "Chicago commutes",
+                onClick = {
+
+                }
+            )
+        }
+        item {
+            SettingsElementView(
+                imageVector = Icons.Outlined.Info,
+                title = "About",
+                description = "Chicago commutes",
+                onClick = {
+
+                }
+            )
+        }
+        item {
+            SettingsElementView(
+                imageVector = Icons.Outlined.Info,
+                title = "About",
+                description = "Chicago commutes",
+                onClick = {
+
+                }
+            )
+        }
 /*        item {
             // Theme
             Column(

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,15 +26,19 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.google.android.material.switchmaterial.SwitchMaterial
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.theme.ChicagoCommutesTheme
+import fr.cph.chicago.core.ui.ExitUntilCollapsedLargeTopAppBar
 import fr.cph.chicago.core.ui.common.SwitchMaterial3
 import fr.cph.chicago.core.ui.screen.SettingsViewModel
 import fr.cph.chicago.core.ui.screen.ThemeChangerDialog
@@ -59,7 +64,13 @@ fun DisplaySettingsView(
 ) {
     val uiState = viewModel.uiState
     val context = LocalContext.current as ComponentActivity
+
+    val decayAnimationSpec = rememberSplineBasedDecay<Float>()
+    val scrollBehavior = remember(decayAnimationSpec) {
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec)
+    }
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             LargeTopAppBar(
                 navigationIcon = {
@@ -75,12 +86,14 @@ fun DisplaySettingsView(
                         text = "Display"
                     )
                 },
+                scrollBehavior = scrollBehavior
             )
         }
     ) {
         LazyColumn(
             modifier = modifier
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(15.dp),
         ) {
             item {
                 Text(
@@ -180,7 +193,7 @@ private fun DisplayElementView(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 15.dp),
+                .padding(horizontal = 20.dp/*, vertical = 15.dp*/),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(

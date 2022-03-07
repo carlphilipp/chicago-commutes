@@ -1,6 +1,7 @@
 package fr.cph.chicago.core.ui.navigation
 
 import android.content.Intent
+import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerValue
@@ -11,6 +12,7 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -18,6 +20,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.NavHost
@@ -66,9 +70,14 @@ fun Navigation(screens: List<DrawerScreens>) {
             )
         },
         content = {
+            val decayAnimationSpec = rememberSplineBasedDecay<Float>()
+            val scrollBehavior = remember(decayAnimationSpec) {
+                TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec)
+            }
             var showSearch by remember { mutableStateOf(true) }
             showSearch = currentScreen.value == DrawerScreens.Favorites
             Scaffold(
+                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
                     if (currentScreen.value == DrawerScreens.Settings) {
                         LargeTopAppBar(
@@ -85,6 +94,7 @@ fun Navigation(screens: List<DrawerScreens>) {
                                     text = currentScreen.value.title
                                 )
                             },
+                            scrollBehavior = scrollBehavior
                         )
                     } else {
                         TopBar(
