@@ -35,10 +35,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.google.android.material.switchmaterial.SwitchMaterial
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.theme.ChicagoCommutesTheme
-import fr.cph.chicago.core.ui.ExitUntilCollapsedLargeTopAppBar
 import fr.cph.chicago.core.ui.common.SwitchMaterial3
 import fr.cph.chicago.core.ui.screen.SettingsViewModel
 import fr.cph.chicago.core.ui.screen.ThemeChangerDialog
