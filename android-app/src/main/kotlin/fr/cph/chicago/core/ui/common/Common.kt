@@ -39,6 +39,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -135,9 +136,9 @@ fun loadGoogleStreet(position: Position, onSuccess: Consumer<Drawable>, onError:
  * by ProvideWindowInsets
  */
 @Composable
-fun NavigationBarsSpacer() {
+fun NavigationBarsSpacer(modifier: Modifier = Modifier) {
     Spacer(
-        Modifier
+        modifier
             .fillMaxWidth()
             .navigationBarsPadding()
     )

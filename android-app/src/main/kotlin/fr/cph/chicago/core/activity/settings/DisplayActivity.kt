@@ -9,8 +9,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -25,16 +30,19 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import fr.cph.chicago.core.activity.CustomComponentActivity
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.ui.common.SwitchMaterial3
@@ -42,7 +50,7 @@ import fr.cph.chicago.core.ui.screen.SettingsViewModel
 import fr.cph.chicago.core.ui.screen.ThemeChangerDialog
 import fr.cph.chicago.core.viewmodel.settingsViewModel
 
-class DisplayActivity : ComponentActivity() {
+class DisplayActivity : CustomComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -70,22 +78,33 @@ fun DisplaySettingsView(
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            LargeTopAppBar(
-                navigationIcon = {
-                    IconButton(onClick = { context.finish() }) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = null
+            // FIXME: duplicated code
+            val backgroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors()
+            val backgroundColor = backgroundColors.containerColor(scrollFraction = scrollBehavior.scrollFraction).value
+            val foregroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent, scrolledContainerColor = Color.Transparent)
+
+            Surface(color = backgroundColor) {
+                LargeTopAppBar(
+                    navigationIcon = {
+                        IconButton(onClick = { context.finish() }) {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowBack,
+                                contentDescription = null
+                            )
+                        }
+                    },
+                    title = {
+                        Text(
+                            text = "Display"
                         )
-                    }
-                },
-                title = {
-                    Text(
-                        text = "Display"
+                    },
+                    colors = foregroundColors,
+                    scrollBehavior = scrollBehavior,
+                    modifier = Modifier.windowInsetsPadding(
+                        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
                     )
-                },
-                scrollBehavior = scrollBehavior
-            )
+                )
+            }
         }
     ) {
         LazyColumn(

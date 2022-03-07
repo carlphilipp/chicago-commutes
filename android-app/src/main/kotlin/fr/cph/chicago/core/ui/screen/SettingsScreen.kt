@@ -329,7 +329,7 @@ fun SettingsElementView(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ThemeChangerDialog(viewModel: SettingsViewModel) {
     var currentThemeState by remember { mutableStateOf(viewModel.uiState.theme) }

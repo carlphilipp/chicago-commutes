@@ -28,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import fr.cph.chicago.R
+import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.screen.DrawerScreens
 import fr.cph.chicago.core.ui.screen.screens
 
@@ -72,6 +73,7 @@ fun Drawer(modifier: Modifier = Modifier, currentScreen: DrawerScreens, onDestin
                 onDestinationClicked = onDestinationClicked
             )
         }
+        item { NavigationBarsSpacer(modifier = Modifier.padding(bottom = 5.dp)) }
     }
 }
 

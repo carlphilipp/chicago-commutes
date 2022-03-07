@@ -96,10 +96,10 @@ fun Navigation(screens: List<DrawerScreens>) {
             var showSearch by remember { mutableStateOf(true) }
             showSearch = currentScreen.value == DrawerScreens.Favorites
 
-
             Scaffold(
                 modifier = Modifier.nestedScroll(settingsViewModel.uiState.scrollBehavior.nestedScrollConnection),
                 topBar = {
+                    // FIXME: Duplicated code
                     val backgroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors()
                     val backgroundColor = backgroundColors.containerColor(scrollFraction = settingsViewModel.uiState.scrollBehavior.scrollFraction).value
                     val foregroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent, scrolledContainerColor = Color.Transparent)
