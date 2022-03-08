@@ -477,8 +477,10 @@ data class SettingsState(
     val theme: Theme = Theme.AUTO,
     val showThemeChangerDialog: Boolean = false,
     val showClearCacheDialog: Boolean = false,
-    val dynamicColorEnabled: Boolean = false,
     val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
+
+    val themeColorAutomatic: Boolean = false,
+    val dynamicColorEnabled: Boolean = false,
 )
 
 class SettingsViewModel(private val preferenceService: PreferenceService = PreferenceService, private val realmConfig: RealmConfig = RealmConfig) {
@@ -497,6 +499,11 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
 
     fun setDynamicColor(value: Boolean) {
         preferenceService.saveDynamicColor(value)
+        refreshCurrentTheme()
+    }
+
+    fun setThemeColorAutomatic(value: Boolean) {
+        preferenceService.saveAutomaticThemeColor(value)
         refreshCurrentTheme()
     }
 
@@ -540,6 +547,7 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
         uiState = uiState.copy(
             theme = preferenceService.getTheme(),
             dynamicColorEnabled = preferenceService.getDynamicColor(),
+            themeColorAutomatic = preferenceService.isAutomaticThemeColor(),
         )
     }
 }

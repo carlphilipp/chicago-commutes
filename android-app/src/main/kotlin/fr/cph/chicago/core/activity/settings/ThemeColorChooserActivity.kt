@@ -1,21 +1,18 @@
 package fr.cph.chicago.core.activity.settings
 
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.rememberSplineBasedDecay
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Palette
@@ -31,22 +28,22 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import fr.cph.chicago.core.activity.CustomComponentActivity
-import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.theme.blue_line
+import fr.cph.chicago.core.theme.defaultButtonShape
 import fr.cph.chicago.core.theme.green_line
 import fr.cph.chicago.core.theme.red_line
 import fr.cph.chicago.core.theme.yellow_line
@@ -59,8 +56,9 @@ import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 import fr.cph.chicago.core.ui.common.ThemeColorButton
 import fr.cph.chicago.core.ui.screen.SettingsViewModel
 import fr.cph.chicago.core.viewmodel.settingsViewModel
+import timber.log.Timber
 
-class ThemeChooserActivity : CustomComponentActivity() {
+class ThemeColorChooserActivity : CustomComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -75,7 +73,7 @@ class ThemeChooserActivity : CustomComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ThemeChooserView(viewModel: SettingsViewModel) {
-
+    Timber.i("Compose ThemeChooserView")
     val context = LocalContext.current as ComponentActivity
     val decayAnimationSpec = rememberSplineBasedDecay<Float>()
     val scrollBehavior = remember(decayAnimationSpec) {
@@ -86,7 +84,7 @@ fun ThemeChooserView(viewModel: SettingsViewModel) {
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             LargeTopBar(
-                title = "Theme",
+                title = "Theme color",
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     IconButton(onClick = { context.finish() }) {
@@ -107,12 +105,34 @@ fun ThemeChooserView(viewModel: SettingsViewModel) {
             item {
                 ElevatedCard(modifier = Modifier.padding(horizontal = 15.dp)) {
                     Column(modifier = Modifier.padding(15.dp)) {
+                        val title = if (viewModel.uiState.themeColorAutomatic) "Using system theme" else "Using manual theme"
+
                         Text(
                             modifier = Modifier,
-                            text = "Using system theme",
+                            text = title,
                             style = MaterialTheme.typography.labelLarge,
                             color = MaterialTheme.colorScheme.primary,
                         )
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                            val subtitle = when {
+                                viewModel.uiState.dynamicColorEnabled && viewModel.uiState.themeColorAutomatic -> {
+                                    "Dynamic colors enabled"
+                                }
+                                !viewModel.uiState.themeColorAutomatic -> {
+                                    "Dynamic colors can only be used in automatic"
+                                }
+                                else -> {
+                                    "Dynamic color disabled"
+                                }
+                            }
+                            Spacer(modifier = Modifier.padding(4.dp))
+                            Text(
+                                modifier = Modifier,
+                                text = subtitle,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                        }
                         Spacer(modifier = Modifier.padding(10.dp))
                         Text(
                             modifier = Modifier,
@@ -140,13 +160,24 @@ fun ThemeChooserView(viewModel: SettingsViewModel) {
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Button(onClick = { Toast.makeText(context, "test", Toast.LENGTH_SHORT).show() }) {
+                            Button(
+                                onClick = { Toast.makeText(context, "test", Toast.LENGTH_SHORT).show() },
+                                shape = defaultButtonShape,
+                            ) {
                                 Text(text = "Button")
                             }
-                            ElevatedButton(onClick = { Toast.makeText(context, "test", Toast.LENGTH_SHORT).show() }) {
+                            ElevatedButton(
+                                onClick = {
+                                    Toast.makeText(context, "test", Toast.LENGTH_SHORT).show()
+                                },
+                                shape = defaultButtonShape,
+                            ) {
                                 Text(text = "Elevated")
                             }
-                            FilledTonalButton(onClick = { Toast.makeText(context, "test", Toast.LENGTH_SHORT).show() }) {
+                            FilledTonalButton(
+                                onClick = { Toast.makeText(context, "test", Toast.LENGTH_SHORT).show() },
+                                shape = defaultButtonShape,
+                            ) {
                                 Text(text = "Filled")
                             }
                         }
@@ -192,26 +223,95 @@ fun ThemeChooserView(viewModel: SettingsViewModel) {
                 }
             }
             item {
-                DisplayElementSwitchView(
-                    imageVector = Icons.Outlined.Palette,
-                    title = "Theme selection",
-                    description = "Automatic or manual",
-                    isChecked = viewModel.uiState.theme == Theme.AUTO,
-                    onClick = {
-
-                    }
-                )
-            }
-            item {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 15.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 15.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    ThemeColorButton(color = blue_line, enabled = false, onClick = {})
-                    ThemeColorButton(color = red_line, enabled = false, onClick = {})
-                    ThemeColorButton(color = yellow_line, enabled = false, onClick = {})
-                    ThemeColorButton(color = green_line, enabled = false, onClick = {})
+                    // FIXME: Not sure if there is a better way?
+                    val onClick = { viewModel.setThemeColorAutomatic(!viewModel.uiState.themeColorAutomatic) }
+                    if (viewModel.uiState.themeColorAutomatic) {
+                        Button(
+                            modifier = Modifier.weight(0.5f),
+                            onClick = { },
+                            shape = defaultButtonShape,
+                        ) {
+                            Text(text = "Automatic")
+                        }
+                        TextButton(
+                            modifier = Modifier.weight(0.5f),
+                            onClick = onClick,
+                            shape = defaultButtonShape,
+                        ) {
+                            Text(text = "Manual")
+                        }
+                    } else {
+                        TextButton(
+                            modifier = Modifier.weight(0.4f),
+                            onClick = onClick,
+                            shape = defaultButtonShape,
+                        ) {
+                            Text(text = "Automatic")
+                        }
+                        Button(
+                            modifier = Modifier.weight(0.4f),
+                            onClick = {},
+                            shape = defaultButtonShape,
+                        ) {
+                            Text(text = "Manual")
+                        }
+                    }
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    DisplayElementSwitchView(
+                        imageVector = Icons.Outlined.Palette,
+                        title = "Dynamic color",
+                        description = "Use your wallpaper color",
+                        isChecked = viewModel.uiState.dynamicColorEnabled,
+                        enabled = viewModel.uiState.themeColorAutomatic,
+                        onClick = {
+                            viewModel.setDynamicColor(!viewModel.uiState.dynamicColorEnabled)
+                        }
+                    )
+                }
+            }
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 15.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    val enable = !viewModel.uiState.themeColorAutomatic
+                    val alpha = if (viewModel.uiState.themeColorAutomatic) 0.2f else 1.0f
+                    ThemeColorButton(
+                        color = blue_line,
+                        enabled = enable,
+                        alpha = alpha,
+                        onClick = {}
+                    )
+                    ThemeColorButton(
+                        color = red_line,
+                        enabled = enable,
+                        alpha = alpha,
+                        onClick = {}
+                    )
+                    ThemeColorButton(
+                        color = yellow_line,
+                        enabled = enable,
+                        alpha = alpha,
+                        onClick = {}
+                    )
+                    ThemeColorButton(
+                        color = green_line,
+                        enabled =
+                        enable,
+                        alpha = alpha,
+                        onClick = {}
+                    )
                 }
             }
             item { NavigationBarsSpacer() }

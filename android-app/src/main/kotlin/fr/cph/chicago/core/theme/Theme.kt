@@ -55,7 +55,6 @@ private fun SystemUiSetup(isDarkTheme: Boolean) {
     val systemUiController = rememberSystemUiController()
 
     SideEffect {
-        Timber.i("Setup System UI: is dark theme? $isDarkTheme")
         systemUiController.setStatusBarColor(
             color = Color.Transparent,
             darkIcons = !isDarkTheme

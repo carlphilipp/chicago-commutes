@@ -1,7 +1,6 @@
 package fr.cph.chicago.core.activity.settings
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.rememberSplineBasedDecay
@@ -30,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -99,10 +99,10 @@ fun DisplaySettingsView(
                     color = MaterialTheme.colorScheme.primary,
                 )
                 DisplayElementView(
-                    title = "Theme",
+                    title = "Theme color",
                     description = "Automatic or choose a color",
                     onClick = {
-                        startSettingsActivity(context = context, clazz = ThemeChooserActivity::class.java)
+                        startSettingsActivity(context = context, clazz = ThemeColorChooserActivity::class.java)
                     },
                     imageVector = Icons.Outlined.Palette
                 )
@@ -221,13 +221,12 @@ fun DisplayElementSwitchView(
     title: String,
     description: String,
     isChecked: Boolean,
+    enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-    ) {
+    val newModifier = if (enabled) modifier.clickable(onClick = onClick) else modifier.fillMaxWidth()
+    val alpha = if (enabled) 1.0f else 0.2f
+    Row(modifier = newModifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -235,7 +234,9 @@ fun DisplayElementSwitchView(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
-                modifier = Modifier.padding(end = 20.dp),
+                modifier = Modifier
+                    .padding(end = 20.dp)
+                    .alpha(alpha),
                 imageVector = imageVector,
                 contentDescription = null
             )
@@ -245,10 +246,12 @@ fun DisplayElementSwitchView(
                 horizontalAlignment = Alignment.Start,
             ) {
                 Text(
+                    modifier = Modifier.alpha(alpha),
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Text(
+                    modifier = Modifier.alpha(alpha),
                     text = description,
                     style = MaterialTheme.typography.bodySmall,
                 )
@@ -264,6 +267,7 @@ fun DisplayElementSwitchView(
                     onCheckedChange = {
                         onClick()
                     },
+                    enabled = enabled,
                     checked = isChecked,
                 )
             }

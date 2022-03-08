@@ -71,6 +71,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -657,11 +658,17 @@ fun LoadingCircle(
 }
 
 @Composable
-fun ThemeColorButton(color: Color, enabled: Boolean, onClick: () -> Unit) {
+fun ThemeColorButton(
+    color: Color,
+    enabled: Boolean,
+    alpha: Float,
+    onClick: () -> Unit
+) {
     ElevatedButton(
         modifier = Modifier
             .width(70.dp)
-            .height(70.dp),
+            .height(70.dp)
+            .alpha(alpha),
         onClick = onClick,
         enabled = enabled,
         shape = RoundedCornerShape(12.0.dp),
@@ -671,7 +678,8 @@ fun ThemeColorButton(color: Color, enabled: Boolean, onClick: () -> Unit) {
             modifier = Modifier
                 .size(50.dp)
                 .clip(CircleShape)
-                .background(color),
+                .background(color)
+                .alpha(alpha),
         )
     }
 }
