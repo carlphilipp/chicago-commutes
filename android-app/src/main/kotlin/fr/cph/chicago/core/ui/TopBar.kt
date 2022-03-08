@@ -141,7 +141,9 @@ fun LargeTopBar(
     Surface(color = backgroundColor) {
         LargeTopAppBar(
             navigationIcon = navigationIcon,
-            title = { Text(text = title) },
+            title = {
+                Text(text = title)
+            },
             colors = foregroundColors,
             scrollBehavior = scrollBehavior,
             modifier = Modifier.windowInsetsPadding(
