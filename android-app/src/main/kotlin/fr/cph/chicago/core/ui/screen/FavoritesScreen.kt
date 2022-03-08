@@ -1,5 +1,6 @@
 package fr.cph.chicago.core.ui.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -47,6 +48,7 @@ import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.bike_orange
 import fr.cph.chicago.core.ui.common.AnimatedText
 import fr.cph.chicago.core.ui.common.BusDetailDialog
@@ -68,6 +70,7 @@ fun FavoritesScreen(
     mainViewModel: MainViewModel,
     favorites: Favorites = Favorites,
 ) {
+    val navController = LocalNavController.current
     val lastUpdate: LastUpdate = favorites.time.value
 
     SwipeRefresh(
@@ -92,6 +95,9 @@ fun FavoritesScreen(
             }
             item { NavigationBarsSpacer() }
         }
+    }
+    BackHandler {
+        navController.navigateBack()
     }
 }
 

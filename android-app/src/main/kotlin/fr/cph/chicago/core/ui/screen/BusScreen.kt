@@ -1,5 +1,6 @@
 package fr.cph.chicago.core.ui.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +29,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fr.cph.chicago.core.model.BusRoute
+import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.ui.common.AnimatedErrorView
 import fr.cph.chicago.core.ui.common.BusRouteDialog
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
@@ -38,6 +40,7 @@ import fr.cph.chicago.core.viewmodel.MainViewModel
 @Composable
 fun BusScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
 
+    val navController = LocalNavController.current
     var showDialog by remember { mutableStateOf(false) }
     var selectedBusRoute by remember { mutableStateOf(BusRoute.buildEmpty()) }
     var searchBusRoutes by remember { mutableStateOf<List<BusRoute>>(listOf()) }
@@ -119,4 +122,8 @@ fun BusScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
                 hideDialog = { showDialog = false },
             )
         })
+
+    BackHandler {
+        navController.navigateBack()
+    }
 }

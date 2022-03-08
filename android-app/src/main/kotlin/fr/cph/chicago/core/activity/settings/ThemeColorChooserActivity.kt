@@ -55,6 +55,7 @@ import fr.cph.chicago.core.ui.common.SwitchMaterial3
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 import fr.cph.chicago.core.ui.common.ThemeColorButton
 import fr.cph.chicago.core.ui.screen.SettingsViewModel
+import fr.cph.chicago.core.ui.screen.settings.DisplayElementSwitchView
 import fr.cph.chicago.core.viewmodel.settingsViewModel
 import timber.log.Timber
 

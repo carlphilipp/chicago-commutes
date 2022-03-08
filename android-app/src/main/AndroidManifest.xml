@@ -126,12 +126,6 @@
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".core.activity.settings.DisplayActivity"
-            android:configChanges="uiMode"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-
-        <activity
             android:name=".core.activity.settings.ThemeColorChooserActivity"
             android:configChanges="uiMode"
             android:exported="false"

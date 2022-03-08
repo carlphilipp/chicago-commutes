@@ -1,5 +1,6 @@
 package fr.cph.chicago.core.ui.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,6 +31,7 @@ import fr.cph.chicago.core.ui.common.AnimatedErrorView
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.util.startBikeStationActivity
 
@@ -37,6 +39,7 @@ import fr.cph.chicago.util.startBikeStationActivity
 @Composable
 fun DivvyScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
 
+    val navController = LocalNavController.current
     val context = LocalContext.current
     var searchBikeStations by remember { mutableStateOf(listOf<BikeStation>()) }
     searchBikeStations = mainViewModel.uiState.bikeStations
@@ -100,4 +103,8 @@ fun DivvyScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
                 }
             }
         })
+
+    BackHandler {
+        navController.navigateBack()
+    }
 }

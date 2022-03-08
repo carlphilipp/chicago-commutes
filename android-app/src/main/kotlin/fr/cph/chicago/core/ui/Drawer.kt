@@ -29,11 +29,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import fr.cph.chicago.R
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
-import fr.cph.chicago.core.ui.screen.DrawerScreens
+import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.core.ui.screen.screens
 
 @Composable
-fun Drawer(modifier: Modifier = Modifier, currentScreen: DrawerScreens, onDestinationClicked: (route: DrawerScreens) -> Unit) {
+fun Drawer(modifier: Modifier = Modifier, currentScreen: Screen, onDestinationClicked: (route: Screen) -> Unit) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item {
             Box {
@@ -56,7 +56,7 @@ fun Drawer(modifier: Modifier = Modifier, currentScreen: DrawerScreens, onDestin
             }
         }
 
-        items(screens) { screen ->
+        items(screens.filter { screen -> screen.showOnDrawer }) { screen ->
             val backgroundColor = if (screen.route == currentScreen.route) {
                 MaterialTheme.colorScheme.secondaryContainer
             } else {
@@ -80,9 +80,9 @@ fun Drawer(modifier: Modifier = Modifier, currentScreen: DrawerScreens, onDestin
 @Composable
 fun DrawerButton(
     modifier: Modifier,
-    screen: DrawerScreens,
+    screen: Screen,
     backgroundColor: Color,
-    onDestinationClicked: (route: DrawerScreens) -> Unit
+    onDestinationClicked: (route: Screen) -> Unit
 ) {
     Surface(
         modifier = modifier,

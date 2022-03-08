@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -41,18 +42,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.core.activity.BaseActivity
-import fr.cph.chicago.core.activity.settings.DisplayActivity
 import fr.cph.chicago.core.model.Theme
+import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.redux.ResetStateAction
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.RealmConfig
 import fr.cph.chicago.service.PreferenceService
-import fr.cph.chicago.util.startSettingsActivity
 
 @Composable
 fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) {
     val uiState = viewModel.uiState
-    val context = LocalContext.current
+    val navController = LocalNavController.current
 
     LazyColumn(
         modifier = modifier
@@ -64,7 +64,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                 title = "Display",
                 description = "Theme, dark mode and fonts",
                 onClick = {
-                    startSettingsActivity(context = context, clazz = DisplayActivity::class.java)
+                    navController.navigate(screen = Screen.SettingsDisplay)
                 }
             )
         }
@@ -286,6 +286,10 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
 
     if (uiState.showClearCacheDialog) {
         ClearCacheDialog(viewModel = viewModel)
+    }
+
+    BackHandler {
+        navController.navigateBack()
     }
 }
 

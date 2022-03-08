@@ -2,6 +2,7 @@ package fr.cph.chicago.core.ui.screen
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -47,11 +48,13 @@ import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 import fr.cph.chicago.core.model.dto.AlertType
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
+import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.viewmodel.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlertsScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
+    val navController = LocalNavController.current
     val load = remember { mutableStateOf(true) }
     if (load.value) {
         mainViewModel.shouldLoadAlerts()
@@ -176,5 +179,8 @@ fun AlertsScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
                     }
                 }
             })
+    }
+    BackHandler {
+        navController.navigateBack()
     }
 }
