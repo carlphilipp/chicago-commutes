@@ -1,6 +1,5 @@
 package fr.cph.chicago.core.ui.screen
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -70,7 +69,6 @@ fun FavoritesScreen(
     mainViewModel: MainViewModel,
     favorites: Favorites = Favorites,
 ) {
-    val navController = LocalNavController.current
     val lastUpdate: LastUpdate = favorites.time.value
 
     SwipeRefresh(
@@ -95,9 +93,6 @@ fun FavoritesScreen(
             }
             item { NavigationBarsSpacer() }
         }
-    }
-    BackHandler {
-        navController.navigateBack()
     }
 }
 

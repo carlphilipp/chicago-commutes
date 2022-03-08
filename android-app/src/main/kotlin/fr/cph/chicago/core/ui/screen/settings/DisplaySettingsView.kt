@@ -1,7 +1,6 @@
 package fr.cph.chicago.core.ui.screen.settings
 
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,7 +27,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import fr.cph.chicago.core.activity.settings.ThemeColorChooserActivity
 import fr.cph.chicago.core.model.Theme
-import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.ui.common.SwitchMaterial3
 import fr.cph.chicago.core.ui.screen.SettingsViewModel
 import fr.cph.chicago.core.ui.screen.ThemeChangerDialog
@@ -42,7 +40,6 @@ fun DisplaySettingsView(
 ) {
     val uiState = viewModel.uiState
     val context = LocalContext.current as ComponentActivity
-    val navController = LocalNavController.current
 
     LazyColumn(
         modifier = modifier
@@ -127,9 +124,6 @@ fun DisplaySettingsView(
     }
     if (uiState.showThemeChangerDialog) {
         ThemeChangerDialog(viewModel = viewModel)
-    }
-    BackHandler {
-        navController.navigateBack()
     }
 }
 

@@ -36,6 +36,7 @@ import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.ui.Drawer
 import fr.cph.chicago.core.ui.LargeTopBar
 import fr.cph.chicago.core.ui.MediumTopBar
+import fr.cph.chicago.core.ui.common.BackHandler
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.core.ui.screen.SettingsViewModel
 import fr.cph.chicago.core.ui.screen.TopBarIconAction
@@ -88,6 +89,7 @@ fun Navigation(viewModel: NavigationViewModel, settingsViewModel: SettingsViewMo
             var showSearch by remember { mutableStateOf(true) }
             showSearch = uiState.currentScreen == Screen.Favorites
 
+            // Add custom nav controller in local provider so it can be retrieve easily downstream
             CompositionLocalProvider(LocalNavController provides navController) {
                 Scaffold(
                     modifier = Modifier.nestedScroll(settingsViewModel.uiState.scrollBehavior.nestedScrollConnection),
@@ -104,8 +106,11 @@ fun Navigation(viewModel: NavigationViewModel, settingsViewModel: SettingsViewMo
                     ) {
                         uiState.screens.forEach { screen ->
                             composable(screen.route) {
-                                uiState.currentScreen = screen
-                                screen.component()
+                                // Add custom backhandler to all composable
+                                BackHandler {
+                                    uiState.currentScreen = screen
+                                    screen.component()
+                                }
                             }
                         }
                     }
@@ -172,7 +177,7 @@ class NavHostTopBarController(private val viewModel: NavigationViewModel) {
     }
 
     fun navigate(screen: Screen) {
-        Timber.i("Stack Navigate to ${screen.title}");
+        Timber.d("Navigate to ${screen.title}");
         viewModel.uiState.navController.navigate(screen.route) {
             popUpTo(viewModel.uiState.navController.graph.startDestinationId)
             launchSingleTop = true
@@ -183,7 +188,7 @@ class NavHostTopBarController(private val viewModel: NavigationViewModel) {
     }
 
     fun navigateBack() {
-        Timber.i("Stack Navigate back");
+        Timber.d("Navigate back");
         previous.pop()
         if (previous.isEmpty()) {
             navigate(screen = Screen.Favorites)
@@ -195,13 +200,13 @@ class NavHostTopBarController(private val viewModel: NavigationViewModel) {
     }
 
     fun printStackState() {
-        Timber.i("Stack size: ${previous.size}");
+        Timber.d("Stack size: ${previous.size}");
         var str = "[ ";
         for (i in previous.size - 1 downTo 0) {
             str = str + previous[i].title + " <- "
         }
         str = str + " ]"
-        Timber.i("Stack: $str")
+        Timber.d("Stack: $str")
     }
 }
 

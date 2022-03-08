@@ -93,6 +93,7 @@ import androidx.core.graphics.drawable.toBitmap
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.favorite_yellow
 import fr.cph.chicago.core.theme.green_line
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -130,6 +131,18 @@ fun loadGoogleStreet(position: Position, onSuccess: Consumer<Drawable>, onError:
     googleStreetClient.getImage(position.latitude, position.longitude, 1000, 400)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(onSuccess, onError)
+}
+
+@Composable
+fun BackHandler(content: @Composable () -> Unit) {
+    val navController = LocalNavController.current
+
+    content()
+
+    // TODO close activity if favorite
+    androidx.activity.compose.BackHandler {
+        navController.navigateBack()
+    }
 }
 
 /**

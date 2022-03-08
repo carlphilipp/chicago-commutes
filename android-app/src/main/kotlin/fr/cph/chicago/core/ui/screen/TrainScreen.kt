@@ -2,7 +2,6 @@ package fr.cph.chicago.core.ui.screen
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,13 +18,11 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.TrainListStationActivity
-import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.core.navigation.LocalNavController
+import fr.cph.chicago.core.ui.common.ColoredBox
 
 @Composable
 fun TrainScreen(modifier: Modifier = Modifier) {
-    val navController = LocalNavController.current
 
     LazyColumn(modifier = modifier.fillMaxWidth()) {
         items(TrainLine.size() - 1) { index ->
@@ -47,7 +44,8 @@ fun TrainScreen(modifier: Modifier = Modifier) {
                 Row(
                     horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()) {
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     ColoredBox(modifier = Modifier.padding(end = 20.dp), color = line.color)
                     Text(
                         text = line.toString(),
@@ -56,9 +54,5 @@ fun TrainScreen(modifier: Modifier = Modifier) {
                 }
             }
         }
-    }
-
-    BackHandler {
-        navController.navigateBack()
     }
 }
