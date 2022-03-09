@@ -1,6 +1,10 @@
 package fr.cph.chicago.core.navigation
 
 import android.content.Intent
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -29,9 +33,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.ui.Drawer
@@ -50,7 +54,7 @@ val LocalNavController = compositionLocalOf<NavHostTopBarController> {
     error("No NavHostTopBarController provided")
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.animation.ExperimentalAnimationApi::class)
 @Composable
 fun Navigation(viewModel: NavigationViewModel, settingsViewModel: SettingsViewModel) {
     val uiState = viewModel.uiState
@@ -99,12 +103,26 @@ fun Navigation(viewModel: NavigationViewModel, settingsViewModel: SettingsViewMo
                         )
                     }
                 ) {
-                    NavHost(
+                    AnimatedNavHost(
                         navController = navController.navController(),
                         startDestination = Screen.Favorites.route
                     ) {
                         uiState.screens.forEach { screen ->
-                            composable(screen.route) {
+                            composable(
+                                route = screen.route,
+                                enterTransition = {
+                                    when (initialState.destination.route) {
+                                        Screen.SettingsDisplay.route -> slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(3000))
+                                        else -> EnterTransition.None
+                                    }
+                                },
+                                exitTransition = {
+                                    when (targetState.destination.route) {
+                                        Screen.SettingsDisplay.route -> slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(3000))
+                                        else -> ExitTransition.None
+                                    }
+                                },
+                            ) {
                                 // Add custom backhandler to all composable so we can handle when someone push the back button
                                 BackHandler {
                                     uiState.currentScreen = screen
@@ -128,11 +146,11 @@ data class NavigationUiState constructor(
     val navController: NavHostController = NavHostController(App.instance.applicationContext),
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.animation.ExperimentalAnimationApi::class)
 @Composable
 fun rememberNavigationState(
     drawerState: DrawerState = rememberDrawerState(DrawerValue.Closed),
-    navController: NavHostController = rememberNavController(),
+    navController: NavHostController = rememberAnimatedNavController(),//rememberNavController(),
     currentScreen: Screen = Screen.Favorites,
 ) = remember(drawerState, navController, currentScreen) {
     NavigationUiState(
