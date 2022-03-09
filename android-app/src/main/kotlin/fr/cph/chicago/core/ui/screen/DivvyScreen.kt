@@ -22,22 +22,21 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.ui.common.AnimatedErrorView
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 import fr.cph.chicago.core.viewmodel.MainViewModel
-import fr.cph.chicago.util.startBikeStationActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DivvyScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
 
-    val context = LocalContext.current
+    val navController = LocalNavController.current
     var searchBikeStations by remember { mutableStateOf(listOf<BikeStation>()) }
     searchBikeStations = mainViewModel.uiState.bikeStations
     var textSearch by remember { mutableStateOf(TextFieldValue("")) }
@@ -64,7 +63,14 @@ fun DivvyScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(horizontal = 20.dp),
-                                onClick = { startBikeStationActivity(context = context, bikeStation = bikeStation) }
+                                onClick = {
+                                    navController.navigate(
+                                        screen = Screen.DivvyDetails,
+                                        arguments = mapOf(
+                                            "stationId" to bikeStation.id
+                                        )
+                                    )
+                                }
                             ) {
                                 Row(
                                     horizontalArrangement = Arrangement.Start,

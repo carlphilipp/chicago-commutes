@@ -56,7 +56,6 @@ import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.common.TrainDetailDialog
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.util.TimeUtil
-import fr.cph.chicago.util.startBikeStationActivity
 import fr.cph.chicago.util.startBusMapActivity
 import fr.cph.chicago.util.startTrainMapActivity
 import java.util.Calendar
@@ -222,7 +221,7 @@ fun BusFavoriteCard(
 
 @Composable
 fun BikeFavoriteCard(modifier: Modifier = Modifier, bikeStation: BikeStation) {
-    val context = LocalContext.current
+    val navController = LocalNavController.current
 
     FavoriteCardWrapper(modifier = modifier) {
         HeaderCard(
@@ -242,7 +241,10 @@ fun BikeFavoriteCard(modifier: Modifier = Modifier, bikeStation: BikeStation) {
 
         FooterCard(
             detailsOnClick = {
-                startBikeStationActivity(context = context, bikeStation = bikeStation)
+                navController.navigate(
+                    screen = Screen.DivvyDetails,
+                    arguments = mapOf("stationId" to bikeStation.id)
+                )
             }
         )
     }

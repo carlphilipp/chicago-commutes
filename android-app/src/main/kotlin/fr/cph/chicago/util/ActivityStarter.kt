@@ -5,10 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.R
-import fr.cph.chicago.core.activity.BikeStationComposable
 import fr.cph.chicago.core.activity.BusMapActivity
 import fr.cph.chicago.core.activity.TrainMapActivity
-import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.enumeration.TrainLine
 
@@ -33,15 +31,6 @@ fun startBusMapActivity(context: Context, busRouteId: String) {
     val extras = Bundle()
     val intent = Intent(context, BusMapActivity::class.java)
     extras.putString(context.getString(R.string.bundle_bus_route_id), busRouteId)
-    intent.putExtras(extras)
-    startActivity(context, intent)
-}
-
-// Bikes
-fun startBikeStationActivity(context: Context, bikeStation: BikeStation) {
-    val intent = Intent(context, BikeStationComposable::class.java)
-    val extras = Bundle()
-    extras.putParcelable(context.getString(R.string.bundle_bike_station), bikeStation)
     intent.putExtras(extras)
     startActivity(context, intent)
 }

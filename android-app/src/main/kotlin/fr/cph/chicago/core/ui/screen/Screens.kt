@@ -81,7 +81,7 @@ sealed class Screen(
     )
 
     object BusDetails : Screen(
-        title = "Train station details",
+        title = "Bus details",
         route = "bus/details?busStopId={busStopId}&busStopName={busStopName}&busRouteId={busRouteId}&busRouteName={busRouteName}&bound={bound}&boundTitle={boundTitle}",
         icon = Icons.Filled.DirectionsBus,
         showOnDrawer = false,
@@ -115,6 +115,25 @@ sealed class Screen(
         icon = Icons.Filled.DirectionsBike,
         topBar = ScreenTopBar.MediumTopBarDrawer,
         component = { DivvyScreen(mainViewModel = mainViewModel) }
+    )
+
+    object DivvyDetails : Screen(
+        title = "Divvy station details",
+        route = "divvy/details/{stationId}",
+        icon = Icons.Filled.Train,
+        showOnDrawer = false,
+        topBar = ScreenTopBar.None,
+        component = { backStackEntry ->
+            val stationId = backStackEntry.arguments?.getString("stationId", "0") ?: ""
+            val viewModel: BikeStationViewModel = viewModel(
+                factory = BikeStationViewModel.provideFactory(
+                    stationId = stationId,
+                    owner = backStackEntry,
+                    defaultArgs = backStackEntry.arguments
+                )
+            )
+            BikeStationScreen(viewModel = viewModel)
+        }
     )
 
     object Nearby : Screen(
@@ -214,6 +233,7 @@ val screens = listOf(
     Screen.Bus,
     Screen.BusDetails,
     Screen.Divvy,
+    Screen.DivvyDetails,
     Screen.Nearby,
     Screen.Map,
     Screen.Alerts,

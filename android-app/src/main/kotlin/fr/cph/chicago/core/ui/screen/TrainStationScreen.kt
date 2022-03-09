@@ -215,7 +215,6 @@ class TrainStationViewModel @Inject constructor(
         private set
 
     init {
-        Timber.i("Train Station init model")
         viewModelScope.launch {
             val trainStation = trainService.getStation(stationId)
             val isFavorite = isFavorite(stationId)

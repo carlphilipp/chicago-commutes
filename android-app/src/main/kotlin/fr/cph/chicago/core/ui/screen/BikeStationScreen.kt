@@ -1,11 +1,9 @@
-package fr.cph.chicago.core.activity
+package fr.cph.chicago.core.ui.screen
 
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,17 +29,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.AbstractSavedStateViewModelFactory
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.savedstate.SavedStateRegistryOwner
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BikeStation.Companion.DEFAULT_AVAILABLE
 import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.core.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.ui.common.AnimatedText
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.ShowFavoriteSnackBar
@@ -49,7 +48,6 @@ import fr.cph.chicago.core.ui.common.StationDetailsImageView
 import fr.cph.chicago.core.ui.common.StationDetailsTitleIconView
 import fr.cph.chicago.core.ui.common.loadGoogleStreet
 import fr.cph.chicago.core.ui.common.openExternalMapApplication
-import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.redux.AddBikeFavoriteAction
 import fr.cph.chicago.redux.BikeStationAction
 import fr.cph.chicago.redux.RemoveBikeFavoriteAction
@@ -62,24 +60,9 @@ import fr.cph.chicago.util.TimeUtil
 import java.util.Calendar
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-
-class BikeStationComposable : CustomComponentActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val bikeStation = intent.extras?.getParcelable(getString(R.string.bundle_bike_station)) ?: BikeStation.buildUnknownStation()
-
-        val viewModel = BikeStationViewModel().initModel(bikeStation = bikeStation)
-
-        setContent {
-            ChicagoCommutesTheme(settingsViewModel = settingsViewModel) {
-                BikeStationView(viewModel = viewModel)
-            }
-        }
-    }
-}
 
 data class BikeStationUiState(
     val bikeStation: BikeStation = BikeStation.buildUnknownStation(),
@@ -96,25 +79,38 @@ data class BikeStationUiState(
 
 @HiltViewModel
 class BikeStationViewModel @Inject constructor(
+    stationId: String,
     private val preferenceService: PreferenceService = PreferenceService,
 ) : ViewModel(), StoreSubscriber<State> {
     var uiState by mutableStateOf(BikeStationUiState())
         private set
 
-    fun initModel(bikeStation: BikeStation): BikeStationViewModel {
-        uiState = uiState.copy(
-            bikeStation = bikeStation,
-            isFavorite = isFavorite(bikeStation.id),
-        )
+    init {
+        viewModelScope.launch {
+            val bikeStation = store.state.bikeStations
+                .find { bikeStation -> bikeStation.id == stationId }
+                ?: BikeStation.buildUnknownStation()
 
-        if (canLoadGoogleMapImage()) {
-            loadGoogleStreetImage(bikeStation.latitude, bikeStation.longitude)
-        } else {
+            //val isFavorite = isFavorite(stationId)
+
+
             uiState = uiState.copy(
-                isGoogleStreetImageLoading = false,
-                showGoogleStreetImage = false,
+                bikeStation = bikeStation,
+                isFavorite = isFavorite(bikeStation.id),
             )
+
+            if (canLoadGoogleMapImage()) {
+                loadGoogleStreetImage(bikeStation.latitude, bikeStation.longitude)
+            } else {
+                uiState = uiState.copy(
+                    isGoogleStreetImageLoading = false,
+                    showGoogleStreetImage = false,
+                )
+            }
         }
+    }
+
+    fun initModel(bikeStation: BikeStation): BikeStationViewModel {
         return this
     }
 
@@ -235,17 +231,34 @@ class BikeStationViewModel @Inject constructor(
     fun onStop() {
         store.unsubscribe(this)
     }
+
+    companion object {
+        fun provideFactory(
+            stationId: String,
+            owner: SavedStateRegistryOwner,
+            defaultArgs: Bundle? = null,
+        ): AbstractSavedStateViewModelFactory =
+            object : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(
+                    key: String,
+                    modelClass: Class<T>,
+                    handle: SavedStateHandle
+                ): T {
+                    return BikeStationViewModel(stationId) as T
+                }
+            }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BikeStationView(
+fun BikeStationScreen(
     modifier: Modifier = Modifier,
     viewModel: BikeStationViewModel,
 ) {
     val uiState = viewModel.uiState
     val scope = rememberCoroutineScope()
-    val activity = (LocalLifecycleOwner.current as ComponentActivity)
     val context = LocalContext.current
 
     SwipeRefresh(
@@ -259,7 +272,7 @@ fun BikeStationView(
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     item {
                         StationDetailsImageView(
-                           /* activity = activity,*/
+                            /* activity = activity,*/
                             showGoogleStreetImage = uiState.showGoogleStreetImage,
                             googleStreetMapImage = uiState.googleStreetMapImage,
                             isLoading = uiState.isGoogleStreetImageLoading,

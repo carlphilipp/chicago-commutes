@@ -27,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -36,16 +35,17 @@ import androidx.constraintlayout.compose.Dimension
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.TrainStation
+import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.ui.SearchTopBar
 import fr.cph.chicago.core.ui.common.BusRouteDialog
 import fr.cph.chicago.core.ui.common.ChipMaterial3
 import fr.cph.chicago.core.ui.common.ColoredBox
+import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
-import fr.cph.chicago.util.startBikeStationActivity
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
@@ -69,7 +69,7 @@ class SearchActivity : CustomComponentActivity() {
 @Composable
 private fun SearchView(viewModel: SearchViewModel) {
     val uiState = viewModel.uiState
-    val context = LocalContext.current
+    val navController = LocalNavController.current
     Scaffold(
         topBar = {
             SearchTopBar(
@@ -121,7 +121,7 @@ private fun SearchView(viewModel: SearchViewModel) {
                                 colors = trainStation.lines.map { line -> line.color },
                                 onClick = {
                                     // FIXME show train station details. Only possible when search activity is no more
-                                /*startTrainStationActivity(context, trainStation)*/
+                                    /*startTrainStationActivity(context, trainStation)*/
                                 }
                             )
                         }
@@ -143,7 +143,12 @@ private fun SearchView(viewModel: SearchViewModel) {
                             SearchRow(
                                 imageVector = Icons.Filled.DirectionsBike,
                                 title = bikeStation.name,
-                                onClick = { startBikeStationActivity(context, bikeStation) }
+                                onClick = {
+                                    navController.navigate(
+                                        screen = Screen.DivvyDetails,
+                                        arguments = mapOf("stationId" to bikeStation.id)
+                                    )
+                                }
                             )
                         }
                     }
