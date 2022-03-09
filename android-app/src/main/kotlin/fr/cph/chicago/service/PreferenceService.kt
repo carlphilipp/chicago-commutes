@@ -66,6 +66,14 @@ object PreferenceService {
         return repo.saveDynamicColor(value)
     }
 
+    fun isAutomaticThemeColor() : Boolean{
+        return repo.isAutomaticThemeColor()
+    }
+
+    fun saveAutomaticThemeColor(value: Boolean) {
+        return repo.saveAutomaticThemeColor(value)
+    }
+
     fun isTrainStationFavorite(trainStationId: String): Boolean {
         return store.state.trainFavorites.any { it == trainStationId }
     }

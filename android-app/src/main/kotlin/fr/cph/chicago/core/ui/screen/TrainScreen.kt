@@ -18,11 +18,12 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.TrainListStationActivity
-import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.core.ui.common.ColoredBox
 
 @Composable
 fun TrainScreen(modifier: Modifier = Modifier) {
+
     LazyColumn(modifier = modifier.fillMaxWidth()) {
         items(TrainLine.size() - 1) { index ->
             val line = TrainLine.values()[index]
@@ -43,7 +44,8 @@ fun TrainScreen(modifier: Modifier = Modifier) {
                 Row(
                     horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()) {
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     ColoredBox(modifier = Modifier.padding(end = 20.dp), color = line.color)
                     Text(
                         text = line.toString(),

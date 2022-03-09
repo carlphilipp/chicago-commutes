@@ -126,6 +126,17 @@ object PreferenceRepository {
         editor.apply()
     }
 
+    fun isAutomaticThemeColor(): Boolean {
+        val sharedPref = getPrivatePreferences()
+        return sharedPref.getBoolean(PrefType.AUTOMATIC_COLOR.value, true)
+    }
+
+    fun saveAutomaticThemeColor(value: Boolean) {
+        val editor = getPrivatePreferences().edit()
+        editor.putBoolean(PrefType.AUTOMATIC_COLOR.value, value)
+        editor.apply()
+    }
+
     // Trains
     fun saveTrainFavorites(favorites: Set<String>) {
         val sharedPref = getPrivatePreferences()
@@ -326,6 +337,7 @@ enum class PrefType(val value: String) {
     FAVORITES("ChicagoTrackerFavorites"),
     THEME("ChicagoTrackerTheme"),
     DYNAMIC_COLOR("ChicagoTrackerThemeDynamicColor"),
+    AUTOMATIC_COLOR("ChicagoTrackerThemeAutomaticColor"),
     TRAIN("ChicagoTrackerFavoritesTrain"),
     TRAIN_FILTER("ChicagoTrackerFavoritesTrainFilter"),
     BUS("ChicagoTrackerFavoritesBus"),

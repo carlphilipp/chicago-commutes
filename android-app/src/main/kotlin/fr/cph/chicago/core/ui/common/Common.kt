@@ -32,25 +32,31 @@ import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Map
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
@@ -60,12 +66,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -84,21 +90,21 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.graphics.drawable.toBitmap
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.favorite_yellow
+import fr.cph.chicago.core.theme.green_line
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.functions.Consumer
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
-import timber.log.Timber
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 private val googleStreetClient = GoogleStreetClient
 
@@ -125,6 +131,31 @@ fun loadGoogleStreet(position: Position, onSuccess: Consumer<Drawable>, onError:
     googleStreetClient.getImage(position.latitude, position.longitude, 1000, 400)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(onSuccess, onError)
+}
+
+@Composable
+fun BackHandler(content: @Composable () -> Unit) {
+    val navController = LocalNavController.current
+
+    content()
+
+    // TODO close activity if favorite
+    androidx.activity.compose.BackHandler {
+        navController.navigateBack()
+    }
+}
+
+/**
+ * This only works if the insets library is in the classpath and if the component that render this composable is wrapped
+ * by ProvideWindowInsets
+ */
+@Composable
+fun NavigationBarsSpacer(modifier: Modifier = Modifier) {
+    Spacer(
+        modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+    )
 }
 
 @Composable
@@ -160,6 +191,7 @@ fun AnimatedText(
                     text = target,
                     style = style,
                     maxLines = 1,
+
                     overflow = TextOverflow.Ellipsis,
                     color = color,
                 )
@@ -462,6 +494,15 @@ fun StationDetailsTitleIconView(
                 }
             }
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                // FIXME:
+                // See to implement that or find something with some ui animation
+/*                var chec = remember { mutableStateOf(true) }
+                IconToggleButton(checked = chec.value, onCheckedChange = {
+                    chec.value = !chec.value
+                }) {
+                    val tint by animateColorAsState(if (chec.value) Color(0xFFEC407A) else Color(0xFFB0BEC5))
+                    Icon(Icons.Filled.Favorite, contentDescription = "Localized description", tint = tint)
+                }*/
                 IconButton(onClick = onFavoriteClick) {
                     Icon(
                         imageVector = Icons.Filled.Favorite,
@@ -625,6 +666,33 @@ fun LoadingCircle(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)
                 .wrapContentSize()
+        )
+    }
+}
+
+@Composable
+fun ThemeColorButton(
+    color: Color,
+    enabled: Boolean,
+    alpha: Float,
+    onClick: () -> Unit
+) {
+    ElevatedButton(
+        modifier = Modifier
+            .width(70.dp)
+            .height(70.dp)
+            .alpha(alpha),
+        onClick = onClick,
+        enabled = enabled,
+        shape = RoundedCornerShape(12.0.dp),
+        contentPadding = PaddingValues(3.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(50.dp)
+                .clip(CircleShape)
+                .background(color)
+                .alpha(alpha),
         )
     }
 }

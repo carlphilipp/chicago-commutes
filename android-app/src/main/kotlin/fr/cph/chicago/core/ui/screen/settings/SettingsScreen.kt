@@ -1,10 +1,9 @@
-package fr.cph.chicago.core.ui.screen
+package fr.cph.chicago.core.ui.screen.settings
 
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,24 +12,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.DeveloperMode
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.filled.Wallpaper
 import androidx.compose.material.icons.outlined.Brightness6
 import androidx.compose.material.icons.outlined.DeveloperMode
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,35 +35,36 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.core.activity.BaseActivity
 import fr.cph.chicago.core.model.Theme
+import fr.cph.chicago.core.navigation.LocalNavController
+import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.redux.ResetStateAction
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.RealmConfig
 import fr.cph.chicago.service.PreferenceService
-import fr.cph.chicago.util.Util
-import fr.cph.chicago.util.startSettingsDisplayActivity
 
 @Composable
-fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel, util: Util = Util) {
+fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) {
     val uiState = viewModel.uiState
-    val context = LocalContext.current
+    val navController = LocalNavController.current
 
-    LazyColumn(modifier = modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
+    LazyColumn(
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
         item {
             SettingsElementView(
                 imageVector = Icons.Outlined.Brightness6,
                 title = "Display",
                 description = "Theme, dark mode and fonts",
                 onClick = {
-                    startSettingsDisplayActivity(context = context)
+                    navController.navigate(screen = Screen.SettingsDisplay)
                 }
             )
         }
@@ -92,27 +89,6 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel, 
             )
         }
 /*        item {
-            // Theme
-            Column(
-                modifier
-                    .fillMaxWidth()
-                    .clickable { viewModel.showThemeChangerDialog(true) }) {
-                Row(modifier = cellModifier) {
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = stringResource(id = R.string.preferences_data_theme_title),
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        Spacer(modifier = Modifier.height(5.dp))
-                        Text(
-                            text = uiState.theme.description,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
-                }
-                Divider(thickness = 1.dp)
-            }
-        }
         item {
             // Data cache
             Column(
@@ -194,42 +170,48 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel, 
 
 @Composable
 fun SettingsElementView(
+    modifier: Modifier = Modifier,
     imageVector: ImageVector,
     title: String,
     description: String,
     onClick: () -> Unit
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(bottom = 30.dp)
-            .clickable(onClick = onClick),
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically,
+            .clickable(onClick = onClick)
     ) {
-        Icon(
-            modifier = Modifier.padding(end = 20.dp),
-            imageVector = imageVector,
-            contentDescription = null
-        )
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.Start,
+        Row(
+            modifier = modifier
+                .padding(horizontal = 20.dp, vertical = 15.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
+            Icon(
+                modifier = Modifier.padding(end = 20.dp),
+                imageVector = imageVector,
+                contentDescription = null
             )
-            Text(
-                text = description,
-                style = MaterialTheme.typography.bodySmall,
-            )
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start,
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
         }
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ThemeChangerDialog(viewModel: SettingsViewModel) {
     var currentThemeState by remember { mutableStateOf(viewModel.uiState.theme) }
@@ -369,10 +351,13 @@ fun ClearCacheDialog(viewModel: SettingsViewModel) {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 data class SettingsState(
     val theme: Theme = Theme.AUTO,
     val showThemeChangerDialog: Boolean = false,
     val showClearCacheDialog: Boolean = false,
+    val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
+    val themeColorAutomatic: Boolean = false,
     val dynamicColorEnabled: Boolean = false,
 )
 
@@ -395,6 +380,11 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
         refreshCurrentTheme()
     }
 
+    fun setThemeColorAutomatic(value: Boolean) {
+        preferenceService.saveAutomaticThemeColor(value)
+        refreshCurrentTheme()
+    }
+
     fun showThemeChangerDialog(show: Boolean) {
         uiState = uiState.copy(
             showThemeChangerDialog = show
@@ -411,6 +401,10 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
         deleteCache(context)
         preferenceService.clearPreferences()
         realmConfig.cleanRealm()
+    }
+
+    fun setScrollBehavior(scrollBehavior: TopAppBarScrollBehavior) {
+        uiState = uiState.copy(scrollBehavior = scrollBehavior)
     }
 
     private fun deleteCache(context: Context?) {
@@ -431,6 +425,7 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
         uiState = uiState.copy(
             theme = preferenceService.getTheme(),
             dynamicColorEnabled = preferenceService.getDynamicColor(),
+            themeColorAutomatic = preferenceService.isAutomaticThemeColor(),
         )
     }
 }

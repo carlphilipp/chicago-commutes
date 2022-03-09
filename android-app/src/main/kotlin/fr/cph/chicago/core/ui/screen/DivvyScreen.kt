@@ -26,10 +26,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.ui.common.AnimatedErrorView
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
-import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.util.startBikeStationActivity
 

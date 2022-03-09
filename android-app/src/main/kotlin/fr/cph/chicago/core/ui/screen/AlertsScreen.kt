@@ -40,13 +40,13 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.AlertActivity
+import fr.cph.chicago.core.model.dto.AlertType
+import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.core.ui.common.AnimatedErrorView
 import fr.cph.chicago.core.ui.common.AnimatedPlaceHolderList
 import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
-import fr.cph.chicago.core.model.dto.AlertType
-import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.core.viewmodel.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
