@@ -13,6 +13,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -88,12 +89,13 @@ fun Navigation(viewModel: NavigationViewModel, settingsViewModel: SettingsViewMo
 
             // Add custom nav controller in local provider so it can be retrieve easily downstream
             CompositionLocalProvider(LocalNavController provides navController) {
+                val scrollBehavior = topBarBehavior(viewModel.uiState.currentScreen)
                 Scaffold(
-                    modifier = Modifier.nestedScroll(settingsViewModel.uiState.scrollBehavior.nestedScrollConnection),
+                    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                     topBar = {
                         DisplayTopBar(
-                            settingsViewModel = settingsViewModel,
                             viewModel = viewModel,
+                            scrollBehavior = scrollBehavior,
                         )
                     }
                 ) {
@@ -209,9 +211,20 @@ class NavHostTopBarController(private val viewModel: NavigationViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+private fun topBarBehavior(screen: Screen): TopAppBarScrollBehavior {
+    return if (screen.topBar.type == TopBarType.LARGE) {
+        val decayAnimationSpec = rememberSplineBasedDecay<Float>()
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec)
+    } else {
+        TopAppBarDefaults.pinnedScrollBehavior()
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 private fun DisplayTopBar(
-    settingsViewModel: SettingsViewModel,
     viewModel: NavigationViewModel,
+    scrollBehavior: TopAppBarScrollBehavior,
 ) {
     val navController = LocalNavController.current
     val context = LocalContext.current
@@ -227,13 +240,9 @@ private fun DisplayTopBar(
     }
 
     if (screen.topBar.type == TopBarType.LARGE) {
-        val decayAnimationSpec = rememberSplineBasedDecay<Float>()
-        settingsViewModel.setScrollBehavior(scrollBehavior = remember(decayAnimationSpec) {
-            TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec)
-        })
         LargeTopBar(
             title = screen.title,
-            scrollBehavior = settingsViewModel.uiState.scrollBehavior,
+            scrollBehavior = scrollBehavior,
             navigationIcon = {
                 IconButton(onClick = onClick) {
                     Icon(
@@ -244,12 +253,9 @@ private fun DisplayTopBar(
             },
         )
     } else {
-        settingsViewModel.setScrollBehavior(scrollBehavior = remember {
-            TopAppBarDefaults.pinnedScrollBehavior()
-        })
         MediumTopBar(
             title = screen.title,
-            scrollBehavior = settingsViewModel.uiState.scrollBehavior,
+            scrollBehavior = scrollBehavior,
             navigationIcon = {
                 IconButton(onClick = { openDrawer() }) {
                     Icon(
