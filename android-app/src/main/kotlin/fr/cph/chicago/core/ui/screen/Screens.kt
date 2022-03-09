@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
+import fr.cph.chicago.core.ui.screen.settings.ThemeChooserSettingsScreen
 import fr.cph.chicago.core.ui.screen.settings.DisplaySettingsScreen
 import fr.cph.chicago.core.ui.screen.settings.SettingsScreen
 import fr.cph.chicago.core.viewmodel.locationViewModel
@@ -104,6 +105,14 @@ sealed class Screen(
         topBar = ScreenTopBar.LargeTopBarBack,
         showOnDrawer = false,
         component = { DisplaySettingsScreen(viewModel = settingsViewModel) })
+
+    object SettingsThemeColorChooser : Screen(
+        title = "Theme color",
+        route = "settings/color",
+        icon = Icons.Filled.Settings,
+        topBar = ScreenTopBar.LargeTopBarBack,
+        showOnDrawer = false,
+        component = { ThemeChooserSettingsScreen(viewModel = settingsViewModel) })
 }
 
 sealed class ScreenTopBar(
@@ -149,4 +158,5 @@ val screens = listOf(
     Screen.Rate,
     Screen.Settings,
     Screen.SettingsDisplay,
+    Screen.SettingsThemeColorChooser,
 )

@@ -1,6 +1,5 @@
 package fr.cph.chicago.core.ui.screen.settings
 
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,21 +22,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import fr.cph.chicago.core.activity.settings.ThemeColorChooserActivity
 import fr.cph.chicago.core.model.Theme
+import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.ui.common.SwitchMaterial3
-import fr.cph.chicago.util.startSettingsActivity
+import fr.cph.chicago.core.ui.screen.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DisplaySettingsScreen(
     modifier: Modifier = Modifier,
-    viewModel: SettingsViewModel
+    viewModel: SettingsViewModel,
 ) {
     val uiState = viewModel.uiState
-    val context = LocalContext.current as ComponentActivity
+    val navController = LocalNavController.current
 
     LazyColumn(
         modifier = modifier
@@ -46,7 +44,7 @@ fun DisplaySettingsScreen(
     ) {
         item {
             Text(
-                modifier = Modifier.padding(horizontal = 20.dp),
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 5.dp),
                 text = "Theme",
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.primary,
@@ -55,14 +53,14 @@ fun DisplaySettingsScreen(
                 title = "Theme color",
                 description = "Automatic or choose a color",
                 onClick = {
-                    startSettingsActivity(context = context, clazz = ThemeColorChooserActivity::class.java)
+                    navController.navigate(screen = Screen.SettingsThemeColorChooser)
                 },
                 imageVector = Icons.Outlined.Palette
             )
         }
         item {
             Text(
-                modifier = Modifier.padding(horizontal = 20.dp),
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 5.dp, bottom = 5.dp),
                 text = "Appearance",
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.primary,
@@ -104,7 +102,7 @@ fun DisplaySettingsScreen(
         }
         item {
             Text(
-                modifier = Modifier.padding(horizontal = 20.dp),
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 5.dp, bottom = 5.dp),
                 text = "Fonts",
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.primary,
