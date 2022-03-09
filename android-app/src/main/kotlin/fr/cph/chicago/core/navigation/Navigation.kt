@@ -132,6 +132,7 @@ data class NavigationUiState constructor(
     val gesturesEnabled: Boolean = true,
     val screens: List<Screen> = fr.cph.chicago.core.ui.screen.screens,
     var currentScreen: Screen = Screen.Favorites,
+    var topBarTitle: String = Screen.Favorites.title,
     val drawerState: DrawerState = DrawerState(DrawerValue.Closed),
     val navController: NavHostController = NavHostController(App.instance.applicationContext),
 )
@@ -160,9 +161,10 @@ class NavigationViewModel : ViewModel() {
         return this
     }
 
-    fun updateScreen(screen: Screen) {
+    fun updateScreen(screen: Screen, customTitle: String) {
         uiState = uiState.copy(
-            currentScreen = screen
+            currentScreen = screen,
+            topBarTitle = customTitle,
         )
     }
 
@@ -177,21 +179,22 @@ class NavigationViewModel : ViewModel() {
 
 class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
 
-    private val previous: Stack<Screen> = Stack()
+    private val previous: Stack<Pair<Screen, String>> = Stack()
 
     fun navController(): NavHostController {
         return viewModel.uiState.navController
     }
 
-    fun navigate(screen: Screen, arguments: Map<String, String> = mapOf()) {
+    fun navigate(screen: Screen, arguments: Map<String, String> = mapOf(), customTitle: String = "") {
         Timber.d("Navigate to ${screen.title}");
         val route = buildRoute(route = screen.route, arguments = arguments)
         viewModel.uiState.navController.navigate(route) {
             popUpTo(viewModel.uiState.navController.graph.startDestinationId)
             launchSingleTop = true
         }
-        viewModel.updateScreen(screen = screen)
-        previous.push(screen)
+        val title = if (customTitle != "") customTitle else screen.title
+        viewModel.updateScreen(screen = screen, customTitle = title)
+        previous.push(Pair(screen, title))
         printStackState()
     }
 
@@ -202,7 +205,10 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
             navigate(screen = Screen.Favorites)
         } else {
             val screen = previous.pop()
-            navigate(screen = screen)
+            navigate(
+                screen = screen.first,
+                customTitle = screen.second
+            )
         }
         printStackState()
     }
@@ -211,7 +217,7 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
         Timber.d("Navigate Stack size: ${previous.size}");
         var str = "[ ";
         for (i in previous.size - 1 downTo 0) {
-            str = str + previous[i].title + " <- "
+            str = str + previous[i].first.title + " <- "
         }
         str = str + " ]"
         Timber.d("Navigate Stack: $str")
@@ -259,7 +265,7 @@ private fun DisplayTopBar(
 
         if (screen.topBar.type == TopBarType.LARGE) {
             LargeTopBar(
-                title = screen.title,
+                title = viewModel.uiState.topBarTitle,
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     IconButton(onClick = onClick) {
@@ -272,7 +278,7 @@ private fun DisplayTopBar(
             )
         } else {
             MediumTopBar(
-                title = screen.title,
+                title = viewModel.uiState.topBarTitle,
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     IconButton(onClick = { openDrawer() }) {

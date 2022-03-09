@@ -18,6 +18,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
+import fr.cph.chicago.core.activity.TrainLineStops
+import fr.cph.chicago.core.activity.TrainListStationViewModel
 import fr.cph.chicago.core.ui.screen.settings.DisplaySettingsScreen
 import fr.cph.chicago.core.ui.screen.settings.SettingsScreen
 import fr.cph.chicago.core.ui.screen.settings.ThemeChooserSettingsScreen
@@ -50,6 +52,25 @@ sealed class Screen(
         component = {
             Timber.i("Displaying train screen")
             TrainScreen()
+        }
+    )
+
+    object TrainList : Screen(
+        title = "Train station list",
+        route = "train/line/{line}",
+        icon = Icons.Filled.Train,
+        showOnDrawer = false,
+        topBar = ScreenTopBar.MediumTopBarDrawer,
+        component = { backStackEntry ->
+            val line = backStackEntry.arguments?.getString("line", "0") ?: ""
+            val viewModel: TrainListStationViewModel = viewModel(
+                factory = TrainListStationViewModel.provideFactory(
+                    line = line,
+                    owner = backStackEntry,
+                    defaultArgs = backStackEntry.arguments
+                )
+            )
+            TrainLineStops(viewModel = viewModel)
         }
     )
 
@@ -96,7 +117,7 @@ sealed class Screen(
             val viewModel: BusStationViewModel = viewModel(
                 factory = BusStationViewModel.provideFactory(
                     busStopId = busStopId,
-                    busStopName =busStopName,
+                    busStopName = busStopName,
                     busRouteId = busRouteId,
                     busRouteName = busRouteName,
                     bound = bound,
@@ -229,6 +250,7 @@ enum class TopBarType {
 val screens = listOf(
     Screen.Favorites,
     Screen.Train,
+    Screen.TrainList,
     Screen.TrainDetails,
     Screen.Bus,
     Screen.BusDetails,

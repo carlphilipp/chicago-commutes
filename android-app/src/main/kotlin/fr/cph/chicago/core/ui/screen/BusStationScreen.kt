@@ -371,16 +371,6 @@ class BusStationViewModel @Inject constructor(
         store.unsubscribe(this)
     }
 
-    /*
-    val busStopId = intent.getStringExtra(getString(R.string.bundle_bus_stop_id)) ?: ""
-        val busStopName = intent.getStringExtra(getString(R.string.bundle_bus_stop_name)) ?: ""
-
-        val busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: ""
-        val busRouteName = intent.getStringExtra(getString(R.string.bundle_bus_route_name)) ?: ""
-
-        val bound = intent.getStringExtra(getString(R.string.bundle_bus_bound)) ?: ""
-        val boundTitle = intent.getStringExtra(getString(R.string.bundle_bus_bound_title)) ?: ""
-     */
     companion object {
         fun provideFactory(
             busStopId: String,

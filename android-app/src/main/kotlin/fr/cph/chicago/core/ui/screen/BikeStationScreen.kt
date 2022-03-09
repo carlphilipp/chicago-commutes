@@ -90,10 +90,6 @@ class BikeStationViewModel @Inject constructor(
             val bikeStation = store.state.bikeStations
                 .find { bikeStation -> bikeStation.id == stationId }
                 ?: BikeStation.buildUnknownStation()
-
-            //val isFavorite = isFavorite(stationId)
-
-
             uiState = uiState.copy(
                 bikeStation = bikeStation,
                 isFavorite = isFavorite(bikeStation.id),
@@ -108,10 +104,6 @@ class BikeStationViewModel @Inject constructor(
                 )
             }
         }
-    }
-
-    fun initModel(bikeStation: BikeStation): BikeStationViewModel {
-        return this
     }
 
     override fun newState(state: State) {

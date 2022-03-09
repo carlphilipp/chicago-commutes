@@ -229,11 +229,6 @@ class TrainStationViewModel @Inject constructor(
         }
     }
 
-    fun initModel(stationId: String): TrainStationViewModel {
-
-        return this
-    }
-
     override fun newState(state: State) {
         Timber.d("new state ${state.trainStationStatus}")
         when (state.trainStationStatus) {
