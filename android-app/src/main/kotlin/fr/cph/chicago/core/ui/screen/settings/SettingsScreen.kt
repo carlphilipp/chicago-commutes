@@ -72,7 +72,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                 title = "Developer options",
                 description = "Beep boop",
                 onClick = {
-
+                    navController.navigate(screen = Screen.DeveloperOptions)
                 }
             )
         }

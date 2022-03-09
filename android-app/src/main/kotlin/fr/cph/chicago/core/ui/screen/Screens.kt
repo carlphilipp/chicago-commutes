@@ -2,6 +2,7 @@ package fr.cph.chicago.core.ui.screen
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.DeveloperMode
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsBus
 import androidx.compose.material.icons.filled.Favorite
@@ -181,6 +182,23 @@ sealed class Screen(
         }
     )
 
+    object DeveloperOptions : Screen(
+        title = "Developer options",
+        route = "developer",
+        icon = Icons.Filled.DeveloperMode,
+        showOnDrawer = false,
+        topBar = ScreenTopBar.MediumTopBarDrawer,
+        component = { backStackEntry ->
+            val viewModel: DeveloperOptionsViewModel = viewModel(
+                factory = DeveloperOptionsViewModel.provideFactory(
+                    owner = backStackEntry,
+                    defaultArgs = backStackEntry.arguments
+                )
+            )
+            DeveloperOptionsScreen(viewModel = viewModel)
+        }
+    )
+
     object Nearby : Screen(
         title = App.instance.getString(R.string.menu_nearby),
         route = "nearby",
@@ -317,6 +335,7 @@ val screens = listOf(
     Screen.Bus,
     Screen.BusBound,
     Screen.BusDetails,
+    Screen.DeveloperOptions,
     Screen.Divvy,
     Screen.DivvyDetails,
     Screen.Nearby,
