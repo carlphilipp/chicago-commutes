@@ -37,7 +37,6 @@ class MainActivity : CustomComponentActivity() {
                 val navigationUiState = rememberNavigationState()
                 Navigation(
                     viewModel = NavigationViewModel().initModel(navigationUiState),
-                    settingsViewModel = settingsViewModel,
                 )
 
                 DisposableEffect(key1 = viewModel) {

@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
@@ -50,13 +49,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Map
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
@@ -95,7 +92,6 @@ import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.favorite_yellow
-import fr.cph.chicago.core.theme.green_line
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.functions.Consumer
@@ -377,12 +373,13 @@ fun ShowSnackBar(
 @Composable
 fun StationDetailsImageView(
     modifier: Modifier = Modifier,
-    activity: ComponentActivity,
     isLoading: Boolean,
     showGoogleStreetImage: Boolean,
     googleStreetMapImage: Drawable,
     scrollState: ScrollState? = null,
 ) {
+    val navController = LocalNavController.current
+
     Surface(modifier = modifier.zIndex(1f)) {
         AnimatedVisibility(
             modifier = Modifier.height(200.dp),
@@ -439,7 +436,7 @@ fun StationDetailsImageView(
 
         FilledTonalButton(
             modifier = Modifier.padding(20.dp),
-            onClick = { activity.finish() },
+            onClick = { navController.navigateBack() },
         ) {
             Icon(
                 imageVector = Icons.Filled.ArrowBack,

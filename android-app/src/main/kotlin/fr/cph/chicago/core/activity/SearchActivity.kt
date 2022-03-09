@@ -1,7 +1,6 @@
 package fr.cph.chicago.core.activity
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,24 +33,23 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import fr.cph.chicago.core.ui.SearchTopBar
-import fr.cph.chicago.core.ui.common.ChipMaterial3
-import fr.cph.chicago.core.ui.common.ColoredBox
-import fr.cph.chicago.core.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.TrainStation
+import fr.cph.chicago.core.theme.ChicagoCommutesTheme
+import fr.cph.chicago.core.ui.SearchTopBar
 import fr.cph.chicago.core.ui.common.BusRouteDialog
+import fr.cph.chicago.core.ui.common.ChipMaterial3
+import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.startBikeStationActivity
-import fr.cph.chicago.util.startTrainStationActivity
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 class SearchActivity : CustomComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -121,7 +119,10 @@ private fun SearchView(viewModel: SearchViewModel) {
                                 imageVector = Icons.Filled.Train,
                                 title = trainStation.name,
                                 colors = trainStation.lines.map { line -> line.color },
-                                onClick = { startTrainStationActivity(context, trainStation) }
+                                onClick = {
+                                    // FIXME show train station details. Only possible when search activity is no more
+                                /*startTrainStationActivity(context, trainStation)*/
+                                }
                             )
                         }
                     }

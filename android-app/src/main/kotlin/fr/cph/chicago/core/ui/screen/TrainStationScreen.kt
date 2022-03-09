@@ -1,11 +1,9 @@
-package fr.cph.chicago.core.activity
+package fr.cph.chicago.core.ui.screen
 
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,13 +36,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.AbstractSavedStateViewModelFactory
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.savedstate.SavedStateRegistryOwner
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import fr.cph.chicago.R
+import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.model.Stop
+import fr.cph.chicago.core.model.TrainEta
+import fr.cph.chicago.core.model.TrainStation
+import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.ui.common.AnimatedText
 import fr.cph.chicago.core.ui.common.ShimmerAnimation
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
@@ -53,13 +58,6 @@ import fr.cph.chicago.core.ui.common.StationDetailsImageView
 import fr.cph.chicago.core.ui.common.StationDetailsTitleIconView
 import fr.cph.chicago.core.ui.common.loadGoogleStreet
 import fr.cph.chicago.core.ui.common.openExternalMapApplication
-import fr.cph.chicago.core.theme.ChicagoCommutesTheme
-import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.core.model.Stop
-import fr.cph.chicago.core.model.TrainEta
-import fr.cph.chicago.core.model.TrainStation
-import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.redux.AddTrainFavoriteAction
 import fr.cph.chicago.redux.RemoveTrainFavoriteAction
 import fr.cph.chicago.redux.ResetTrainStationStatusAction
@@ -71,23 +69,123 @@ import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
-class TrainStationActivity : CustomComponentActivity() {
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TrainStationScreen(
+    modifier: Modifier = Modifier,
+    viewModel: TrainStationViewModel,
+) {
+    val uiState = viewModel.uiState
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    SwipeRefresh(
+        modifier = modifier,
+        state = rememberSwipeRefreshState(isRefreshing = uiState.isRefreshing),
+        onRefresh = { viewModel.refresh() },
+    ) {
+        Scaffold(
+            content = {
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(uiState.scrollState)
+                        .fillMaxWidth()
+                ) {
+                    StationDetailsImageView(
+                        showGoogleStreetImage = uiState.showGoogleStreetImage,
+                        googleStreetMapImage = uiState.googleStreetMapImage,
+                        isLoading = uiState.isGoogleStreetImageLoading,
+                        scrollState = uiState.scrollState
+                    )
+                    StationDetailsTitleIconView(
+                        title = uiState.trainStation.name,
+                        isFavorite = uiState.isFavorite,
+                        onFavoriteClick = { viewModel.switchFavorite() },
+                        onMapClick = { viewModel.openMap(context = context, scope = scope) }
+                    )
+                    uiState.trainStation.stopByLines.keys.forEach { line ->
+                        val stops = uiState.trainStation.stopByLines[line]!!
+                        Column(
+                            modifier = Modifier
+                                .padding(horizontal = 20.dp)
+                                .fillMaxWidth()
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                Surface(
+                                    color = line.color,
+                                    shadowElevation = 1.dp,
+                                    shape = RoundedCornerShape(15.0.dp),
+                                ) {
+                                    Text(
+                                        text = line.toStringWithLine(),
+                                        color = Color.White,
+                                        style = MaterialTheme.typography.titleSmall,
+                                        modifier = Modifier.padding(horizontal = 15.dp, vertical = 5.dp),
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.padding(bottom = 3.dp))
+                            stops.sorted().forEachIndexed { index, stop ->
+                                TrainStop(
+                                    viewModel = TrainStopViewModel(
+                                        stationId = uiState.trainStation.id,
+                                        line = line,
+                                        stop = stop,
+                                        trainEtas = uiState.trainEtasState
+                                            .filter { trainEta -> trainEta.trainStation.id == uiState.trainStation.id }
+                                            .filter { trainEta -> trainEta.routeName == line },
+                                        showStationName = uiState.showTrainArrivalData,
+                                        showDivider = index != stops.size - 1
+                                    ).initModel()
+                                )
+                            }
+                        }
+                    }
+                }
+            })
+    }
 
-        val stationId = intent.extras?.getString(getString(R.string.bundle_train_stationId), "0") ?: ""
-        val viewModel = TrainStationViewModel().initModel(stationId)
-        store.dispatch(TrainStationAction(stationId))
-
-        setContent {
-            ChicagoCommutesTheme(settingsViewModel = settingsViewModel) {
-                TrainStationView(viewModel = viewModel)
+    if (uiState.applyFavorite) {
+        ShowFavoriteSnackBar(
+            scope = scope,
+            snackbarHostState = viewModel.uiState.snackbarHostState,
+            isFavorite = viewModel.uiState.isFavorite,
+            onComplete = {
+                viewModel.resetApplyFavorite()
             }
-        }
+        )
+    }
+
+    if (uiState.showErrorMessage) {
+        ShowErrorMessageSnackBar(
+            scope = scope,
+            snackbarHostState = viewModel.uiState.snackbarHostState,
+            showError = uiState.showErrorMessage,
+            onComplete = {
+                viewModel.resetShowErrorMessage()
+            }
+        )
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Bottom,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        SnackbarHost(hostState = uiState.snackbarHostState) { data -> Snackbar(snackbarData = data) }
+    }
+
+    DisposableEffect(key1 = viewModel) {
+        viewModel.onStart()
+        onDispose { viewModel.onStop() }
     }
 }
 
@@ -108,6 +206,7 @@ data class TrainStationUiState(
 
 @HiltViewModel
 class TrainStationViewModel @Inject constructor(
+    stationId: String,
     private val trainService: TrainService = TrainService,
     private val preferenceService: PreferenceService = PreferenceService,
 ) : ViewModel(), StoreSubscriber<State> {
@@ -115,16 +214,24 @@ class TrainStationViewModel @Inject constructor(
     var uiState by mutableStateOf(TrainStationUiState())
         private set
 
+    init {
+        Timber.i("Train Station init model")
+        viewModelScope.launch {
+            val trainStation = trainService.getStation(stationId)
+            val isFavorite = isFavorite(stationId)
+
+            uiState = TrainStationUiState(
+                trainStation = trainStation,
+                isFavorite = isFavorite,
+            )
+
+            store.dispatch(TrainStationAction(stationId))
+            loadGoogleStreetImage(trainStation.stops[0].position)
+        }
+    }
+
     fun initModel(stationId: String): TrainStationViewModel {
-        val trainStation = trainService.getStation(stationId)
-        val isFavorite = isFavorite(stationId)
 
-        uiState = uiState.copy(
-            trainStation = trainStation,
-            isFavorite = isFavorite,
-        )
-
-        loadGoogleStreetImage(trainStation.stops[0].position)
         return this
     }
 
@@ -235,123 +342,23 @@ class TrainStationViewModel @Inject constructor(
     fun onStop() {
         store.unsubscribe(this)
     }
-}
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TrainStationView(
-    modifier: Modifier = Modifier,
-    viewModel: TrainStationViewModel,
-) {
-    val uiState = viewModel.uiState
-    val scope = rememberCoroutineScope()
-    val activity = (LocalLifecycleOwner.current as ComponentActivity)
-    val context = LocalContext.current
-
-    SwipeRefresh(
-        modifier = modifier,
-        state = rememberSwipeRefreshState(isRefreshing = uiState.isRefreshing),
-        onRefresh = { viewModel.refresh() },
-    ) {
-        Scaffold(
-            content = {
-                Column(
-                    modifier = Modifier
-                        .verticalScroll(uiState.scrollState)
-                        .fillMaxWidth()
-                ) {
-                    StationDetailsImageView(
-                        activity = activity,
-                        showGoogleStreetImage = uiState.showGoogleStreetImage,
-                        googleStreetMapImage = uiState.googleStreetMapImage,
-                        isLoading = uiState.isGoogleStreetImageLoading,
-                        scrollState = uiState.scrollState
-                    )
-                    StationDetailsTitleIconView(
-                        title = uiState.trainStation.name,
-                        isFavorite = uiState.isFavorite,
-                        onFavoriteClick = { viewModel.switchFavorite() },
-                        onMapClick = { viewModel.openMap(context = context, scope = scope) }
-                    )
-                    uiState.trainStation.stopByLines.keys.forEach { line ->
-                        val stops = uiState.trainStation.stopByLines[line]!!
-                        Column(
-                            modifier = Modifier
-                                .padding(horizontal = 20.dp)
-                                .fillMaxWidth()
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
-                                modifier = Modifier.fillMaxWidth(),
-                            ) {
-                                Surface(
-                                    color = line.color,
-                                    shadowElevation = 1.dp,
-                                    shape = RoundedCornerShape(15.0.dp),
-                                ) {
-                                    Text(
-                                        text = line.toStringWithLine(),
-                                        color = Color.White,
-                                        style = MaterialTheme.typography.titleSmall,
-                                        modifier = Modifier.padding(horizontal = 15.dp, vertical = 5.dp),
-                                    )
-                                }
-                            }
-                            Spacer(modifier = Modifier.padding(bottom = 3.dp))
-                            stops.sorted().forEachIndexed { index, stop ->
-                                TrainStop(
-                                    viewModel = TrainStopViewModel(
-                                        stationId = uiState.trainStation.id,
-                                        line = line,
-                                        stop = stop,
-                                        trainEtas = uiState.trainEtasState
-                                            .filter { trainEta -> trainEta.trainStation.id == uiState.trainStation.id }
-                                            .filter { trainEta -> trainEta.routeName == line },
-                                        showStationName = uiState.showTrainArrivalData,
-                                        showDivider = index != stops.size - 1
-                                    ).initModel()
-                                )
-                            }
-                        }
-                    }
+    companion object {
+        fun provideFactory(
+            stationId: String,
+            owner: SavedStateRegistryOwner,
+            defaultArgs: Bundle? = null,
+        ): AbstractSavedStateViewModelFactory =
+            object : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(
+                    key: String,
+                    modelClass: Class<T>,
+                    handle: SavedStateHandle
+                ): T {
+                    return TrainStationViewModel(stationId) as T
                 }
-            })
-    }
-
-    if (uiState.applyFavorite) {
-        ShowFavoriteSnackBar(
-            scope = scope,
-            snackbarHostState = viewModel.uiState.snackbarHostState,
-            isFavorite = viewModel.uiState.isFavorite,
-            onComplete = {
-                viewModel.resetApplyFavorite()
             }
-        )
-    }
-
-    if (uiState.showErrorMessage) {
-        ShowErrorMessageSnackBar(
-            scope = scope,
-            snackbarHostState = viewModel.uiState.snackbarHostState,
-            showError = uiState.showErrorMessage,
-            onComplete = {
-                viewModel.resetShowErrorMessage()
-            }
-        )
-    }
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Bottom,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        SnackbarHost(hostState = uiState.snackbarHostState) { data -> Snackbar(snackbarData = data) }
-    }
-
-    DisposableEffect(key1 = viewModel) {
-        viewModel.onStart()
-        onDispose { viewModel.onStop() }
     }
 }
 

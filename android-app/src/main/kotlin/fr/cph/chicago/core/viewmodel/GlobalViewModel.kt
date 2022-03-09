@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.core.activity.MainUiState
 import fr.cph.chicago.core.ui.common.LocationViewModel
@@ -20,6 +21,7 @@ import fr.cph.chicago.core.model.Favorites
 import fr.cph.chicago.core.model.LastUpdate
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainStation
+import fr.cph.chicago.core.ui.screen.TrainStationViewModel
 import fr.cph.chicago.redux.AlertAction
 import fr.cph.chicago.redux.BikeStationAction
 import fr.cph.chicago.redux.BusRoutesAction

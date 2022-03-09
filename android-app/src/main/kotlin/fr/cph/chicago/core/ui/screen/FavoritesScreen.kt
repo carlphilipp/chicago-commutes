@@ -60,7 +60,6 @@ import fr.cph.chicago.util.startBikeStationActivity
 import fr.cph.chicago.util.startBusDetailActivity
 import fr.cph.chicago.util.startBusMapActivity
 import fr.cph.chicago.util.startTrainMapActivity
-import fr.cph.chicago.util.startTrainStationActivity
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -104,6 +103,7 @@ fun TrainFavoriteCard(
     favorites: Favorites,
 ) {
     val context = LocalContext.current
+    val navController = LocalNavController.current
     var showDialog by remember { mutableStateOf(false) }
 
     FavoriteCardWrapper(modifier = modifier) {
@@ -123,7 +123,10 @@ fun TrainFavoriteCard(
         }
 
         FooterCard(
-            detailsOnClick = { startTrainStationActivity(context, trainStation) },
+            detailsOnClick = {
+                //startTrainStationActivity(context, trainStation)
+                navController.navigate(Screen.TrainDetails, mapOf("stationId" to trainStation.id))
+            },
             mapOnClick = {
                 if (trainStation.lines.size == 1) {
                     val line = trainStation.lines.first()

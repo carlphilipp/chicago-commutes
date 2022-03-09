@@ -1,5 +1,6 @@
 package fr.cph.chicago.core.ui.screen
 
+import android.os.Bundle
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DirectionsBike
@@ -14,14 +15,18 @@ import androidx.compose.material.icons.filled.Train
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.hilt.work.WorkerFactoryModule_ProvideFactoryFactory.provideFactory
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.ui.screen.settings.ThemeChooserSettingsScreen
 import fr.cph.chicago.core.ui.screen.settings.DisplaySettingsScreen
 import fr.cph.chicago.core.ui.screen.settings.SettingsScreen
+import fr.cph.chicago.core.ui.screen.settings.ThemeChooserSettingsScreen
 import fr.cph.chicago.core.viewmodel.locationViewModel
 import fr.cph.chicago.core.viewmodel.mainViewModel
 import fr.cph.chicago.core.viewmodel.settingsViewModel
+import timber.log.Timber
 
 sealed class Screen(
     val title: String,
@@ -29,7 +34,7 @@ sealed class Screen(
     val icon: ImageVector,
     val showOnDrawer: Boolean = true,
     val topBar: ScreenTopBar,
-    val component: @Composable () -> Unit
+    val component: @Composable (NavBackStackEntry) -> Unit
 ) {
     object Favorites : Screen(
         title = App.instance.getString(R.string.menu_favorites),
@@ -44,7 +49,29 @@ sealed class Screen(
         route = "train",
         icon = Icons.Filled.Train,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { TrainScreen() }
+        component = {
+            Timber.i("Displaying train screen")
+            TrainScreen()
+        }
+    )
+
+    object TrainDetails : Screen(
+        title = "Train station details",
+        route = "train/{stationId}",
+        icon = Icons.Filled.Train,
+        showOnDrawer = false,
+        topBar = ScreenTopBar.None,
+        component = { backStackEntry ->
+            val stationId = backStackEntry.arguments?.getString("stationId", "0") ?: ""
+            val viewModel: TrainStationViewModel = viewModel(
+                factory = TrainStationViewModel.provideFactory(
+                    stationId = stationId,
+                    owner = backStackEntry,
+                    defaultArgs = backStackEntry.arguments
+                )
+            )
+            TrainStationScreen(viewModel = viewModel)
+        }
     )
 
     object Bus : Screen(
@@ -137,6 +164,12 @@ sealed class ScreenTopBar(
         icon = Icons.Filled.ArrowBack,
         action = TopBarIconAction.BACK,
     )
+
+    object None : ScreenTopBar(
+        type = TopBarType.NONE,
+        icon = Icons.Filled.ArrowBack,
+        action = TopBarIconAction.BACK,
+    )
 }
 
 enum class TopBarIconAction {
@@ -144,12 +177,13 @@ enum class TopBarIconAction {
 }
 
 enum class TopBarType {
-    LARGE, MEDIUM,
+    LARGE, MEDIUM, NONE,
 }
 
 val screens = listOf(
     Screen.Favorites,
     Screen.Train,
+    Screen.TrainDetails,
     Screen.Bus,
     Screen.Divvy,
     Screen.Nearby,

@@ -65,12 +65,6 @@
             android:configChanges="uiMode"
             android:exported="false"
             android:screenOrientation="portrait" />
-
-        <activity
-            android:name=".core.activity.TrainStationActivity"
-            android:configChanges="uiMode"
-            android:exported="false"
-            android:screenOrientation="portrait" />
         <activity
             android:name=".core.activity.TrainListStationActivity"
             android:configChanges="uiMode"

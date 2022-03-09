@@ -125,7 +125,7 @@ fun BusStationView(
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     item {
                         StationDetailsImageView(
-                            activity = activity,
+                            /*activity = activity,*/
                             showGoogleStreetImage = uiState.showGoogleStreetImage,
                             googleStreetMapImage = uiState.googleStreetMapImage,
                             isLoading = uiState.isGoogleStreetImageLoading,

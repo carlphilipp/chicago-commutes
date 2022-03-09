@@ -43,22 +43,22 @@ import fr.cph.chicago.core.ui.LargeTopBar
 import fr.cph.chicago.core.ui.MediumTopBar
 import fr.cph.chicago.core.ui.common.BackHandler
 import fr.cph.chicago.core.ui.screen.Screen
+import fr.cph.chicago.core.ui.screen.ScreenTopBar
 import fr.cph.chicago.core.ui.screen.TopBarIconAction
 import fr.cph.chicago.core.ui.screen.TopBarType
-import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
+import java.util.Stack
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.Stack
 
-val LocalNavController = compositionLocalOf<NavHostTopBarController> {
-    error("No NavHostTopBarController provided")
+val LocalNavController = compositionLocalOf<NavHostControllerWrapper> {
+    error("No NavHostControllerWrapper provided")
 }
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.animation.ExperimentalAnimationApi::class)
 @Composable
-fun Navigation(viewModel: NavigationViewModel, settingsViewModel: SettingsViewModel) {
+fun Navigation(viewModel: NavigationViewModel) {
     val uiState = viewModel.uiState
-    val navController = remember { NavHostTopBarController(viewModel) }
+    val navController = remember { NavHostControllerWrapper(viewModel) }
     val scope = rememberCoroutineScope()
 
     ModalNavigationDrawer(
@@ -78,19 +78,6 @@ fun Navigation(viewModel: NavigationViewModel, settingsViewModel: SettingsViewMo
             )
         },
         content = {
-            // FIXME: this whole thing should probably be refactored
-/*            val decayAnimationSpec = rememberSplineBasedDecay<Float>()
-
-            if (uiState.currentScreen == Screen.Settings || uiState.currentScreen == Screen.SettingsDisplay) {
-                settingsViewModel.setScrollBehavior(
-                    scrollBehavior = remember(decayAnimationSpec) { TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec) }
-                )
-            } else {
-                settingsViewModel.setScrollBehavior(
-                    scrollBehavior = remember { TopAppBarDefaults.enterAlwaysScrollBehavior() }
-                )
-            }*/
-
             // Add custom nav controller in local provider so it can be retrieve easily downstream
             CompositionLocalProvider(LocalNavController provides navController) {
                 val scrollBehavior = topBarBehavior(viewModel.uiState.currentScreen)
@@ -110,23 +97,26 @@ fun Navigation(viewModel: NavigationViewModel, settingsViewModel: SettingsViewMo
                         uiState.screens.forEach { screen ->
                             composable(
                                 route = screen.route,
+                                arguments = emptyList(),
                                 enterTransition = {
                                     when (initialState.destination.route) {
+                                        // TODO
                                         Screen.SettingsDisplay.route -> slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(3000))
                                         else -> EnterTransition.None
                                     }
                                 },
                                 exitTransition = {
                                     when (targetState.destination.route) {
+                                        // TODO
                                         Screen.SettingsDisplay.route -> slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(3000))
                                         else -> ExitTransition.None
                                     }
                                 },
-                            ) {
+                            ) { backStackEntry ->
                                 // Add custom backhandler to all composable so we can handle when someone push the back button
                                 BackHandler {
                                     uiState.currentScreen = screen
-                                    screen.component()
+                                    screen.component(backStackEntry)
                                 }
                             }
                         }
@@ -185,7 +175,7 @@ class NavigationViewModel : ViewModel() {
     }
 }
 
-class NavHostTopBarController(private val viewModel: NavigationViewModel) {
+class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
 
     private val previous: Stack<Screen> = Stack()
 
@@ -193,9 +183,10 @@ class NavHostTopBarController(private val viewModel: NavigationViewModel) {
         return viewModel.uiState.navController
     }
 
-    fun navigate(screen: Screen) {
+    fun navigate(screen: Screen, arguments: Map<String, String> = mapOf()) {
         Timber.d("Navigate to ${screen.title}");
-        viewModel.uiState.navController.navigate(screen.route) {
+        val route = buildRoute(route = screen.route, arguments = arguments)
+        viewModel.uiState.navController.navigate(route) {
             popUpTo(viewModel.uiState.navController.graph.startDestinationId)
             launchSingleTop = true
         }
@@ -217,13 +208,21 @@ class NavHostTopBarController(private val viewModel: NavigationViewModel) {
     }
 
     fun printStackState() {
-        Timber.d("Stack size: ${previous.size}");
+        Timber.d("Navigate Stack size: ${previous.size}");
         var str = "[ ";
         for (i in previous.size - 1 downTo 0) {
             str = str + previous[i].title + " <- "
         }
         str = str + " ]"
-        Timber.d("Stack: $str")
+        Timber.d("Navigate Stack: $str")
+    }
+
+    private fun buildRoute(route: String, arguments: Map<String, String>): String {
+        var routeWithArguments = route
+        arguments.forEach {
+            routeWithArguments = routeWithArguments.replace("{" + it.key + "}", it.value)
+        }
+        return routeWithArguments
     }
 }
 
@@ -244,56 +243,58 @@ private fun DisplayTopBar(
     viewModel: NavigationViewModel,
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
-    val navController = LocalNavController.current
-    val context = LocalContext.current
     val screen = viewModel.uiState.currentScreen
-    val scope = rememberCoroutineScope()
-    val openDrawer = { scope.launch { viewModel.uiState.drawerState.open() } }
-    val onClick: () -> Unit = {
-        if (screen.topBar.action == TopBarIconAction.BACK) {
-            navController.navigateBack()
-        } else {
-            openDrawer()
+    if (screen.topBar != ScreenTopBar.None) {
+        val navController = LocalNavController.current
+        val context = LocalContext.current
+        val scope = rememberCoroutineScope()
+        val openDrawer = { scope.launch { viewModel.uiState.drawerState.open() } }
+        val onClick: () -> Unit = {
+            if (screen.topBar.action == TopBarIconAction.BACK) {
+                navController.navigateBack()
+            } else {
+                openDrawer()
+            }
         }
-    }
 
-    if (screen.topBar.type == TopBarType.LARGE) {
-        LargeTopBar(
-            title = screen.title,
-            scrollBehavior = scrollBehavior,
-            navigationIcon = {
-                IconButton(onClick = onClick) {
-                    Icon(
-                        imageVector = screen.topBar.icon,
-                        contentDescription = null,
-                    )
-                }
-            },
-        )
-    } else {
-        MediumTopBar(
-            title = screen.title,
-            scrollBehavior = scrollBehavior,
-            navigationIcon = {
-                IconButton(onClick = { openDrawer() }) {
-                    Icon(
-                        imageVector = Icons.Filled.Menu,
-                        contentDescription = null
-                    )
-                }
-            },
-            actions = {
-                IconButton(onClick = {
-                    val intent = Intent(context, SearchActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    ContextCompat.startActivity(context, intent, null)
-                }) {
-                    Icon(
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = null
-                    )
-                }
-            },
-        )
+        if (screen.topBar.type == TopBarType.LARGE) {
+            LargeTopBar(
+                title = screen.title,
+                scrollBehavior = scrollBehavior,
+                navigationIcon = {
+                    IconButton(onClick = onClick) {
+                        Icon(
+                            imageVector = screen.topBar.icon,
+                            contentDescription = null,
+                        )
+                    }
+                },
+            )
+        } else {
+            MediumTopBar(
+                title = screen.title,
+                scrollBehavior = scrollBehavior,
+                navigationIcon = {
+                    IconButton(onClick = { openDrawer() }) {
+                        Icon(
+                            imageVector = Icons.Filled.Menu,
+                            contentDescription = null
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {
+                        val intent = Intent(context, SearchActivity::class.java)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        ContextCompat.startActivity(context, intent, null)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = null
+                        )
+                    }
+                },
+            )
+        }
     }
 }

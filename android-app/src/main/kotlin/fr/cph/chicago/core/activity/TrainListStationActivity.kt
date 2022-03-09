@@ -26,7 +26,6 @@ import fr.cph.chicago.core.ui.RefreshTopBar
 import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.service.TrainService
-import fr.cph.chicago.util.startTrainStationActivity
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
@@ -68,7 +67,10 @@ fun TrainLineStops(viewModel: TrainListStationViewModel) {
             ) {
                 items(viewModel.uiState.trainStations.size) { index ->
                     val station = viewModel.uiState.trainStations[index]
-                    TextButton(onClick = { startTrainStationActivity(context, station) }) {
+                    TextButton(onClick = {
+                        // FIXME: show train station details when train list station activity is not an actuvity anymore
+                       // startTrainStationActivity(context, station)
+                    }) {
                         Text(
                             text = station.name,
                             style = MaterialTheme.typography.bodyMedium,
