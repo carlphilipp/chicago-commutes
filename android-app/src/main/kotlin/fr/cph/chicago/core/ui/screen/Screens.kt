@@ -16,7 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.ui.screen.settings.DisplaySettingsView
+import fr.cph.chicago.core.ui.screen.settings.DisplaySettingsScreen
+import fr.cph.chicago.core.ui.screen.settings.SettingsScreen
 import fr.cph.chicago.core.viewmodel.locationViewModel
 import fr.cph.chicago.core.viewmodel.mainViewModel
 import fr.cph.chicago.core.viewmodel.settingsViewModel
@@ -102,7 +103,7 @@ sealed class Screen(
         icon = Icons.Filled.Settings,
         topBar = ScreenTopBar.LargeTopBarBack,
         showOnDrawer = false,
-        component = { DisplaySettingsView(viewModel = settingsViewModel) })
+        component = { DisplaySettingsScreen(viewModel = settingsViewModel) })
 }
 
 sealed class ScreenTopBar(

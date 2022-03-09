@@ -28,13 +28,11 @@ import androidx.compose.ui.unit.dp
 import fr.cph.chicago.core.activity.settings.ThemeColorChooserActivity
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.ui.common.SwitchMaterial3
-import fr.cph.chicago.core.ui.screen.SettingsViewModel
-import fr.cph.chicago.core.ui.screen.ThemeChangerDialog
 import fr.cph.chicago.util.startSettingsActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DisplaySettingsView(
+fun DisplaySettingsScreen(
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel
 ) {

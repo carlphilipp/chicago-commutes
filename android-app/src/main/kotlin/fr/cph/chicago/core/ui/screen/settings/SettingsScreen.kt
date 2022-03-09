@@ -1,4 +1,4 @@
-package fr.cph.chicago.core.ui.screen
+package fr.cph.chicago.core.ui.screen.settings
 
 import android.content.Context
 import android.content.Intent
@@ -43,6 +43,7 @@ import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.core.activity.BaseActivity
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.navigation.LocalNavController
+import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.redux.ResetStateAction
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.RealmConfig
@@ -87,128 +88,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                 }
             )
         }
-        item {
-            SettingsElementView(
-                imageVector = Icons.Outlined.Info,
-                title = "About2",
-                description = "Chicago commutes",
-                onClick = {
-
-                }
-            )
-        }
-        item {
-            SettingsElementView(
-                imageVector = Icons.Outlined.Info,
-                title = "About2",
-                description = "Chicago commutes",
-                onClick = {
-
-                }
-            )
-        }
-        item {
-            SettingsElementView(
-                imageVector = Icons.Outlined.Info,
-                title = "About3",
-                description = "Chicago commutes",
-                onClick = {
-
-                }
-            )
-        }
-        item {
-            SettingsElementView(
-                imageVector = Icons.Outlined.Info,
-                title = "About4",
-                description = "Chicago commutes",
-                onClick = {
-
-                }
-            )
-        }
-        item {
-            SettingsElementView(
-                imageVector = Icons.Outlined.Info,
-                title = "About5",
-                description = "Chicago commutes",
-                onClick = {
-
-                }
-            )
-        }
-        item {
-            SettingsElementView(
-                imageVector = Icons.Outlined.Info,
-                title = "About6",
-                description = "Chicago commutes",
-                onClick = {
-
-                }
-            )
-        }
-        item {
-            SettingsElementView(
-                imageVector = Icons.Outlined.Info,
-                title = "About7",
-                description = "Chicago commutes",
-                onClick = {
-
-                }
-            )
-        }
-        item {
-            SettingsElementView(
-                imageVector = Icons.Outlined.Info,
-                title = "About8",
-                description = "Chicago commutes",
-                onClick = {
-
-                }
-            )
-        }
-        item {
-            SettingsElementView(
-                imageVector = Icons.Outlined.Info,
-                title = "About9",
-                description = "Chicago commutes",
-                onClick = {
-
-                }
-            )
-        }
-        item {
-            SettingsElementView(
-                imageVector = Icons.Outlined.Info,
-                title = "About10",
-                description = "Chicago commutes",
-                onClick = {
-
-                }
-            )
-        }
 /*        item {
-            // Theme
-            Column(
-                modifier
-                    .fillMaxWidth()
-                    .clickable { viewModel.showThemeChangerDialog(true) }) {
-                Row(modifier = cellModifier) {
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = stringResource(id = R.string.preferences_data_theme_title),
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        Spacer(modifier = Modifier.height(5.dp))
-                        Text(
-                            text = uiState.theme.description,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
-                }
-                Divider(thickness = 1.dp)
-            }
-        }
         item {
             // Data cache
             Column(
@@ -477,7 +357,6 @@ data class SettingsState(
     val showThemeChangerDialog: Boolean = false,
     val showClearCacheDialog: Boolean = false,
     val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
-
     val themeColorAutomatic: Boolean = false,
     val dynamicColorEnabled: Boolean = false,
 )

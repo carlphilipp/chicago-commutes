@@ -54,10 +54,9 @@ import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.common.SwitchMaterial3
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 import fr.cph.chicago.core.ui.common.ThemeColorButton
-import fr.cph.chicago.core.ui.screen.SettingsViewModel
+import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.core.ui.screen.settings.DisplayElementSwitchView
 import fr.cph.chicago.core.viewmodel.settingsViewModel
-import timber.log.Timber
 
 class ThemeColorChooserActivity : CustomComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,7 +73,6 @@ class ThemeColorChooserActivity : CustomComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ThemeChooserView(viewModel: SettingsViewModel) {
-    Timber.i("Compose ThemeChooserView")
     val context = LocalContext.current as ComponentActivity
     val decayAnimationSpec = rememberSplineBasedDecay<Float>()
     val scrollBehavior = remember(decayAnimationSpec) {
@@ -292,26 +290,34 @@ fun ThemeChooserView(viewModel: SettingsViewModel) {
                         color = blue_line,
                         enabled = enable,
                         alpha = alpha,
-                        onClick = {}
+                        onClick = {
+                            Toast.makeText(context, "TODO. Not sure how to", Toast.LENGTH_SHORT).show()
+                        }
                     )
                     ThemeColorButton(
                         color = red_line,
                         enabled = enable,
                         alpha = alpha,
-                        onClick = {}
+                        onClick = {
+                            Toast.makeText(context, "TODO. Not sure how to", Toast.LENGTH_SHORT).show()
+                        }
                     )
                     ThemeColorButton(
                         color = yellow_line,
                         enabled = enable,
                         alpha = alpha,
-                        onClick = {}
+                        onClick = {
+                            Toast.makeText(context, "TODO. Not sure how to", Toast.LENGTH_SHORT).show()
+                        }
                     )
                     ThemeColorButton(
                         color = green_line,
                         enabled =
                         enable,
                         alpha = alpha,
-                        onClick = {}
+                        onClick = {
+                            Toast.makeText(context, "TODO. Not sure how to", Toast.LENGTH_SHORT).show()
+                        }
                     )
                 }
             }

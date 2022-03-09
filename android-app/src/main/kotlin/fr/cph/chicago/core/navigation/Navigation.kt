@@ -38,12 +38,12 @@ import fr.cph.chicago.core.ui.LargeTopBar
 import fr.cph.chicago.core.ui.MediumTopBar
 import fr.cph.chicago.core.ui.common.BackHandler
 import fr.cph.chicago.core.ui.screen.Screen
-import fr.cph.chicago.core.ui.screen.SettingsViewModel
 import fr.cph.chicago.core.ui.screen.TopBarIconAction
 import fr.cph.chicago.core.ui.screen.TopBarType
-import java.util.Stack
+import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.Stack
 
 val LocalNavController = compositionLocalOf<NavHostTopBarController> {
     error("No NavHostTopBarController provided")
@@ -74,7 +74,7 @@ fun Navigation(viewModel: NavigationViewModel, settingsViewModel: SettingsViewMo
         },
         content = {
             // FIXME: this whole thing should probably be refactored
-            val decayAnimationSpec = rememberSplineBasedDecay<Float>()
+/*            val decayAnimationSpec = rememberSplineBasedDecay<Float>()
 
             if (uiState.currentScreen == Screen.Settings || uiState.currentScreen == Screen.SettingsDisplay) {
                 settingsViewModel.setScrollBehavior(
@@ -84,10 +84,7 @@ fun Navigation(viewModel: NavigationViewModel, settingsViewModel: SettingsViewMo
                 settingsViewModel.setScrollBehavior(
                     scrollBehavior = remember { TopAppBarDefaults.enterAlwaysScrollBehavior() }
                 )
-            }
-
-            var showSearch by remember { mutableStateOf(true) }
-            showSearch = uiState.currentScreen == Screen.Favorites
+            }*/
 
             // Add custom nav controller in local provider so it can be retrieve easily downstream
             CompositionLocalProvider(LocalNavController provides navController) {
@@ -106,7 +103,7 @@ fun Navigation(viewModel: NavigationViewModel, settingsViewModel: SettingsViewMo
                     ) {
                         uiState.screens.forEach { screen ->
                             composable(screen.route) {
-                                // Add custom backhandler to all composable
+                                // Add custom backhandler to all composable so we can handle when someone push the back button
                                 BackHandler {
                                     uiState.currentScreen = screen
                                     screen.component()
@@ -228,7 +225,12 @@ private fun DisplayTopBar(
             openDrawer()
         }
     }
+
     if (screen.topBar.type == TopBarType.LARGE) {
+        val decayAnimationSpec = rememberSplineBasedDecay<Float>()
+        settingsViewModel.setScrollBehavior(scrollBehavior = remember(decayAnimationSpec) {
+            TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec)
+        })
         LargeTopBar(
             title = screen.title,
             scrollBehavior = settingsViewModel.uiState.scrollBehavior,
@@ -242,6 +244,7 @@ private fun DisplayTopBar(
             },
         )
     } else {
+        settingsViewModel.setScrollBehavior(scrollBehavior = remember { TopAppBarDefaults.enterAlwaysScrollBehavior() })
         MediumTopBar(
             title = screen.title,
             scrollBehavior = settingsViewModel.uiState.scrollBehavior,
@@ -249,7 +252,7 @@ private fun DisplayTopBar(
                 IconButton(onClick = { openDrawer() }) {
                     Icon(
                         imageVector = Icons.Filled.Menu,
-                        contentDescription = "Menu"
+                        contentDescription = null
                     )
                 }
             },
@@ -261,10 +264,9 @@ private fun DisplayTopBar(
                 }) {
                     Icon(
                         imageVector = Icons.Filled.Search,
-                        contentDescription = "Search"
+                        contentDescription = null
                     )
                 }
-
             },
         )
     }

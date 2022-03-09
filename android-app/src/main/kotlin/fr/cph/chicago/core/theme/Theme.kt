@@ -12,8 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import fr.cph.chicago.core.model.Theme
-import fr.cph.chicago.core.ui.screen.SettingsViewModel
-import timber.log.Timber
+import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 
 @Composable
 fun ChicagoCommutesTheme(

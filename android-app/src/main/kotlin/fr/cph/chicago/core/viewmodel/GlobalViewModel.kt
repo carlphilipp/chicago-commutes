@@ -13,7 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.core.activity.MainUiState
 import fr.cph.chicago.core.ui.common.LocationViewModel
 import fr.cph.chicago.core.ui.common.NearbyResult
-import fr.cph.chicago.core.ui.screen.SettingsViewModel
+import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Favorites
