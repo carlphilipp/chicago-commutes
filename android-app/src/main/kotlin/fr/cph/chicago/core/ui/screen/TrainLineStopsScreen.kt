@@ -1,4 +1,4 @@
-package fr.cph.chicago.core.activity
+package fr.cph.chicago.core.ui.screen
 
 import android.os.Bundle
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,7 +23,6 @@ import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.ui.common.ColoredBox
-import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.service.TrainService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
@@ -33,7 +32,7 @@ import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TrainLineStops(viewModel: TrainListStationViewModel) {
+fun TrainLineStopsScreen(viewModel: TrainListStationViewModel) {
 
     val navController = LocalNavController.current
 

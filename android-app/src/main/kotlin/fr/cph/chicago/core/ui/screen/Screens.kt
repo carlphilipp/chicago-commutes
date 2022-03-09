@@ -18,8 +18,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.activity.TrainLineStops
-import fr.cph.chicago.core.activity.TrainListStationViewModel
 import fr.cph.chicago.core.ui.screen.settings.DisplaySettingsScreen
 import fr.cph.chicago.core.ui.screen.settings.SettingsScreen
 import fr.cph.chicago.core.ui.screen.settings.ThemeChooserSettingsScreen
@@ -70,7 +68,7 @@ sealed class Screen(
                     defaultArgs = backStackEntry.arguments
                 )
             )
-            TrainLineStops(viewModel = viewModel)
+            TrainLineStopsScreen(viewModel = viewModel)
         }
     )
 
