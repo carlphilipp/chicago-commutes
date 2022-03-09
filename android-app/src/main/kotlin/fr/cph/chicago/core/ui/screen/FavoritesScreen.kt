@@ -57,7 +57,6 @@ import fr.cph.chicago.core.ui.common.TrainDetailDialog
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.startBikeStationActivity
-import fr.cph.chicago.util.startBusDetailActivity
 import fr.cph.chicago.util.startBusMapActivity
 import fr.cph.chicago.util.startTrainMapActivity
 import java.util.Calendar
@@ -124,7 +123,6 @@ fun TrainFavoriteCard(
 
         FooterCard(
             detailsOnClick = {
-                //startTrainStationActivity(context, trainStation)
                 navController.navigate(Screen.TrainDetails, mapOf("stationId" to trainStation.id))
             },
             mapOnClick = {
@@ -155,6 +153,7 @@ fun BusFavoriteCard(
     favorites: Favorites,
 ) {
     val context = LocalContext.current
+    val navController = LocalNavController.current
     var showDialog by remember { mutableStateOf(false) }
 
     FavoriteCardWrapper(modifier = modifier) {
@@ -190,7 +189,17 @@ fun BusFavoriteCard(
         FooterCard(
             detailsOnClick = {
                 if (busDetailsDTOs.size == 1) {
-                    startBusDetailActivity(context, busDetailsDTOs[0])
+                    navController.navigate(
+                        screen = Screen.BusDetails,
+                        arguments = mapOf(
+                            "busStopId" to busDetailsDTOs[0].stopId.toString(),
+                            "busStopName" to busDetailsDTOs[0].stopName,
+                            "busRouteId" to busDetailsDTOs[0].busRouteId,
+                            "busRouteName" to busDetailsDTOs[0].routeName,
+                            "bound" to busDetailsDTOs[0].bound,
+                            "boundTitle" to busDetailsDTOs[0].boundTitle,
+                        )
+                    )
                 } else {
                     showDialog = true
                 }

@@ -7,11 +7,9 @@ import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.BikeStationComposable
 import fr.cph.chicago.core.activity.BusMapActivity
-import fr.cph.chicago.core.activity.BusStationActivity
 import fr.cph.chicago.core.activity.TrainMapActivity
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusDirections
-import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
 
 // Trains
@@ -24,23 +22,6 @@ fun startTrainMapActivity(context: Context, trainLine: TrainLine) {
 }
 
 // Buses
-fun startBusDetailActivity(context: Context, busDetailsDTO: BusDetailsDTO) {
-    val intent = Intent(context, BusStationActivity::class.java)
-    val extras = with(Bundle()) {
-        putString(context.getString(R.string.bundle_bus_stop_id), busDetailsDTO.stopId.toString())
-        putString(context.getString(R.string.bundle_bus_route_id), busDetailsDTO.busRouteId)
-        putString(context.getString(R.string.bundle_bus_route_name), busDetailsDTO.routeName)
-        putString(context.getString(R.string.bundle_bus_bound), busDetailsDTO.bound)
-        putString(context.getString(R.string.bundle_bus_bound_title), busDetailsDTO.boundTitle)
-        putString(context.getString(R.string.bundle_bus_stop_name), busDetailsDTO.stopName)
-        this
-    }
-
-    intent.putExtras(extras)
-    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    startActivity(context, intent)
-}
-
 fun startBusMapActivity(context: Context, busDirections: BusDirections) {
     startBusMapActivity(
         context = context,

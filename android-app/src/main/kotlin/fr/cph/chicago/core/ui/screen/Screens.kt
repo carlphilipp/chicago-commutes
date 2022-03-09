@@ -1,6 +1,5 @@
 package fr.cph.chicago.core.ui.screen
 
-import android.os.Bundle
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DirectionsBike
@@ -15,7 +14,6 @@ import androidx.compose.material.icons.filled.Train
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.hilt.work.WorkerFactoryModule_ProvideFactoryFactory.provideFactory
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import fr.cph.chicago.R
@@ -57,7 +55,7 @@ sealed class Screen(
 
     object TrainDetails : Screen(
         title = "Train station details",
-        route = "train/{stationId}",
+        route = "train/details/{stationId}",
         icon = Icons.Filled.Train,
         showOnDrawer = false,
         topBar = ScreenTopBar.None,
@@ -80,6 +78,35 @@ sealed class Screen(
         icon = Icons.Filled.DirectionsBus,
         topBar = ScreenTopBar.MediumTopBarDrawer,
         component = { BusScreen(mainViewModel = mainViewModel) }
+    )
+
+    object BusDetails : Screen(
+        title = "Train station details",
+        route = "bus/details?busStopId={busStopId}&busStopName={busStopName}&busRouteId={busRouteId}&busRouteName={busRouteName}&bound={bound}&boundTitle={boundTitle}",
+        icon = Icons.Filled.DirectionsBus,
+        showOnDrawer = false,
+        topBar = ScreenTopBar.None,
+        component = { backStackEntry ->
+            val busStopId = backStackEntry.arguments?.getString("busStopId", "0") ?: ""
+            val busStopName = backStackEntry.arguments?.getString("busStopName", "0") ?: ""
+            val busRouteId = backStackEntry.arguments?.getString("busRouteId", "0") ?: ""
+            val busRouteName = backStackEntry.arguments?.getString("busRouteName", "0") ?: ""
+            val bound = backStackEntry.arguments?.getString("bound", "0") ?: ""
+            val boundTitle = backStackEntry.arguments?.getString("boundTitle", "0") ?: ""
+            val viewModel: BusStationViewModel = viewModel(
+                factory = BusStationViewModel.provideFactory(
+                    busStopId = busStopId,
+                    busStopName =busStopName,
+                    busRouteId = busRouteId,
+                    busRouteName = busRouteName,
+                    bound = bound,
+                    boundTitle = boundTitle,
+                    owner = backStackEntry,
+                    defaultArgs = backStackEntry.arguments
+                )
+            )
+            BusStationScreen(viewModel = viewModel)
+        }
     )
 
     object Divvy : Screen(
@@ -185,6 +212,7 @@ val screens = listOf(
     Screen.Train,
     Screen.TrainDetails,
     Screen.Bus,
+    Screen.BusDetails,
     Screen.Divvy,
     Screen.Nearby,
     Screen.Map,

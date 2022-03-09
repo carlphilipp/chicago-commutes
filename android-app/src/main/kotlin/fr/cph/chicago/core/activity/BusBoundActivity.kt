@@ -31,16 +31,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BusStop
-import fr.cph.chicago.core.model.dto.BusDetailsDTO
+import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.ui.RefreshTopBar
 import fr.cph.chicago.core.ui.common.AnimatedErrorView
 import fr.cph.chicago.core.ui.common.AnimatedPlaceHolderList
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
+import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.service.BusService
-import fr.cph.chicago.util.startBusDetailActivity
 import timber.log.Timber
 
 class BusBoundActivity : CustomComponentActivity() {
@@ -77,7 +77,7 @@ fun BusBoundView(
     viewModel: BusBoundUiViewModel,
 ) {
     val uiState = viewModel.uiState
-    val context = LocalContext.current
+    val navController = LocalNavController.current
     val scope = rememberCoroutineScope()
 
     Scaffold(
@@ -118,15 +118,16 @@ fun BusBoundView(
                                         .fillMaxWidth()
                                         .padding(horizontal = 20.dp),
                                     onClick = {
-                                        startBusDetailActivity(
-                                            context = context,
-                                            busDetailsDTO = BusDetailsDTO(
-                                                stopId = busStop.id.toInt(),
-                                                stopName = busStop.name,
-                                                bound = uiState.bound,
-                                                boundTitle = uiState.boundTitle,
-                                                busRouteId = uiState.busRouteId,
-                                                routeName = uiState.busRouteName,
+                                        // FIXME: that's not going to work if this is still an activity
+                                        navController.navigate(
+                                            screen = Screen.BusDetails,
+                                            arguments = mapOf(
+                                                "busStopId" to busStop.id,
+                                                "busStopName" to busStop.name,
+                                                "busRouteId" to uiState.busRouteId,
+                                                "busRouteName" to uiState.busRouteName,
+                                                "bound" to uiState.bound,
+                                                "boundTitle" to uiState.boundTitle,
                                             )
                                         )
                                     },

@@ -37,8 +37,9 @@ import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.core.navigation.LocalNavController
+import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.service.BusService
-import fr.cph.chicago.util.startBusDetailActivity
 import fr.cph.chicago.util.startBusMapActivity
 import fr.cph.chicago.util.startTrainMapActivity
 import timber.log.Timber
@@ -129,7 +130,7 @@ fun TrainDetailDialog(
 @Composable
 fun BusDetailDialog(show: Boolean, busDetailsDTOs: List<BusDetailsDTO>, hideDialog: () -> Unit) {
     if (show) {
-        val context = LocalContext.current
+        val navController = LocalNavController.current
         AlertDialog(
             modifier = Modifier.padding(horizontal = 50.dp),
             onDismissRequest = hideDialog,
@@ -155,7 +156,17 @@ fun BusDetailDialog(show: Boolean, busDetailsDTOs: List<BusDetailsDTO>, hideDial
                         OutlinedButton(
                             modifier = modifier,
                             onClick = {
-                                startBusDetailActivity(context, busDetailsDTO)
+                                navController.navigate(
+                                    screen = Screen.BusDetails,
+                                    arguments = mapOf(
+                                        "busStopId" to busDetailsDTO.stopId.toString(),
+                                        "busStopName" to busDetailsDTO.stopName,
+                                        "busRouteId" to busDetailsDTO.busRouteId,
+                                        "busRouteName" to busDetailsDTO.routeName,
+                                        "bound" to busDetailsDTO.bound,
+                                        "boundTitle" to busDetailsDTO.boundTitle,
+                                    )
+                                )
                                 hideDialog()
                             },
                         ) {
