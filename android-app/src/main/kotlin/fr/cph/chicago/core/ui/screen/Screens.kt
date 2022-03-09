@@ -201,6 +201,27 @@ sealed class Screen(
         topBar = ScreenTopBar.MediumTopBarDrawer,
         component = { AlertsScreen(mainViewModel = mainViewModel) })
 
+    object AlertDetail : Screen(
+        title = "Alert",
+        route = "alerts/{stationId}?title={title}",
+        icon = Icons.Filled.Train,
+        showOnDrawer = false,
+        topBar = ScreenTopBar.MediumTopBarDrawer,
+        component = { backStackEntry ->
+            val routeId = backStackEntry.arguments?.getString("routeId", "") ?: ""
+            val title = backStackEntry.arguments?.getString("title", "") ?: ""
+            val viewModel: AlertDetailsViewModel = viewModel(
+                factory = AlertDetailsViewModel.provideFactory(
+                    routeId = routeId,
+                    title = title,
+                    owner = backStackEntry,
+                    defaultArgs = backStackEntry.arguments
+                )
+            )
+            AlertDetailsScreen(viewModel = viewModel)
+        }
+    )
+
     object Rate : Screen(
         title = App.instance.getString(R.string.menu_rate),
         route = "rate",
@@ -283,6 +304,7 @@ val screens = listOf(
     Screen.Nearby,
     Screen.Map,
     Screen.Alerts,
+    Screen.AlertDetail,
     Screen.Rate,
     Screen.Settings,
     Screen.SettingsDisplay,
