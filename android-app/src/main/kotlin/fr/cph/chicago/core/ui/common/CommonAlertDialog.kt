@@ -1,7 +1,5 @@
 package fr.cph.chicago.core.ui.common
 
-import android.content.Intent
-import android.os.Bundle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,9 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import androidx.core.content.ContextCompat
 import fr.cph.chicago.R
-import fr.cph.chicago.core.activity.BusBoundActivity
 import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
@@ -205,6 +201,7 @@ fun BusRouteDialog(
         var foundBusDirections by remember { mutableStateOf(BusDirections("")) }
         var showDialogError by remember { mutableStateOf(false) }
         val context = LocalContext.current
+        val navController = LocalNavController.current
 
         busService.loadBusDirectionsSingle(busRoute.id)
             .subscribe(
@@ -262,15 +259,17 @@ fun BusRouteDialog(
                                         modifier = Modifier.fillMaxWidth(),
                                         onClick = {
                                             val lBusDirections = foundBusDirections.busDirections
-                                            val extras = Bundle()
-                                            val intent = Intent(context, BusBoundActivity::class.java)
-                                            extras.putString(context.getString(R.string.bundle_bus_route_id), busRoute.id)
-                                            extras.putString(context.getString(R.string.bundle_bus_route_name), busRoute.name)
-                                            extras.putString(context.getString(R.string.bundle_bus_bound), lBusDirections[index].text)
-                                            extras.putString(context.getString(R.string.bundle_bus_bound_title), lBusDirections[index].text)
-                                            intent.putExtras(extras)
-                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                            ContextCompat.startActivity(context, intent, null)
+
+                                            navController.navigate(
+                                                screen = Screen.BusBound,
+                                                arguments = mapOf(
+                                                    "busRouteId" to busRoute.id,
+                                                    "busRouteName" to busRoute.name,
+                                                    "bound" to lBusDirections[index].text,
+                                                    "boundTitle" to lBusDirections[index].text
+                                                ),
+                                                customTitle = "${busRoute.id} - ${lBusDirections[index].text}"
+                                            )
                                             hideDialog()
                                         },
                                     ) {

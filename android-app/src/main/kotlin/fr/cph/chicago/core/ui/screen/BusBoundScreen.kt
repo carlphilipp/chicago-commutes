@@ -1,7 +1,6 @@
-package fr.cph.chicago.core.activity
+package fr.cph.chicago.core.ui.screen
 
 import android.os.Bundle
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,54 +24,26 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.AbstractSavedStateViewModelFactory
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import fr.cph.chicago.R
+import androidx.savedstate.SavedStateRegistryOwner
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.navigation.LocalNavController
-import fr.cph.chicago.core.theme.ChicagoCommutesTheme
-import fr.cph.chicago.core.ui.RefreshTopBar
 import fr.cph.chicago.core.ui.common.AnimatedErrorView
 import fr.cph.chicago.core.ui.common.AnimatedPlaceHolderList
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
-import fr.cph.chicago.core.ui.screen.Screen
-import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.service.BusService
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
-
-class BusBoundActivity : CustomComponentActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: ""
-        val busRouteName = intent.getStringExtra(getString(R.string.bundle_bus_route_name)) ?: ""
-        val bound = intent.getStringExtra(getString(R.string.bundle_bus_bound)) ?: ""
-        val boundTitle = intent.getStringExtra(getString(R.string.bundle_bus_bound_title)) ?: ""
-
-        val viewModel = BusBoundUiViewModel(
-            busRouteId = busRouteId,
-            busRouteName = busRouteName,
-            bound = bound,
-            boundTitle = boundTitle,
-        )
-        viewModel.loadData()
-
-        setContent {
-            ChicagoCommutesTheme(settingsViewModel = settingsViewModel) {
-                BusBoundView(
-                    viewModel = viewModel,
-                )
-            }
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BusBoundView(
+fun BusBoundScreen(
     modifier: Modifier = Modifier,
     viewModel: BusBoundUiViewModel,
 ) {
@@ -82,7 +53,6 @@ fun BusBoundView(
 
     Scaffold(
         modifier = modifier,
-        topBar = { RefreshTopBar("${uiState.busRouteId} - ${uiState.boundTitle}") },
         snackbarHost = { SnackbarHost(hostState = uiState.snackbarHostState) { data -> Snackbar(snackbarData = data) } },
         content = {
             when {
@@ -154,10 +124,10 @@ fun BusBoundView(
 }
 
 data class BusBoundUiState(
-    val busRouteId: String,
-    val busRouteName: String,
-    val bound: String,
-    val boundTitle: String,
+    val busRouteId: String = "",
+    val busRouteName: String = "",
+    val bound: String = "",
+    val boundTitle: String = "",
 
     val busStops: List<BusStop> = listOf(),
 
@@ -177,15 +147,18 @@ class BusBoundUiViewModel(
     boundTitle: String,
     private val busService: BusService = BusService,
 ) : ViewModel() {
-    var uiState by mutableStateOf(
-        BusBoundUiState(
+    var uiState by mutableStateOf(BusBoundUiState())
+        private set
+
+    init {
+        uiState = BusBoundUiState(
             busRouteId = busRouteId,
             busRouteName = busRouteName,
             bound = bound,
             boundTitle = boundTitle,
         )
-    )
-        private set
+        loadData()
+    }
 
     fun refresh() {
         Timber.d("Start Refreshing")
@@ -202,6 +175,8 @@ class BusBoundUiViewModel(
 
     fun loadData() {
         busService.loadAllBusStopsForRouteBound(uiState.busRouteId, uiState.bound)
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { result ->
                     val searchBusStops = if (uiState.searchText.text != "") {
@@ -229,5 +204,31 @@ class BusBoundUiViewModel(
 
     fun resetShowError() {
         uiState = uiState.copy(showError = false)
+    }
+
+    companion object {
+        fun provideFactory(
+            busRouteId: String,
+            busRouteName: String,
+            bound: String,
+            boundTitle: String,
+            owner: SavedStateRegistryOwner,
+            defaultArgs: Bundle? = null,
+        ): AbstractSavedStateViewModelFactory =
+            object : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(
+                    key: String,
+                    modelClass: Class<T>,
+                    handle: SavedStateHandle
+                ): T {
+                    return BusBoundUiViewModel(
+                        busRouteId = busRouteId,
+                        busRouteName = busRouteName,
+                        bound = bound,
+                        boundTitle = boundTitle,
+                    ) as T
+                }
+            }
     }
 }

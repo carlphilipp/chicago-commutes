@@ -141,7 +141,7 @@ data class NavigationUiState constructor(
 @Composable
 fun rememberNavigationState(
     drawerState: DrawerState = rememberDrawerState(DrawerValue.Closed),
-    navController: NavHostController = rememberAnimatedNavController(),//rememberNavController(),
+    navController: NavHostController = rememberAnimatedNavController(),
     currentScreen: Screen = Screen.Favorites,
 ) = remember(drawerState, navController, currentScreen) {
     NavigationUiState(
@@ -179,7 +179,7 @@ class NavigationViewModel : ViewModel() {
 
 class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
 
-    private val previous: Stack<Pair<Screen, String>> = Stack()
+    private val previous: Stack<Triple<Screen, String, Map<String, String>>> = Stack()
 
     fun navController(): NavHostController {
         return viewModel.uiState.navController
@@ -194,7 +194,7 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
         }
         val title = if (customTitle != "") customTitle else screen.title
         viewModel.updateScreen(screen = screen, customTitle = title)
-        previous.push(Pair(screen, title))
+        previous.push(Triple(screen, title, arguments))
         printStackState()
     }
 
@@ -207,6 +207,7 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
             val screen = previous.pop()
             navigate(
                 screen = screen.first,
+                arguments = screen.third,
                 customTitle = screen.second
             )
         }

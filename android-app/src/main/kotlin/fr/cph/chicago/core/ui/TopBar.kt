@@ -76,7 +76,7 @@ fun TopBar(
 // TODO refactor and rename cause it does not make sense
 @Composable
 fun RefreshTopBar(title: String, showRefresh: Boolean = false, onRefresh: () -> Unit = {}) {
-    val activity = LocalLifecycleOwner.current as ComponentActivity
+    //val activity = LocalLifecycleOwner.current as ComponentActivity
     CenterAlignedTopAppBar(
         title = {
             Text(
@@ -88,7 +88,7 @@ fun RefreshTopBar(title: String, showRefresh: Boolean = false, onRefresh: () -> 
             )
         },
         navigationIcon = {
-            IconButton(onClick = { activity.finish() }) {
+            IconButton(onClick = { /*activity.finish()*/ }) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "Back"

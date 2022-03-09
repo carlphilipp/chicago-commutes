@@ -67,12 +67,6 @@
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".core.activity.BusBoundActivity"
-            android:configChanges="uiMode"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-
-        <activity
             android:name=".core.activity.DeveloperOptionsActivity"
             android:configChanges="uiMode"
             android:exported="false"

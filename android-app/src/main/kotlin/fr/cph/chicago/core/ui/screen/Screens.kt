@@ -128,6 +128,31 @@ sealed class Screen(
         }
     )
 
+    object BusBound : Screen(
+        title = "Bus bound",
+        route = "bus/bound?busRouteId={busRouteId}&busRouteName={busRouteName}&bound={bound}&boundTitle={boundTitle}",
+        icon = Icons.Filled.DirectionsBus,
+        showOnDrawer = false,
+        topBar = ScreenTopBar.MediumTopBarDrawer,
+        component = { backStackEntry ->
+            val busRouteId = backStackEntry.arguments?.getString("busRouteId", "0") ?: ""
+            val busRouteName = backStackEntry.arguments?.getString("busRouteName", "0") ?: ""
+            val bound = backStackEntry.arguments?.getString("bound", "0") ?: ""
+            val boundTitle = backStackEntry.arguments?.getString("boundTitle", "0") ?: ""
+            val viewModel: BusBoundUiViewModel = viewModel(
+                factory = BusBoundUiViewModel.provideFactory(
+                    busRouteId = busRouteId,
+                    busRouteName = busRouteName,
+                    bound = bound,
+                    boundTitle = boundTitle,
+                    owner = backStackEntry,
+                    defaultArgs = backStackEntry.arguments
+                )
+            )
+            BusBoundScreen(viewModel = viewModel)
+        }
+    )
+
     object Divvy : Screen(
         title = App.instance.getString(R.string.menu_divvy),
         route = "divvy",
@@ -251,6 +276,7 @@ val screens = listOf(
     Screen.TrainList,
     Screen.TrainDetails,
     Screen.Bus,
+    Screen.BusBound,
     Screen.BusDetails,
     Screen.Divvy,
     Screen.DivvyDetails,
