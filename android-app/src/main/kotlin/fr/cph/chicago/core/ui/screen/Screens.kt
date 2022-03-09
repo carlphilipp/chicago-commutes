@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.NearMe
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.StarRate
 import androidx.compose.material.icons.filled.Train
@@ -251,6 +252,23 @@ sealed class Screen(
         topBar = ScreenTopBar.LargeTopBarBack,
         showOnDrawer = false,
         component = { ThemeChooserSettingsScreen(viewModel = settingsViewModel) })
+
+    object Search : Screen(
+        title = "Search",
+        route = "search",
+        icon = Icons.Filled.Search,
+        showOnDrawer = false,
+        topBar = ScreenTopBar.MediumTopBarDrawer,
+        component = { backStackEntry ->
+            val viewModel: SearchViewModel = viewModel(
+                factory = SearchViewModel.provideFactory(
+                    owner = backStackEntry,
+                    defaultArgs = backStackEntry.arguments
+                )
+            )
+            SearchViewScreen(viewModel = viewModel)
+        }
+    )
 }
 
 sealed class ScreenTopBar(
@@ -309,4 +327,5 @@ val screens = listOf(
     Screen.Settings,
     Screen.SettingsDisplay,
     Screen.SettingsThemeColorChooser,
+    Screen.Search,
 )

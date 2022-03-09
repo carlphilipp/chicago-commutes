@@ -30,14 +30,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.ui.Drawer
 import fr.cph.chicago.core.ui.LargeTopBar
 import fr.cph.chicago.core.ui.MediumTopBar
@@ -251,9 +249,8 @@ private fun DisplayTopBar(
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
     val screen = viewModel.uiState.currentScreen
+    val navController = LocalNavController.current
     if (screen.topBar != ScreenTopBar.None) {
-        val navController = LocalNavController.current
-        val context = LocalContext.current
         val scope = rememberCoroutineScope()
         val openDrawer = { scope.launch { viewModel.uiState.drawerState.open() } }
         val onClick: () -> Unit = {
@@ -291,9 +288,7 @@ private fun DisplayTopBar(
                 },
                 actions = {
                     IconButton(onClick = {
-                        val intent = Intent(context, SearchActivity::class.java)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        ContextCompat.startActivity(context, intent, null)
+                        navController.navigate(Screen.Search)
                     }) {
                         Icon(
                             imageVector = Icons.Filled.Search,

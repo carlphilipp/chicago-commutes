@@ -110,7 +110,6 @@ fun RefreshTopBar(title: String, showRefresh: Boolean = false, onRefresh: () -> 
 
 @Composable
 fun SearchTopBar(searchText: TextFieldValue, onValueChange: (TextFieldValue) -> Unit) {
-    val activity = LocalLifecycleOwner.current as ComponentActivity
     CenterAlignedTopAppBar(
         title = {
             TextFieldMaterial3(
@@ -119,7 +118,7 @@ fun SearchTopBar(searchText: TextFieldValue, onValueChange: (TextFieldValue) -> 
             )
         },
         navigationIcon = {
-            IconButton(onClick = { activity.finish() }) {
+            IconButton(onClick = { /*activity.finish()*/ }) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "Back"
