@@ -244,7 +244,9 @@ private fun DisplayTopBar(
             },
         )
     } else {
-        settingsViewModel.setScrollBehavior(scrollBehavior = remember { TopAppBarDefaults.enterAlwaysScrollBehavior() })
+        settingsViewModel.setScrollBehavior(scrollBehavior = remember {
+            TopAppBarDefaults.pinnedScrollBehavior()
+        })
         MediumTopBar(
             title = screen.title,
             scrollBehavior = settingsViewModel.uiState.scrollBehavior,
