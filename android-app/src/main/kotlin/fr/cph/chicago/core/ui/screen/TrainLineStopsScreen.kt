@@ -100,7 +100,6 @@ class TrainListStationViewModel(
                     Timber.e(it, "Could not load stations for line ${trainLine.toTextString()}")
                 }
             )
-
     }
 
     companion object {

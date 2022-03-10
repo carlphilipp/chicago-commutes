@@ -32,11 +32,12 @@ import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 import fr.cph.chicago.core.viewmodel.MainViewModel
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DivvyScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
-
+    Timber.d("Compose DivvyScreen")
     val navController = LocalNavController.current
     var searchBikeStations by remember { mutableStateOf(listOf<BikeStation>()) }
     searchBikeStations = mainViewModel.uiState.bikeStations

@@ -26,9 +26,10 @@ import fr.cph.chicago.core.ui.screen.settings.ThemeChooserSettingsScreen
 import fr.cph.chicago.core.viewmodel.locationViewModel
 import fr.cph.chicago.core.viewmodel.mainViewModel
 import fr.cph.chicago.core.viewmodel.settingsViewModel
-import timber.log.Timber
+import kotlin.random.Random
 
 sealed class Screen(
+    val id: Int = Random.nextInt(),
     val title: String,
     val route: String,
     val icon: ImageVector,
@@ -42,7 +43,6 @@ sealed class Screen(
         icon = Icons.Filled.Favorite,
         topBar = ScreenTopBar.MediumTopBarDrawer,
         component = {
-            Timber.i("FavoritesScreen composable")
             FavoritesScreen(mainViewModel = mainViewModel)
         }
     )
@@ -53,7 +53,6 @@ sealed class Screen(
         icon = Icons.Filled.Train,
         topBar = ScreenTopBar.MediumTopBarDrawer,
         component = {
-            Timber.i("Displaying train screen")
             TrainScreen()
         }
     )
@@ -73,7 +72,6 @@ sealed class Screen(
                     defaultArgs = backStackEntry.arguments
                 )
             )
-            Timber.i("Train station list")
             TrainLineStopsScreen(viewModel = viewModel)
         }
     )
@@ -93,7 +91,6 @@ sealed class Screen(
                     defaultArgs = backStackEntry.arguments
                 )
             )
-            Timber.i("TrainDetails compose")
             TrainStationScreen(viewModel = viewModel)
         }
     )
@@ -104,7 +101,6 @@ sealed class Screen(
         icon = Icons.Filled.DirectionsBus,
         topBar = ScreenTopBar.MediumTopBarDrawer,
         component = {
-            Timber.i("Bus screen compose")
             BusScreen(mainViewModel = mainViewModel)
         }
     )
@@ -134,7 +130,6 @@ sealed class Screen(
                     defaultArgs = backStackEntry.arguments
                 )
             )
-            Timber.i("BusDetails compose")
             BusStationScreen(viewModel = viewModel)
         }
     )
@@ -160,7 +155,6 @@ sealed class Screen(
                     defaultArgs = backStackEntry.arguments
                 )
             )
-            Timber.i("BusBound compose")
             BusBoundScreen(viewModel = viewModel)
         }
     )
@@ -171,7 +165,6 @@ sealed class Screen(
         icon = Icons.Filled.DirectionsBike,
         topBar = ScreenTopBar.MediumTopBarDrawer,
         component = {
-            Timber.i("Divvy compose")
             DivvyScreen(mainViewModel = mainViewModel)
         }
     )
@@ -191,7 +184,6 @@ sealed class Screen(
                     defaultArgs = backStackEntry.arguments
                 )
             )
-            Timber.i("DivvyDetails compose")
             BikeStationScreen(viewModel = viewModel)
         }
     )
@@ -368,3 +360,7 @@ val screens = listOf(
     Screen.SettingsThemeColorChooser,
     Screen.Search,
 )
+
+val drawerScreens by lazy {
+    screens.filter { screen -> screen.showOnDrawer }
+}

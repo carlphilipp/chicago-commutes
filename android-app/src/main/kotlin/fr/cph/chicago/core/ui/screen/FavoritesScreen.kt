@@ -59,6 +59,7 @@ import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.startBusMapActivity
 import fr.cph.chicago.util.startTrainMapActivity
 import java.util.Calendar
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,6 +67,7 @@ fun FavoritesScreen(
     mainViewModel: MainViewModel,
     favorites: Favorites = Favorites,
 ) {
+    Timber.d("Compose FavoritesScreen")
     val lastUpdate: LastUpdate = favorites.time.value
 
     SwipeRefresh(

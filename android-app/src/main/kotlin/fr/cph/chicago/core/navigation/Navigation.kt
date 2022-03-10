@@ -32,9 +32,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.ui.Drawer
 import fr.cph.chicago.core.ui.LargeTopBar
@@ -55,7 +55,7 @@ val LocalNavController = compositionLocalOf<NavHostControllerWrapper> {
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.animation.ExperimentalAnimationApi::class)
 @Composable
 fun Navigation(viewModel: NavigationViewModel) {
-    Timber.i("Navigation composable")
+    Timber.d("Compose Navigation")
     val uiState = viewModel.uiState
     val navController = remember { NavHostControllerWrapper(viewModel) }
     val scope = rememberCoroutineScope()
@@ -70,15 +70,14 @@ fun Navigation(viewModel: NavigationViewModel) {
                     if (screen != Screen.Rate) {
                         scope.launch {
                             uiState.drawerState.close()
-                            navController.navigate(screen)
                         }
                     }
-
+                    navController.navigate(screen)
                 }
             )
         },
         content = {
-            Timber.i("Navigation composable content")
+            Timber.d("Compose Navigation content")
             // Add custom nav controller in local provider so it can be retrieve easily downstream
             CompositionLocalProvider(LocalNavController provides navController) {
                 val scrollBehavior = topBarBehavior(viewModel.uiState.currentScreen)
@@ -91,37 +90,38 @@ fun Navigation(viewModel: NavigationViewModel) {
                         )
                     }
                 ) {
-                    AnimatedNavHost(
+                    NavHost(
                         navController = navController.navController(),
                         startDestination = Screen.Favorites.route
                     ) {
                         uiState.screens.forEach { screen ->
+                            Timber.d("Compose for each screen -> ${screen.title}")
                             composable(
                                 route = screen.route,
                                 arguments = emptyList(),
-                                enterTransition = {
-                                    //when (targetState.destination.route) {
-                                        //Screen.Favorites.route -> fadeIn(animationSpec = tween(200))
-                                        //Screen.SettingsDisplay.route -> slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(3000))
-                                        //else -> fadeIn(animationSpec = tween(1)/*, initialOffsetY = { it / 5 }*/,
-                                        //)
-                                    //}
-                                    EnterTransition.None
-                                },
-                                exitTransition = {
-                                    //when (targetState.destination.route) {
-                                        // TODO
-                                        //Screen.SettingsDisplay.route -> slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(3000))
-                                        //else -> fadeOut(animationSpec = tween(1))
-                                    //}
-                                    ExitTransition.None
-                                },
-                                popEnterTransition = {EnterTransition.None},
-                                popExitTransition = { ExitTransition.None},
+//                                enterTransition = {
+//                                    //when (targetState.destination.route) {
+//                                        //Screen.Favorites.route -> fadeIn(animationSpec = tween(200))
+//                                        //Screen.SettingsDisplay.route -> slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(3000))
+//                                        //else -> fadeIn(animationSpec = tween(1)/*, initialOffsetY = { it / 5 }*/,
+//                                        //)
+//                                    //}
+//                                    EnterTransition.None
+//                                },
+//                                exitTransition = {
+//                                    //when (targetState.destination.route) {
+//                                        // TODO
+//                                        //Screen.SettingsDisplay.route -> slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(3000))
+//                                        //else -> fadeOut(animationSpec = tween(1))
+//                                    //}
+//                                    ExitTransition.None
+//                                },
+//                                popEnterTransition = {EnterTransition.None},
+//                                popExitTransition = { ExitTransition.None},
                             ) { backStackEntry ->
                                 // Add custom backhandler to all composable so we can handle when someone push the back button
                                 BackHandler {
-                                    Timber.i("NavHost component() $screen")
+                                    Timber.d("Compose render -> ${screen.title}")
                                     uiState.currentScreen = screen
                                     screen.component(backStackEntry)
                                 }
@@ -148,7 +148,7 @@ data class NavigationUiState constructor(
 @Composable
 fun rememberNavigationState(
     drawerState: DrawerState = rememberDrawerState(DrawerValue.Closed),
-    navController: NavHostController = rememberAnimatedNavController(),
+    navController: NavHostController = rememberNavController(),
     currentScreen: Screen = Screen.Favorites,
 ) = remember(drawerState, navController, currentScreen) {
     NavigationUiState(
