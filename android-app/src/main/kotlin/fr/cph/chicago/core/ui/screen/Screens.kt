@@ -41,7 +41,10 @@ sealed class Screen(
         route = "fav",
         icon = Icons.Filled.Favorite,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { FavoritesScreen(mainViewModel = mainViewModel) }
+        component = {
+            Timber.i("FavoritesScreen composable")
+            FavoritesScreen(mainViewModel = mainViewModel)
+        }
     )
 
     object Train : Screen(
@@ -70,6 +73,7 @@ sealed class Screen(
                     defaultArgs = backStackEntry.arguments
                 )
             )
+            Timber.i("Train station list")
             TrainLineStopsScreen(viewModel = viewModel)
         }
     )
@@ -89,6 +93,7 @@ sealed class Screen(
                     defaultArgs = backStackEntry.arguments
                 )
             )
+            Timber.i("TrainDetails compose")
             TrainStationScreen(viewModel = viewModel)
         }
     )
@@ -98,7 +103,10 @@ sealed class Screen(
         route = "bus",
         icon = Icons.Filled.DirectionsBus,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { BusScreen(mainViewModel = mainViewModel) }
+        component = {
+            Timber.i("Bus screen compose")
+            BusScreen(mainViewModel = mainViewModel)
+        }
     )
 
     object BusDetails : Screen(
@@ -126,6 +134,7 @@ sealed class Screen(
                     defaultArgs = backStackEntry.arguments
                 )
             )
+            Timber.i("BusDetails compose")
             BusStationScreen(viewModel = viewModel)
         }
     )
@@ -151,6 +160,7 @@ sealed class Screen(
                     defaultArgs = backStackEntry.arguments
                 )
             )
+            Timber.i("BusBound compose")
             BusBoundScreen(viewModel = viewModel)
         }
     )
@@ -160,7 +170,10 @@ sealed class Screen(
         route = "divvy",
         icon = Icons.Filled.DirectionsBike,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { DivvyScreen(mainViewModel = mainViewModel) }
+        component = {
+            Timber.i("Divvy compose")
+            DivvyScreen(mainViewModel = mainViewModel)
+        }
     )
 
     object DivvyDetails : Screen(
@@ -178,6 +191,7 @@ sealed class Screen(
                     defaultArgs = backStackEntry.arguments
                 )
             )
+            Timber.i("DivvyDetails compose")
             BikeStationScreen(viewModel = viewModel)
         }
     )

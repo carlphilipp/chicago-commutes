@@ -23,12 +23,15 @@ import fr.cph.chicago.core.viewmodel.mainViewModel
 import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.task.RefreshTaskLifecycleEventObserver
 import fr.cph.chicago.util.MapUtil.chicagoPosition
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : CustomComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Timber.i("MainActivity started")
 
         val viewModel = mainViewModel.initModel()
 
@@ -45,7 +48,7 @@ class MainActivity : CustomComponentActivity() {
                 }
             }
         }
-        lifecycle.addObserver(RefreshTaskLifecycleEventObserver())
+        //lifecycle.addObserver(RefreshTaskLifecycleEventObserver())
     }
 }
 

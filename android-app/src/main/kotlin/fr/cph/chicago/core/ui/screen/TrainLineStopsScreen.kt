@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,6 +33,7 @@ import timber.log.Timber
 @Composable
 fun TrainLineStopsScreen(viewModel: TrainListStationViewModel) {
 
+    val uiState = viewModel.uiState
     val navController = LocalNavController.current
 
     LazyColumn(
@@ -39,8 +41,7 @@ fun TrainLineStopsScreen(viewModel: TrainListStationViewModel) {
             .padding(start = 10.dp, end = 10.dp)
             .fillMaxSize()
     ) {
-        items(viewModel.uiState.trainStations.size) { index ->
-            val station = viewModel.uiState.trainStations[index]
+        items(uiState.trainStations) { station ->
             TextButton(onClick = {
                 navController.navigate(Screen.TrainDetails, mapOf("stationId" to station.id))
             }) {
@@ -88,7 +89,9 @@ class TrainListStationViewModel(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { result ->
-                    uiState = uiState.copy(trainStations = result)
+                    uiState = uiState.copy(
+                        trainStations = result,
+                    )
                 },
                 {
                     Timber.e(it, "Could not load stations for line ${trainLine.toTextString()}")

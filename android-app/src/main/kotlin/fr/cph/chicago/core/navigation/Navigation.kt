@@ -5,7 +5,10 @@ import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.rememberSplineBasedDecay
+import androidx.compose.animation.slideInVertically
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
@@ -55,6 +58,7 @@ val LocalNavController = compositionLocalOf<NavHostControllerWrapper> {
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.animation.ExperimentalAnimationApi::class)
 @Composable
 fun Navigation(viewModel: NavigationViewModel) {
+    Timber.i("Navigation composable")
     val uiState = viewModel.uiState
     val navController = remember { NavHostControllerWrapper(viewModel) }
     val scope = rememberCoroutineScope()
@@ -76,6 +80,7 @@ fun Navigation(viewModel: NavigationViewModel) {
             )
         },
         content = {
+            Timber.i("Navigation composable content")
             // Add custom nav controller in local provider so it can be retrieve easily downstream
             CompositionLocalProvider(LocalNavController provides navController) {
                 val scrollBehavior = topBarBehavior(viewModel.uiState.currentScreen)
@@ -97,22 +102,24 @@ fun Navigation(viewModel: NavigationViewModel) {
                                 route = screen.route,
                                 arguments = emptyList(),
                                 enterTransition = {
-                                    when (initialState.destination.route) {
-                                        // TODO
-                                        Screen.SettingsDisplay.route -> slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(3000))
-                                        else -> EnterTransition.None
+                                    when (targetState.destination.route) {
+                                        Screen.Favorites.route -> fadeIn(animationSpec = tween(200),)
+                                        //Screen.SettingsDisplay.route -> slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(3000))
+                                        else -> slideInVertically(animationSpec = tween(400), initialOffsetY = { it / 5 },
+                                        )
                                     }
                                 },
                                 exitTransition = {
                                     when (targetState.destination.route) {
                                         // TODO
-                                        Screen.SettingsDisplay.route -> slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(3000))
-                                        else -> ExitTransition.None
+                                        //Screen.SettingsDisplay.route -> slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(3000))
+                                        else -> fadeOut(animationSpec = tween(50),)
                                     }
                                 },
                             ) { backStackEntry ->
                                 // Add custom backhandler to all composable so we can handle when someone push the back button
                                 BackHandler {
+                                    Timber.i("NavHost component() $screen")
                                     uiState.currentScreen = screen
                                     screen.component(backStackEntry)
                                 }

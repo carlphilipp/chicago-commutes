@@ -89,7 +89,6 @@ fun BusBoundScreen(
                                         .fillMaxWidth()
                                         .padding(horizontal = 20.dp),
                                     onClick = {
-                                        // FIXME: that's not going to work if this is still an activity
                                         navController.navigate(
                                             screen = Screen.BusDetails,
                                             arguments = mapOf(
