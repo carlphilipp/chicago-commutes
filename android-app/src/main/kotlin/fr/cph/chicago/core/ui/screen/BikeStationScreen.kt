@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.savedstate.SavedStateRegistryOwner
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -57,12 +56,14 @@ import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.TimeUtil
-import java.util.Calendar
-import javax.inject.Inject
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
+import java.util.Calendar
+import javax.inject.Inject
 
 data class BikeStationUiState(
     val bikeStation: BikeStation = BikeStation.buildUnknownStation(),
@@ -86,24 +87,33 @@ class BikeStationViewModel @Inject constructor(
         private set
 
     init {
-        viewModelScope.launch {
-            val bikeStation = store.state.bikeStations
+        Single.fromCallable {
+            store.state.bikeStations
                 .find { bikeStation -> bikeStation.id == stationId }
                 ?: BikeStation.buildUnknownStation()
-            uiState = uiState.copy(
-                bikeStation = bikeStation,
-                isFavorite = isFavorite(bikeStation.id),
-            )
-
-            if (canLoadGoogleMapImage()) {
-                loadGoogleStreetImage(bikeStation.latitude, bikeStation.longitude)
-            } else {
-                uiState = uiState.copy(
-                    isGoogleStreetImageLoading = false,
-                    showGoogleStreetImage = false,
-                )
-            }
         }
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { bikeStation ->
+                uiState = uiState.copy(
+                    bikeStation = bikeStation,
+                    isFavorite = isFavorite(bikeStation.id),
+                )
+                bikeStation
+            }
+            .map { bikeStation ->
+                if (canLoadGoogleMapImage()) {
+                    loadGoogleStreetImage(bikeStation.latitude, bikeStation.longitude)
+                } else {
+                    uiState = uiState.copy(
+                        isGoogleStreetImageLoading = false,
+                        showGoogleStreetImage = false,
+                    )
+                }
+            }
+            .subscribeOn(Schedulers.computation())
+            .subscribe (
+                {},{ Timber.e(it, "Could not init bike station screen") }
+            )
     }
 
     override fun newState(state: State) {

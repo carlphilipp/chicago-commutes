@@ -226,10 +226,6 @@ class SearchViewModel @Inject constructor(
     var uiState by mutableStateOf(SearchUiState())
         private set
 
-    fun initModel(): SearchViewModel {
-        return this
-    }
-
     fun updateText(searchText: TextFieldValue) {
         uiState = uiState.copy(searchText = searchText)
     }

@@ -18,7 +18,6 @@ import fr.cph.chicago.core.ui.common.ColoredBox
 
 @Composable
 fun TrainScreen(modifier: Modifier = Modifier) {
-
     val navController = LocalNavController.current
 
     LazyColumn(modifier = modifier.fillMaxWidth()) {

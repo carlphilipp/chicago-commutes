@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.savedstate.SavedStateRegistryOwner
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -67,11 +66,10 @@ import fr.cph.chicago.redux.TrainStationAction
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
+import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -215,18 +213,16 @@ class TrainStationViewModel @Inject constructor(
         private set
 
     init {
-        viewModelScope.launch {
-            val trainStation = trainService.getStation(stationId)
-            val isFavorite = isFavorite(stationId)
+        val trainStation = trainService.getStation(stationId)
+        val isFavorite = isFavorite(stationId)
 
-            uiState = TrainStationUiState(
-                trainStation = trainStation,
-                isFavorite = isFavorite,
-            )
+        uiState = TrainStationUiState(
+            trainStation = trainStation,
+            isFavorite = isFavorite,
+        )
 
-            store.dispatch(TrainStationAction(stationId))
-            loadGoogleStreetImage(trainStation.stops[0].position)
-        }
+        store.dispatch(TrainStationAction(stationId))
+        loadGoogleStreetImage(trainStation.stops[0].position)
     }
 
     override fun newState(state: State) {

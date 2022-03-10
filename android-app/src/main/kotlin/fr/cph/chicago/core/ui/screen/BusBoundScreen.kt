@@ -173,7 +173,7 @@ class BusBoundUiViewModel(
         )
     }
 
-    fun loadData() {
+    private fun loadData() {
         busService.loadAllBusStopsForRouteBound(uiState.busRouteId, uiState.bound)
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())

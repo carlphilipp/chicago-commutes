@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.savedstate.SavedStateRegistryOwner
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -62,11 +61,10 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.PreferenceService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
+import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,7 +74,6 @@ fun BusStationScreen(
 ) {
     val uiState = viewModel.uiState
     val scope = rememberCoroutineScope()
-    //val activity = (LocalLifecycleOwner.current as ComponentActivity)
     val context = LocalContext.current
     val busArrivalsKeys = uiState.busArrivalStopDTO.keys.toList()
 
@@ -212,17 +209,15 @@ class BusStationViewModel @Inject constructor(
         private set
 
     init {
-        viewModelScope.launch {
-            val defaultedArrivals = ArrayMap<String, MutableList<BusArrival>>()
-            defaultedArrivals["Unknown"] = mutableListOf()
-            uiState = uiState.copy(
-                busDetails = busDetails,
-                isFavorite = isFavorite(busRouteId = busDetails.busRouteId, busStopId = busDetails.stopId.toString(), boundTitle = busDetails.boundTitle),
-                busArrivalStopDTO = BusArrivalStopDTO(underlying = defaultedArrivals)
-            )
-            loadData()
-            loadStopPositionAndGoogleStreetImage()
-        }
+        val defaultedArrivals = ArrayMap<String, MutableList<BusArrival>>()
+        defaultedArrivals["Unknown"] = mutableListOf()
+        uiState = uiState.copy(
+            busDetails = busDetails,
+            isFavorite = isFavorite(busRouteId = busDetails.busRouteId, busStopId = busDetails.stopId.toString(), boundTitle = busDetails.boundTitle),
+            busArrivalStopDTO = BusArrivalStopDTO(underlying = defaultedArrivals)
+        )
+        loadData()
+        loadStopPositionAndGoogleStreetImage()
     }
 
     override fun newState(state: State) {
@@ -270,7 +265,7 @@ class BusStationViewModel @Inject constructor(
         }
     }
 
-    fun loadData() {
+    private fun loadData() {
         store.dispatch(
             BusStopArrivalsAction(
                 busRouteId = uiState.busDetails.busRouteId,

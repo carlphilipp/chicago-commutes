@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.savedstate.SavedStateRegistryOwner
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
@@ -27,7 +26,6 @@ import fr.cph.chicago.service.TrainService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,16 +72,14 @@ class TrainListStationViewModel(
         private set
 
     init {
-        viewModelScope.launch {
-            val trainLine = TrainLine.fromString(line)
-            val title = trainLine.toStringWithLine()
+        val trainLine = TrainLine.fromString(line)
+        val title = trainLine.toStringWithLine()
 
-            uiState = TrainListStationUiState(
-                title = title,
-                trainLine = trainLine,
-            )
-            loadData(trainLine)
-        }
+        uiState = TrainListStationUiState(
+            title = title,
+            trainLine = trainLine,
+        )
+        loadData(trainLine)
     }
 
     private fun loadData(trainLine: TrainLine) {
