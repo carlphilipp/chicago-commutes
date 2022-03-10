@@ -35,6 +35,7 @@ import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.ui.common.AnimatedErrorView
 import fr.cph.chicago.core.ui.common.AnimatedPlaceHolderList
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
+import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 import fr.cph.chicago.service.BusService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -53,7 +54,7 @@ fun BusBoundScreen(
 
     Scaffold(
         modifier = modifier,
-        snackbarHost = { SnackbarHost(hostState = uiState.snackbarHostState) { data -> Snackbar(snackbarData = data) } },
+        snackbarHost = { SnackbarHostInsets(state = uiState.snackbarHostState) },
         content = {
             when {
                 uiState.isRefreshing && uiState.busStops.isEmpty() -> {

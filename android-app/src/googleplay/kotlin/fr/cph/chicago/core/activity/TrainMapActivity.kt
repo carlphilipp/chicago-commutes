@@ -4,6 +4,11 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
@@ -44,6 +49,7 @@ import fr.cph.chicago.core.ui.RefreshTopBar
 import fr.cph.chicago.core.ui.common.LoadingBar
 import fr.cph.chicago.core.ui.common.LoadingCircle
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
+import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.GoogleMapUtil.createBitMapDescriptor
@@ -98,7 +104,7 @@ fun TrainMapView(
                 showRefresh = true,
                 onRefresh = { viewModel.reloadData() })
         },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) { data -> Snackbar(snackbarData = data) } },
+        snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
         content = {
 
             GoogleMapTrainMapView(

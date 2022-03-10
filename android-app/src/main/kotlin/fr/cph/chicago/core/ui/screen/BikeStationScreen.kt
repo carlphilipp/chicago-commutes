@@ -43,6 +43,7 @@ import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.ui.common.AnimatedText
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.ShowFavoriteSnackBar
+import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.StationDetailsImageView
 import fr.cph.chicago.core.ui.common.StationDetailsTitleIconView
 import fr.cph.chicago.core.ui.common.loadGoogleStreet
@@ -269,7 +270,7 @@ fun BikeStationScreen(
         onRefresh = { viewModel.refresh() },
     ) {
         Scaffold(
-            snackbarHost = { SnackbarHost(hostState = uiState.snackbarHostState) { data -> Snackbar(snackbarData = data) } },
+            snackbarHost = { SnackbarHostInsets(state = uiState.snackbarHostState) },
             content = {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     item {

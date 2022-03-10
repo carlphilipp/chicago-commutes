@@ -34,14 +34,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -62,7 +67,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -96,11 +100,11 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.functions.Consumer
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 private val googleStreetClient = GoogleStreetClient
 
@@ -305,72 +309,6 @@ fun ShimmerLargeItem(
 }
 
 @Composable
-fun ShowFavoriteSnackBar(
-    scope: CoroutineScope,
-    snackbarHostState: SnackbarHostState,
-    isFavorite: Boolean,
-    onComplete: () -> Unit,
-) {
-    ShowSnackBar(
-        scope = scope,
-        snackbarHostState = snackbarHostState,
-        element = isFavorite,
-        message = if (isFavorite) stringResource(id = R.string.message_add_fav) else stringResource(id = R.string.message_remove_fav),
-        onComplete = onComplete,
-    )
-}
-
-@Composable
-fun ShowLocationNotFoundSnackBar(
-    scope: CoroutineScope,
-    snackbarHostState: SnackbarHostState,
-    showErrorMessage: Boolean,
-    onComplete: () -> Unit,
-) {
-    ShowErrorMessageSnackBar(
-        scope = scope,
-        snackbarHostState = snackbarHostState,
-        showError = showErrorMessage,
-        message = stringResource(id = R.string.error_location),
-        onComplete = onComplete,
-    )
-}
-
-@Composable
-fun ShowErrorMessageSnackBar(
-    scope: CoroutineScope,
-    snackbarHostState: SnackbarHostState,
-    showError: Boolean,
-    message: String = stringResource(id = R.string.error_message),
-    onComplete: () -> Unit,
-) {
-    ShowSnackBar(
-        scope = scope,
-        snackbarHostState = snackbarHostState,
-        element = showError,
-        message = message,
-        onComplete = onComplete,
-    )
-}
-
-@Composable
-fun ShowSnackBar(
-    scope: CoroutineScope,
-    snackbarHostState: SnackbarHostState,
-    element: Boolean,
-    message: String,
-    onComplete: () -> Unit,
-) {
-    LaunchedEffect(element) {
-        scope.launch {
-            snackbarHostState.showSnackbar(message = message, withDismissAction = true)
-            onComplete()
-        }
-    }
-}
-
-
-@Composable
 fun StationDetailsImageView(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
@@ -382,7 +320,11 @@ fun StationDetailsImageView(
 
     Surface(modifier = modifier.zIndex(1f)) {
         AnimatedVisibility(
-            modifier = Modifier.height(200.dp),
+            modifier = Modifier
+                .height(200.dp)
+                .windowInsetsPadding(
+                    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+                ),
             visible = isLoading,
             exit = fadeOut(animationSpec = tween(durationMillis = 300)),
         ) {
@@ -435,7 +377,11 @@ fun StationDetailsImageView(
         }
 
         FilledTonalButton(
-            modifier = Modifier.padding(20.dp),
+            modifier = Modifier
+                .padding(start = 20.dp)
+                .windowInsetsPadding(
+                    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+                ),
             onClick = { navController.navigateBack() },
         ) {
             Icon(

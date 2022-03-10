@@ -4,9 +4,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -40,6 +45,7 @@ import fr.cph.chicago.core.ui.common.AnimatedErrorView
 import fr.cph.chicago.core.ui.common.AnimatedPlaceHolderList
 import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
+import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 import fr.cph.chicago.core.viewmodel.MainViewModel
 
@@ -65,7 +71,7 @@ fun AlertsScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
     ) {
         Scaffold(
             modifier = modifier.fillMaxWidth(),
-            snackbarHost = { SnackbarHost(hostState = mainViewModel.uiState.snackbarHostState) { data -> Snackbar(snackbarData = data) } },
+            snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
             content = {
                 if (uiState.isRefreshing && uiState.routesAlerts.isEmpty()) {
                     AnimatedPlaceHolderList(isLoading = uiState.isRefreshing)
@@ -108,7 +114,7 @@ fun AlertsScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
                                                 "${alert.id} - ${alert.routeName}"
                                             navController.navigate(
                                                 screen = Screen.AlertDetail,
-                                               arguments =  mapOf(
+                                                arguments = mapOf(
                                                     "routeId" to alert.id,
                                                     "title" to title
                                                 ),
