@@ -1,14 +1,19 @@
 package fr.cph.chicago.core.navigation
 
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.rememberSplineBasedDecay
-import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.slideIn
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -30,11 +35,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.unit.IntOffset
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.ui.Drawer
 import fr.cph.chicago.core.ui.LargeTopBar
@@ -79,6 +87,7 @@ fun Navigation(viewModel: NavigationViewModel) {
         content = {
             Timber.d("Compose Navigation content")
             // Add custom nav controller in local provider so it can be retrieve easily downstream
+            val springSpec = spring<IntOffset>(dampingRatio = Spring.DampingRatioMediumBouncy)
             CompositionLocalProvider(LocalNavController provides navController) {
                 val scrollBehavior = topBarBehavior(viewModel.uiState.currentScreen)
                 Scaffold(
@@ -90,7 +99,7 @@ fun Navigation(viewModel: NavigationViewModel) {
                         )
                     }
                 ) {
-                    NavHost(
+                    AnimatedNavHost(
                         navController = navController.navController(),
                         startDestination = Screen.Favorites.route
                     ) {
@@ -99,25 +108,39 @@ fun Navigation(viewModel: NavigationViewModel) {
                             composable(
                                 route = screen.route,
                                 arguments = emptyList(),
-//                                enterTransition = {
-//                                    //when (targetState.destination.route) {
-//                                        //Screen.Favorites.route -> fadeIn(animationSpec = tween(200))
-//                                        //Screen.SettingsDisplay.route -> slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(3000))
-//                                        //else -> fadeIn(animationSpec = tween(1)/*, initialOffsetY = { it / 5 }*/,
-//                                        //)
-//                                    //}
-//                                    EnterTransition.None
-//                                },
-//                                exitTransition = {
-//                                    //when (targetState.destination.route) {
-//                                        // TODO
-//                                        //Screen.SettingsDisplay.route -> slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(3000))
-//                                        //else -> fadeOut(animationSpec = tween(1))
-//                                    //}
-//                                    ExitTransition.None
-//                                },
-//                                popEnterTransition = {EnterTransition.None},
-//                                popExitTransition = { ExitTransition.None},
+                                enterTransition = {
+                                    when (screen) {
+                                        Screen.Settings -> scaleIn()
+                                        Screen.SettingsDisplay -> scaleIn()
+                                        Screen.SettingsThemeColorChooser -> scaleIn()
+                                        else -> slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(500))
+                                    }
+
+                                    //fadeIn(animationSpec = tween(2000))
+                                    //when (targetState.destination.route) {
+                                        //Screen.Favorites.route -> fadeIn(animationSpec = tween(200))
+                                        //Screen.SettingsDisplay.route -> slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(3000))
+                                        //else -> fadeIn(animationSpec = tween(1)/*, initialOffsetY = { it / 5 }*/,
+                                        //)
+                                    //}
+                                    //EnterTransition.None
+                                },
+                                exitTransition = {
+                                    //when (targetState.destination.route) {
+                                        // TODO
+                                        //Screen.SettingsDisplay.route -> slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(3000))
+                                        //else -> fadeOut(animationSpec = tween(1))
+                                    //}
+                                    //slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(2000))
+                                    //ExitTransition.None
+                                    fadeOut()
+                                },
+                                popEnterTransition = {
+                                    EnterTransition.None
+                                                     },
+                                popExitTransition = {
+                                    ExitTransition.None}
+                                ,
                             ) { backStackEntry ->
                                 // Add custom backhandler to all composable so we can handle when someone push the back button
                                 BackHandler {
@@ -148,8 +171,8 @@ data class NavigationUiState constructor(
 @Composable
 fun rememberNavigationState(
     drawerState: DrawerState = rememberDrawerState(DrawerValue.Closed),
-    navController: NavHostController = rememberNavController(),
-    currentScreen: Screen = Screen.Favorites,
+    navController: NavHostController = rememberAnimatedNavController(),
+    currentScreen: Screen = remember { Screen.Favorites },
 ) = remember(drawerState, navController, currentScreen) {
     NavigationUiState(
         drawerState = drawerState,
