@@ -15,9 +15,11 @@ import androidx.compose.ui.unit.dp
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.ui.common.ColoredBox
+import timber.log.Timber
 
 @Composable
 fun TrainScreen(modifier: Modifier = Modifier) {
+    Timber.d("Compose TrainScreen")
     val navController = LocalNavController.current
 
     LazyColumn(modifier = modifier.fillMaxWidth()) {

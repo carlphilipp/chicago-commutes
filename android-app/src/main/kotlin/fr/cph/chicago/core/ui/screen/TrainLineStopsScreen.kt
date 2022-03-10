@@ -23,6 +23,7 @@ import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.ui.common.ColoredBox
+import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.service.TrainService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
@@ -32,7 +33,7 @@ import timber.log.Timber
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrainLineStopsScreen(viewModel: TrainListStationViewModel) {
-
+    Timber.d("Compose TrainLineStopsScreen")
     val uiState = viewModel.uiState
     val navController = LocalNavController.current
 
@@ -41,13 +42,14 @@ fun TrainLineStopsScreen(viewModel: TrainListStationViewModel) {
             .padding(start = 10.dp, end = 10.dp)
             .fillMaxSize()
     ) {
-        items(uiState.trainStations) { station ->
-            TextButton(onClick = {
-                navController.navigate(Screen.TrainDetails, mapOf("stationId" to station.id))
-            }) {
+        items(
+            items = uiState.trainStations,
+            key = { it.id }
+        ) { station ->
+            TextButton(onClick = { navController.navigate(Screen.TrainDetails, mapOf("stationId" to station.id)) }) {
                 Text(
                     text = station.name,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.weight(1f),
                 )
                 station.lines.forEach { line ->
@@ -55,6 +57,7 @@ fun TrainLineStopsScreen(viewModel: TrainListStationViewModel) {
                 }
             }
         }
+        item { NavigationBarsSpacer() }
     }
 }
 

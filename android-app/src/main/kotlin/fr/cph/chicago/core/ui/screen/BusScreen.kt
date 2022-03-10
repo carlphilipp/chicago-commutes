@@ -34,11 +34,12 @@ import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 import fr.cph.chicago.core.viewmodel.MainViewModel
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BusScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
-
+    Timber.d("Compose BusScreen")
     var showDialog by remember { mutableStateOf(false) }
     var selectedBusRoute by remember { mutableStateOf(BusRoute.buildEmpty()) }
     var searchBusRoutes by remember { mutableStateOf<List<BusRoute>>(listOf()) }
@@ -52,7 +53,9 @@ fun BusScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
             if (mainViewModel.uiState.busRoutes.isNotEmpty()) {
                 Column {
                     TextFieldMaterial3(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 5.dp),
                         text = textSearch,
                         onValueChange = { value ->
                             textSearch = value
