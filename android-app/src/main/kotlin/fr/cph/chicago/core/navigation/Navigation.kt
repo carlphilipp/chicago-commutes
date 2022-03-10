@@ -1,7 +1,5 @@
 package fr.cph.chicago.core.navigation
 
-import android.content.Intent
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
@@ -32,7 +30,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -73,9 +70,10 @@ fun Navigation(viewModel: NavigationViewModel) {
                     if (screen != Screen.Rate) {
                         scope.launch {
                             uiState.drawerState.close()
+                            navController.navigate(screen)
                         }
                     }
-                    navController.navigate(screen)
+
                 }
             )
         },
@@ -102,20 +100,24 @@ fun Navigation(viewModel: NavigationViewModel) {
                                 route = screen.route,
                                 arguments = emptyList(),
                                 enterTransition = {
-                                    when (targetState.destination.route) {
-                                        Screen.Favorites.route -> fadeIn(animationSpec = tween(200),)
+                                    //when (targetState.destination.route) {
+                                        //Screen.Favorites.route -> fadeIn(animationSpec = tween(200))
                                         //Screen.SettingsDisplay.route -> slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(3000))
-                                        else -> slideInVertically(animationSpec = tween(400), initialOffsetY = { it / 5 },
-                                        )
-                                    }
+                                        //else -> fadeIn(animationSpec = tween(1)/*, initialOffsetY = { it / 5 }*/,
+                                        //)
+                                    //}
+                                    EnterTransition.None
                                 },
                                 exitTransition = {
-                                    when (targetState.destination.route) {
+                                    //when (targetState.destination.route) {
                                         // TODO
                                         //Screen.SettingsDisplay.route -> slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(3000))
-                                        else -> fadeOut(animationSpec = tween(50),)
-                                    }
+                                        //else -> fadeOut(animationSpec = tween(1))
+                                    //}
+                                    ExitTransition.None
                                 },
+                                popEnterTransition = {EnterTransition.None},
+                                popExitTransition = { ExitTransition.None},
                             ) { backStackEntry ->
                                 // Add custom backhandler to all composable so we can handle when someone push the back button
                                 BackHandler {
@@ -194,7 +196,7 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
         Timber.d("Navigate to ${screen.title}");
         val route = buildRoute(route = screen.route, arguments = arguments)
         viewModel.uiState.navController.navigate(route) {
-            popUpTo(viewModel.uiState.navController.graph.startDestinationId)
+            //popUpTo(viewModel.uiState.navController.graph.startDestinationId)
             launchSingleTop = true
         }
         val title = if (customTitle != "") customTitle else screen.title

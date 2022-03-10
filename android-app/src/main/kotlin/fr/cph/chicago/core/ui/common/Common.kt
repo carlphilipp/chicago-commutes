@@ -3,7 +3,6 @@ package fr.cph.chicago.core.ui.common
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -91,7 +90,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.core.graphics.drawable.toBitmap
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.model.Position
@@ -101,11 +99,11 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.functions.Consumer
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 private val googleStreetClient = GoogleStreetClient
 
@@ -347,7 +345,7 @@ fun StationDetailsImageView(
                 Modifier.fillMaxWidth()
             }
             Image(
-                bitmap = googleStreetMapImage!!.asImageBitmap(),
+                bitmap = googleStreetMapImage.asImageBitmap(),
                 contentDescription = "Google image street view",
                 contentScale = ContentScale.Crop,
                 modifier = imageModifier
@@ -604,7 +602,7 @@ fun LoadingCircle(
         modifier = modifier.fillMaxSize(),
         visible = show,
         enter = EnterTransition.None,
-        exit = fadeOut()
+        //exit = fadeOut()
     ) {
         CircularProgressIndicator(
             modifier = Modifier

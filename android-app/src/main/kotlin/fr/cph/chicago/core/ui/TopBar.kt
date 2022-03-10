@@ -1,6 +1,5 @@
 package fr.cph.chicago.core.ui
 
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
@@ -27,11 +26,8 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -76,7 +72,6 @@ fun TopBar(
 // TODO refactor and rename cause it does not make sense
 @Composable
 fun RefreshTopBar(title: String, showRefresh: Boolean = false, onRefresh: () -> Unit = {}) {
-    //val activity = LocalLifecycleOwner.current as ComponentActivity
     CenterAlignedTopAppBar(
         title = {
             Text(
@@ -103,26 +98,6 @@ fun RefreshTopBar(title: String, showRefresh: Boolean = false, onRefresh: () -> 
                         contentDescription = "Refresh"
                     )
                 }
-            }
-        }
-    )
-}
-
-@Composable
-fun SearchTopBar(searchText: TextFieldValue, onValueChange: (TextFieldValue) -> Unit) {
-    CenterAlignedTopAppBar(
-        title = {
-            TextFieldMaterial3(
-                text = searchText,
-                onValueChange = onValueChange
-            )
-        },
-        navigationIcon = {
-            IconButton(onClick = { /*activity.finish()*/ }) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Back"
-                )
             }
         }
     )
