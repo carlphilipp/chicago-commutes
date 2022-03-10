@@ -3,6 +3,7 @@ package fr.cph.chicago.core.navigation
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.DecayAnimationSpec
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -83,14 +84,10 @@ fun Navigation(viewModel: NavigationViewModel) {
             // Add custom nav controller in local provider so it can be retrieve easily downstream
             val springSpec = spring<IntOffset>(dampingRatio = Spring.DampingRatioMediumBouncy)
             CompositionLocalProvider(LocalNavController provides navController) {
-                val scrollBehavior = topBarBehavior(viewModel.uiState.currentScreen)
+                //val scrollBehavior = topBarBehavior(viewModel.uiState.currentScreen)
                 Scaffold(
-                    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                    modifier = Modifier.nestedScroll(viewModel.uiState.scrollBehavior.nestedScrollConnection),
                     topBar = {
-                        DisplayTopBar(
-                            viewModel = viewModel,
-                            scrollBehavior = scrollBehavior,
-                        )
                     }
                 ) {
                     AnimatedNavHost(
@@ -106,7 +103,7 @@ fun Navigation(viewModel: NavigationViewModel) {
                                     when (screen) {
                                         Screen.Settings, Screen.SettingsDisplay, Screen.SettingsThemeColorChooser -> scaleIn()
                                         Screen.TrainDetails, Screen.BusDetails, Screen.DivvyDetails -> slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(200))
-                                        else -> EnterTransition.None //slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(500))
+                                        else -> EnterTransition.None
                                     }
                                 },
                                 exitTransition = {
@@ -115,18 +112,14 @@ fun Navigation(viewModel: NavigationViewModel) {
                                         else -> fadeOut()
                                     }
                                 },
-                                popEnterTransition = {
-                                    EnterTransition.None
-                                },
-                                popExitTransition = {
-                                    ExitTransition.None
-                                },
+                                popEnterTransition = { EnterTransition.None },
+                                popExitTransition = { ExitTransition.None },
                             ) { backStackEntry ->
                                 // Add custom backhandler to all composable so we can handle when someone push the back button
                                 BackHandler {
                                     Timber.d("Compose render -> ${screen.title}")
                                     uiState.currentScreen = screen
-                                    screen.component(backStackEntry)
+                                    screen.component(backStackEntry, viewModel)
                                 }
                             }
                         }
@@ -142,9 +135,15 @@ data class NavigationUiState constructor(
     val gesturesEnabled: Boolean = true,
     val screens: List<Screen> = fr.cph.chicago.core.ui.screen.screens,
     var currentScreen: Screen = Screen.Favorites,
-    var topBarTitle: String = Screen.Favorites.title,
+    //var topBarTitle: String = Screen.Favorites.title,
     val drawerState: DrawerState = DrawerState(DrawerValue.Closed),
     val navController: NavHostController = NavHostController(App.instance.applicationContext),
+
+    val decayAnimationSpec: DecayAnimationSpec<Float>? = null,
+
+    val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    val scrollMediumBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    val scrollLargeBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
 )
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.animation.ExperimentalAnimationApi::class)
@@ -153,11 +152,19 @@ fun rememberNavigationState(
     drawerState: DrawerState = rememberDrawerState(DrawerValue.Closed),
     navController: NavHostController = rememberAnimatedNavController(),
     currentScreen: Screen = remember { Screen.Favorites },
-) = remember(drawerState, navController, currentScreen) {
+    scrollBehavior: TopAppBarScrollBehavior = remember {
+        TopAppBarDefaults.pinnedScrollBehavior()
+    },
+    decayAnimationSpec: DecayAnimationSpec<Float> = rememberSplineBasedDecay(),
+    scrollLargeBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec)
+) = remember(drawerState, navController, currentScreen, scrollBehavior, decayAnimationSpec, scrollLargeBehavior) {
     NavigationUiState(
         drawerState = drawerState,
         navController = navController,
         currentScreen = currentScreen,
+        scrollBehavior = scrollBehavior,
+        decayAnimationSpec = decayAnimationSpec,
+        scrollLargeBehavior = scrollLargeBehavior
     )
 }
 
@@ -171,10 +178,15 @@ class NavigationViewModel : ViewModel() {
         return this
     }
 
-    fun updateScreen(screen: Screen, customTitle: String) {
+    fun updateScreen(screen: Screen) {
+        val scrollBehavior = if (screen.topBar.type == TopBarType.LARGE) {
+            uiState.scrollLargeBehavior
+        } else {
+            uiState.scrollMediumBehavior
+        }
         uiState = uiState.copy(
             currentScreen = screen,
-            topBarTitle = customTitle,
+            scrollBehavior = scrollBehavior,
         )
     }
 
@@ -203,7 +215,7 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
             launchSingleTop = true
         }
         val title = if (customTitle != "") customTitle else screen.title
-        viewModel.updateScreen(screen = screen, customTitle = title)
+        viewModel.updateScreen(screen = screen)
         previous.push(Triple(screen, title, arguments))
         printStackState()
     }
@@ -256,9 +268,9 @@ private fun topBarBehavior(screen: Screen): TopAppBarScrollBehavior {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DisplayTopBar(
+fun DisplayTopBar(
+    title: String,
     viewModel: NavigationViewModel,
-    scrollBehavior: TopAppBarScrollBehavior,
 ) {
     val screen = viewModel.uiState.currentScreen
     val navController = LocalNavController.current
@@ -276,8 +288,8 @@ private fun DisplayTopBar(
 
         if (topBar.type == TopBarType.LARGE) {
             LargeTopBar(
-                title = viewModel.uiState.topBarTitle,
-                scrollBehavior = scrollBehavior,
+                title = title,
+                scrollBehavior = viewModel.uiState.scrollBehavior,
                 navigationIcon = {
                     IconButton(onClick = onClick) {
                         Icon(
@@ -289,8 +301,8 @@ private fun DisplayTopBar(
             )
         } else {
             MediumTopBar(
-                title = viewModel.uiState.topBarTitle,
-                scrollBehavior = scrollBehavior,
+                title = title,
+                scrollBehavior = viewModel.uiState.scrollBehavior,
                 navigationIcon = {
                     IconButton(onClick = onClick) {
                         Icon(

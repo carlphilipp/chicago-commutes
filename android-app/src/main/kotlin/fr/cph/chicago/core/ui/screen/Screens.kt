@@ -20,6 +20,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
+import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.screen.settings.DisplaySettingsScreen
 import fr.cph.chicago.core.ui.screen.settings.SettingsScreen
 import fr.cph.chicago.core.ui.screen.settings.ThemeChooserSettingsScreen
@@ -35,15 +36,19 @@ sealed class Screen(
     val icon: ImageVector,
     val showOnDrawer: Boolean = true,
     val topBar: ScreenTopBar,
-    val component: @Composable (NavBackStackEntry) -> Unit
+    val component: @Composable (NavBackStackEntry, NavigationViewModel) -> Unit
 ) {
     object Favorites : Screen(
         title = App.instance.getString(R.string.menu_favorites),
         route = "fav",
         icon = Icons.Filled.Favorite,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = {
-            FavoritesScreen(mainViewModel = mainViewModel)
+        component = { _, navigationViewModel ->
+            FavoritesScreen(
+                title = "Favorites",
+                mainViewModel = mainViewModel,
+                navigationViewModel = navigationViewModel
+            )
         }
     )
 
@@ -52,8 +57,8 @@ sealed class Screen(
         route = "train",
         icon = Icons.Filled.Train,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = {
-            TrainScreen()
+        component = { _, navigationViewModel ->
+            TrainScreen(title = "Train", navigationViewModel = navigationViewModel)
         }
     )
 
@@ -63,7 +68,7 @@ sealed class Screen(
         icon = Icons.Filled.Train,
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarBack,
-        component = { backStackEntry ->
+        component = { backStackEntry, _ ->
             val line = backStackEntry.arguments?.getString("line", "0") ?: ""
             val viewModel: TrainListStationViewModel = viewModel(
                 factory = TrainListStationViewModel.provideFactory(
@@ -82,7 +87,7 @@ sealed class Screen(
         icon = Icons.Filled.Train,
         showOnDrawer = false,
         topBar = ScreenTopBar.None,
-        component = { backStackEntry ->
+        component = { backStackEntry, navigationViewModel ->
             val stationId = backStackEntry.arguments?.getString("stationId", "0") ?: ""
             val viewModel: TrainStationViewModel = viewModel(
                 factory = TrainStationViewModel.provideFactory(
@@ -91,7 +96,10 @@ sealed class Screen(
                     defaultArgs = backStackEntry.arguments
                 )
             )
-            TrainStationScreen(viewModel = viewModel)
+            TrainStationScreen(
+                viewModel = viewModel,
+                navigationViewModel = navigationViewModel
+            )
         }
     )
 
@@ -100,7 +108,7 @@ sealed class Screen(
         route = "bus",
         icon = Icons.Filled.DirectionsBus,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = {
+        component = { _, _ ->
             BusScreen(mainViewModel = mainViewModel)
         }
     )
@@ -111,7 +119,7 @@ sealed class Screen(
         icon = Icons.Filled.DirectionsBus,
         showOnDrawer = false,
         topBar = ScreenTopBar.None,
-        component = { backStackEntry ->
+        component = { backStackEntry, _ ->
             val busStopId = backStackEntry.arguments?.getString("busStopId", "0") ?: ""
             val busStopName = backStackEntry.arguments?.getString("busStopName", "0") ?: ""
             val busRouteId = backStackEntry.arguments?.getString("busRouteId", "0") ?: ""
@@ -140,7 +148,7 @@ sealed class Screen(
         icon = Icons.Filled.DirectionsBus,
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarBack,
-        component = { backStackEntry ->
+        component = { backStackEntry, _ ->
             val busRouteId = backStackEntry.arguments?.getString("busRouteId", "0") ?: ""
             val busRouteName = backStackEntry.arguments?.getString("busRouteName", "0") ?: ""
             val bound = backStackEntry.arguments?.getString("bound", "0") ?: ""
@@ -164,7 +172,7 @@ sealed class Screen(
         route = "divvy",
         icon = Icons.Filled.DirectionsBike,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = {
+        component = { _, _ ->
             DivvyScreen(mainViewModel = mainViewModel)
         }
     )
@@ -175,7 +183,7 @@ sealed class Screen(
         icon = Icons.Filled.Train,
         showOnDrawer = false,
         topBar = ScreenTopBar.None,
-        component = { backStackEntry ->
+        component = { backStackEntry, _ ->
             val stationId = backStackEntry.arguments?.getString("stationId", "0") ?: ""
             val viewModel: BikeStationViewModel = viewModel(
                 factory = BikeStationViewModel.provideFactory(
@@ -194,7 +202,7 @@ sealed class Screen(
         icon = Icons.Filled.DeveloperMode,
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { backStackEntry ->
+        component = { backStackEntry, _ ->
             val viewModel: DeveloperOptionsViewModel = viewModel(
                 factory = DeveloperOptionsViewModel.provideFactory(
                     owner = backStackEntry,
@@ -210,21 +218,21 @@ sealed class Screen(
         route = "nearby",
         icon = Icons.Filled.NearMe,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { NearbyScreen(mainViewModel = mainViewModel, locationViewModel = locationViewModel) })
+        component = { _, _ -> NearbyScreen(mainViewModel = mainViewModel, locationViewModel = locationViewModel) })
 
     object Map : Screen(
         title = App.instance.getString(R.string.menu_cta_map),
         route = "map",
         icon = Icons.Filled.Map,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { Map() })
+        component = { _, _ -> Map() })
 
     object Alerts : Screen(
         title = App.instance.getString(R.string.menu_cta_alert),
         route = "alerts",
         icon = Icons.Filled.Warning,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { AlertsScreen(mainViewModel = mainViewModel) })
+        component = { _, _ -> AlertsScreen(mainViewModel = mainViewModel) })
 
     object AlertDetail : Screen(
         title = "Alert",
@@ -232,7 +240,7 @@ sealed class Screen(
         icon = Icons.Filled.Train,
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { backStackEntry ->
+        component = { backStackEntry, _ ->
             val routeId = backStackEntry.arguments?.getString("routeId", "") ?: ""
             val title = backStackEntry.arguments?.getString("title", "") ?: ""
             val viewModel: AlertDetailsViewModel = viewModel(
@@ -252,14 +260,14 @@ sealed class Screen(
         route = "rate",
         icon = Icons.Filled.StarRate,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { RateScreen(mainViewModel = mainViewModel) })
+        component = { _, _ -> RateScreen(mainViewModel = mainViewModel) })
 
     object Settings : Screen(
         title = App.instance.getString(R.string.menu_settings),
         route = "settings",
         icon = Icons.Filled.Settings,
         topBar = ScreenTopBar.LargeTopBarDrawer,
-        component = { SettingsScreen(viewModel = settingsViewModel) })
+        component = { _, _ -> SettingsScreen(viewModel = settingsViewModel) })
 
     object SettingsDisplay : Screen(
         title = "Display",
@@ -267,7 +275,7 @@ sealed class Screen(
         icon = Icons.Filled.Settings,
         topBar = ScreenTopBar.LargeTopBarBack,
         showOnDrawer = false,
-        component = { DisplaySettingsScreen(viewModel = settingsViewModel) })
+        component = { _, _ -> DisplaySettingsScreen(viewModel = settingsViewModel) })
 
     object SettingsThemeColorChooser : Screen(
         title = "Theme color",
@@ -275,7 +283,7 @@ sealed class Screen(
         icon = Icons.Filled.Settings,
         topBar = ScreenTopBar.LargeTopBarBack,
         showOnDrawer = false,
-        component = { ThemeChooserSettingsScreen(viewModel = settingsViewModel) })
+        component = { _, _ -> ThemeChooserSettingsScreen(viewModel = settingsViewModel) })
 
     object Search : Screen(
         title = "Search",
@@ -283,7 +291,7 @@ sealed class Screen(
         icon = Icons.Filled.Search,
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { backStackEntry ->
+        component = { backStackEntry, _ ->
             val viewModel: SearchViewModel = viewModel(
                 factory = SearchViewModel.provideFactory(
                     owner = backStackEntry,

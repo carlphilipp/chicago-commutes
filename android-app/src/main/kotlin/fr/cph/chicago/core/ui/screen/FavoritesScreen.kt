@@ -20,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,8 +48,11 @@ import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
+import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.theme.bike_orange
+import fr.cph.chicago.core.ui.MediumTopBar
 import fr.cph.chicago.core.ui.common.AnimatedText
 import fr.cph.chicago.core.ui.common.BusDetailDialog
 import fr.cph.chicago.core.ui.common.ColoredBox
@@ -65,32 +69,40 @@ import timber.log.Timber
 @Composable
 fun FavoritesScreen(
     mainViewModel: MainViewModel,
+    navigationViewModel: NavigationViewModel,
+    title: String,
     favorites: Favorites = Favorites,
 ) {
     Timber.d("Compose FavoritesScreen")
     val lastUpdate: LastUpdate = favorites.time.value
 
-    SwipeRefresh(
-        state = rememberSwipeRefreshState(mainViewModel.uiState.isRefreshing),
-        onRefresh = {
-            mainViewModel.refresh()
-        },
-    ) {
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(favorites.size()) { index ->
-                ElevatedCard(
-                    modifier = Modifier.padding(horizontal = 15.dp, vertical = 7.dp),
-                ) {
-                    Column {
-                        when (val model = favorites.getObject(index)) {
-                            is TrainStation -> TrainFavoriteCard(trainStation = model, lastUpdate = lastUpdate, favorites = favorites)
-                            is BusRoute -> BusFavoriteCard(busRoute = model, lastUpdate = lastUpdate, favorites = favorites)
-                            is BikeStation -> BikeFavoriteCard(bikeStation = model)
+    Column {
+        DisplayTopBar(
+            title =title,
+            viewModel = navigationViewModel,
+        )
+        SwipeRefresh(
+            state = rememberSwipeRefreshState(mainViewModel.uiState.isRefreshing),
+            onRefresh = {
+                mainViewModel.refresh()
+            },
+        ) {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(favorites.size()) { index ->
+                    ElevatedCard(
+                        modifier = Modifier.padding(horizontal = 15.dp, vertical = 7.dp),
+                    ) {
+                        Column {
+                            when (val model = favorites.getObject(index)) {
+                                is TrainStation -> TrainFavoriteCard(trainStation = model, lastUpdate = lastUpdate, favorites = favorites)
+                                is BusRoute -> BusFavoriteCard(busRoute = model, lastUpdate = lastUpdate, favorites = favorites)
+                                is BikeStation -> BikeFavoriteCard(bikeStation = model)
+                            }
                         }
                     }
                 }
+                item { NavigationBarsSpacer() }
             }
-            item { NavigationBarsSpacer() }
         }
     }
 }

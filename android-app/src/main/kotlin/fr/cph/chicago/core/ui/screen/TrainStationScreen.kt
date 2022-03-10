@@ -53,6 +53,8 @@ import fr.cph.chicago.core.model.Stop
 import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.core.navigation.DisplayTopBar
+import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.AnimatedText
 import fr.cph.chicago.core.ui.common.ShimmerAnimation
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
@@ -80,119 +82,127 @@ import timber.log.Timber
 fun TrainStationScreen(
     modifier: Modifier = Modifier,
     viewModel: TrainStationViewModel,
+    navigationViewModel: NavigationViewModel,
 ) {
     val uiState = viewModel.uiState
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    SwipeRefresh(
-        modifier = modifier,
-        state = rememberSwipeRefreshState(isRefreshing = uiState.isRefreshing),
-        onRefresh = { viewModel.refresh() },
-    ) {
-        Scaffold(
-            content = {
-                Column(
-                    modifier = Modifier
-                        .verticalScroll(uiState.scrollState)
-                        .fillMaxWidth()
-                ) {
-                    StationDetailsImageView(
-                        showGoogleStreetImage = uiState.showGoogleStreetImage,
-                        googleStreetMapImage = uiState.googleStreetMapImage,
-                        isLoading = uiState.isGoogleStreetImageLoading,
-                        scrollState = uiState.scrollState
-                    )
-                    StationDetailsTitleIconView(
-                        title = uiState.trainStation.name,
-                        isFavorite = uiState.isFavorite,
-                        onFavoriteClick = { viewModel.switchFavorite() },
-                        onMapClick = { viewModel.openMap(context = context, scope = scope) }
-                    )
-                    uiState.trainStation.stopByLines.keys.forEach { line ->
-                        val stops = uiState.trainStation.stopByLines[line]!!
-                        Column(
-                            modifier = Modifier
-                                .padding(horizontal = 20.dp)
-                                .fillMaxWidth()
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
-                                modifier = Modifier.fillMaxWidth(),
+    Column {
+        DisplayTopBar(
+            title = uiState.trainStation.name,
+            viewModel = navigationViewModel,
+        )
+
+        SwipeRefresh(
+            modifier = modifier,
+            state = rememberSwipeRefreshState(isRefreshing = uiState.isRefreshing),
+            onRefresh = { viewModel.refresh() },
+        ) {
+            Scaffold(
+                content = {
+                    Column(
+                        modifier = Modifier
+                            .verticalScroll(uiState.scrollState)
+                            .fillMaxWidth()
+                    ) {
+                        StationDetailsImageView(
+                            showGoogleStreetImage = uiState.showGoogleStreetImage,
+                            googleStreetMapImage = uiState.googleStreetMapImage,
+                            isLoading = uiState.isGoogleStreetImageLoading,
+                            scrollState = uiState.scrollState
+                        )
+                        StationDetailsTitleIconView(
+                            title = uiState.trainStation.name,
+                            isFavorite = uiState.isFavorite,
+                            onFavoriteClick = { viewModel.switchFavorite() },
+                            onMapClick = { viewModel.openMap(context = context, scope = scope) }
+                        )
+                        uiState.trainStation.stopByLines.keys.forEach { line ->
+                            val stops = uiState.trainStation.stopByLines[line]!!
+                            Column(
+                                modifier = Modifier
+                                    .padding(horizontal = 20.dp)
+                                    .fillMaxWidth()
                             ) {
-                                Surface(
-                                    color = line.color,
-                                    shadowElevation = 1.dp,
-                                    shape = RoundedCornerShape(15.0.dp),
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center,
+                                    modifier = Modifier.fillMaxWidth(),
                                 ) {
-                                    Text(
-                                        text = line.toStringWithLine(),
-                                        color = Color.White,
-                                        style = MaterialTheme.typography.titleSmall,
-                                        modifier = Modifier.padding(horizontal = 15.dp, vertical = 5.dp),
+                                    Surface(
+                                        color = line.color,
+                                        shadowElevation = 1.dp,
+                                        shape = RoundedCornerShape(15.0.dp),
+                                    ) {
+                                        Text(
+                                            text = line.toStringWithLine(),
+                                            color = Color.White,
+                                            style = MaterialTheme.typography.titleSmall,
+                                            modifier = Modifier.padding(horizontal = 15.dp, vertical = 5.dp),
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.padding(bottom = 3.dp))
+                                stops.sorted().forEachIndexed { index, stop ->
+                                    TrainStop(
+                                        viewModel = TrainStopViewModel(
+                                            stationId = uiState.trainStation.id,
+                                            line = line,
+                                            stop = stop,
+                                            trainEtas = uiState.trainEtasState
+                                                .filter { trainEta -> trainEta.trainStation.id == uiState.trainStation.id }
+                                                .filter { trainEta -> trainEta.routeName == line },
+                                            showStationName = uiState.showTrainArrivalData,
+                                            showDivider = index != stops.size - 1
+                                        ).initModel()
                                     )
                                 }
                             }
-                            Spacer(modifier = Modifier.padding(bottom = 3.dp))
-                            stops.sorted().forEachIndexed { index, stop ->
-                                TrainStop(
-                                    viewModel = TrainStopViewModel(
-                                        stationId = uiState.trainStation.id,
-                                        line = line,
-                                        stop = stop,
-                                        trainEtas = uiState.trainEtasState
-                                            .filter { trainEta -> trainEta.trainStation.id == uiState.trainStation.id }
-                                            .filter { trainEta -> trainEta.routeName == line },
-                                        showStationName = uiState.showTrainArrivalData,
-                                        showDivider = index != stops.size - 1
-                                    ).initModel()
-                                )
-                            }
                         }
                     }
+                })
+        }
+
+        if (uiState.applyFavorite) {
+            ShowFavoriteSnackBar(
+                scope = scope,
+                snackbarHostState = viewModel.uiState.snackbarHostState,
+                isFavorite = viewModel.uiState.isFavorite,
+                onComplete = {
+                    viewModel.resetApplyFavorite()
                 }
-            })
-    }
-
-    if (uiState.applyFavorite) {
-        ShowFavoriteSnackBar(
-            scope = scope,
-            snackbarHostState = viewModel.uiState.snackbarHostState,
-            isFavorite = viewModel.uiState.isFavorite,
-            onComplete = {
-                viewModel.resetApplyFavorite()
-            }
-        )
-    }
-
-    if (uiState.showErrorMessage) {
-        ShowErrorMessageSnackBar(
-            scope = scope,
-            snackbarHostState = viewModel.uiState.snackbarHostState,
-            showError = uiState.showErrorMessage,
-            onComplete = {
-                viewModel.resetShowErrorMessage()
-            }
-        )
-    }
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Bottom,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        SnackbarHost(hostState = uiState.snackbarHostState) { data ->
-            Snackbar(
-                modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)),
-                snackbarData = data,
             )
         }
-    }
 
-    DisposableEffect(key1 = viewModel) {
-        viewModel.onStart()
-        onDispose { viewModel.onStop() }
+        if (uiState.showErrorMessage) {
+            ShowErrorMessageSnackBar(
+                scope = scope,
+                snackbarHostState = viewModel.uiState.snackbarHostState,
+                showError = uiState.showErrorMessage,
+                onComplete = {
+                    viewModel.resetShowErrorMessage()
+                }
+            )
+        }
+
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            SnackbarHost(hostState = uiState.snackbarHostState) { data ->
+                Snackbar(
+                    modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)),
+                    snackbarData = data,
+                )
+            }
+        }
+
+        DisposableEffect(key1 = viewModel) {
+            viewModel.onStart()
+            onDispose { viewModel.onStop() }
+        }
     }
 }
 
