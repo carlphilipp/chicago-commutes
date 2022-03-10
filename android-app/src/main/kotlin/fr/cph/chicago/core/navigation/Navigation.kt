@@ -6,13 +6,9 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.animation.scaleIn
-import androidx.compose.animation.slideIn
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DrawerState
@@ -38,8 +34,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.IntOffset
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -110,37 +104,23 @@ fun Navigation(viewModel: NavigationViewModel) {
                                 arguments = emptyList(),
                                 enterTransition = {
                                     when (screen) {
-                                        Screen.Settings -> scaleIn()
-                                        Screen.SettingsDisplay -> scaleIn()
-                                        Screen.SettingsThemeColorChooser -> scaleIn()
-                                        else -> slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(500))
+                                        Screen.Settings, Screen.SettingsDisplay, Screen.SettingsThemeColorChooser -> scaleIn()
+                                        Screen.TrainDetails, Screen.BusDetails, Screen.DivvyDetails -> slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(200))
+                                        else -> EnterTransition.None //slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(500))
                                     }
-
-                                    //fadeIn(animationSpec = tween(2000))
-                                    //when (targetState.destination.route) {
-                                        //Screen.Favorites.route -> fadeIn(animationSpec = tween(200))
-                                        //Screen.SettingsDisplay.route -> slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(3000))
-                                        //else -> fadeIn(animationSpec = tween(1)/*, initialOffsetY = { it / 5 }*/,
-                                        //)
-                                    //}
-                                    //EnterTransition.None
                                 },
                                 exitTransition = {
-                                    //when (targetState.destination.route) {
-                                        // TODO
-                                        //Screen.SettingsDisplay.route -> slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(3000))
-                                        //else -> fadeOut(animationSpec = tween(1))
-                                    //}
-                                    //slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(2000))
-                                    //ExitTransition.None
-                                    fadeOut()
+                                    when (screen) {
+                                        Screen.TrainDetails, Screen.BusDetails, Screen.DivvyDetails -> slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(200))
+                                        else -> fadeOut()
+                                    }
                                 },
                                 popEnterTransition = {
                                     EnterTransition.None
-                                                     },
+                                },
                                 popExitTransition = {
-                                    ExitTransition.None}
-                                ,
+                                    ExitTransition.None
+                                },
                             ) { backStackEntry ->
                                 // Add custom backhandler to all composable so we can handle when someone push the back button
                                 BackHandler {
