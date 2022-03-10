@@ -63,7 +63,7 @@ sealed class Screen(
         route = "train/line/{line}",
         icon = Icons.Filled.Train,
         showOnDrawer = false,
-        topBar = ScreenTopBar.MediumTopBarDrawer,
+        topBar = ScreenTopBar.MediumTopBarBack,
         component = { backStackEntry ->
             val line = backStackEntry.arguments?.getString("line", "0") ?: ""
             val viewModel: TrainListStationViewModel = viewModel(
@@ -144,7 +144,7 @@ sealed class Screen(
         route = "bus/bound?busRouteId={busRouteId}&busRouteName={busRouteName}&bound={bound}&boundTitle={boundTitle}",
         icon = Icons.Filled.DirectionsBus,
         showOnDrawer = false,
-        topBar = ScreenTopBar.MediumTopBarDrawer,
+        topBar = ScreenTopBar.MediumTopBarBack,
         component = { backStackEntry ->
             val busRouteId = backStackEntry.arguments?.getString("busRouteId", "0") ?: ""
             val busRouteName = backStackEntry.arguments?.getString("busRouteName", "0") ?: ""
@@ -312,6 +312,12 @@ sealed class ScreenTopBar(
         type = TopBarType.MEDIUM,
         icon = Icons.Filled.Menu,
         action = TopBarIconAction.OPEN_DRAWER,
+    )
+
+    object MediumTopBarBack : ScreenTopBar(
+        type = TopBarType.MEDIUM,
+        icon = Icons.Filled.ArrowBack,
+        action = TopBarIconAction.BACK,
     )
 
     object LargeTopBarDrawer : ScreenTopBar(

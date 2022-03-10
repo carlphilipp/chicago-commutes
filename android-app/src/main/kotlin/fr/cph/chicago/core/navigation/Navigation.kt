@@ -269,15 +269,16 @@ private fun DisplayTopBar(
                 openDrawer()
             }
         }
+        val topBar = screen.topBar
 
-        if (screen.topBar.type == TopBarType.LARGE) {
+        if (topBar.type == TopBarType.LARGE) {
             LargeTopBar(
                 title = viewModel.uiState.topBarTitle,
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     IconButton(onClick = onClick) {
                         Icon(
-                            imageVector = screen.topBar.icon,
+                            imageVector = topBar.icon,
                             contentDescription = null,
                         )
                     }
@@ -288,9 +289,9 @@ private fun DisplayTopBar(
                 title = viewModel.uiState.topBarTitle,
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
-                    IconButton(onClick = { openDrawer() }) {
+                    IconButton(onClick = onClick) {
                         Icon(
-                            imageVector = Icons.Filled.Menu,
+                            imageVector = topBar.icon,
                             contentDescription = null
                         )
                     }
