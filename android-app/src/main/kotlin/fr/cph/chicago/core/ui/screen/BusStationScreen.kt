@@ -1,8 +1,7 @@
 package fr.cph.chicago.core.ui.screen
 
 import android.content.Context
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.ShapeDrawable
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.ArrayMap
 import androidx.compose.foundation.layout.Arrangement
@@ -16,8 +15,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -62,10 +59,10 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.PreferenceService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,7 +86,6 @@ fun BusStationScreen(
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     item {
                         StationDetailsImageView(
-                            /*activity = activity,*/
                             showGoogleStreetImage = uiState.showGoogleStreetImage,
                             googleStreetMapImage = uiState.googleStreetMapImage,
                             isLoading = uiState.isGoogleStreetImageLoading,
@@ -193,7 +189,7 @@ data class BusStationUiState(
     val isRefreshing: Boolean = false,
     val applyFavorite: Boolean = false,
     val showBusArrivalData: Boolean = false,
-    val googleStreetMapImage: Drawable = ShapeDrawable(),
+    val googleStreetMapImage: Bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888),
     val isGoogleStreetImageLoading: Boolean = true,
     val showGoogleStreetImage: Boolean = false,
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),

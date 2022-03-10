@@ -1,6 +1,7 @@
 package fr.cph.chicago.core.ui.screen
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
 import android.os.Bundle
@@ -72,7 +73,7 @@ data class BikeStationUiState(
     val isFavorite: Boolean = false,
     val isRefreshing: Boolean = false,
     val applyFavorite: Boolean = false,
-    val googleStreetMapImage: Drawable = ShapeDrawable(),
+    val googleStreetMapImage: Bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888),
     val isGoogleStreetImageLoading: Boolean = true,
     val showGoogleStreetImage: Boolean = false,
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
@@ -275,7 +276,6 @@ fun BikeStationScreen(
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     item {
                         StationDetailsImageView(
-                            /* activity = activity,*/
                             showGoogleStreetImage = uiState.showGoogleStreetImage,
                             googleStreetMapImage = uiState.googleStreetMapImage,
                             isLoading = uiState.isGoogleStreetImageLoading,

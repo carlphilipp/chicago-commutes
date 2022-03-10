@@ -19,7 +19,8 @@
 
 package fr.cph.chicago.client
 
-import android.graphics.drawable.Drawable
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import fr.cph.chicago.Constants.GOOGLE_STREET_VIEW_BASE
 import fr.cph.chicago.config.httpClient
 import fr.cph.chicago.redux.store
@@ -29,7 +30,7 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
-import java.io.ByteArrayInputStream
+
 
 /**
  * Class that access google street api. Singleton
@@ -39,19 +40,14 @@ import java.io.ByteArrayInputStream
  */
 object GoogleStreetClient {
 
-    var counter = 0
-
-    fun getImage(latitude: Double, longitude: Double, width: Int = WIDTH, height: Int = HEIGHT): Single<Drawable> {
+    fun getImage(latitude: Double, longitude: Double, width: Int = WIDTH, height: Int = HEIGHT): Single<Bitmap> {
         return googleStreetHttpClient.getStreetViewImage(
             location = "$latitude,$longitude",
             size = "${width}x${height}"
         )
             .map { response ->
-                if(counter == 0 || counter == 1) {
-                    counter++
-                    //throw RuntimeException()
-                }
-                Drawable.createFromStream(ByteArrayInputStream(response.bytes()), "src name") }
+                BitmapFactory.decodeStream(response.byteStream())
+            }
     }
 }
 

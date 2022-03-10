@@ -1,8 +1,7 @@
 package fr.cph.chicago.core.ui.screen
 
 import android.content.Context
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.ShapeDrawable
+import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -56,7 +54,6 @@ import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.ui.common.AnimatedText
-import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.common.ShimmerAnimation
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.ShowFavoriteSnackBar
@@ -73,10 +70,10 @@ import fr.cph.chicago.redux.TrainStationAction
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -206,7 +203,7 @@ data class TrainStationUiState(
     val isRefreshing: Boolean = false,
     val applyFavorite: Boolean = false,
     val showTrainArrivalData: Boolean = false,
-    val googleStreetMapImage: Drawable = ShapeDrawable(),
+    val googleStreetMapImage: Bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888),
     val isGoogleStreetImageLoading: Boolean = true,
     val showGoogleStreetImage: Boolean = false,
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),

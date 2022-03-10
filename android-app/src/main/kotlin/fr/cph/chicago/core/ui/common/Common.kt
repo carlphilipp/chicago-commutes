@@ -2,6 +2,7 @@ package fr.cph.chicago.core.ui.common
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import androidx.compose.animation.AnimatedContent
@@ -127,7 +128,7 @@ fun openExternalMapApplication(context: Context, scope: CoroutineScope, snackbar
     }
 }
 
-fun loadGoogleStreet(position: Position, onSuccess: Consumer<Drawable>, onError: Consumer<Throwable>) {
+fun loadGoogleStreet(position: Position, onSuccess: Consumer<Bitmap>, onError: Consumer<Throwable>) {
     googleStreetClient.getImage(position.latitude, position.longitude, 1000, 400)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(onSuccess, onError)
@@ -313,7 +314,7 @@ fun StationDetailsImageView(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
     showGoogleStreetImage: Boolean,
-    googleStreetMapImage: Drawable,
+    googleStreetMapImage: Bitmap,
     scrollState: ScrollState? = null,
 ) {
     val navController = LocalNavController.current
@@ -346,7 +347,7 @@ fun StationDetailsImageView(
                 Modifier.fillMaxWidth()
             }
             Image(
-                bitmap = googleStreetMapImage.toBitmap().asImageBitmap(),
+                bitmap = googleStreetMapImage!!.asImageBitmap(),
                 contentDescription = "Google image street view",
                 contentScale = ContentScale.Crop,
                 modifier = imageModifier
