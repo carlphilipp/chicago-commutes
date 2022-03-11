@@ -16,6 +16,7 @@ import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -41,95 +42,98 @@ fun DisplaySettingsScreen(
     val uiState = viewModel.uiState
     val navController = LocalNavController.current
 
-    Column {
-        DisplayTopBar(
-            title = title,
-            viewModel = navigationViewModel,
-        )
-        LazyColumn(
-            modifier = modifier
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(15.dp),
-        ) {
-            item {
-                Text(
-                    modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 5.dp),
-                    text = "Theme",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary,
+    Scaffold(
+        content = {
+            Column {
+                DisplayTopBar(
+                    title = title,
+                    viewModel = navigationViewModel,
                 )
-                DisplayElementView(
-                    title = "Theme color",
-                    description = "Automatic or choose a color",
-                    onClick = {
-                        navController.navigate(screen = Screen.SettingsThemeColorChooser)
-                    },
-                    imageVector = Icons.Outlined.Palette
-                )
-            }
-            item {
-                Text(
-                    modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 5.dp, bottom = 5.dp),
-                    text = "Appearance",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-                DisplayElementSwitchView(
-                    title = "Follow System",
-                    description = "Select dark/light mode based on system",
-                    onClick = {
-                        if (viewModel.uiState.theme != Theme.AUTO) {
-                            viewModel.setTheme(Theme.AUTO)
-                        }
-                    },
-                    imageVector = Icons.Outlined.Brightness6,
-                    isChecked = uiState.theme == Theme.AUTO,
-                )
-                DisplayElementSwitchView(
-                    title = "Light Mode",
-                    description = "Enable",
-                    onClick = {
-                        if (viewModel.uiState.theme != Theme.LIGHT) {
-                            viewModel.setTheme(Theme.LIGHT)
-                        }
-                    },
-                    imageVector = Icons.Outlined.LightMode,
-                    isChecked = uiState.theme == Theme.LIGHT,
-                )
-                DisplayElementSwitchView(
-                    title = "Dark Mode",
-                    description = "Enable",
-                    onClick = {
-                        if (viewModel.uiState.theme != Theme.DARK) {
-                            viewModel.setTheme(Theme.DARK)
-                        }
-                    },
-                    imageVector = Icons.Outlined.DarkMode,
-                    isChecked = uiState.theme == Theme.DARK,
-                )
-            }
-            item {
-                Text(
-                    modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 5.dp, bottom = 5.dp),
-                    text = "Fonts",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-                DisplayElementSwitchView(
-                    title = "Fonts",
-                    description = "Choose fonts",
-                    onClick = {
+                LazyColumn(
+                    modifier = modifier
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(15.dp),
+                ) {
+                    item {
+                        Text(
+                            modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 5.dp),
+                            text = "Theme",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                        DisplayElementView(
+                            title = "Theme color",
+                            description = "Automatic or choose a color",
+                            onClick = {
+                                navController.navigate(screen = Screen.SettingsThemeColorChooser)
+                            },
+                            imageVector = Icons.Outlined.Palette
+                        )
+                    }
+                    item {
+                        Text(
+                            modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 5.dp, bottom = 5.dp),
+                            text = "Appearance",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                        DisplayElementSwitchView(
+                            title = "Follow System",
+                            description = "Select dark/light mode based on system",
+                            onClick = {
+                                if (viewModel.uiState.theme != Theme.AUTO) {
+                                    viewModel.setTheme(Theme.AUTO)
+                                }
+                            },
+                            imageVector = Icons.Outlined.Brightness6,
+                            isChecked = uiState.theme == Theme.AUTO,
+                        )
+                        DisplayElementSwitchView(
+                            title = "Light Mode",
+                            description = "Enable",
+                            onClick = {
+                                if (viewModel.uiState.theme != Theme.LIGHT) {
+                                    viewModel.setTheme(Theme.LIGHT)
+                                }
+                            },
+                            imageVector = Icons.Outlined.LightMode,
+                            isChecked = uiState.theme == Theme.LIGHT,
+                        )
+                        DisplayElementSwitchView(
+                            title = "Dark Mode",
+                            description = "Enable",
+                            onClick = {
+                                if (viewModel.uiState.theme != Theme.DARK) {
+                                    viewModel.setTheme(Theme.DARK)
+                                }
+                            },
+                            imageVector = Icons.Outlined.DarkMode,
+                            isChecked = uiState.theme == Theme.DARK,
+                        )
+                    }
+                    item {
+                        Text(
+                            modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 5.dp, bottom = 5.dp),
+                            text = "Fonts",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                        DisplayElementSwitchView(
+                            title = "Fonts",
+                            description = "Choose fonts",
+                            onClick = {
 
-                    },
-                    imageVector = Icons.Default.FontDownload,
-                    isChecked = false,
-                )
+                            },
+                            imageVector = Icons.Default.FontDownload,
+                            isChecked = false,
+                        )
+                    }
+                }
+                if (uiState.showThemeChangerDialog) {
+                    ThemeChangerDialog(viewModel = viewModel)
+                }
             }
-        }
-        if (uiState.showThemeChangerDialog) {
-            ThemeChangerDialog(viewModel = viewModel)
-        }
-    }
+        })
 }
 
 @Composable

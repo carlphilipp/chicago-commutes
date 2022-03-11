@@ -1,9 +1,10 @@
 package fr.cph.chicago.core.navigation
 
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.DecayAnimationSpec
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -37,6 +38,10 @@ import fr.cph.chicago.core.ui.Drawer
 import fr.cph.chicago.core.ui.LargeTopBar
 import fr.cph.chicago.core.ui.MediumTopBar
 import fr.cph.chicago.core.ui.common.BackHandler
+import fr.cph.chicago.core.ui.common.enterTransition
+import fr.cph.chicago.core.ui.common.exitTransition
+import fr.cph.chicago.core.ui.common.fallBackEnterTransition
+import fr.cph.chicago.core.ui.common.fallBackExitTransition
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.core.ui.screen.ScreenTopBar
 import fr.cph.chicago.core.ui.screen.TopBarIconAction
@@ -84,56 +89,17 @@ fun Navigation(viewModel: NavigationViewModel) {
                 ) {
                     AnimatedNavHost(
                         navController = navController.navController(),
-                        startDestination = Screen.Favorites.route
+                        startDestination = Screen.Favorites.route,
+                        enterTransition = fallBackEnterTransition(),
+                        exitTransition = fallBackExitTransition(),
                     ) {
                         uiState.screens.forEach { screen: Screen ->
                             Timber.d("Compose for each screen -> ${screen.title}")
                             composable(
                                 route = screen.route,
                                 arguments = emptyList(),
-                                enterTransition = {
-
-                                    when (targetState.destination.route) {
-                                        Screen.TrainDetails.route -> {
-                                            Timber.i("Animation enterTransition targetState.destination ${initialState.destination.route} SLIDE IN LEFT")
-                                            slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(500))
-                                        }
-                                        Screen.TrainList.route -> {
-                                            when(initialState.destination.route) {
-                                                Screen.TrainDetails.route -> {
-                                                    null
-                                                }
-                                                else -> {
-                                                    slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(500))
-                                                }
-                                            }
-                                        }
-                                        else -> {
-                                            Timber.i("Animation enterTransition targetState.destination ${initialState.destination.route} NO ANIMATION")
-                                            null//EnterTransition.None
-                                        }
-                                    }
-                                    //EnterTransition.None
-                                },
-                                exitTransition = {
-                                    when (initialState.destination.route) {
-                                        Screen.TrainDetails.route -> {
-                                            Timber.i("Animation exitTransition initialState.destination ${initialState.destination.route} SLIDE IN RIGHT")
-                                            slideOutOfContainer(
-                                                AnimatedContentScope.SlideDirection.Right, animationSpec = tween(500)
-
-                                            )
-                                        }
-                                        else -> {
-                                            Timber.i("Animation exitTransition initialState.destination ${initialState.destination.route} NO ANIMATION")
-                                            ExitTransition.None
-                                        }
-
-                                    }
-                                    //ExitTransition.None
-                                },
-                                //popEnterTransition = { EnterTransition.None },
-                                //popExitTransition = { ExitTransition.None },
+                                enterTransition = enterTransition(),
+                                exitTransition = exitTransition(),
                             ) { backStackEntry ->
                                 // Add custom backhandler to all composable so we can handle when someone push the back button
                                 BackHandler {

@@ -24,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -49,6 +50,7 @@ import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.RealmConfig
 import fr.cph.chicago.service.PreferenceService
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     modifier: Modifier = Modifier,
@@ -59,45 +61,48 @@ fun SettingsScreen(
     val uiState = viewModel.uiState
     val navController = LocalNavController.current
 
-    Column {
-        DisplayTopBar(
-            title = title,
-            viewModel = navigationViewModel,
-        )
-        LazyColumn(
-            modifier = modifier
-                .fillMaxWidth()
-        ) {
-            item {
-                SettingsElementView(
-                    imageVector = Icons.Outlined.Brightness6,
-                    title = "Display",
-                    description = "Theme, dark mode and fonts",
-                    onClick = {
-                        navController.navigate(screen = Screen.SettingsDisplay)
-                    }
+    // Wrapping with Scaffold as the animation is overriden if it's not the case
+    Scaffold(
+        content = {
+            Column {
+                DisplayTopBar(
+                    title = title,
+                    viewModel = navigationViewModel,
                 )
-            }
-            item {
-                SettingsElementView(
-                    imageVector = Icons.Outlined.DeveloperMode,
-                    title = "Developer options",
-                    description = "Beep boop",
-                    onClick = {
-                        navController.navigate(screen = Screen.DeveloperOptions)
+                LazyColumn(
+                    modifier = modifier
+                        .fillMaxWidth()
+                ) {
+                    item {
+                        SettingsElementView(
+                            imageVector = Icons.Outlined.Brightness6,
+                            title = "Display",
+                            description = "Theme, dark mode and fonts",
+                            onClick = {
+                                navController.navigate(screen = Screen.SettingsDisplay)
+                            }
+                        )
                     }
-                )
-            }
-            item {
-                SettingsElementView(
-                    imageVector = Icons.Outlined.Info,
-                    title = "About",
-                    description = "Chicago commutes",
-                    onClick = {
+                    item {
+                        SettingsElementView(
+                            imageVector = Icons.Outlined.DeveloperMode,
+                            title = "Developer options",
+                            description = "Beep boop",
+                            onClick = {
+                                navController.navigate(screen = Screen.DeveloperOptions)
+                            }
+                        )
+                    }
+                    item {
+                        SettingsElementView(
+                            imageVector = Icons.Outlined.Info,
+                            title = "About",
+                            description = "Chicago commutes",
+                            onClick = {
 
+                            }
+                        )
                     }
-                )
-            }
 /*        item {
         item {
             // Data cache
@@ -167,16 +172,17 @@ fun SettingsScreen(
                 }
             }
         }*/
-        }
+                }
 
-        if (uiState.showThemeChangerDialog) {
-            ThemeChangerDialog(viewModel = viewModel)
-        }
+                if (uiState.showThemeChangerDialog) {
+                    ThemeChangerDialog(viewModel = viewModel)
+                }
 
-        if (uiState.showClearCacheDialog) {
-            ClearCacheDialog(viewModel = viewModel)
-        }
-    }
+                if (uiState.showClearCacheDialog) {
+                    ClearCacheDialog(viewModel = viewModel)
+                }
+            }
+        })
 }
 
 @Composable

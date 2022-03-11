@@ -124,7 +124,6 @@ fun BusStationScreen(
                                 Spacer(modifier = Modifier.padding(bottom = 3.dp))
                                 val destination = busArrivalsKeys[index]
                                 val arrivals = uiState.busArrivalStopDTO[busArrivalsKeys[index]]!!
-                                Timber.i("Stop name: " + uiState.busDetails.stopName)
                                 Text(
                                     text = uiState.busDetails.stopName,
                                     style = MaterialTheme.typography.titleMedium,

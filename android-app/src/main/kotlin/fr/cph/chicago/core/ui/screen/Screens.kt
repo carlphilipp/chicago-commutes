@@ -285,7 +285,7 @@ sealed class Screen(
         route = "alerts/{stationId}?title={title}",
         icon = Icons.Filled.Train,
         showOnDrawer = false,
-        topBar = ScreenTopBar.MediumTopBarDrawer,
+        topBar = ScreenTopBar.MediumTopBarBack,
         component = { backStackEntry, navigationViewModel ->
             val routeId = URLDecoder.decode(backStackEntry.arguments?.getString("routeId", "") ?: "", StandardCharsets.UTF_8.toString())
             val title = URLDecoder.decode(backStackEntry.arguments?.getString("title", "") ?: "", StandardCharsets.UTF_8.toString())
