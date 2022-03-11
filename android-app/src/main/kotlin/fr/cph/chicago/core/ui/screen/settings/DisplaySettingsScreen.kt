@@ -19,17 +19,20 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import fr.cph.chicago.Constants.DEFAULT_SETTINGS_DELAY
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.SwitchMaterial3
 import fr.cph.chicago.core.ui.screen.Screen
+import fr.cph.chicago.launchWithDelay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,6 +44,7 @@ fun DisplaySettingsScreen(
 ) {
     val uiState = viewModel.uiState
     val navController = LocalNavController.current
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         content = {
@@ -65,7 +69,9 @@ fun DisplaySettingsScreen(
                             title = "Theme color",
                             description = "Automatic or choose a color",
                             onClick = {
-                                navController.navigate(screen = Screen.SettingsThemeColorChooser)
+                                scope.launchWithDelay(DEFAULT_SETTINGS_DELAY) {
+                                    navController.navigate(screen = Screen.SettingsThemeColorChooser)
+                                }
                             },
                             imageVector = Icons.Outlined.Palette
                         )

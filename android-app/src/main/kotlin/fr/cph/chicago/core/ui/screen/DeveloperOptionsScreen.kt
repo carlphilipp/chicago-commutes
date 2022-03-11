@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -96,39 +97,42 @@ fun DeveloperOptionsScreen(
     navigationViewModel: NavigationViewModel,
     title: String,
 ) {
-    Column {
-        DisplayTopBar(
-            title = title,
-            viewModel = navigationViewModel,
-        )
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            item {
-                Row(modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { viewModel.showHideCacheData() }
-                    .padding(15.dp)) {
-                    Column {
-                        Text(
-                            text = stringResource(id = R.string.preferences_data_cache_title),
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        Text(
-                            text = stringResource(id = R.string.developer_show_cache),
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                        if (viewModel.uiState.showCache) {
-                            Spacer(modifier = Modifier.padding(10.dp))
-                            CacheDetail(viewModel)
+    Scaffold(
+        content = {
+            Column {
+                DisplayTopBar(
+                    title = title,
+                    viewModel = navigationViewModel,
+                )
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    item {
+                        Row(modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { viewModel.showHideCacheData() }
+                            .padding(15.dp)) {
+                            Column {
+                                Text(
+                                    text = stringResource(id = R.string.preferences_data_cache_title),
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                                Text(
+                                    text = stringResource(id = R.string.developer_show_cache),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                                if (viewModel.uiState.showCache) {
+                                    Spacer(modifier = Modifier.padding(10.dp))
+                                    CacheDetail(viewModel)
+                                }
+                            }
                         }
                     }
+                    item { NavigationBarsSpacer() }
                 }
             }
-            item { NavigationBarsSpacer() }
-        }
-    }
+        })
 }
 
 @Composable

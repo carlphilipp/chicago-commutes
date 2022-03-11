@@ -9,6 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.navigation.NavBackStackEntry
 import fr.cph.chicago.core.ui.screen.Screen
@@ -36,6 +37,15 @@ fun enterTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> EnterTrans
     return {
 
         val slideInFromRight = slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(durationMillis = 200))
+        val scaleInSettings = scaleIn(
+            animationSpec = tween(
+                durationMillis = 100,
+                delayMillis = 0,
+                easing = FastOutSlowInEasing
+            ),
+            initialScale = 0.9f,
+            transformOrigin = TransformOrigin.Center,
+        )
 
         val origin = initialState.destination.route
         val destination = targetState.destination.route
@@ -65,16 +75,24 @@ fun enterTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> EnterTrans
                     }
                 }
             }
-            Screen.SettingsDisplay.route, Screen.SettingsThemeColorChooser.route, Screen.DeveloperOptions.route -> {
-                scaleIn(
-                    animationSpec = tween(
-                        durationMillis = 200,
-                        delayMillis = 0,
-                        easing = FastOutSlowInEasing
-                    ),
-                    initialScale = 0.8f,
-                    transformOrigin = TransformOrigin.Center,
-                )
+            Screen.SettingsThemeColorChooser.route, Screen.DeveloperOptions.route -> {
+                scaleInSettings
+            }
+            Screen.Settings.route -> {
+                when (origin) {
+                    Screen.SettingsDisplay.route, Screen.DeveloperOptions.route -> {// FIXME: Add about here when it exists
+                        EnterTransition.None
+                    }
+                    else -> null
+                }
+            }
+            Screen.SettingsDisplay.route -> {
+                when (origin) {
+                    Screen.SettingsThemeColorChooser.route -> { // FIXME: Add font here when it exists
+                        EnterTransition.None
+                    }
+                    else -> scaleInSettings
+                }
             }
             else -> {
                 Timber.i("Animation enterTransition targetState.destination ${destination} NO ANIMATION")
@@ -99,9 +117,17 @@ fun exitTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransit
             Screen.TrainList.route, Screen.BusBound.route, Screen.AlertDetail.route -> {
                 slideOutToRight
             }
-            Screen.Settings.route -> {
-                Timber.i("Animation exitTransition initialState.destination $origin ExitTransition.None")
-                ExitTransition.None
+            Screen.SettingsDisplay.route, Screen.SettingsThemeColorChooser.route, Screen.DeveloperOptions.route -> {
+                Timber.i("Animation exitTransition initialState.destination $origin scaleOut")
+                scaleOut(
+                    animationSpec = tween(
+                        durationMillis = 50,
+                        delayMillis = 0,
+                        easing = FastOutSlowInEasing
+                    ),
+                    targetScale = 0.0f,
+                    transformOrigin = TransformOrigin.Center,
+                )
             }
             else -> {
                 Timber.i("Animation exitTransition initialState.destination $origin NO ANIMATION")

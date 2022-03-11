@@ -54,4 +54,7 @@ object Constants {
 
     // Parsing
     const val STOP_FILE_PATH = "bus_stops.txt"
+
+    // Settings
+    const val DEFAULT_SETTINGS_DELAY = 100L
 }

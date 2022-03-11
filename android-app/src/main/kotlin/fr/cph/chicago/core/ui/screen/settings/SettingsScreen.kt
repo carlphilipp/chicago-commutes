@@ -30,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -39,12 +40,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat.startActivity
+import fr.cph.chicago.Constants.DEFAULT_SETTINGS_DELAY
 import fr.cph.chicago.core.activity.BaseActivity
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.screen.Screen
+import fr.cph.chicago.launchWithDelay
 import fr.cph.chicago.redux.ResetStateAction
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.RealmConfig
@@ -60,6 +63,7 @@ fun SettingsScreen(
 ) {
     val uiState = viewModel.uiState
     val navController = LocalNavController.current
+    val scope = rememberCoroutineScope()
 
     // Wrapping with Scaffold as the animation is overriden if it's not the case
     Scaffold(
@@ -79,7 +83,9 @@ fun SettingsScreen(
                             title = "Display",
                             description = "Theme, dark mode and fonts",
                             onClick = {
-                                navController.navigate(screen = Screen.SettingsDisplay)
+                                scope.launchWithDelay(DEFAULT_SETTINGS_DELAY) {
+                                    navController.navigate(screen = Screen.SettingsDisplay)
+                                }
                             }
                         )
                     }
@@ -89,7 +95,9 @@ fun SettingsScreen(
                             title = "Developer options",
                             description = "Beep boop",
                             onClick = {
-                                navController.navigate(screen = Screen.DeveloperOptions)
+                                scope.launchWithDelay(DEFAULT_SETTINGS_DELAY) {
+                                    navController.navigate(screen = Screen.DeveloperOptions)
+                                }
                             }
                         )
                     }
@@ -99,7 +107,9 @@ fun SettingsScreen(
                             title = "About",
                             description = "Chicago commutes",
                             onClick = {
+                                scope.launchWithDelay(DEFAULT_SETTINGS_DELAY) {
 
+                                }
                             }
                         )
                     }
