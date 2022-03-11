@@ -1,6 +1,7 @@
 package fr.cph.chicago.core.ui.screen
 
 import android.os.Bundle
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,9 +22,12 @@ import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
+import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
+import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.service.TrainService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
@@ -32,32 +36,42 @@ import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TrainLineStopsScreen(viewModel: TrainListStationViewModel) {
+fun TrainLineStopsScreen(
+    viewModel: TrainListStationViewModel,
+    title: String,
+    navigationViewModel: NavigationViewModel
+) {
     Timber.d("Compose TrainLineStopsScreen")
     val uiState = viewModel.uiState
     val navController = LocalNavController.current
 
-    LazyColumn(
-        modifier = Modifier
-            .padding(start = 10.dp, end = 10.dp)
-            .fillMaxSize()
-    ) {
-        items(
-            items = uiState.trainStations,
-            key = { it.id }
-        ) { station ->
-            TextButton(onClick = { navController.navigate(Screen.TrainDetails, mapOf("stationId" to station.id)) }) {
-                Text(
-                    text = station.name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.weight(1f),
-                )
-                station.lines.forEach { line ->
-                    ColoredBox(modifier = Modifier.padding(start = 5.dp), color = line.color)
+    Column {
+        DisplayTopBar(
+            title = title,
+            viewModel = navigationViewModel,
+        )
+        LazyColumn(
+            modifier = Modifier
+                .padding(start = 10.dp, end = 10.dp)
+                .fillMaxSize()
+        ) {
+            items(
+                items = uiState.trainStations,
+                key = { it.id }
+            ) { station ->
+                TextButton(onClick = { navController.navigate(Screen.TrainDetails, mapOf("stationId" to station.id)) }) {
+                    Text(
+                        text = station.name,
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.weight(1f),
+                    )
+                    station.lines.forEach { line ->
+                        ColoredBox(modifier = Modifier.padding(start = 5.dp), color = line.color)
+                    }
                 }
             }
+            item { NavigationBarsSpacer() }
         }
-        item { NavigationBarsSpacer() }
     }
 }
 

@@ -10,8 +10,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -26,7 +24,9 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
+import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.AnimatedErrorView
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
@@ -36,7 +36,12 @@ import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DivvyScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
+fun DivvyScreen(
+    modifier: Modifier = Modifier,
+    title: String,
+    mainViewModel: MainViewModel,
+    navigationViewModel: NavigationViewModel
+) {
     Timber.d("Compose DivvyScreen")
     val navController = LocalNavController.current
     var searchBikeStations by remember { mutableStateOf(listOf<BikeStation>()) }
@@ -47,64 +52,70 @@ fun DivvyScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
     Scaffold(
         snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
         content = {
-            if (mainViewModel.uiState.bikeStations.isNotEmpty()) {
-                Column {
-                    TextFieldMaterial3(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = textSearch,
-                        onValueChange = { value ->
-                            textSearch = value
-                            searchBikeStations = mainViewModel.uiState.bikeStations.filter { bikeStation ->
-                                bikeStation.name.contains(value.text, true)
-                            }
-                        }
-                    )
-                    LazyColumn(modifier = modifier.fillMaxWidth()) {
-                        items(searchBikeStations) { bikeStation ->
-                            TextButton(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 20.dp),
-                                onClick = {
-                                    navController.navigate(
-                                        screen = Screen.DivvyDetails,
-                                        arguments = mapOf(
-                                            "stationId" to bikeStation.id
-                                        )
-                                    )
-                                }
-                            ) {
-                                Row(
-                                    horizontalArrangement = Arrangement.Start,
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Text(
-                                        bikeStation.name,
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                AnimatedErrorView(
-                    onClick = {
-                        mainViewModel.loadBikeStations()
-                    }
+            Column {
+                DisplayTopBar(
+                    title = title,
+                    viewModel = navigationViewModel,
                 )
-                if (mainViewModel.uiState.bikeStationsShowError) {
-                    ShowErrorMessageSnackBar(
-                        scope = scope,
-                        snackbarHostState = mainViewModel.uiState.snackbarHostState,
-                        showError = mainViewModel.uiState.bikeStationsShowError,
-                        onComplete = {
-                            mainViewModel.resetBikeStationsShowError()
+                if (mainViewModel.uiState.bikeStations.isNotEmpty()) {
+                    Column {
+                        TextFieldMaterial3(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = textSearch,
+                            onValueChange = { value ->
+                                textSearch = value
+                                searchBikeStations = mainViewModel.uiState.bikeStations.filter { bikeStation ->
+                                    bikeStation.name.contains(value.text, true)
+                                }
+                            }
+                        )
+                        LazyColumn(modifier = modifier.fillMaxWidth()) {
+                            items(searchBikeStations) { bikeStation ->
+                                TextButton(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 20.dp),
+                                    onClick = {
+                                        navController.navigate(
+                                            screen = Screen.DivvyDetails,
+                                            arguments = mapOf(
+                                                "stationId" to bikeStation.id
+                                            )
+                                        )
+                                    }
+                                ) {
+                                    Row(
+                                        horizontalArrangement = Arrangement.Start,
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Text(
+                                            bikeStation.name,
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    AnimatedErrorView(
+                        onClick = {
+                            mainViewModel.loadBikeStations()
                         }
                     )
+                    if (mainViewModel.uiState.bikeStationsShowError) {
+                        ShowErrorMessageSnackBar(
+                            scope = scope,
+                            snackbarHostState = mainViewModel.uiState.snackbarHostState,
+                            showError = mainViewModel.uiState.bikeStationsShowError,
+                            onComplete = {
+                                mainViewModel.resetBikeStationsShowError()
+                            }
+                        )
+                    }
                 }
             }
         })

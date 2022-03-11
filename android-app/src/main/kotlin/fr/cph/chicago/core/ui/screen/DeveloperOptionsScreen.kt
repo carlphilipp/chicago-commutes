@@ -25,6 +25,8 @@ import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.dto.PreferenceDTO
+import fr.cph.chicago.core.navigation.DisplayTopBar
+import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.service.PreferenceService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -89,30 +91,43 @@ class DeveloperOptionsViewModel(private val preferenceService: PreferenceService
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DeveloperOptionsScreen(viewModel: DeveloperOptionsViewModel) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        item {
-            Row(modifier = Modifier.fillMaxWidth().clickable { viewModel.showHideCacheData() }.padding(15.dp)) {
-                Column {
-                    Text(
-                        text = stringResource(id = R.string.preferences_data_cache_title),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    Text(
-                        text = stringResource(id = R.string.developer_show_cache),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                    if (viewModel.uiState.showCache) {
-                        Spacer(modifier = Modifier.padding(10.dp))
-                        CacheDetail(viewModel)
+fun DeveloperOptionsScreen(
+    viewModel: DeveloperOptionsViewModel,
+    navigationViewModel: NavigationViewModel,
+    title: String,
+) {
+    Column {
+        DisplayTopBar(
+            title = title,
+            viewModel = navigationViewModel,
+        )
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            item {
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { viewModel.showHideCacheData() }
+                    .padding(15.dp)) {
+                    Column {
+                        Text(
+                            text = stringResource(id = R.string.preferences_data_cache_title),
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        Text(
+                            text = stringResource(id = R.string.developer_show_cache),
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                        if (viewModel.uiState.showCache) {
+                            Spacer(modifier = Modifier.padding(10.dp))
+                            CacheDetail(viewModel)
+                        }
                     }
                 }
             }
+            item { NavigationBarsSpacer() }
         }
-        item { NavigationBarsSpacer() }
     }
 }
 

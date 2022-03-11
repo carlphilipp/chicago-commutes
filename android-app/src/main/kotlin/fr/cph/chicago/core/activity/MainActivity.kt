@@ -48,7 +48,7 @@ class MainActivity : CustomComponentActivity() {
                 }
             }
         }
-        //lifecycle.addObserver(RefreshTaskLifecycleEventObserver())
+        lifecycle.addObserver(RefreshTaskLifecycleEventObserver())
     }
 }
 

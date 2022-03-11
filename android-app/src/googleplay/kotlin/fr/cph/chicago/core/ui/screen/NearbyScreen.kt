@@ -41,6 +41,8 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.navigation.DisplayTopBar
+import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.permissions.NearbyLocationPermissionView
 import fr.cph.chicago.core.ui.common.LoadingCircle
 import fr.cph.chicago.core.ui.common.LocationViewModel
@@ -52,8 +54,8 @@ import fr.cph.chicago.core.ui.common.runWithDelay
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.util.GoogleMapUtil.getBitmapDescriptor
 import fr.cph.chicago.util.toLatLng
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
+import timber.log.Timber
 
 // FIXME: handle zoom right after permissions has been approved or denied
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,6 +64,8 @@ fun NearbyScreen(
     modifier: Modifier = Modifier,
     mainViewModel: MainViewModel,
     locationViewModel: LocationViewModel,
+    navigationViewModel: NavigationViewModel,
+    title: String
 ) {
     val scope = rememberCoroutineScope()
     var isMapLoaded by remember { mutableStateOf(false) }
@@ -79,36 +83,43 @@ fun NearbyScreen(
         locationViewModel = locationViewModel,
     )
 
-    Scaffold(
-        modifier = modifier.fillMaxWidth(),
-        snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
-        content = {
-            NearbyGoogleMapView(
-                onMapLoaded = { isMapLoaded = true },
-                mainViewModel = mainViewModel,
-            )
+    Column {
+        DisplayTopBar(
+            title = title,
+            viewModel = navigationViewModel,
+        )
 
-            LoadingCircle(show = !isMapLoaded)
-
-            if (mainViewModel.uiState.nearbyShowLocationError) {
-
-                ShowLocationNotFoundSnackBar(
-                    scope = scope,
-                    snackbarHostState = mainViewModel.uiState.snackbarHostState,
-                    showErrorMessage = mainViewModel.uiState.nearbyShowLocationError,
-                    onComplete = { mainViewModel.setShowLocationError(false) }
+        Scaffold(
+            modifier = modifier.fillMaxWidth(),
+            snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
+            content = {
+                NearbyGoogleMapView(
+                    onMapLoaded = { isMapLoaded = true },
+                    mainViewModel = mainViewModel,
                 )
+
+                LoadingCircle(show = !isMapLoaded)
+
+                if (mainViewModel.uiState.nearbyShowLocationError) {
+
+                    ShowLocationNotFoundSnackBar(
+                        scope = scope,
+                        snackbarHostState = mainViewModel.uiState.snackbarHostState,
+                        showErrorMessage = mainViewModel.uiState.nearbyShowLocationError,
+                        onComplete = { mainViewModel.setShowLocationError(false) }
+                    )
+                }
+                if (mainViewModel.uiState.nearbyDetailsError) {
+                    ShowErrorMessageSnackBar(
+                        scope = scope,
+                        snackbarHostState = mainViewModel.uiState.snackbarHostState,
+                        showError = mainViewModel.uiState.nearbyDetailsError,
+                        onComplete = { mainViewModel.setNearbyDetailsError(false) }
+                    )
+                }
             }
-            if (mainViewModel.uiState.nearbyDetailsError) {
-                ShowErrorMessageSnackBar(
-                    scope = scope,
-                    snackbarHostState = mainViewModel.uiState.snackbarHostState,
-                    showError = mainViewModel.uiState.nearbyDetailsError,
-                    onComplete = { mainViewModel.setNearbyDetailsError(false) }
-                )
-            }
-        }
-    )
+        )
+    }
 }
 
 @Composable

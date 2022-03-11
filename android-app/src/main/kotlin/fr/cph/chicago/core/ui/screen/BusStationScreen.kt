@@ -39,6 +39,8 @@ import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
+import fr.cph.chicago.core.navigation.DisplayTopBar
+import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.AnimatedText
 import fr.cph.chicago.core.ui.common.ShimmerAnimation
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
@@ -69,115 +71,124 @@ import timber.log.Timber
 fun BusStationScreen(
     modifier: Modifier = Modifier,
     viewModel: BusStationViewModel,
+    navigationViewModel: NavigationViewModel,
+    title: String,
 ) {
     val uiState = viewModel.uiState
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val busArrivalsKeys = uiState.busArrivalStopDTO.keys.toList()
 
-    SwipeRefresh(
-        modifier = modifier,
-        state = rememberSwipeRefreshState(uiState.isRefreshing),
-        onRefresh = { viewModel.refresh() },
-    ) {
-        Scaffold(
-            snackbarHost = { SnackbarHostInsets(state = uiState.snackbarHostState) },
-            content = {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    item {
-                        StationDetailsImageView(
-                            showGoogleStreetImage = uiState.showGoogleStreetImage,
-                            googleStreetMapImage = uiState.googleStreetMapImage,
-                            isLoading = uiState.isGoogleStreetImageLoading,
-                        )
-                    }
-                    item {
-                        StationDetailsTitleIconView(
-                            title = "${uiState.busDetails.busRouteId} - ${uiState.busDetails.routeName}",
-                            subTitle = uiState.busDetails.boundTitle,
-                            isFavorite = uiState.isFavorite,
-                            onFavoriteClick = {
-                                viewModel.switchFavorite(
-                                    boundTitle = uiState.busDetails.boundTitle,
-                                    busStopId = uiState.busDetails.stopId.toString(),
-                                    busRouteId = uiState.busDetails.busRouteId,
-                                    busRouteName = uiState.busDetails.routeName,
-                                    busStopName = uiState.busDetails.stopName
-                                )
-                            },
-                            onMapClick = {
-                                viewModel.openMap(context = context, scope = scope)
-                            }
-                        )
-                    }
-                    items(busArrivalsKeys.size) { index ->
-                        Column(
-                            modifier = Modifier
-                                .padding(horizontal = 20.dp)
-                                .fillMaxWidth()
-                        ) {
-                            Spacer(modifier = Modifier.padding(bottom = 3.dp))
-                            val destination = busArrivalsKeys[index]
-                            val arrivals = uiState.busArrivalStopDTO[busArrivalsKeys[index]]!!
-                            Text(
-                                text = uiState.busDetails.stopName,
-                                style = MaterialTheme.typography.titleMedium,
+    Column {
+        DisplayTopBar(
+            title = title,
+            viewModel = navigationViewModel,
+        )
+        SwipeRefresh(
+            modifier = modifier,
+            state = rememberSwipeRefreshState(uiState.isRefreshing),
+            onRefresh = { viewModel.refresh() },
+        ) {
+            Scaffold(
+                snackbarHost = { SnackbarHostInsets(state = uiState.snackbarHostState) },
+                content = {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        item {
+                            StationDetailsImageView(
+                                showGoogleStreetImage = uiState.showGoogleStreetImage,
+                                googleStreetMapImage = uiState.googleStreetMapImage,
+                                isLoading = uiState.isGoogleStreetImageLoading,
                             )
-                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically) {
-                                if (uiState.showBusArrivalData) {
-                                    Text(
-                                        text = if (arrivals.size == 0) destination else "To $destination",
-                                        style = MaterialTheme.typography.bodyLarge,
+                        }
+                        item {
+                            StationDetailsTitleIconView(
+                                title = "${uiState.busDetails.busRouteId} - ${uiState.busDetails.routeName}",
+                                subTitle = uiState.busDetails.boundTitle,
+                                isFavorite = uiState.isFavorite,
+                                onFavoriteClick = {
+                                    viewModel.switchFavorite(
+                                        boundTitle = uiState.busDetails.boundTitle,
+                                        busStopId = uiState.busDetails.stopId.toString(),
+                                        busRouteId = uiState.busDetails.busRouteId,
+                                        busRouteName = uiState.busDetails.routeName,
+                                        busStopName = uiState.busDetails.stopName
                                     )
-                                } else {
-                                    ShimmerAnimation(width = 100.dp, height = 25.dp)
+                                },
+                                onMapClick = {
+                                    viewModel.openMap(context = context, scope = scope)
                                 }
-                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+                            )
+                        }
+                        items(busArrivalsKeys.size) { index ->
+                            Column(
+                                modifier = Modifier
+                                    .padding(horizontal = 20.dp)
+                                    .fillMaxWidth()
+                            ) {
+                                Spacer(modifier = Modifier.padding(bottom = 3.dp))
+                                val destination = busArrivalsKeys[index]
+                                val arrivals = uiState.busArrivalStopDTO[busArrivalsKeys[index]]!!
+                                Text(
+                                    text = uiState.busDetails.stopName,
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically) {
                                     if (uiState.showBusArrivalData) {
-                                        arrivals.forEach { busArrival ->
-                                            var currentTime by remember { mutableStateOf(busArrival.formatArrivalTime()) }
-                                            currentTime = busArrival.formatArrivalTime()
-                                            AnimatedText(
-                                                text = currentTime,
-                                                style = MaterialTheme.typography.bodyLarge,
-                                            )
-                                        }
+                                        Text(
+                                            text = if (arrivals.size == 0) destination else "To $destination",
+                                            style = MaterialTheme.typography.bodyLarge,
+                                        )
                                     } else {
                                         ShimmerAnimation(width = 100.dp, height = 25.dp)
+                                    }
+                                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+                                        if (uiState.showBusArrivalData) {
+                                            arrivals.forEach { busArrival ->
+                                                var currentTime by remember { mutableStateOf(busArrival.formatArrivalTime()) }
+                                                currentTime = busArrival.formatArrivalTime()
+                                                AnimatedText(
+                                                    text = currentTime,
+                                                    style = MaterialTheme.typography.bodyLarge,
+                                                )
+                                            }
+                                        } else {
+                                            ShimmerAnimation(width = 100.dp, height = 25.dp)
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+                })
+        }
+
+
+        if (uiState.applyFavorite) {
+            ShowFavoriteSnackBar(
+                scope = scope,
+                snackbarHostState = viewModel.uiState.snackbarHostState,
+                isFavorite = viewModel.uiState.isFavorite,
+                onComplete = {
+                    viewModel.resetApplyFavorite()
                 }
-            })
-    }
+            )
+        }
 
-    if (uiState.applyFavorite) {
-        ShowFavoriteSnackBar(
-            scope = scope,
-            snackbarHostState = viewModel.uiState.snackbarHostState,
-            isFavorite = viewModel.uiState.isFavorite,
-            onComplete = {
-                viewModel.resetApplyFavorite()
-            }
-        )
-    }
+        if (uiState.showErrorMessage) {
+            ShowErrorMessageSnackBar(
+                scope = scope,
+                snackbarHostState = viewModel.uiState.snackbarHostState,
+                showError = uiState.showErrorMessage,
+                onComplete = {
+                    viewModel.resetShowErrorMessage()
+                }
+            )
+        }
 
-    if (uiState.showErrorMessage) {
-        ShowErrorMessageSnackBar(
-            scope = scope,
-            snackbarHostState = viewModel.uiState.snackbarHostState,
-            showError = uiState.showErrorMessage,
-            onComplete = {
-                viewModel.resetShowErrorMessage()
-            }
-        )
-    }
-
-    DisposableEffect(key1 = viewModel) {
-        viewModel.onStart()
-        onDispose { viewModel.onStop() }
+        DisposableEffect(key1 = viewModel) {
+            viewModel.onStart()
+            onDispose { viewModel.onStop() }
+        }
     }
 }
 

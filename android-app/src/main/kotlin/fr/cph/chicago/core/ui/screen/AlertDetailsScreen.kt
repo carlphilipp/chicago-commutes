@@ -34,6 +34,8 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.core.model.dto.RouteAlertsDTO
+import fr.cph.chicago.core.navigation.DisplayTopBar
+import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.AnimatedErrorView
 import fr.cph.chicago.core.ui.common.AnimatedPlaceHolderList
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
@@ -47,74 +49,82 @@ import javax.inject.Inject
 @Composable
 fun AlertDetailsScreen(
     modifier: Modifier = Modifier,
-    viewModel: AlertDetailsViewModel
+    viewModel: AlertDetailsViewModel,
+    navigationViewModel: NavigationViewModel,
+    title: String,
 ) {
     val uiState = viewModel.uiState
     val scope = rememberCoroutineScope()
-    Scaffold(
-        snackbarHost = { SnackbarHostInsets(state = uiState.snackbarHostState) },
-        content = {
-            SwipeRefresh(
-                modifier = modifier,
-                state = rememberSwipeRefreshState(uiState.isRefreshing),
-                onRefresh = { viewModel.loadAlertDetails() },
-            ) {
-                if (uiState.isRefreshing && uiState.routeAlertsDTOS.isEmpty()) {
-                    AnimatedPlaceHolderList(isLoading = uiState.isRefreshing)
-                } else {
-                    if (!uiState.isError) {
-                        LazyColumn(modifier = Modifier.fillMaxSize()) {
-                            items(uiState.routeAlertsDTOS) { alert ->
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 20.dp, vertical = 10.dp)
-                                ) {
-                                    Text(
-                                        text = alert.headLine,
-                                        style = MaterialTheme.typography.titleSmall
-                                    )
-                                    Text(
-                                        text = alert.description,
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                    Text(
-                                        text = alert.impact,
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                    Text(
-                                        text = "From: " + alert.start,
-                                        style = MaterialTheme.typography.bodySmall
-                                    )
-                                    if (alert.end != "") {
+    Column {
+        DisplayTopBar(
+            title = title,
+            viewModel = navigationViewModel,
+        )
+        Scaffold(
+            snackbarHost = { SnackbarHostInsets(state = uiState.snackbarHostState) },
+            content = {
+                SwipeRefresh(
+                    modifier = modifier,
+                    state = rememberSwipeRefreshState(uiState.isRefreshing),
+                    onRefresh = { viewModel.loadAlertDetails() },
+                ) {
+                    if (uiState.isRefreshing && uiState.routeAlertsDTOS.isEmpty()) {
+                        AnimatedPlaceHolderList(isLoading = uiState.isRefreshing)
+                    } else {
+                        if (!uiState.isError) {
+                            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                                items(uiState.routeAlertsDTOS) { alert ->
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 20.dp, vertical = 10.dp)
+                                    ) {
                                         Text(
-                                            text = "To: " + alert.end,
+                                            text = alert.headLine,
+                                            style = MaterialTheme.typography.titleSmall
+                                        )
+                                        Text(
+                                            text = alert.description,
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                        Text(
+                                            text = alert.impact,
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                        Text(
+                                            text = "From: " + alert.start,
                                             style = MaterialTheme.typography.bodySmall
                                         )
+                                        if (alert.end != "") {
+                                            Text(
+                                                text = "To: " + alert.end,
+                                                style = MaterialTheme.typography.bodySmall
+                                            )
+                                        }
                                     }
                                 }
                             }
-                        }
-                    } else {
-                        AnimatedErrorView(
-                            onClick = {
-                                viewModel.loadAlertDetails()
-                            }
-                        )
-                        if (uiState.showErrorSnackBar) {
-
-                            ShowErrorMessageSnackBar(
-                                scope = scope,
-                                snackbarHostState = uiState.snackbarHostState,
-                                showError = uiState.showErrorSnackBar,
-                                onComplete = { viewModel.resetShowErrorSnackBar() }
+                        } else {
+                            AnimatedErrorView(
+                                onClick = {
+                                    viewModel.loadAlertDetails()
+                                }
                             )
+                            if (uiState.showErrorSnackBar) {
+
+                                ShowErrorMessageSnackBar(
+                                    scope = scope,
+                                    snackbarHostState = uiState.snackbarHostState,
+                                    showError = uiState.showErrorSnackBar,
+                                    onComplete = { viewModel.resetShowErrorSnackBar() }
+                                )
+                            }
                         }
                     }
                 }
             }
-        }
-    )
+        )
+    }
 }
 
 data class AlertDetailsUiState(

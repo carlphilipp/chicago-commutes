@@ -1,15 +1,13 @@
 package fr.cph.chicago.core.navigation
 
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.DecayAnimationSpec
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.rememberSplineBasedDecay
-import androidx.compose.animation.scaleIn
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DrawerState
@@ -32,7 +30,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.unit.IntOffset
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -73,52 +70,72 @@ fun Navigation(viewModel: NavigationViewModel) {
                     if (screen != Screen.Rate) {
                         scope.launch {
                             uiState.drawerState.close()
+                            navController.navigate(screen)
                         }
                     }
-                    navController.navigate(screen)
                 }
             )
         },
         content = {
             Timber.d("Compose Navigation content")
             // Add custom nav controller in local provider so it can be retrieve easily downstream
-            val springSpec = spring<IntOffset>(dampingRatio = Spring.DampingRatioMediumBouncy)
             CompositionLocalProvider(LocalNavController provides navController) {
-                //val scrollBehavior = topBarBehavior(viewModel.uiState.currentScreen)
                 Scaffold(
                     modifier = Modifier.nestedScroll(viewModel.uiState.scrollBehavior.nestedScrollConnection),
-                    topBar = {
-                    }
                 ) {
                     AnimatedNavHost(
                         navController = navController.navController(),
                         startDestination = Screen.Favorites.route
                     ) {
-                        uiState.screens.forEach { screen ->
+                        uiState.screens.forEach { screen: Screen ->
                             Timber.d("Compose for each screen -> ${screen.title}")
                             composable(
                                 route = screen.route,
                                 arguments = emptyList(),
                                 enterTransition = {
-                                    when (screen) {
-                                        Screen.Settings, Screen.SettingsDisplay, Screen.SettingsThemeColorChooser -> scaleIn()
-                                        Screen.TrainDetails, Screen.BusDetails, Screen.DivvyDetails -> slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(200))
-                                        else -> EnterTransition.None
-                                    }
+/*                                    Timber.i("Animation initialState destination ${initialState.destination.route}")
+                                    when (initialState.destination.route) {
+                                        Screen.Favorites.route -> {
+                                            slideInVertically(
+                                                animationSpec = spring(
+                                                    dampingRatio = Spring.StiffnessHigh,
+                                                    stiffness = Spring.StiffnessMedium,
+                                                ),
+                                                initialOffsetY = { fullHeight ->
+                                                    Timber.i("Animation slideInVertically fullHeight $fullHeight")
+                                                    -5
+                                                },
+                                            )
+                                        }
+                                        else -> null
+                                    }*/
+                                    EnterTransition.None
                                 },
                                 exitTransition = {
-                                    when (screen) {
-                                        Screen.TrainDetails, Screen.BusDetails, Screen.DivvyDetails -> slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(200))
-                                        else -> fadeOut()
-                                    }
+/*                                    when (targetState.destination.route) {
+                                        Screen.Favorites.route -> {
+                                            slideOutVertically(
+                                                animationSpec = spring(
+                                                    dampingRatio = Spring.StiffnessHigh,
+                                                    stiffness = Spring.StiffnessMedium,
+                                                ),
+                                                targetOffsetY = { fullHeight ->
+                                                    Timber.i("Animation slideOutVertically fullHeight $fullHeight")
+                                                    -5
+                                                },
+                                            )
+                                        }
+                                        else -> null
+                                    }*/
+                                    ExitTransition.None
                                 },
-                                popEnterTransition = { EnterTransition.None },
-                                popExitTransition = { ExitTransition.None },
+                                //popEnterTransition = { EnterTransition.None },
+                                //popExitTransition = { ExitTransition.None },
                             ) { backStackEntry ->
                                 // Add custom backhandler to all composable so we can handle when someone push the back button
                                 BackHandler {
                                     Timber.d("Compose render -> ${screen.title}")
-                                    uiState.currentScreen = screen
+                                    uiState.currentScreen = screen // FIXME: I don't think it's needed?
                                     screen.component(backStackEntry, viewModel)
                                 }
                             }
@@ -199,7 +216,10 @@ class NavigationViewModel : ViewModel() {
     }
 }
 
-class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
+class NavHostControllerWrapper(
+    private
+    val viewModel: NavigationViewModel
+) {
 
     private val previous: Stack<Triple<Screen, String, Map<String, String>>> = Stack()
 
@@ -214,6 +234,7 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
             //popUpTo(viewModel.uiState.navController.graph.startDestinationId)
             launchSingleTop = true
         }
+        // FIXME, to delete?
         val title = if (customTitle != "") customTitle else screen.title
         viewModel.updateScreen(screen = screen)
         previous.push(Triple(screen, title, arguments))

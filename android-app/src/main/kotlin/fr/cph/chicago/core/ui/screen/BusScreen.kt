@@ -26,8 +26,11 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fr.cph.chicago.core.model.BusRoute
+import fr.cph.chicago.core.navigation.DisplayTopBar
+import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.AnimatedErrorView
 import fr.cph.chicago.core.ui.common.BusRouteDialog
+import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
@@ -36,7 +39,12 @@ import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BusScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
+fun BusScreen(
+    modifier: Modifier = Modifier,
+    title: String,
+    mainViewModel: MainViewModel,
+    navigationViewModel: NavigationViewModel
+) {
     Timber.d("Compose BusScreen")
     var showDialog by remember { mutableStateOf(false) }
     var selectedBusRoute by remember { mutableStateOf(BusRoute.buildEmpty()) }
@@ -48,73 +56,80 @@ fun BusScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
     Scaffold(
         snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
         content = {
-            if (mainViewModel.uiState.busRoutes.isNotEmpty()) {
-                Column {
-                    TextFieldMaterial3(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 5.dp),
-                        text = textSearch,
-                        onValueChange = { value ->
-                            textSearch = value
-                            searchBusRoutes = mainViewModel.uiState.busRoutes.filter { busRoute ->
-                                busRoute.id.contains(value.text, true) || busRoute.name.contains(value.text, true)
-                            }
-                        }
-                    )
-                    LazyColumn(
-                        modifier = modifier.fillMaxSize()
-                    ) {
-                        items(
-                            items = searchBusRoutes,
-                            key = { it.id }
-                        ) { busRoute ->
-                            TextButton(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 20.dp),
-                                onClick = {
-                                    showDialog = true
-                                    selectedBusRoute = busRoute
-                                }
-                            ) {
-                                Row(
-                                    horizontalArrangement = Arrangement.Start,
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Text(
-                                        modifier = Modifier.requiredWidth(50.dp),
-                                        text = busRoute.id,
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        maxLines = 1,
-                                    )
-                                    Text(
-                                        text = busRoute.name,
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                AnimatedErrorView(
-                    onClick = {
-                        mainViewModel.loadBusRoutes()
-                    }
+            Column {
+                DisplayTopBar(
+                    title = title,
+                    viewModel = navigationViewModel,
                 )
-                if (mainViewModel.uiState.busRoutesShowError) {
-                    ShowErrorMessageSnackBar(
-                        scope = scope,
-                        snackbarHostState = mainViewModel.uiState.snackbarHostState,
-                        showError = mainViewModel.uiState.busRoutesShowError,
-                        onComplete = {
-                            mainViewModel.resetBusRoutesShowError()
+                if (mainViewModel.uiState.busRoutes.isNotEmpty()) {
+                    Column {
+                        TextFieldMaterial3(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 5.dp),
+                            text = textSearch,
+                            onValueChange = { value ->
+                                textSearch = value
+                                searchBusRoutes = mainViewModel.uiState.busRoutes.filter { busRoute ->
+                                    busRoute.id.contains(value.text, true) || busRoute.name.contains(value.text, true)
+                                }
+                            }
+                        )
+                        LazyColumn(
+                            modifier = modifier.fillMaxSize()
+                        ) {
+                            items(
+                                items = searchBusRoutes,
+                                key = { it.id }
+                            ) { busRoute ->
+                                TextButton(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 20.dp),
+                                    onClick = {
+                                        showDialog = true
+                                        selectedBusRoute = busRoute
+                                    }
+                                ) {
+                                    Row(
+                                        horizontalArrangement = Arrangement.Start,
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Text(
+                                            modifier = Modifier.requiredWidth(50.dp),
+                                            text = busRoute.id,
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            maxLines = 1,
+                                        )
+                                        Text(
+                                            text = busRoute.name,
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+                                    }
+                                }
+                            }
+                            item { NavigationBarsSpacer() }
+                        }
+                    }
+                } else {
+                    AnimatedErrorView(
+                        onClick = {
+                            mainViewModel.loadBusRoutes()
                         }
                     )
+                    if (mainViewModel.uiState.busRoutesShowError) {
+                        ShowErrorMessageSnackBar(
+                            scope = scope,
+                            snackbarHostState = mainViewModel.uiState.snackbarHostState,
+                            showError = mainViewModel.uiState.busRoutesShowError,
+                            onComplete = {
+                                mainViewModel.resetBusRoutesShowError()
+                            }
+                        )
+                    }
                 }
             }
 
@@ -124,4 +139,5 @@ fun BusScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
                 hideDialog = { showDialog = false },
             )
         })
+
 }

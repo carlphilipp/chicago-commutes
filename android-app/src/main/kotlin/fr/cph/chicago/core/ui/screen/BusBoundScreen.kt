@@ -12,8 +12,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -31,9 +29,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
 import fr.cph.chicago.core.model.BusStop
+import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
+import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.AnimatedErrorView
 import fr.cph.chicago.core.ui.common.AnimatedPlaceHolderList
+import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
@@ -47,6 +48,8 @@ import timber.log.Timber
 fun BusBoundScreen(
     modifier: Modifier = Modifier,
     viewModel: BusBoundUiViewModel,
+    navigationViewModel: NavigationViewModel,
+    title: String,
 ) {
     val uiState = viewModel.uiState
     val navController = LocalNavController.current
@@ -56,64 +59,71 @@ fun BusBoundScreen(
         modifier = modifier,
         snackbarHost = { SnackbarHostInsets(state = uiState.snackbarHostState) },
         content = {
-            when {
-                uiState.isRefreshing && uiState.busStops.isEmpty() -> {
-                    AnimatedPlaceHolderList(isLoading = uiState.isRefreshing)
-                }
-                uiState.isErrorState -> {
-                    AnimatedErrorView(onClick = { viewModel.refresh() })
-                    if (uiState.isErrorState) {
-                        ShowErrorMessageSnackBar(
-                            scope = scope,
-                            snackbarHostState = uiState.snackbarHostState,
-                            showError = uiState.isErrorState,
-                            onComplete = {
-                                viewModel.resetShowError()
-                            }
-                        )
+            Column {
+                DisplayTopBar(
+                    title = title,
+                    viewModel = navigationViewModel,
+                )
+                when {
+                    uiState.isRefreshing && uiState.busStops.isEmpty() -> {
+                        AnimatedPlaceHolderList(isLoading = uiState.isRefreshing)
                     }
-                }
-                else -> {
-                    Column {
-                        TextFieldMaterial3(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = uiState.searchText,
-                            onValueChange = { textFieldValue ->
-                                viewModel.updateSearch(textFieldValue = textFieldValue)
-                            }
-                        )
-                        LazyColumn(modifier = Modifier.fillMaxSize()) {
-                            items(uiState.searchBusStops) { busStop ->
-                                TextButton(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 20.dp),
-                                    onClick = {
-                                        navController.navigate(
-                                            screen = Screen.BusDetails,
-                                            arguments = mapOf(
-                                                "busStopId" to busStop.id,
-                                                "busStopName" to busStop.name,
-                                                "busRouteId" to uiState.busRouteId,
-                                                "busRouteName" to uiState.busRouteName,
-                                                "bound" to uiState.bound,
-                                                "boundTitle" to uiState.boundTitle,
+                    uiState.isErrorState -> {
+                        AnimatedErrorView(onClick = { viewModel.refresh() })
+                        if (uiState.isErrorState) {
+                            ShowErrorMessageSnackBar(
+                                scope = scope,
+                                snackbarHostState = uiState.snackbarHostState,
+                                showError = uiState.isErrorState,
+                                onComplete = {
+                                    viewModel.resetShowError()
+                                }
+                            )
+                        }
+                    }
+                    else -> {
+                        Column {
+                            TextFieldMaterial3(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = uiState.searchText,
+                                onValueChange = { textFieldValue ->
+                                    viewModel.updateSearch(textFieldValue = textFieldValue)
+                                }
+                            )
+                            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                                items(uiState.searchBusStops) { busStop ->
+                                    TextButton(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 20.dp),
+                                        onClick = {
+                                            navController.navigate(
+                                                screen = Screen.BusDetails,
+                                                arguments = mapOf(
+                                                    "busStopId" to busStop.id,
+                                                    "busStopName" to busStop.name,
+                                                    "busRouteId" to uiState.busRouteId,
+                                                    "busRouteName" to uiState.busRouteName,
+                                                    "bound" to uiState.bound,
+                                                    "boundTitle" to uiState.boundTitle,
+                                                )
                                             )
-                                        )
-                                    },
-                                ) {
-                                    Row(
-                                        horizontalArrangement = Arrangement.Start,
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.fillMaxWidth()
+                                        },
                                     ) {
-                                        Text(
-                                            text = busStop.description,
-                                            style = MaterialTheme.typography.bodyLarge,
-                                            maxLines = 1,
-                                        )
+                                        Row(
+                                            horizontalArrangement = Arrangement.Start,
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Text(
+                                                text = busStop.description,
+                                                style = MaterialTheme.typography.bodyLarge,
+                                                maxLines = 1,
+                                            )
+                                        }
                                     }
                                 }
+                                item { NavigationBarsSpacer() }
                             }
                         }
                     }

@@ -68,7 +68,7 @@ sealed class Screen(
         icon = Icons.Filled.Train,
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarBack,
-        component = { backStackEntry, _ ->
+        component = { backStackEntry, navigationViewModel ->
             val line = backStackEntry.arguments?.getString("line", "0") ?: ""
             val viewModel: TrainListStationViewModel = viewModel(
                 factory = TrainListStationViewModel.provideFactory(
@@ -77,7 +77,11 @@ sealed class Screen(
                     defaultArgs = backStackEntry.arguments
                 )
             )
-            TrainLineStopsScreen(viewModel = viewModel)
+            TrainLineStopsScreen(
+                viewModel = viewModel,
+                navigationViewModel = navigationViewModel,
+                title = "$line Line"
+            )
         }
     )
 
@@ -108,8 +112,12 @@ sealed class Screen(
         route = "bus",
         icon = Icons.Filled.DirectionsBus,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { _, _ ->
-            BusScreen(mainViewModel = mainViewModel)
+        component = { _, navigationViewModel ->
+            BusScreen(
+                title = "Bus",
+                navigationViewModel = navigationViewModel,
+                mainViewModel = mainViewModel,
+            )
         }
     )
 
@@ -119,7 +127,7 @@ sealed class Screen(
         icon = Icons.Filled.DirectionsBus,
         showOnDrawer = false,
         topBar = ScreenTopBar.None,
-        component = { backStackEntry, _ ->
+        component = { backStackEntry, navigationViewModel ->
             val busStopId = backStackEntry.arguments?.getString("busStopId", "0") ?: ""
             val busStopName = backStackEntry.arguments?.getString("busStopName", "0") ?: ""
             val busRouteId = backStackEntry.arguments?.getString("busRouteId", "0") ?: ""
@@ -138,7 +146,11 @@ sealed class Screen(
                     defaultArgs = backStackEntry.arguments
                 )
             )
-            BusStationScreen(viewModel = viewModel)
+            BusStationScreen(
+                navigationViewModel = navigationViewModel,
+                viewModel = viewModel,
+                title = "$busRouteId - $boundTitle"
+            )
         }
     )
 
@@ -148,7 +160,7 @@ sealed class Screen(
         icon = Icons.Filled.DirectionsBus,
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarBack,
-        component = { backStackEntry, _ ->
+        component = { backStackEntry, navigationViewModel ->
             val busRouteId = backStackEntry.arguments?.getString("busRouteId", "0") ?: ""
             val busRouteName = backStackEntry.arguments?.getString("busRouteName", "0") ?: ""
             val bound = backStackEntry.arguments?.getString("bound", "0") ?: ""
@@ -163,7 +175,11 @@ sealed class Screen(
                     defaultArgs = backStackEntry.arguments
                 )
             )
-            BusBoundScreen(viewModel = viewModel)
+            BusBoundScreen(
+                viewModel = viewModel,
+                navigationViewModel = navigationViewModel,
+                title = "$busRouteId - $boundTitle"
+            )
         }
     )
 
@@ -172,8 +188,12 @@ sealed class Screen(
         route = "divvy",
         icon = Icons.Filled.DirectionsBike,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { _, _ ->
-            DivvyScreen(mainViewModel = mainViewModel)
+        component = { _, navigationViewModel ->
+            DivvyScreen(
+                mainViewModel = mainViewModel,
+                navigationViewModel = navigationViewModel,
+                title = "Divvy"
+            )
         }
     )
 
@@ -183,7 +203,7 @@ sealed class Screen(
         icon = Icons.Filled.Train,
         showOnDrawer = false,
         topBar = ScreenTopBar.None,
-        component = { backStackEntry, _ ->
+        component = { backStackEntry, navigationViewModel ->
             val stationId = backStackEntry.arguments?.getString("stationId", "0") ?: ""
             val viewModel: BikeStationViewModel = viewModel(
                 factory = BikeStationViewModel.provideFactory(
@@ -192,7 +212,11 @@ sealed class Screen(
                     defaultArgs = backStackEntry.arguments
                 )
             )
-            BikeStationScreen(viewModel = viewModel)
+            BikeStationScreen(
+                viewModel = viewModel,
+                navigationViewModel = navigationViewModel,
+                title = stationId,
+            )
         }
     )
 
@@ -201,15 +225,19 @@ sealed class Screen(
         route = "developer",
         icon = Icons.Filled.DeveloperMode,
         showOnDrawer = false,
-        topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { backStackEntry, _ ->
+        topBar = ScreenTopBar.LargeTopBarBack,
+        component = { backStackEntry, navigationViewModel ->
             val viewModel: DeveloperOptionsViewModel = viewModel(
                 factory = DeveloperOptionsViewModel.provideFactory(
                     owner = backStackEntry,
                     defaultArgs = backStackEntry.arguments
                 )
             )
-            DeveloperOptionsScreen(viewModel = viewModel)
+            DeveloperOptionsScreen(
+                viewModel = viewModel,
+                navigationViewModel = navigationViewModel,
+                title = "Developer",
+            )
         }
     )
 
@@ -218,21 +246,39 @@ sealed class Screen(
         route = "nearby",
         icon = Icons.Filled.NearMe,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { _, _ -> NearbyScreen(mainViewModel = mainViewModel, locationViewModel = locationViewModel) })
+        component = { _, navigationViewModel ->
+            NearbyScreen(
+                mainViewModel = mainViewModel,
+                locationViewModel = locationViewModel,
+                navigationViewModel = navigationViewModel,
+                title = "Nearby",
+            )
+        })
 
     object Map : Screen(
         title = App.instance.getString(R.string.menu_cta_map),
         route = "map",
         icon = Icons.Filled.Map,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { _, _ -> Map() })
+        component = { _, navigationViewModel ->
+            Map(
+                navigationViewModel = navigationViewModel,
+                title = "CTA Map",
+            )
+        })
 
     object Alerts : Screen(
         title = App.instance.getString(R.string.menu_cta_alert),
         route = "alerts",
         icon = Icons.Filled.Warning,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { _, _ -> AlertsScreen(mainViewModel = mainViewModel) })
+        component = { _, navigationViewModel ->
+            AlertsScreen(
+                mainViewModel = mainViewModel,
+                navigationViewModel = navigationViewModel,
+                title = "CTA Alerts",
+            )
+        })
 
     object AlertDetail : Screen(
         title = "Alert",
@@ -240,7 +286,7 @@ sealed class Screen(
         icon = Icons.Filled.Train,
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { backStackEntry, _ ->
+        component = { backStackEntry, navigationViewModel ->
             val routeId = backStackEntry.arguments?.getString("routeId", "") ?: ""
             val title = backStackEntry.arguments?.getString("title", "") ?: ""
             val viewModel: AlertDetailsViewModel = viewModel(
@@ -251,7 +297,11 @@ sealed class Screen(
                     defaultArgs = backStackEntry.arguments
                 )
             )
-            AlertDetailsScreen(viewModel = viewModel)
+            AlertDetailsScreen(
+                navigationViewModel = navigationViewModel,
+                viewModel = viewModel,
+                title = title,
+            )
         }
     )
 
@@ -267,7 +317,13 @@ sealed class Screen(
         route = "settings",
         icon = Icons.Filled.Settings,
         topBar = ScreenTopBar.LargeTopBarDrawer,
-        component = { _, _ -> SettingsScreen(viewModel = settingsViewModel) })
+        component = { _, navigationViewModel->
+            SettingsScreen(
+                title = "Settings",
+                viewModel = settingsViewModel,
+                navigationViewModel = navigationViewModel,
+            )
+        })
 
     object SettingsDisplay : Screen(
         title = "Display",
@@ -275,7 +331,13 @@ sealed class Screen(
         icon = Icons.Filled.Settings,
         topBar = ScreenTopBar.LargeTopBarBack,
         showOnDrawer = false,
-        component = { _, _ -> DisplaySettingsScreen(viewModel = settingsViewModel) })
+        component = { _, navigationViewModel->
+            DisplaySettingsScreen(
+                title = "Display",
+                viewModel = settingsViewModel,
+                navigationViewModel = navigationViewModel,
+            )
+        })
 
     object SettingsThemeColorChooser : Screen(
         title = "Theme color",
@@ -283,7 +345,13 @@ sealed class Screen(
         icon = Icons.Filled.Settings,
         topBar = ScreenTopBar.LargeTopBarBack,
         showOnDrawer = false,
-        component = { _, _ -> ThemeChooserSettingsScreen(viewModel = settingsViewModel) })
+        component = { _, navigationViewModel->
+            ThemeChooserSettingsScreen(
+                title = "Theme color",
+                viewModel = settingsViewModel,
+                navigationViewModel = navigationViewModel,
+            )
+        })
 
     object Search : Screen(
         title = "Search",
@@ -291,14 +359,18 @@ sealed class Screen(
         icon = Icons.Filled.Search,
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { backStackEntry, _ ->
+        component = { backStackEntry, navigationViewModel->
             val viewModel: SearchViewModel = viewModel(
                 factory = SearchViewModel.provideFactory(
                     owner = backStackEntry,
                     defaultArgs = backStackEntry.arguments
                 )
             )
-            SearchViewScreen(viewModel = viewModel)
+            SearchViewScreen(
+                title = "Search",
+                viewModel = viewModel,
+                navigationViewModel = navigationViewModel,
+            )
         }
     )
 }

@@ -38,7 +38,9 @@ import androidx.savedstate.SavedStateRegistryOwner
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.TrainStation
+import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
+import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.BusRouteDialog
 import fr.cph.chicago.core.ui.common.ChipMaterial3
 import fr.cph.chicago.core.ui.common.ColoredBox
@@ -53,99 +55,110 @@ import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchViewScreen(viewModel: SearchViewModel) {
+fun SearchViewScreen(
+    viewModel: SearchViewModel,
+    navigationViewModel: NavigationViewModel,
+    title: String,
+) {
     val uiState = viewModel.uiState
     val navController = LocalNavController.current
-    Scaffold(
-        content = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                TextFieldMaterial3(
-                    text = uiState.searchText,
-                    onValueChange = { textFieldValue ->
-                        viewModel.updateText(textFieldValue)
-                        viewModel.search(textFieldValue.text)
-                    }
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    ChipMaterial3(
-                        modifier = Modifier.padding(5.dp),
-                        text = "Train",
-                        isSelected = uiState.isTrainSelected,
-                        onClick = {
-                            viewModel.trainSelect(!uiState.isTrainSelected)
-                        },
-                    )
-                    ChipMaterial3(
-                        modifier = Modifier.padding(5.dp),
-                        text = "Bus",
-                        isSelected = uiState.isBusSelected,
-                        onClick = {
-                            viewModel.busSelect(!uiState.isBusSelected)
-                        },
-                    )
-                    ChipMaterial3(
-                        modifier = Modifier.padding(5.dp),
-                        text = "Bike",
-                        isSelected = uiState.isBikeSelected,
-                        onClick = {
-                            viewModel.bikeSelect(!uiState.isBikeSelected)
+
+    Column {
+        DisplayTopBar(
+            title = title,
+            viewModel = navigationViewModel,
+        )
+        Scaffold(
+            content = {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    TextFieldMaterial3(
+                        text = uiState.searchText,
+                        onValueChange = { textFieldValue ->
+                            viewModel.updateText(textFieldValue)
+                            viewModel.search(textFieldValue.text)
                         }
                     )
-                }
-                LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                    items(uiState.trains) { trainStation ->
-                        Row {
-                            SearchRow(
-                                imageVector = Icons.Filled.Train,
-                                title = trainStation.name,
-                                colors = trainStation.lines.map { line -> line.color },
-                                onClick = {
-                                    navController.navigate(Screen.TrainDetails, mapOf("stationId" to trainStation.id))
-                                }
-                            )
-                        }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        ChipMaterial3(
+                            modifier = Modifier.padding(5.dp),
+                            text = "Train",
+                            isSelected = uiState.isTrainSelected,
+                            onClick = {
+                                viewModel.trainSelect(!uiState.isTrainSelected)
+                            },
+                        )
+                        ChipMaterial3(
+                            modifier = Modifier.padding(5.dp),
+                            text = "Bus",
+                            isSelected = uiState.isBusSelected,
+                            onClick = {
+                                viewModel.busSelect(!uiState.isBusSelected)
+                            },
+                        )
+                        ChipMaterial3(
+                            modifier = Modifier.padding(5.dp),
+                            text = "Bike",
+                            isSelected = uiState.isBikeSelected,
+                            onClick = {
+                                viewModel.bikeSelect(!uiState.isBikeSelected)
+                            }
+                        )
                     }
-                    items(uiState.busRoutes) { busRoute ->
-                        Row {
-                            SearchRow(
-                                imageVector = Icons.Filled.DirectionsBus,
-                                title = busRoute.id + " " + busRoute.name,
-                                onClick = {
-                                    viewModel.setBusRoute(busRoute)
-                                    viewModel.showBusDialog(true)
-                                }
-                            )
+                    LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                        items(uiState.trains) { trainStation ->
+                            Row {
+                                SearchRow(
+                                    imageVector = Icons.Filled.Train,
+                                    title = trainStation.name,
+                                    colors = trainStation.lines.map { line -> line.color },
+                                    onClick = {
+                                        navController.navigate(Screen.TrainDetails, mapOf("stationId" to trainStation.id))
+                                    }
+                                )
+                            }
                         }
-                    }
-                    items(uiState.bikeStations) { bikeStation ->
-                        Row {
-                            SearchRow(
-                                imageVector = Icons.Filled.DirectionsBike,
-                                title = bikeStation.name,
-                                onClick = {
-                                    navController.navigate(
-                                        screen = Screen.DivvyDetails,
-                                        arguments = mapOf("stationId" to bikeStation.id)
-                                    )
-                                }
-                            )
+                        items(uiState.busRoutes) { busRoute ->
+                            Row {
+                                SearchRow(
+                                    imageVector = Icons.Filled.DirectionsBus,
+                                    title = busRoute.id + " " + busRoute.name,
+                                    onClick = {
+                                        viewModel.setBusRoute(busRoute)
+                                        viewModel.showBusDialog(true)
+                                    }
+                                )
+                            }
+                        }
+                        items(uiState.bikeStations) { bikeStation ->
+                            Row {
+                                SearchRow(
+                                    imageVector = Icons.Filled.DirectionsBike,
+                                    title = bikeStation.name,
+                                    onClick = {
+                                        navController.navigate(
+                                            screen = Screen.DivvyDetails,
+                                            arguments = mapOf("stationId" to bikeStation.id)
+                                        )
+                                    }
+                                )
+                            }
                         }
                     }
                 }
             }
-        }
-    )
-    BusRouteDialog(
-        showDialog = uiState.showBusDialog,
-        busRoute = uiState.busRoute,
-        hideDialog = {
-            viewModel.showBusDialog(false)
-        }
-    )
+        )
+        BusRouteDialog(
+            showDialog = uiState.showBusDialog,
+            busRoute = uiState.busRoute,
+            hideDialog = {
+                viewModel.showBusDialog(false)
+            }
+        )
+    }
 }
 
 @Composable

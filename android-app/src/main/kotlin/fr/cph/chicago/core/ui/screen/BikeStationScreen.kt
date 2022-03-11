@@ -2,8 +2,6 @@ package fr.cph.chicago.core.ui.screen
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.ShapeDrawable
 import android.os.Bundle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,8 +14,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,6 +37,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BikeStation.Companion.DEFAULT_AVAILABLE
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.navigation.DisplayTopBar
+import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.AnimatedText
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.ShowFavoriteSnackBar
@@ -61,11 +59,131 @@ import fr.cph.chicago.util.TimeUtil
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.Calendar
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import java.util.Calendar
-import javax.inject.Inject
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BikeStationScreen(
+    modifier: Modifier = Modifier,
+    viewModel: BikeStationViewModel,
+    navigationViewModel: NavigationViewModel,
+    title: String,
+) {
+    val uiState = viewModel.uiState
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    Column {
+        DisplayTopBar(
+            title = title,
+            viewModel = navigationViewModel,
+        )
+        SwipeRefresh(
+            modifier = modifier,
+            state = rememberSwipeRefreshState(uiState.isRefreshing),
+            onRefresh = { viewModel.refresh() },
+        ) {
+            Scaffold(
+                snackbarHost = { SnackbarHostInsets(state = uiState.snackbarHostState) },
+                content = {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        item {
+                            StationDetailsImageView(
+                                showGoogleStreetImage = uiState.showGoogleStreetImage,
+                                googleStreetMapImage = uiState.googleStreetMapImage,
+                                isLoading = uiState.isGoogleStreetImageLoading,
+                            )
+                        }
+                        item {
+                            StationDetailsTitleIconView(
+                                title = uiState.bikeStation.name,
+                                subTitle = "Last updated: ${TimeUtil.formatTimeDifference(uiState.bikeStation.lastReported, Calendar.getInstance().time)}",
+                                isFavorite = uiState.isFavorite,
+                                onFavoriteClick = { viewModel.switchFavorite() },
+                                onMapClick = { viewModel.openMap(context = context, scope = scope) }
+                            )
+                        }
+                        item {
+                            Column(
+                                modifier = Modifier
+                                    .padding(horizontal = 20.dp)
+                                    .fillMaxWidth()
+                            ) {
+                                Spacer(modifier = Modifier.padding(bottom = 3.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "Available bikes",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                    )
+                                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+                                        var availableBikes by remember { mutableStateOf(uiState.bikeStation.availableBikes.toString()) }
+                                        availableBikes = uiState.bikeStation.availableBikes.toString()
+                                        AnimatedText(
+                                            text = availableBikes,
+                                            style = MaterialTheme.typography.bodyLarge,
+                                        )
+                                    }
+                                }
+                                Row(
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(
+                                        text = "Available docks",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                    )
+                                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+                                        var availableDocks by remember { mutableStateOf(uiState.bikeStation.availableDocks.toString()) }
+                                        availableDocks = uiState.bikeStation.availableDocks.toString()
+
+                                        AnimatedText(
+                                            text = availableDocks,
+                                            style = MaterialTheme.typography.bodyLarge,
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                })
+        }
+
+        if (uiState.applyFavorite) {
+            ShowFavoriteSnackBar(
+                scope = scope,
+                snackbarHostState = viewModel.uiState.snackbarHostState,
+                isFavorite = viewModel.uiState.isFavorite,
+                onComplete = {
+                    viewModel.resetApplyFavorite()
+                }
+            )
+        }
+
+        if (uiState.showErrorMessage) {
+
+            ShowErrorMessageSnackBar(
+                scope = scope,
+                snackbarHostState = viewModel.uiState.snackbarHostState,
+                showError = uiState.showErrorMessage,
+                onComplete = {
+                    viewModel.resetShowErrorMessage()
+                }
+            )
+        }
+
+        DisposableEffect(key1 = viewModel) {
+            viewModel.onStart()
+            onDispose { viewModel.onStop() }
+        }
+    }
+}
+
 
 data class BikeStationUiState(
     val bikeStation: BikeStation = BikeStation.buildUnknownStation(),
@@ -113,8 +231,8 @@ class BikeStationViewModel @Inject constructor(
                 }
             }
             .subscribeOn(Schedulers.computation())
-            .subscribe (
-                {},{ Timber.e(it, "Could not init bike station screen") }
+            .subscribe(
+                {}, { Timber.e(it, "Could not init bike station screen") }
             )
     }
 
@@ -252,116 +370,5 @@ class BikeStationViewModel @Inject constructor(
                     return BikeStationViewModel(stationId) as T
                 }
             }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun BikeStationScreen(
-    modifier: Modifier = Modifier,
-    viewModel: BikeStationViewModel,
-) {
-    val uiState = viewModel.uiState
-    val scope = rememberCoroutineScope()
-    val context = LocalContext.current
-
-    SwipeRefresh(
-        modifier = modifier,
-        state = rememberSwipeRefreshState(uiState.isRefreshing),
-        onRefresh = { viewModel.refresh() },
-    ) {
-        Scaffold(
-            snackbarHost = { SnackbarHostInsets(state = uiState.snackbarHostState) },
-            content = {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    item {
-                        StationDetailsImageView(
-                            showGoogleStreetImage = uiState.showGoogleStreetImage,
-                            googleStreetMapImage = uiState.googleStreetMapImage,
-                            isLoading = uiState.isGoogleStreetImageLoading,
-                        )
-                    }
-                    item {
-                        StationDetailsTitleIconView(
-                            title = uiState.bikeStation.name,
-                            subTitle = "Last updated: ${TimeUtil.formatTimeDifference(uiState.bikeStation.lastReported, Calendar.getInstance().time)}",
-                            isFavorite = uiState.isFavorite,
-                            onFavoriteClick = { viewModel.switchFavorite() },
-                            onMapClick = { viewModel.openMap(context = context, scope = scope) }
-                        )
-                    }
-                    item {
-                        Column(
-                            modifier = Modifier
-                                .padding(horizontal = 20.dp)
-                                .fillMaxWidth()
-                        ) {
-                            Spacer(modifier = Modifier.padding(bottom = 3.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = "Available bikes",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                )
-                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
-                                    var availableBikes by remember { mutableStateOf(uiState.bikeStation.availableBikes.toString()) }
-                                    availableBikes = uiState.bikeStation.availableBikes.toString()
-                                    AnimatedText(
-                                        text = availableBikes,
-                                        style = MaterialTheme.typography.bodyLarge,
-                                    )
-                                }
-                            }
-                            Row(
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = "Available docks",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                )
-                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
-                                    var availableDocks by remember { mutableStateOf(uiState.bikeStation.availableDocks.toString()) }
-                                    availableDocks = uiState.bikeStation.availableDocks.toString()
-
-                                    AnimatedText(
-                                        text = availableDocks,
-                                        style = MaterialTheme.typography.bodyLarge,
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            })
-    }
-
-    if (uiState.applyFavorite) {
-        ShowFavoriteSnackBar(
-            scope = scope,
-            snackbarHostState = viewModel.uiState.snackbarHostState,
-            isFavorite = viewModel.uiState.isFavorite,
-            onComplete = {
-                viewModel.resetApplyFavorite()
-            }
-        )
-    }
-
-    if (uiState.showErrorMessage) {
-
-        ShowErrorMessageSnackBar(
-            scope = scope,
-            snackbarHostState = viewModel.uiState.snackbarHostState,
-            showError = uiState.showErrorMessage,
-            onComplete = {
-                viewModel.resetShowErrorMessage()
-            }
-        )
-    }
-
-    DisposableEffect(key1 = viewModel) {
-        viewModel.onStart()
-        onDispose { viewModel.onStop() }
     }
 }

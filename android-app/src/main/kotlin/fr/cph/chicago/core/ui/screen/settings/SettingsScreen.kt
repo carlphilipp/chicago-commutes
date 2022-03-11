@@ -40,7 +40,9 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.core.activity.BaseActivity
 import fr.cph.chicago.core.model.Theme
+import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
+import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.redux.ResetStateAction
 import fr.cph.chicago.redux.store
@@ -48,44 +50,54 @@ import fr.cph.chicago.repository.RealmConfig
 import fr.cph.chicago.service.PreferenceService
 
 @Composable
-fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) {
+fun SettingsScreen(
+    modifier: Modifier = Modifier,
+    viewModel: SettingsViewModel,
+    navigationViewModel: NavigationViewModel,
+    title: String,
+) {
     val uiState = viewModel.uiState
     val navController = LocalNavController.current
 
-    LazyColumn(
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
-        item {
-            SettingsElementView(
-                imageVector = Icons.Outlined.Brightness6,
-                title = "Display",
-                description = "Theme, dark mode and fonts",
-                onClick = {
-                    navController.navigate(screen = Screen.SettingsDisplay)
-                }
-            )
-        }
-        item {
-            SettingsElementView(
-                imageVector = Icons.Outlined.DeveloperMode,
-                title = "Developer options",
-                description = "Beep boop",
-                onClick = {
-                    navController.navigate(screen = Screen.DeveloperOptions)
-                }
-            )
-        }
-        item {
-            SettingsElementView(
-                imageVector = Icons.Outlined.Info,
-                title = "About",
-                description = "Chicago commutes",
-                onClick = {
+    Column {
+        DisplayTopBar(
+            title = title,
+            viewModel = navigationViewModel,
+        )
+        LazyColumn(
+            modifier = modifier
+                .fillMaxWidth()
+        ) {
+            item {
+                SettingsElementView(
+                    imageVector = Icons.Outlined.Brightness6,
+                    title = "Display",
+                    description = "Theme, dark mode and fonts",
+                    onClick = {
+                        navController.navigate(screen = Screen.SettingsDisplay)
+                    }
+                )
+            }
+            item {
+                SettingsElementView(
+                    imageVector = Icons.Outlined.DeveloperMode,
+                    title = "Developer options",
+                    description = "Beep boop",
+                    onClick = {
+                        navController.navigate(screen = Screen.DeveloperOptions)
+                    }
+                )
+            }
+            item {
+                SettingsElementView(
+                    imageVector = Icons.Outlined.Info,
+                    title = "About",
+                    description = "Chicago commutes",
+                    onClick = {
 
-                }
-            )
-        }
+                    }
+                )
+            }
 /*        item {
         item {
             // Data cache
@@ -155,14 +167,15 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                 }
             }
         }*/
-    }
+        }
 
-    if (uiState.showThemeChangerDialog) {
-        ThemeChangerDialog(viewModel = viewModel)
-    }
+        if (uiState.showThemeChangerDialog) {
+            ThemeChangerDialog(viewModel = viewModel)
+        }
 
-    if (uiState.showClearCacheDialog) {
-        ClearCacheDialog(viewModel = viewModel)
+        if (uiState.showClearCacheDialog) {
+            ClearCacheDialog(viewModel = viewModel)
+        }
     }
 }
 
