@@ -41,6 +41,8 @@ import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.core.ui.screen.ScreenTopBar
 import fr.cph.chicago.core.ui.screen.TopBarIconAction
 import fr.cph.chicago.core.ui.screen.TopBarType
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.util.Stack
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -270,7 +272,7 @@ class NavHostControllerWrapper(
     private fun buildRoute(route: String, arguments: Map<String, String>): String {
         var routeWithArguments = route
         arguments.forEach {
-            routeWithArguments = routeWithArguments.replace("{" + it.key + "}", it.value)
+            routeWithArguments = routeWithArguments.replace("{" + it.key + "}", URLEncoder.encode(it.value, StandardCharsets.UTF_8.toString()))
         }
         return routeWithArguments
     }

@@ -27,6 +27,8 @@ import fr.cph.chicago.core.ui.screen.settings.ThemeChooserSettingsScreen
 import fr.cph.chicago.core.viewmodel.locationViewModel
 import fr.cph.chicago.core.viewmodel.mainViewModel
 import fr.cph.chicago.core.viewmodel.settingsViewModel
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 import kotlin.random.Random
 
 sealed class Screen(
@@ -69,7 +71,7 @@ sealed class Screen(
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarBack,
         component = { backStackEntry, navigationViewModel ->
-            val line = backStackEntry.arguments?.getString("line", "0") ?: ""
+            val line = URLDecoder.decode(backStackEntry.arguments?.getString("line", "0") ?: "", StandardCharsets.UTF_8.toString())
             val viewModel: TrainListStationViewModel = viewModel(
                 factory = TrainListStationViewModel.provideFactory(
                     line = line,
@@ -128,12 +130,12 @@ sealed class Screen(
         showOnDrawer = false,
         topBar = ScreenTopBar.None,
         component = { backStackEntry, navigationViewModel ->
-            val busStopId = backStackEntry.arguments?.getString("busStopId", "0") ?: ""
-            val busStopName = backStackEntry.arguments?.getString("busStopName", "0") ?: ""
-            val busRouteId = backStackEntry.arguments?.getString("busRouteId", "0") ?: ""
-            val busRouteName = backStackEntry.arguments?.getString("busRouteName", "0") ?: ""
-            val bound = backStackEntry.arguments?.getString("bound", "0") ?: ""
-            val boundTitle = backStackEntry.arguments?.getString("boundTitle", "0") ?: ""
+            val busStopId = URLDecoder.decode(backStackEntry.arguments?.getString("busStopId", "0") ?: "", StandardCharsets.UTF_8.toString())
+            val busStopName = URLDecoder.decode(backStackEntry.arguments?.getString("busStopName", "0") ?: "", StandardCharsets.UTF_8.toString())
+            val busRouteId = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteId", "0") ?: "", StandardCharsets.UTF_8.toString())
+            val busRouteName = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteName", "0") ?: "", StandardCharsets.UTF_8.toString())
+            val bound = URLDecoder.decode(backStackEntry.arguments?.getString("bound", "0") ?: "", StandardCharsets.UTF_8.toString())
+            val boundTitle = URLDecoder.decode(backStackEntry.arguments?.getString("boundTitle", "0") ?: "", StandardCharsets.UTF_8.toString())
             val viewModel: BusStationViewModel = viewModel(
                 factory = BusStationViewModel.provideFactory(
                     busStopId = busStopId,
@@ -160,10 +162,10 @@ sealed class Screen(
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarBack,
         component = { backStackEntry, navigationViewModel ->
-            val busRouteId = backStackEntry.arguments?.getString("busRouteId", "0") ?: ""
-            val busRouteName = backStackEntry.arguments?.getString("busRouteName", "0") ?: ""
-            val bound = backStackEntry.arguments?.getString("bound", "0") ?: ""
-            val boundTitle = backStackEntry.arguments?.getString("boundTitle", "0") ?: ""
+            val busRouteId = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteId", "0") ?: "", StandardCharsets.UTF_8.toString())
+            val busRouteName = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteName", "0") ?: "", StandardCharsets.UTF_8.toString())
+            val bound = URLDecoder.decode(backStackEntry.arguments?.getString("bound", "0") ?: "", StandardCharsets.UTF_8.toString())
+            val boundTitle = URLDecoder.decode(backStackEntry.arguments?.getString("boundTitle", "0") ?: "", StandardCharsets.UTF_8.toString())
             val viewModel: BusBoundUiViewModel = viewModel(
                 factory = BusBoundUiViewModel.provideFactory(
                     busRouteId = busRouteId,
@@ -203,7 +205,7 @@ sealed class Screen(
         showOnDrawer = false,
         topBar = ScreenTopBar.None,
         component = { backStackEntry, navigationViewModel ->
-            val stationId = backStackEntry.arguments?.getString("stationId", "0") ?: ""
+            val stationId = URLDecoder.decode(backStackEntry.arguments?.getString("stationId", "0") ?: "", StandardCharsets.UTF_8.toString())
             val viewModel: BikeStationViewModel = viewModel(
                 factory = BikeStationViewModel.provideFactory(
                     stationId = stationId,
@@ -285,8 +287,8 @@ sealed class Screen(
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarDrawer,
         component = { backStackEntry, navigationViewModel ->
-            val routeId = backStackEntry.arguments?.getString("routeId", "") ?: ""
-            val title = backStackEntry.arguments?.getString("title", "") ?: ""
+            val routeId = URLDecoder.decode(backStackEntry.arguments?.getString("routeId", "") ?: "", StandardCharsets.UTF_8.toString())
+            val title = URLDecoder.decode(backStackEntry.arguments?.getString("title", "") ?: "", StandardCharsets.UTF_8.toString())
             val viewModel: AlertDetailsViewModel = viewModel(
                 factory = AlertDetailsViewModel.provideFactory(
                     routeId = routeId,
