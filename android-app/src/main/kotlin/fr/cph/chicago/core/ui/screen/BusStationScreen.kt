@@ -72,7 +72,6 @@ fun BusStationScreen(
     modifier: Modifier = Modifier,
     viewModel: BusStationViewModel,
     navigationViewModel: NavigationViewModel,
-    title: String,
 ) {
     val uiState = viewModel.uiState
     val scope = rememberCoroutineScope()
@@ -80,10 +79,7 @@ fun BusStationScreen(
     val busArrivalsKeys = uiState.busArrivalStopDTO.keys.toList()
 
     Column {
-        DisplayTopBar(
-            title = title,
-            viewModel = navigationViewModel,
-        )
+        DisplayTopBar(viewModel = navigationViewModel)
         SwipeRefresh(
             modifier = modifier,
             state = rememberSwipeRefreshState(uiState.isRefreshing),

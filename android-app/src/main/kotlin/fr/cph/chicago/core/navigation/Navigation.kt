@@ -3,11 +3,7 @@ package fr.cph.chicago.core.navigation
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.DecayAnimationSpec
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.rememberSplineBasedDecay
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DrawerState
@@ -152,7 +148,6 @@ data class NavigationUiState constructor(
     val gesturesEnabled: Boolean = true,
     val screens: List<Screen> = fr.cph.chicago.core.ui.screen.screens,
     var currentScreen: Screen = Screen.Favorites,
-    //var topBarTitle: String = Screen.Favorites.title,
     val drawerState: DrawerState = DrawerState(DrawerValue.Closed),
     val navController: NavHostController = NavHostController(App.instance.applicationContext),
 
@@ -290,12 +285,12 @@ private fun topBarBehavior(screen: Screen): TopAppBarScrollBehavior {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DisplayTopBar(
-    title: String,
+    title: String = "",
     viewModel: NavigationViewModel,
 ) {
-    val screen = viewModel.uiState.currentScreen
-    val navController = LocalNavController.current
-    if (screen.topBar != ScreenTopBar.None) {
+    if (viewModel.uiState.currentScreen.topBar != ScreenTopBar.None) {
+        val screen = viewModel.uiState.currentScreen
+        val navController = LocalNavController.current
         val scope = rememberCoroutineScope()
         val openDrawer = { scope.launch { viewModel.uiState.drawerState.open() } }
         val onClick: () -> Unit = {

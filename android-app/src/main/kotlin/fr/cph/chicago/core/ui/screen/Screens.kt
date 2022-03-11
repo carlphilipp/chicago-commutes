@@ -149,7 +149,6 @@ sealed class Screen(
             BusStationScreen(
                 navigationViewModel = navigationViewModel,
                 viewModel = viewModel,
-                title = "$busRouteId - $boundTitle"
             )
         }
     )
@@ -215,7 +214,6 @@ sealed class Screen(
             BikeStationScreen(
                 viewModel = viewModel,
                 navigationViewModel = navigationViewModel,
-                title = stationId,
             )
         }
     )

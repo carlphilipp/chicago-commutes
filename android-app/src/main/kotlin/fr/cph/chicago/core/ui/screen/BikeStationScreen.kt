@@ -71,17 +71,13 @@ fun BikeStationScreen(
     modifier: Modifier = Modifier,
     viewModel: BikeStationViewModel,
     navigationViewModel: NavigationViewModel,
-    title: String,
 ) {
     val uiState = viewModel.uiState
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
     Column {
-        DisplayTopBar(
-            title = title,
-            viewModel = navigationViewModel,
-        )
+        DisplayTopBar(viewModel = navigationViewModel)
         SwipeRefresh(
             modifier = modifier,
             state = rememberSwipeRefreshState(uiState.isRefreshing),
