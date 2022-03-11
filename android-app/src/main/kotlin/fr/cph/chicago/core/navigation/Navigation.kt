@@ -1,8 +1,9 @@
 package fr.cph.chicago.core.navigation
 
-import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.DecayAnimationSpec
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -89,41 +90,45 @@ fun Navigation(viewModel: NavigationViewModel) {
                                 route = screen.route,
                                 arguments = emptyList(),
                                 enterTransition = {
-/*                                    Timber.i("Animation initialState destination ${initialState.destination.route}")
-                                    when (initialState.destination.route) {
-                                        Screen.Favorites.route -> {
-                                            slideInVertically(
-                                                animationSpec = spring(
-                                                    dampingRatio = Spring.StiffnessHigh,
-                                                    stiffness = Spring.StiffnessMedium,
-                                                ),
-                                                initialOffsetY = { fullHeight ->
-                                                    Timber.i("Animation slideInVertically fullHeight $fullHeight")
-                                                    -5
-                                                },
-                                            )
+
+                                    when (targetState.destination.route) {
+                                        Screen.TrainDetails.route -> {
+                                            Timber.i("Animation enterTransition targetState.destination ${initialState.destination.route} SLIDE IN LEFT")
+                                            slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(500))
                                         }
-                                        else -> null
-                                    }*/
-                                    EnterTransition.None
+                                        Screen.TrainList.route -> {
+                                            when(initialState.destination.route) {
+                                                Screen.TrainDetails.route -> {
+                                                    null
+                                                }
+                                                else -> {
+                                                    slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(500))
+                                                }
+                                            }
+                                        }
+                                        else -> {
+                                            Timber.i("Animation enterTransition targetState.destination ${initialState.destination.route} NO ANIMATION")
+                                            null//EnterTransition.None
+                                        }
+                                    }
+                                    //EnterTransition.None
                                 },
                                 exitTransition = {
-/*                                    when (targetState.destination.route) {
-                                        Screen.Favorites.route -> {
-                                            slideOutVertically(
-                                                animationSpec = spring(
-                                                    dampingRatio = Spring.StiffnessHigh,
-                                                    stiffness = Spring.StiffnessMedium,
-                                                ),
-                                                targetOffsetY = { fullHeight ->
-                                                    Timber.i("Animation slideOutVertically fullHeight $fullHeight")
-                                                    -5
-                                                },
+                                    when (initialState.destination.route) {
+                                        Screen.TrainDetails.route -> {
+                                            Timber.i("Animation exitTransition initialState.destination ${initialState.destination.route} SLIDE IN RIGHT")
+                                            slideOutOfContainer(
+                                                AnimatedContentScope.SlideDirection.Right, animationSpec = tween(500)
+
                                             )
                                         }
-                                        else -> null
-                                    }*/
-                                    ExitTransition.None
+                                        else -> {
+                                            Timber.i("Animation exitTransition initialState.destination ${initialState.destination.route} NO ANIMATION")
+                                            ExitTransition.None
+                                        }
+
+                                    }
+                                    //ExitTransition.None
                                 },
                                 //popEnterTransition = { EnterTransition.None },
                                 //popExitTransition = { ExitTransition.None },
