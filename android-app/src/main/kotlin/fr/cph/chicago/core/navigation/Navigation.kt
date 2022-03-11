@@ -1,13 +1,16 @@
 package fr.cph.chicago.core.navigation
 
-import android.content.Intent
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.DecayAnimationSpec
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.rememberSplineBasedDecay
+import androidx.compose.animation.scaleIn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -29,36 +32,35 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.ContextCompat
+import androidx.compose.ui.unit.IntOffset
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.ui.Drawer
 import fr.cph.chicago.core.ui.LargeTopBar
 import fr.cph.chicago.core.ui.MediumTopBar
 import fr.cph.chicago.core.ui.common.BackHandler
 import fr.cph.chicago.core.ui.screen.Screen
+import fr.cph.chicago.core.ui.screen.ScreenTopBar
 import fr.cph.chicago.core.ui.screen.TopBarIconAction
 import fr.cph.chicago.core.ui.screen.TopBarType
-import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
+import java.util.Stack
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.Stack
 
-val LocalNavController = compositionLocalOf<NavHostTopBarController> {
-    error("No NavHostTopBarController provided")
+val LocalNavController = compositionLocalOf<NavHostControllerWrapper> {
+    error("No NavHostControllerWrapper provided")
 }
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.animation.ExperimentalAnimationApi::class)
 @Composable
-fun Navigation(viewModel: NavigationViewModel, settingsViewModel: SettingsViewModel) {
+fun Navigation(viewModel: NavigationViewModel) {
+    Timber.d("Compose Navigation")
     val uiState = viewModel.uiState
-    val navController = remember { NavHostTopBarController(viewModel) }
+    val navController = remember { NavHostControllerWrapper(viewModel) }
     val scope = rememberCoroutineScope()
 
     ModalNavigationDrawer(
@@ -78,29 +80,14 @@ fun Navigation(viewModel: NavigationViewModel, settingsViewModel: SettingsViewMo
             )
         },
         content = {
-            // FIXME: this whole thing should probably be refactored
-/*            val decayAnimationSpec = rememberSplineBasedDecay<Float>()
-
-            if (uiState.currentScreen == Screen.Settings || uiState.currentScreen == Screen.SettingsDisplay) {
-                settingsViewModel.setScrollBehavior(
-                    scrollBehavior = remember(decayAnimationSpec) { TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec) }
-                )
-            } else {
-                settingsViewModel.setScrollBehavior(
-                    scrollBehavior = remember { TopAppBarDefaults.enterAlwaysScrollBehavior() }
-                )
-            }*/
-
+            Timber.d("Compose Navigation content")
             // Add custom nav controller in local provider so it can be retrieve easily downstream
+            val springSpec = spring<IntOffset>(dampingRatio = Spring.DampingRatioMediumBouncy)
             CompositionLocalProvider(LocalNavController provides navController) {
-                val scrollBehavior = topBarBehavior(viewModel.uiState.currentScreen)
+                //val scrollBehavior = topBarBehavior(viewModel.uiState.currentScreen)
                 Scaffold(
-                    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                    modifier = Modifier.nestedScroll(viewModel.uiState.scrollBehavior.nestedScrollConnection),
                     topBar = {
-                        DisplayTopBar(
-                            viewModel = viewModel,
-                            scrollBehavior = scrollBehavior,
-                        )
                     }
                 ) {
                     AnimatedNavHost(
@@ -108,25 +95,31 @@ fun Navigation(viewModel: NavigationViewModel, settingsViewModel: SettingsViewMo
                         startDestination = Screen.Favorites.route
                     ) {
                         uiState.screens.forEach { screen ->
+                            Timber.d("Compose for each screen -> ${screen.title}")
                             composable(
                                 route = screen.route,
+                                arguments = emptyList(),
                                 enterTransition = {
-                                    when (initialState.destination.route) {
-                                        Screen.SettingsDisplay.route -> slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(3000))
+                                    when (screen) {
+                                        Screen.Settings, Screen.SettingsDisplay, Screen.SettingsThemeColorChooser -> scaleIn()
+                                        Screen.TrainDetails, Screen.BusDetails, Screen.DivvyDetails -> slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(200))
                                         else -> EnterTransition.None
                                     }
                                 },
                                 exitTransition = {
-                                    when (targetState.destination.route) {
-                                        Screen.SettingsDisplay.route -> slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(3000))
-                                        else -> ExitTransition.None
+                                    when (screen) {
+                                        Screen.TrainDetails, Screen.BusDetails, Screen.DivvyDetails -> slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(200))
+                                        else -> fadeOut()
                                     }
                                 },
-                            ) {
+                                popEnterTransition = { EnterTransition.None },
+                                popExitTransition = { ExitTransition.None },
+                            ) { backStackEntry ->
                                 // Add custom backhandler to all composable so we can handle when someone push the back button
                                 BackHandler {
+                                    Timber.d("Compose render -> ${screen.title}")
                                     uiState.currentScreen = screen
-                                    screen.component()
+                                    screen.component(backStackEntry, viewModel)
                                 }
                             }
                         }
@@ -142,21 +135,36 @@ data class NavigationUiState constructor(
     val gesturesEnabled: Boolean = true,
     val screens: List<Screen> = fr.cph.chicago.core.ui.screen.screens,
     var currentScreen: Screen = Screen.Favorites,
+    //var topBarTitle: String = Screen.Favorites.title,
     val drawerState: DrawerState = DrawerState(DrawerValue.Closed),
     val navController: NavHostController = NavHostController(App.instance.applicationContext),
+
+    val decayAnimationSpec: DecayAnimationSpec<Float>? = null,
+
+    val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    val scrollMediumBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    val scrollLargeBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
 )
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.animation.ExperimentalAnimationApi::class)
 @Composable
 fun rememberNavigationState(
     drawerState: DrawerState = rememberDrawerState(DrawerValue.Closed),
-    navController: NavHostController = rememberAnimatedNavController(),//rememberNavController(),
-    currentScreen: Screen = Screen.Favorites,
-) = remember(drawerState, navController, currentScreen) {
+    navController: NavHostController = rememberAnimatedNavController(),
+    currentScreen: Screen = remember { Screen.Favorites },
+    scrollBehavior: TopAppBarScrollBehavior = remember {
+        TopAppBarDefaults.pinnedScrollBehavior()
+    },
+    decayAnimationSpec: DecayAnimationSpec<Float> = rememberSplineBasedDecay(),
+    scrollLargeBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec)
+) = remember(drawerState, navController, currentScreen, scrollBehavior, decayAnimationSpec, scrollLargeBehavior) {
     NavigationUiState(
         drawerState = drawerState,
         navController = navController,
         currentScreen = currentScreen,
+        scrollBehavior = scrollBehavior,
+        decayAnimationSpec = decayAnimationSpec,
+        scrollLargeBehavior = scrollLargeBehavior
     )
 }
 
@@ -171,8 +179,14 @@ class NavigationViewModel : ViewModel() {
     }
 
     fun updateScreen(screen: Screen) {
+        val scrollBehavior = if (screen.topBar.type == TopBarType.LARGE) {
+            uiState.scrollLargeBehavior
+        } else {
+            uiState.scrollMediumBehavior
+        }
         uiState = uiState.copy(
-            currentScreen = screen
+            currentScreen = screen,
+            scrollBehavior = scrollBehavior,
         )
     }
 
@@ -185,22 +199,24 @@ class NavigationViewModel : ViewModel() {
     }
 }
 
-class NavHostTopBarController(private val viewModel: NavigationViewModel) {
+class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
 
-    private val previous: Stack<Screen> = Stack()
+    private val previous: Stack<Triple<Screen, String, Map<String, String>>> = Stack()
 
     fun navController(): NavHostController {
         return viewModel.uiState.navController
     }
 
-    fun navigate(screen: Screen) {
+    fun navigate(screen: Screen, arguments: Map<String, String> = mapOf(), customTitle: String = "") {
         Timber.d("Navigate to ${screen.title}");
-        viewModel.uiState.navController.navigate(screen.route) {
-            popUpTo(viewModel.uiState.navController.graph.startDestinationId)
+        val route = buildRoute(route = screen.route, arguments = arguments)
+        viewModel.uiState.navController.navigate(route) {
+            //popUpTo(viewModel.uiState.navController.graph.startDestinationId)
             launchSingleTop = true
         }
+        val title = if (customTitle != "") customTitle else screen.title
         viewModel.updateScreen(screen = screen)
-        previous.push(screen)
+        previous.push(Triple(screen, title, arguments))
         printStackState()
     }
 
@@ -211,19 +227,31 @@ class NavHostTopBarController(private val viewModel: NavigationViewModel) {
             navigate(screen = Screen.Favorites)
         } else {
             val screen = previous.pop()
-            navigate(screen = screen)
+            navigate(
+                screen = screen.first,
+                arguments = screen.third,
+                customTitle = screen.second
+            )
         }
         printStackState()
     }
 
     fun printStackState() {
-        Timber.d("Stack size: ${previous.size}");
+        Timber.d("Navigate Stack size: ${previous.size}");
         var str = "[ ";
         for (i in previous.size - 1 downTo 0) {
-            str = str + previous[i].title + " <- "
+            str = str + previous[i].first.title + " <- "
         }
         str = str + " ]"
-        Timber.d("Stack: $str")
+        Timber.d("Navigate Stack: $str")
+    }
+
+    private fun buildRoute(route: String, arguments: Map<String, String>): String {
+        var routeWithArguments = route
+        arguments.forEach {
+            routeWithArguments = routeWithArguments.replace("{" + it.key + "}", it.value)
+        }
+        return routeWithArguments
     }
 }
 
@@ -240,60 +268,60 @@ private fun topBarBehavior(screen: Screen): TopAppBarScrollBehavior {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DisplayTopBar(
+fun DisplayTopBar(
+    title: String,
     viewModel: NavigationViewModel,
-    scrollBehavior: TopAppBarScrollBehavior,
 ) {
-    val navController = LocalNavController.current
-    val context = LocalContext.current
     val screen = viewModel.uiState.currentScreen
-    val scope = rememberCoroutineScope()
-    val openDrawer = { scope.launch { viewModel.uiState.drawerState.open() } }
-    val onClick: () -> Unit = {
-        if (screen.topBar.action == TopBarIconAction.BACK) {
-            navController.navigateBack()
-        } else {
-            openDrawer()
+    val navController = LocalNavController.current
+    if (screen.topBar != ScreenTopBar.None) {
+        val scope = rememberCoroutineScope()
+        val openDrawer = { scope.launch { viewModel.uiState.drawerState.open() } }
+        val onClick: () -> Unit = {
+            if (screen.topBar.action == TopBarIconAction.BACK) {
+                navController.navigateBack()
+            } else {
+                openDrawer()
+            }
         }
-    }
+        val topBar = screen.topBar
 
-    if (screen.topBar.type == TopBarType.LARGE) {
-        LargeTopBar(
-            title = screen.title,
-            scrollBehavior = scrollBehavior,
-            navigationIcon = {
-                IconButton(onClick = onClick) {
-                    Icon(
-                        imageVector = screen.topBar.icon,
-                        contentDescription = null,
-                    )
-                }
-            },
-        )
-    } else {
-        MediumTopBar(
-            title = screen.title,
-            scrollBehavior = scrollBehavior,
-            navigationIcon = {
-                IconButton(onClick = { openDrawer() }) {
-                    Icon(
-                        imageVector = Icons.Filled.Menu,
-                        contentDescription = null
-                    )
-                }
-            },
-            actions = {
-                IconButton(onClick = {
-                    val intent = Intent(context, SearchActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    ContextCompat.startActivity(context, intent, null)
-                }) {
-                    Icon(
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = null
-                    )
-                }
-            },
-        )
+        if (topBar.type == TopBarType.LARGE) {
+            LargeTopBar(
+                title = title,
+                scrollBehavior = viewModel.uiState.scrollBehavior,
+                navigationIcon = {
+                    IconButton(onClick = onClick) {
+                        Icon(
+                            imageVector = topBar.icon,
+                            contentDescription = null,
+                        )
+                    }
+                },
+            )
+        } else {
+            MediumTopBar(
+                title = title,
+                scrollBehavior = viewModel.uiState.scrollBehavior,
+                navigationIcon = {
+                    IconButton(onClick = onClick) {
+                        Icon(
+                            imageVector = topBar.icon,
+                            contentDescription = null
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {
+                        navController.navigate(Screen.Search)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = null
+                        )
+                    }
+                },
+            )
+        }
     }
 }

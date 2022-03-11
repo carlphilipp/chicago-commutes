@@ -88,7 +88,6 @@ fun DisplaySettingsScreen(
                 isChecked = uiState.theme == Theme.LIGHT,
             )
             DisplayElementSwitchView(
-
                 title = "Dark Mode",
                 description = "Enable",
                 onClick = {

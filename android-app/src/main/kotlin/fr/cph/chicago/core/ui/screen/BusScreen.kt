@@ -12,8 +12,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -31,13 +29,15 @@ import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.ui.common.AnimatedErrorView
 import fr.cph.chicago.core.ui.common.BusRouteDialog
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
+import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 import fr.cph.chicago.core.viewmodel.MainViewModel
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BusScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
-
+    Timber.d("Compose BusScreen")
     var showDialog by remember { mutableStateOf(false) }
     var selectedBusRoute by remember { mutableStateOf(BusRoute.buildEmpty()) }
     var searchBusRoutes by remember { mutableStateOf<List<BusRoute>>(listOf()) }
@@ -46,12 +46,14 @@ fun BusScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
     val scope = rememberCoroutineScope()
 
     Scaffold(
-        snackbarHost = { SnackbarHost(hostState = mainViewModel.uiState.snackbarHostState) { data -> Snackbar(snackbarData = data) } },
+        snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
         content = {
             if (mainViewModel.uiState.busRoutes.isNotEmpty()) {
                 Column {
                     TextFieldMaterial3(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 5.dp),
                         text = textSearch,
                         onValueChange = { value ->
                             textSearch = value
@@ -63,7 +65,10 @@ fun BusScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
                     LazyColumn(
                         modifier = modifier.fillMaxSize()
                     ) {
-                        items(searchBusRoutes) { busRoute ->
+                        items(
+                            items = searchBusRoutes,
+                            key = { it.id }
+                        ) { busRoute ->
                             TextButton(
                                 modifier = Modifier
                                     .fillMaxWidth()

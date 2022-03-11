@@ -1,14 +1,17 @@
 package fr.cph.chicago.core.ui.screen
 
-import android.content.Intent
-import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -30,22 +33,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.startActivity
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import fr.cph.chicago.R
-import fr.cph.chicago.core.App
-import fr.cph.chicago.core.activity.AlertActivity
 import fr.cph.chicago.core.model.dto.AlertType
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
+import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.ui.common.AnimatedErrorView
 import fr.cph.chicago.core.ui.common.AnimatedPlaceHolderList
 import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
+import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 import fr.cph.chicago.core.viewmodel.MainViewModel
 
@@ -58,9 +58,9 @@ fun AlertsScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
         load.value = false
     }
 
+    val navController = LocalNavController.current
     val uiState = mainViewModel.uiState
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
     var textSearch by remember { mutableStateOf(TextFieldValue("")) }
     var searchRoutesAlerts by remember { mutableStateOf<List<RoutesAlertsDTO>>(listOf()) }
     searchRoutesAlerts = uiState.routesAlerts
@@ -71,7 +71,7 @@ fun AlertsScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
     ) {
         Scaffold(
             modifier = modifier.fillMaxWidth(),
-            snackbarHost = { SnackbarHost(hostState = mainViewModel.uiState.snackbarHostState) { data -> Snackbar(snackbarData = data) } },
+            snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
             content = {
                 if (uiState.isRefreshing && uiState.routesAlerts.isEmpty()) {
                     AnimatedPlaceHolderList(isLoading = uiState.isRefreshing)
@@ -96,7 +96,7 @@ fun AlertsScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
                                             .fillMaxWidth()
                                             .padding(horizontal = 20.dp),
                                         onClick = {
-                                            val intent = Intent(context, AlertActivity::class.java)
+/*                                            val intent = Intent(context, AlertActivity::class.java)
                                             val extras = Bundle()
                                             extras.putString(App.instance.getString(R.string.bundle_alerts_route_id), alert.id)
                                             extras.putString(
@@ -107,7 +107,20 @@ fun AlertsScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
                                                     "${alert.id} - ${alert.routeName}"
                                             )
                                             intent.putExtras(extras)
-                                            startActivity(context, intent, null)
+                                            startActivity(context, intent, null)*/
+                                            val title = if (alert.alertType === AlertType.TRAIN)
+                                                alert.routeName
+                                            else
+                                                "${alert.id} - ${alert.routeName}"
+                                            navController.navigate(
+                                                screen = Screen.AlertDetail,
+                                                arguments = mapOf(
+                                                    "routeId" to alert.id,
+                                                    "title" to title
+                                                ),
+                                                customTitle = title
+                                            )
+
                                         }
                                     ) {
                                         Row(

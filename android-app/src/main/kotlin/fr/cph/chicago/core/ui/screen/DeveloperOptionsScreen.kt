@@ -1,7 +1,6 @@
-package fr.cph.chicago.core.activity
+package fr.cph.chicago.core.ui.screen
 
 import android.os.Bundle
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -9,9 +8,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,42 +19,30 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.AbstractSavedStateViewModelFactory
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.savedstate.SavedStateRegistryOwner
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.dto.PreferenceDTO
-import fr.cph.chicago.core.theme.ChicagoCommutesTheme
-import fr.cph.chicago.core.ui.RefreshTopBar
-import fr.cph.chicago.core.viewmodel.settingsViewModel
+import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.service.PreferenceService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
 
-class DeveloperOptionsActivity : CustomComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            ChicagoCommutesTheme(settingsViewModel = settingsViewModel) {
-                val viewModel = DeveloperOptionsViewModel().initModel()
-
-                DeveloperOptions(viewModel = viewModel)
-            }
-        }
-    }
-}
-
 data class DeveloperOptionsState(
     val showCache: Boolean = false,
     val preferences: List<PreferenceDTO> = listOf(),
 )
 
-class DeveloperOptionsViewModel(private val preferenceService: PreferenceService = PreferenceService) {
+class DeveloperOptionsViewModel(private val preferenceService: PreferenceService = PreferenceService) : ViewModel() {
     var uiState by mutableStateOf(DeveloperOptionsState())
         private set
 
-    fun initModel(): DeveloperOptionsViewModel {
+    init {
         getAllFavorites()
-        return this
     }
 
     fun showHideCacheData() {
@@ -81,38 +68,52 @@ class DeveloperOptionsViewModel(private val preferenceService: PreferenceService
                     Timber.e(throwable)
                 })
     }
+
+    companion object {
+        fun provideFactory(
+            owner: SavedStateRegistryOwner,
+            defaultArgs: Bundle? = null,
+        ): AbstractSavedStateViewModelFactory =
+            object : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(
+                    key: String,
+                    modelClass: Class<T>,
+                    handle: SavedStateHandle
+                ): T {
+                    return DeveloperOptionsViewModel() as T
+                }
+            }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DeveloperOptions(viewModel: DeveloperOptionsViewModel) {
-    Scaffold(
-        topBar = { RefreshTopBar(title = stringResource(id = R.string.preferences_developer_options)) },
-        content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { viewModel.showHideCacheData() }
-            ) {
-                Row(modifier = Modifier.padding(15.dp)) {
-                    Column {
-                        Text(
-                            text = stringResource(id = R.string.preferences_data_cache_title),
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        Text(
-                            text = stringResource(id = R.string.developer_show_cache),
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                        if (viewModel.uiState.showCache) {
-                            Spacer(modifier = Modifier.padding(10.dp))
-                            CacheDetail(viewModel)
-                        }
+fun DeveloperOptionsScreen(viewModel: DeveloperOptionsViewModel) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        item {
+            Row(modifier = Modifier.fillMaxWidth().clickable { viewModel.showHideCacheData() }.padding(15.dp)) {
+                Column {
+                    Text(
+                        text = stringResource(id = R.string.preferences_data_cache_title),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Text(
+                        text = stringResource(id = R.string.developer_show_cache),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    if (viewModel.uiState.showCache) {
+                        Spacer(modifier = Modifier.padding(10.dp))
+                        CacheDetail(viewModel)
                     }
                 }
             }
         }
-    )
+        item { NavigationBarsSpacer() }
+    }
 }
 
 @Composable

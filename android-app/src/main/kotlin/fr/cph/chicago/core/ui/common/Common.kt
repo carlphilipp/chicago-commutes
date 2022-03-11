@@ -2,9 +2,8 @@ package fr.cph.chicago.core.ui.common
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.Drawable
+import android.graphics.Bitmap
 import android.net.Uri
-import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
@@ -35,14 +34,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -50,13 +54,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Map
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
@@ -65,7 +67,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -89,13 +90,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.core.graphics.drawable.toBitmap
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.favorite_yellow
-import fr.cph.chicago.core.theme.green_line
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.functions.Consumer
@@ -127,7 +126,7 @@ fun openExternalMapApplication(context: Context, scope: CoroutineScope, snackbar
     }
 }
 
-fun loadGoogleStreet(position: Position, onSuccess: Consumer<Drawable>, onError: Consumer<Throwable>) {
+fun loadGoogleStreet(position: Position, onSuccess: Consumer<Bitmap>, onError: Consumer<Throwable>) {
     googleStreetClient.getImage(position.latitude, position.longitude, 1000, 400)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(onSuccess, onError)
@@ -309,83 +308,22 @@ fun ShimmerLargeItem(
 }
 
 @Composable
-fun ShowFavoriteSnackBar(
-    scope: CoroutineScope,
-    snackbarHostState: SnackbarHostState,
-    isFavorite: Boolean,
-    onComplete: () -> Unit,
-) {
-    ShowSnackBar(
-        scope = scope,
-        snackbarHostState = snackbarHostState,
-        element = isFavorite,
-        message = if (isFavorite) stringResource(id = R.string.message_add_fav) else stringResource(id = R.string.message_remove_fav),
-        onComplete = onComplete,
-    )
-}
-
-@Composable
-fun ShowLocationNotFoundSnackBar(
-    scope: CoroutineScope,
-    snackbarHostState: SnackbarHostState,
-    showErrorMessage: Boolean,
-    onComplete: () -> Unit,
-) {
-    ShowErrorMessageSnackBar(
-        scope = scope,
-        snackbarHostState = snackbarHostState,
-        showError = showErrorMessage,
-        message = stringResource(id = R.string.error_location),
-        onComplete = onComplete,
-    )
-}
-
-@Composable
-fun ShowErrorMessageSnackBar(
-    scope: CoroutineScope,
-    snackbarHostState: SnackbarHostState,
-    showError: Boolean,
-    message: String = stringResource(id = R.string.error_message),
-    onComplete: () -> Unit,
-) {
-    ShowSnackBar(
-        scope = scope,
-        snackbarHostState = snackbarHostState,
-        element = showError,
-        message = message,
-        onComplete = onComplete,
-    )
-}
-
-@Composable
-fun ShowSnackBar(
-    scope: CoroutineScope,
-    snackbarHostState: SnackbarHostState,
-    element: Boolean,
-    message: String,
-    onComplete: () -> Unit,
-) {
-    LaunchedEffect(element) {
-        scope.launch {
-            snackbarHostState.showSnackbar(message = message, withDismissAction = true)
-            onComplete()
-        }
-    }
-}
-
-
-@Composable
 fun StationDetailsImageView(
     modifier: Modifier = Modifier,
-    activity: ComponentActivity,
     isLoading: Boolean,
     showGoogleStreetImage: Boolean,
-    googleStreetMapImage: Drawable,
+    googleStreetMapImage: Bitmap,
     scrollState: ScrollState? = null,
 ) {
+    val navController = LocalNavController.current
+
     Surface(modifier = modifier.zIndex(1f)) {
         AnimatedVisibility(
-            modifier = Modifier.height(200.dp),
+            modifier = Modifier
+                .height(200.dp)
+                .windowInsetsPadding(
+                    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+                ),
             visible = isLoading,
             exit = fadeOut(animationSpec = tween(durationMillis = 300)),
         ) {
@@ -407,7 +345,7 @@ fun StationDetailsImageView(
                 Modifier.fillMaxWidth()
             }
             Image(
-                bitmap = googleStreetMapImage.toBitmap().asImageBitmap(),
+                bitmap = googleStreetMapImage.asImageBitmap(),
                 contentDescription = "Google image street view",
                 contentScale = ContentScale.Crop,
                 modifier = imageModifier
@@ -438,8 +376,12 @@ fun StationDetailsImageView(
         }
 
         FilledTonalButton(
-            modifier = Modifier.padding(20.dp),
-            onClick = { activity.finish() },
+            modifier = Modifier
+                .padding(start = 20.dp)
+                .windowInsetsPadding(
+                    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+                ),
+            onClick = { navController.navigateBack() },
         ) {
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
@@ -660,7 +602,7 @@ fun LoadingCircle(
         modifier = modifier.fillMaxSize(),
         visible = show,
         enter = EnterTransition.None,
-        exit = fadeOut()
+        //exit = fadeOut()
     ) {
         CircularProgressIndicator(
             modifier = Modifier

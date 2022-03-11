@@ -1,8 +1,6 @@
-package fr.cph.chicago.core.activity
+package fr.cph.chicago.core.ui.screen
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,62 +26,46 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import fr.cph.chicago.core.ui.SearchTopBar
-import fr.cph.chicago.core.ui.common.ChipMaterial3
-import fr.cph.chicago.core.ui.common.ColoredBox
-import fr.cph.chicago.core.theme.ChicagoCommutesTheme
+import androidx.lifecycle.AbstractSavedStateViewModelFactory
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.savedstate.SavedStateRegistryOwner
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.TrainStation
+import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.ui.common.BusRouteDialog
-import fr.cph.chicago.core.viewmodel.settingsViewModel
+import fr.cph.chicago.core.ui.common.ChipMaterial3
+import fr.cph.chicago.core.ui.common.ColoredBox
+import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
-import fr.cph.chicago.util.startBikeStationActivity
-import fr.cph.chicago.util.startTrainStationActivity
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import timber.log.Timber
 import javax.inject.Inject
-
-class SearchActivity : CustomComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        val viewModel = SearchViewModel().initModel()
-
-        setContent {
-            ChicagoCommutesTheme(settingsViewModel = settingsViewModel) {
-                SearchView(viewModel = viewModel)
-            }
-        }
-    }
-}
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SearchView(viewModel: SearchViewModel) {
+fun SearchViewScreen(viewModel: SearchViewModel) {
     val uiState = viewModel.uiState
-    val context = LocalContext.current
+    val navController = LocalNavController.current
     Scaffold(
-        topBar = {
-            SearchTopBar(
-                onValueChange = { textFieldValue ->
-                    viewModel.updateText(textFieldValue)
-                    viewModel.search(textFieldValue.text)
-                },
-                searchText = uiState.searchText
-            )
-        },
         content = {
             Column(modifier = Modifier.fillMaxWidth()) {
+                TextFieldMaterial3(
+                    text = uiState.searchText,
+                    onValueChange = { textFieldValue ->
+                        viewModel.updateText(textFieldValue)
+                        viewModel.search(textFieldValue.text)
+                    }
+                )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center,
@@ -121,7 +103,9 @@ private fun SearchView(viewModel: SearchViewModel) {
                                 imageVector = Icons.Filled.Train,
                                 title = trainStation.name,
                                 colors = trainStation.lines.map { line -> line.color },
-                                onClick = { startTrainStationActivity(context, trainStation) }
+                                onClick = {
+                                    navController.navigate(Screen.TrainDetails, mapOf("stationId" to trainStation.id))
+                                }
                             )
                         }
                     }
@@ -142,7 +126,12 @@ private fun SearchView(viewModel: SearchViewModel) {
                             SearchRow(
                                 imageVector = Icons.Filled.DirectionsBike,
                                 title = bikeStation.name,
-                                onClick = { startBikeStationActivity(context, bikeStation) }
+                                onClick = {
+                                    navController.navigate(
+                                        screen = Screen.DivvyDetails,
+                                        arguments = mapOf("stationId" to bikeStation.id)
+                                    )
+                                }
                             )
                         }
                     }
@@ -233,13 +222,9 @@ class SearchViewModel @Inject constructor(
     private val trainService: TrainService = TrainService,
     private val busService: BusService = BusService,
     private val bikeService: BikeService = BikeService,
-) {
+) : ViewModel() {
     var uiState by mutableStateOf(SearchUiState())
         private set
-
-    fun initModel(): SearchViewModel {
-        return this
-    }
 
     fun updateText(searchText: TextFieldValue) {
         uiState = uiState.copy(searchText = searchText)
@@ -285,5 +270,22 @@ class SearchViewModel @Inject constructor(
 
     fun setBusRoute(busRoute: BusRoute) {
         uiState = uiState.copy(busRoute = busRoute)
+    }
+
+    companion object {
+        fun provideFactory(
+            owner: SavedStateRegistryOwner,
+            defaultArgs: Bundle? = null,
+        ): AbstractSavedStateViewModelFactory =
+            object : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(
+                    key: String,
+                    modelClass: Class<T>,
+                    handle: SavedStateHandle
+                ): T {
+                    return SearchViewModel() as T
+                }
+            }
     }
 }

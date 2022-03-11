@@ -20,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,8 +48,11 @@ import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
+import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.theme.bike_orange
+import fr.cph.chicago.core.ui.MediumTopBar
 import fr.cph.chicago.core.ui.common.AnimatedText
 import fr.cph.chicago.core.ui.common.BusDetailDialog
 import fr.cph.chicago.core.ui.common.ColoredBox
@@ -56,42 +60,49 @@ import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.common.TrainDetailDialog
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.util.TimeUtil
-import fr.cph.chicago.util.startBikeStationActivity
-import fr.cph.chicago.util.startBusDetailActivity
 import fr.cph.chicago.util.startBusMapActivity
 import fr.cph.chicago.util.startTrainMapActivity
-import fr.cph.chicago.util.startTrainStationActivity
 import java.util.Calendar
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoritesScreen(
     mainViewModel: MainViewModel,
+    navigationViewModel: NavigationViewModel,
+    title: String,
     favorites: Favorites = Favorites,
 ) {
+    Timber.d("Compose FavoritesScreen")
     val lastUpdate: LastUpdate = favorites.time.value
 
-    SwipeRefresh(
-        state = rememberSwipeRefreshState(mainViewModel.uiState.isRefreshing),
-        onRefresh = {
-            mainViewModel.refresh()
-        },
-    ) {
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(favorites.size()) { index ->
-                ElevatedCard(
-                    modifier = Modifier.padding(horizontal = 15.dp, vertical = 7.dp),
-                ) {
-                    Column {
-                        when (val model = favorites.getObject(index)) {
-                            is TrainStation -> TrainFavoriteCard(trainStation = model, lastUpdate = lastUpdate, favorites = favorites)
-                            is BusRoute -> BusFavoriteCard(busRoute = model, lastUpdate = lastUpdate, favorites = favorites)
-                            is BikeStation -> BikeFavoriteCard(bikeStation = model)
+    Column {
+        DisplayTopBar(
+            title =title,
+            viewModel = navigationViewModel,
+        )
+        SwipeRefresh(
+            state = rememberSwipeRefreshState(mainViewModel.uiState.isRefreshing),
+            onRefresh = {
+                mainViewModel.refresh()
+            },
+        ) {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(favorites.size()) { index ->
+                    ElevatedCard(
+                        modifier = Modifier.padding(horizontal = 15.dp, vertical = 7.dp),
+                    ) {
+                        Column {
+                            when (val model = favorites.getObject(index)) {
+                                is TrainStation -> TrainFavoriteCard(trainStation = model, lastUpdate = lastUpdate, favorites = favorites)
+                                is BusRoute -> BusFavoriteCard(busRoute = model, lastUpdate = lastUpdate, favorites = favorites)
+                                is BikeStation -> BikeFavoriteCard(bikeStation = model)
+                            }
                         }
                     }
                 }
+                item { NavigationBarsSpacer() }
             }
-            item { NavigationBarsSpacer() }
         }
     }
 }
@@ -104,6 +115,7 @@ fun TrainFavoriteCard(
     favorites: Favorites,
 ) {
     val context = LocalContext.current
+    val navController = LocalNavController.current
     var showDialog by remember { mutableStateOf(false) }
 
     FavoriteCardWrapper(modifier = modifier) {
@@ -123,7 +135,9 @@ fun TrainFavoriteCard(
         }
 
         FooterCard(
-            detailsOnClick = { startTrainStationActivity(context, trainStation) },
+            detailsOnClick = {
+                navController.navigate(Screen.TrainDetails, mapOf("stationId" to trainStation.id))
+            },
             mapOnClick = {
                 if (trainStation.lines.size == 1) {
                     val line = trainStation.lines.first()
@@ -152,6 +166,7 @@ fun BusFavoriteCard(
     favorites: Favorites,
 ) {
     val context = LocalContext.current
+    val navController = LocalNavController.current
     var showDialog by remember { mutableStateOf(false) }
 
     FavoriteCardWrapper(modifier = modifier) {
@@ -187,7 +202,17 @@ fun BusFavoriteCard(
         FooterCard(
             detailsOnClick = {
                 if (busDetailsDTOs.size == 1) {
-                    startBusDetailActivity(context, busDetailsDTOs[0])
+                    navController.navigate(
+                        screen = Screen.BusDetails,
+                        arguments = mapOf(
+                            "busStopId" to busDetailsDTOs[0].stopId.toString(),
+                            "busStopName" to busDetailsDTOs[0].stopName,
+                            "busRouteId" to busDetailsDTOs[0].busRouteId,
+                            "busRouteName" to busDetailsDTOs[0].routeName,
+                            "bound" to busDetailsDTOs[0].bound,
+                            "boundTitle" to busDetailsDTOs[0].boundTitle,
+                        )
+                    )
                 } else {
                     showDialog = true
                 }
@@ -210,7 +235,7 @@ fun BusFavoriteCard(
 
 @Composable
 fun BikeFavoriteCard(modifier: Modifier = Modifier, bikeStation: BikeStation) {
-    val context = LocalContext.current
+    val navController = LocalNavController.current
 
     FavoriteCardWrapper(modifier = modifier) {
         HeaderCard(
@@ -230,7 +255,10 @@ fun BikeFavoriteCard(modifier: Modifier = Modifier, bikeStation: BikeStation) {
 
         FooterCard(
             detailsOnClick = {
-                startBikeStationActivity(context = context, bikeStation = bikeStation)
+                navController.navigate(
+                    screen = Screen.DivvyDetails,
+                    arguments = mapOf("stationId" to bikeStation.id)
+                )
             }
         )
     }

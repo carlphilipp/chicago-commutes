@@ -1,12 +1,9 @@
-package fr.cph.chicago.core.activity
+package fr.cph.chicago.core.ui.screen
 
 import android.content.Context
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.ShapeDrawable
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.ArrayMap
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,8 +15,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,27 +27,27 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.AbstractSavedStateViewModelFactory
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.savedstate.SavedStateRegistryOwner
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
-import fr.cph.chicago.core.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.ui.common.AnimatedText
 import fr.cph.chicago.core.ui.common.ShimmerAnimation
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.ShowFavoriteSnackBar
+import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.StationDetailsImageView
 import fr.cph.chicago.core.ui.common.StationDetailsTitleIconView
 import fr.cph.chicago.core.ui.common.loadGoogleStreet
 import fr.cph.chicago.core.ui.common.openExternalMapApplication
-import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.redux.AddBusFavoriteAction
 import fr.cph.chicago.redux.BusStopArrivalsAction
 import fr.cph.chicago.redux.RemoveBusFavoriteAction
@@ -69,48 +64,14 @@ import kotlinx.coroutines.CoroutineScope
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
-class BusStationActivity : CustomComponentActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val busStopId = intent.getStringExtra(getString(R.string.bundle_bus_stop_id)) ?: ""
-        val busStopName = intent.getStringExtra(getString(R.string.bundle_bus_stop_name)) ?: ""
-
-        val busRouteId = intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: ""
-        val busRouteName = intent.getStringExtra(getString(R.string.bundle_bus_route_name)) ?: ""
-
-        val bound = intent.getStringExtra(getString(R.string.bundle_bus_bound)) ?: ""
-        val boundTitle = intent.getStringExtra(getString(R.string.bundle_bus_bound_title)) ?: ""
-
-        val busDetails = BusDetailsDTO(
-            busRouteId = busRouteId,
-            routeName = busRouteName,
-            bound = bound,
-            boundTitle = boundTitle,
-            stopId = busStopId.toInt(),
-            stopName = busStopName,
-        )
-
-        val viewModel = BusStationViewModel().initModel(busDetails = busDetails)
-        viewModel.loadData()
-
-        setContent {
-            ChicagoCommutesTheme(settingsViewModel = settingsViewModel) {
-                BusStationView(viewModel = viewModel)
-            }
-        }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BusStationView(
+fun BusStationScreen(
     modifier: Modifier = Modifier,
     viewModel: BusStationViewModel,
 ) {
     val uiState = viewModel.uiState
     val scope = rememberCoroutineScope()
-    val activity = (LocalLifecycleOwner.current as ComponentActivity)
     val context = LocalContext.current
     val busArrivalsKeys = uiState.busArrivalStopDTO.keys.toList()
 
@@ -120,12 +81,11 @@ fun BusStationView(
         onRefresh = { viewModel.refresh() },
     ) {
         Scaffold(
-            snackbarHost = { SnackbarHost(hostState = uiState.snackbarHostState) { data -> Snackbar(snackbarData = data) } },
+            snackbarHost = { SnackbarHostInsets(state = uiState.snackbarHostState) },
             content = {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     item {
                         StationDetailsImageView(
-                            activity = activity,
                             showGoogleStreetImage = uiState.showGoogleStreetImage,
                             googleStreetMapImage = uiState.googleStreetMapImage,
                             isLoading = uiState.isGoogleStreetImageLoading,
@@ -229,7 +189,7 @@ data class BusStationUiState(
     val isRefreshing: Boolean = false,
     val applyFavorite: Boolean = false,
     val showBusArrivalData: Boolean = false,
-    val googleStreetMapImage: Drawable = ShapeDrawable(),
+    val googleStreetMapImage: Bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888),
     val isGoogleStreetImageLoading: Boolean = true,
     val showGoogleStreetImage: Boolean = false,
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
@@ -238,13 +198,14 @@ data class BusStationUiState(
 
 @HiltViewModel
 class BusStationViewModel @Inject constructor(
+    busDetails: BusDetailsDTO,
     private val preferenceService: PreferenceService = PreferenceService,
     private val busService: BusService = BusService,
 ) : ViewModel(), StoreSubscriber<State> {
     var uiState by mutableStateOf(BusStationUiState())
         private set
 
-    fun initModel(busDetails: BusDetailsDTO): BusStationViewModel {
+    init {
         val defaultedArrivals = ArrayMap<String, MutableList<BusArrival>>()
         defaultedArrivals["Unknown"] = mutableListOf()
         uiState = uiState.copy(
@@ -252,9 +213,8 @@ class BusStationViewModel @Inject constructor(
             isFavorite = isFavorite(busRouteId = busDetails.busRouteId, busStopId = busDetails.stopId.toString(), boundTitle = busDetails.boundTitle),
             busArrivalStopDTO = BusArrivalStopDTO(underlying = defaultedArrivals)
         )
-
+        loadData()
         loadStopPositionAndGoogleStreetImage()
-        return this
     }
 
     override fun newState(state: State) {
@@ -302,7 +262,7 @@ class BusStationViewModel @Inject constructor(
         }
     }
 
-    fun loadData() {
+    private fun loadData() {
         store.dispatch(
             BusStopArrivalsAction(
                 busRouteId = uiState.busDetails.busRouteId,
@@ -401,5 +361,36 @@ class BusStationViewModel @Inject constructor(
 
     fun onStop() {
         store.unsubscribe(this)
+    }
+
+    companion object {
+        fun provideFactory(
+            busStopId: String,
+            busStopName: String,
+            busRouteId: String,
+            busRouteName: String,
+            bound: String,
+            boundTitle: String,
+            owner: SavedStateRegistryOwner,
+            defaultArgs: Bundle? = null,
+        ): AbstractSavedStateViewModelFactory =
+            object : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(
+                    key: String,
+                    modelClass: Class<T>,
+                    handle: SavedStateHandle
+                ): T {
+                    val busDetails = BusDetailsDTO(
+                        busRouteId = busRouteId,
+                        routeName = busRouteName,
+                        bound = bound,
+                        boundTitle = boundTitle,
+                        stopId = busStopId.toInt(),
+                        stopName = busStopName,
+                    )
+                    return BusStationViewModel(busDetails) as T
+                }
+            }
     }
 }

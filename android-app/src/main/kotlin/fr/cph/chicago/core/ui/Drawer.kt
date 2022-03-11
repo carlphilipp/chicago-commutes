@@ -30,10 +30,12 @@ import androidx.compose.ui.unit.dp
 import fr.cph.chicago.R
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.screen.Screen
-import fr.cph.chicago.core.ui.screen.screens
+import fr.cph.chicago.core.ui.screen.drawerScreens
+import timber.log.Timber
 
 @Composable
 fun Drawer(modifier: Modifier = Modifier, currentScreen: Screen, onDestinationClicked: (route: Screen) -> Unit) {
+    Timber.d("Compose Drawer")
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item {
             Box {
@@ -56,20 +58,23 @@ fun Drawer(modifier: Modifier = Modifier, currentScreen: Screen, onDestinationCl
             }
         }
 
-        items(screens.filter { screen -> screen.showOnDrawer }) { screen ->
+        items(
+            items = drawerScreens,
+            key = { it.id }
+        ) { screen ->
+            Timber.d("Compose drawing drawer button")
             val backgroundColor = if (screen.route == currentScreen.route) {
                 MaterialTheme.colorScheme.secondaryContainer
             } else {
                 Color.Transparent
             }
-            val surfaceModifier = modifier
-                .padding(start = 8.dp, top = 8.dp, end = 8.dp)
-                .fillMaxWidth()
-                .height(50.dp)
             DrawerButton(
                 screen = screen,
                 backgroundColor = backgroundColor,
-                modifier = surfaceModifier,
+                modifier = modifier
+                    .padding(start = 8.dp, top = 8.dp, end = 8.dp)
+                    .fillMaxWidth()
+                    .height(50.dp),
                 onDestinationClicked = onDestinationClicked
             )
         }

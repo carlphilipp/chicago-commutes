@@ -67,47 +67,6 @@
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".core.activity.TrainStationActivity"
-            android:configChanges="uiMode"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".core.activity.TrainListStationActivity"
-            android:configChanges="uiMode"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-
-        <activity
-            android:name=".core.activity.BusBoundActivity"
-            android:configChanges="uiMode"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-
-        <activity
-            android:name=".core.activity.BusStationActivity"
-            android:configChanges="uiMode"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-
-        <activity
-            android:name=".core.activity.BikeStationComposable"
-            android:configChanges="uiMode"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-
-        <activity
-            android:name=".core.activity.DeveloperOptionsActivity"
-            android:configChanges="uiMode"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-
-        <activity
-            android:name=".core.activity.AlertActivity"
-            android:configChanges="uiMode"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-
-        <activity
             android:name=".core.activity.TrainMapActivity"
             android:configChanges="uiMode"
             android:exported="false"
@@ -115,12 +74,6 @@
 
         <activity
             android:name=".core.activity.BusMapActivity"
-            android:configChanges="uiMode"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-
-        <activity
-            android:name=".core.activity.SearchActivity"
             android:configChanges="uiMode"
             android:exported="false"
             android:screenOrientation="portrait" />

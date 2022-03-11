@@ -1,11 +1,15 @@
-package fr.cph.chicago.core.activity
+package fr.cph.chicago.core.ui.screen
 
 import android.os.Bundle
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,53 +26,33 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.AbstractSavedStateViewModelFactory
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.savedstate.SavedStateRegistryOwner
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import fr.cph.chicago.R
-import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.dto.RouteAlertsDTO
-import fr.cph.chicago.core.theme.ChicagoCommutesTheme
-import fr.cph.chicago.core.ui.RefreshTopBar
 import fr.cph.chicago.core.ui.common.AnimatedErrorView
 import fr.cph.chicago.core.ui.common.AnimatedPlaceHolderList
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
-import fr.cph.chicago.core.viewmodel.settingsViewModel
+import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.service.AlertService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import javax.inject.Inject
 import timber.log.Timber
-
-class AlertActivity : CustomComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        val routeId = intent.getStringExtra(App.instance.getString(R.string.bundle_alerts_route_id)) ?: ""
-        val title = intent.getStringExtra(App.instance.getString(R.string.bundle_title)) ?: ""
-        val viewModel = AlertDetailsViewModel().initModel(routeId = routeId, title = title)
-
-        setContent {
-            ChicagoCommutesTheme(settingsViewModel = settingsViewModel) {
-                AlertDetails(
-                    viewModel = viewModel,
-                )
-            }
-        }
-    }
-}
+import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlertDetails(
+fun AlertDetailsScreen(
     modifier: Modifier = Modifier,
     viewModel: AlertDetailsViewModel
 ) {
     val uiState = viewModel.uiState
     val scope = rememberCoroutineScope()
     Scaffold(
-        topBar = { RefreshTopBar(title = uiState.title) },
-        snackbarHost = { SnackbarHost(hostState = uiState.snackbarHostState) { data -> Snackbar(snackbarData = data) } },
+        snackbarHost = { SnackbarHostInsets(state = uiState.snackbarHostState) },
         content = {
             SwipeRefresh(
                 modifier = modifier,
@@ -144,18 +128,20 @@ data class AlertDetailsUiState(
 )
 
 @HiltViewModel
-class AlertDetailsViewModel @Inject constructor(private val alertService: AlertService = AlertService) : ViewModel() {
+class AlertDetailsViewModel @Inject constructor(
+    routeId: String,
+    title: String,
+    private val alertService: AlertService = AlertService
+) : ViewModel() {
     var uiState by mutableStateOf(AlertDetailsUiState())
         private set
 
-    fun initModel(routeId: String, title: String): AlertDetailsViewModel {
-        uiState = uiState.copy(
+    init {
+        uiState = AlertDetailsUiState(
             routeId = routeId,
             title = title,
         )
         loadAlertDetails()
-
-        return this
     }
 
     fun loadAlertDetails() {
@@ -183,5 +169,27 @@ class AlertDetailsViewModel @Inject constructor(private val alertService: AlertS
 
     fun resetShowErrorSnackBar() {
         uiState = uiState.copy(showErrorSnackBar = false)
+    }
+
+    companion object {
+        fun provideFactory(
+            routeId: String,
+            title: String,
+            owner: SavedStateRegistryOwner,
+            defaultArgs: Bundle? = null,
+        ): AbstractSavedStateViewModelFactory =
+            object : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(
+                    key: String,
+                    modelClass: Class<T>,
+                    handle: SavedStateHandle
+                ): T {
+                    return AlertDetailsViewModel(
+                        routeId = routeId,
+                        title = title,
+                    ) as T
+                }
+            }
     }
 }

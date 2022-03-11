@@ -25,8 +25,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -74,7 +72,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                 title = "Developer options",
                 description = "Beep boop",
                 onClick = {
-
+                    navController.navigate(screen = Screen.DeveloperOptions)
                 }
             )
         }
@@ -356,7 +354,6 @@ data class SettingsState(
     val theme: Theme = Theme.AUTO,
     val showThemeChangerDialog: Boolean = false,
     val showClearCacheDialog: Boolean = false,
-    val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
     val themeColorAutomatic: Boolean = false,
     val dynamicColorEnabled: Boolean = false,
 )
@@ -401,10 +398,6 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
         deleteCache(context)
         preferenceService.clearPreferences()
         realmConfig.cleanRealm()
-    }
-
-    fun setScrollBehavior(scrollBehavior: TopAppBarScrollBehavior) {
-        uiState = uiState.copy(scrollBehavior = scrollBehavior)
     }
 
     private fun deleteCache(context: Context?) {
