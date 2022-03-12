@@ -111,8 +111,7 @@ fun AlertsScreen(
                                                     arguments = mapOf(
                                                         "routeId" to alert.id,
                                                         "title" to title
-                                                    ),
-                                                    customTitle = title
+                                                    )
                                                 )
 
                                             }

@@ -268,7 +268,6 @@ fun BusRouteDialog(
                                                     "bound" to lBusDirections[index].text,
                                                     "boundTitle" to lBusDirections[index].text
                                                 ),
-                                                customTitle = "${busRoute.id} - ${lBusDirections[index].text}"
                                             )
                                             hideDialog()
                                         },

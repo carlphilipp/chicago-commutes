@@ -28,6 +28,7 @@ import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.AnimatedErrorView
+import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
@@ -58,7 +59,7 @@ fun DivvyScreen(
                     viewModel = navigationViewModel,
                 )
                 if (mainViewModel.uiState.bikeStations.isNotEmpty()) {
-                    Column {
+                    Column(modifier = Modifier.padding(top = 5.dp, bottom = 5.dp)) {
                         TextFieldMaterial3(
                             modifier = Modifier.fillMaxWidth(),
                             text = textSearch,
@@ -98,6 +99,7 @@ fun DivvyScreen(
                                     }
                                 }
                             }
+                            item { NavigationBarsSpacer() }
                         }
                     }
                 } else {

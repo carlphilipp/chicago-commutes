@@ -358,7 +358,7 @@ sealed class Screen(
         route = "search",
         icon = Icons.Filled.Search,
         showOnDrawer = false,
-        topBar = ScreenTopBar.MediumTopBarDrawer,
+        topBar = ScreenTopBar.MediumTopBarBack,
         component = { backStackEntry, navigationViewModel->
             val viewModel: SearchViewModel = viewModel(
                 factory = SearchViewModel.provideFactory(

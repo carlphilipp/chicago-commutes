@@ -1,10 +1,6 @@
 package fr.cph.chicago.core.navigation
 
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.core.DecayAnimationSpec
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -46,11 +42,11 @@ import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.core.ui.screen.ScreenTopBar
 import fr.cph.chicago.core.ui.screen.TopBarIconAction
 import fr.cph.chicago.core.ui.screen.TopBarType
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.util.Stack
-import kotlinx.coroutines.launch
-import timber.log.Timber
 
 val LocalNavController = compositionLocalOf<NavHostControllerWrapper> {
     error("No NavHostControllerWrapper provided")
@@ -137,9 +133,7 @@ fun rememberNavigationState(
     drawerState: DrawerState = rememberDrawerState(DrawerValue.Closed),
     navController: NavHostController = rememberAnimatedNavController(),
     currentScreen: Screen = remember { Screen.Favorites },
-    scrollBehavior: TopAppBarScrollBehavior = remember {
-        TopAppBarDefaults.pinnedScrollBehavior()
-    },
+    scrollBehavior: TopAppBarScrollBehavior = remember { TopAppBarDefaults.pinnedScrollBehavior() },
     decayAnimationSpec: DecayAnimationSpec<Float> = rememberSplineBasedDecay(),
     scrollLargeBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec)
 ) = remember(drawerState, navController, currentScreen, scrollBehavior, decayAnimationSpec, scrollLargeBehavior) {
@@ -184,18 +178,14 @@ class NavigationViewModel : ViewModel() {
     }
 }
 
-class NavHostControllerWrapper(
-    private
-    val viewModel: NavigationViewModel
-) {
-
-    private val previous: Stack<Triple<Screen, String, Map<String, String>>> = Stack()
+class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
+    private val previous: Stack<Pair<Screen, Map<String, String>>> = Stack()
 
     fun navController(): NavHostController {
         return viewModel.uiState.navController
     }
 
-    fun navigate(screen: Screen, arguments: Map<String, String> = mapOf(), customTitle: String = "") {
+    fun navigate(screen: Screen, arguments: Map<String, String> = mapOf()) {
         Timber.d("Navigate to ${screen.title}");
         val route = buildRoute(route = screen.route, arguments = arguments)
         viewModel.uiState.navController.navigate(route) {
@@ -203,9 +193,8 @@ class NavHostControllerWrapper(
             launchSingleTop = true
         }
         // FIXME, to delete?
-        val title = if (customTitle != "") customTitle else screen.title
         viewModel.updateScreen(screen = screen)
-        previous.push(Triple(screen, title, arguments))
+        previous.push(Pair(screen, arguments))
         printStackState()
     }
 
@@ -218,8 +207,7 @@ class NavHostControllerWrapper(
             val screen = previous.pop()
             navigate(
                 screen = screen.first,
-                arguments = screen.third,
-                customTitle = screen.second
+                arguments = screen.second,
             )
         }
         printStackState()

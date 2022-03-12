@@ -62,7 +62,7 @@ fun BusScreen(
                     viewModel = navigationViewModel,
                 )
                 if (mainViewModel.uiState.busRoutes.isNotEmpty()) {
-                    Column {
+                    Column(modifier = Modifier.padding(top = 5.dp, bottom = 5.dp)) {
                         TextFieldMaterial3(
                             modifier = Modifier
                                 .fillMaxWidth()

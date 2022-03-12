@@ -51,7 +51,6 @@ fun TrainScreen(modifier: Modifier = Modifier, title: String, navigationViewMode
                                 navController.navigate(
                                     screen = Screen.TrainList,
                                     arguments = mapOf("line" to line.toString()),
-                                    customTitle = line.toStringWithLine()
                                 )
                             }
                         ) {
