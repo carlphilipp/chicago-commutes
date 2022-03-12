@@ -319,11 +319,12 @@ fun StationDetailsImageView(
 ) {
     val navController = LocalNavController.current
     val screenHeight = LocalConfiguration.current.screenHeightDp
+    val height = (1f / 3 * screenHeight).dp
 
     Surface(modifier = modifier.zIndex(1f)) {
-/*        AnimatedVisibility(
+        AnimatedVisibility(
             modifier = Modifier
-                .height(300.dp)
+                .height(height)
                 .windowInsetsPadding(
                     WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
                 ),
@@ -331,9 +332,9 @@ fun StationDetailsImageView(
             exit = fadeOut(animationSpec = tween(durationMillis = 300)),
         ) {
             LargeImagePlaceHolderAnimated()
-        }*/
+        }
         AnimatedVisibility(
-            modifier = Modifier.height((1f / 3 * screenHeight).dp),//.height(300.dp),
+            modifier = Modifier.height(height),//.height(300.dp),
             visible = !isLoading && showGoogleStreetImage,
             enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
         ) {
@@ -355,8 +356,8 @@ fun StationDetailsImageView(
                 modifier = imageModifier
             )
         }
-/*        AnimatedVisibility(
-            modifier = Modifier.height(300.dp),
+        AnimatedVisibility(
+            modifier = Modifier.height(height),
             visible = !isLoading && !showGoogleStreetImage,
             enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
             exit = fadeOut(animationSpec = tween(durationMillis = 300)),
@@ -380,7 +381,7 @@ fun StationDetailsImageView(
                 contentScale = ContentScale.Crop,
                 modifier = imageModifier
             )
-        }*/
+        }
 
         FilledTonalButton(
             modifier = Modifier

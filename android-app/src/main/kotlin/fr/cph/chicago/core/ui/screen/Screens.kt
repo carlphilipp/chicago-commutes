@@ -28,7 +28,6 @@ import fr.cph.chicago.core.viewmodel.locationViewModel
 import fr.cph.chicago.core.viewmodel.mainViewModel
 import fr.cph.chicago.core.viewmodel.settingsViewModel
 import java.net.URLDecoder
-import java.nio.charset.StandardCharsets
 import kotlin.random.Random
 
 sealed class Screen(
@@ -317,7 +316,7 @@ sealed class Screen(
         route = "settings",
         icon = Icons.Filled.Settings,
         topBar = ScreenTopBar.LargeTopBarDrawer,
-        component = { _, navigationViewModel->
+        component = { _, navigationViewModel ->
             SettingsScreen(
                 title = "Settings",
                 viewModel = settingsViewModel,
@@ -331,7 +330,7 @@ sealed class Screen(
         icon = Icons.Filled.Settings,
         topBar = ScreenTopBar.LargeTopBarBack,
         showOnDrawer = false,
-        component = { _, navigationViewModel->
+        component = { _, navigationViewModel ->
             DisplaySettingsScreen(
                 title = "Display",
                 viewModel = settingsViewModel,
@@ -345,7 +344,7 @@ sealed class Screen(
         icon = Icons.Filled.Settings,
         topBar = ScreenTopBar.LargeTopBarBack,
         showOnDrawer = false,
-        component = { _, navigationViewModel->
+        component = { _, navigationViewModel ->
             ThemeChooserSettingsScreen(
                 title = "Theme color",
                 viewModel = settingsViewModel,
@@ -359,7 +358,7 @@ sealed class Screen(
         icon = Icons.Filled.Search,
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarBack,
-        component = { backStackEntry, navigationViewModel->
+        component = { backStackEntry, navigationViewModel ->
             val viewModel: SearchViewModel = viewModel(
                 factory = SearchViewModel.provideFactory(
                     owner = backStackEntry,
