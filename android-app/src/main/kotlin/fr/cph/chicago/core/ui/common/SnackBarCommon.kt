@@ -82,10 +82,14 @@ fun ShowSnackBar(
     element: Boolean,
     message: String,
     onComplete: () -> Unit,
+    withDismissAction: Boolean = true,
 ) {
     LaunchedEffect(element) {
         scope.launch {
-            snackbarHostState.showSnackbar(message = message, withDismissAction = true)
+            snackbarHostState.showSnackbar(
+                message = message,
+                withDismissAction = withDismissAction
+            )
             onComplete()
         }
     }

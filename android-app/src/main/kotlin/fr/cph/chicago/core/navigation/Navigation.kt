@@ -1,5 +1,7 @@
 package fr.cph.chicago.core.navigation
 
+import android.content.Context
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.core.DecayAnimationSpec
 import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.material.icons.Icons
@@ -24,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -34,19 +37,24 @@ import fr.cph.chicago.core.ui.Drawer
 import fr.cph.chicago.core.ui.LargeTopBar
 import fr.cph.chicago.core.ui.MediumTopBar
 import fr.cph.chicago.core.ui.common.BackHandler
+import fr.cph.chicago.core.ui.common.ShowSnackBar
+import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.enterTransition
 import fr.cph.chicago.core.ui.common.exitTransition
 import fr.cph.chicago.core.ui.common.fallBackEnterTransition
 import fr.cph.chicago.core.ui.common.fallBackExitTransition
+import fr.cph.chicago.core.ui.common.runWithDelay
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.core.ui.screen.ScreenTopBar
 import fr.cph.chicago.core.ui.screen.TopBarIconAction
 import fr.cph.chicago.core.ui.screen.TopBarType
+import fr.cph.chicago.core.viewmodel.mainViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.util.Stack
+import java.util.concurrent.TimeUnit
 
 val LocalNavController = compositionLocalOf<NavHostControllerWrapper> {
     error("No NavHostControllerWrapper provided")
@@ -81,8 +89,19 @@ fun Navigation(viewModel: NavigationViewModel) {
             // Add custom nav controller in local provider so it can be retrieve easily downstream
             CompositionLocalProvider(LocalNavController provides navController) {
                 Scaffold(
+                    snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
                     modifier = Modifier.nestedScroll(viewModel.uiState.scrollBehavior.nestedScrollConnection),
                 ) {
+                    if (viewModel.uiState.shouldExit) {
+                        ShowSnackBar(
+                            scope = scope,
+                            snackbarHostState = mainViewModel.uiState.snackbarHostState,
+                            element = viewModel.uiState.shouldExit,
+                            message = "Press BACK again to exit",
+                            onComplete = {},
+                            withDismissAction = false,
+                        )
+                    }
                     AnimatedNavHost(
                         navController = navController.navController(),
                         startDestination = Screen.Favorites.route,
@@ -120,8 +139,12 @@ data class NavigationUiState constructor(
     val drawerState: DrawerState = DrawerState(DrawerValue.Closed),
     val navController: NavHostController = NavHostController(App.instance.applicationContext),
 
-    val decayAnimationSpec: DecayAnimationSpec<Float>? = null,
+    // Exiting the app
+    val context: Context = App.instance.applicationContext,
+    val shouldExit: Boolean = false,
 
+    // Scroll behavior
+    val decayAnimationSpec: DecayAnimationSpec<Float>? = null,
     val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     val scrollMediumBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     val scrollLargeBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
@@ -130,6 +153,7 @@ data class NavigationUiState constructor(
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.animation.ExperimentalAnimationApi::class)
 @Composable
 fun rememberNavigationState(
+    context: Context = LocalContext.current,
     drawerState: DrawerState = rememberDrawerState(DrawerValue.Closed),
     navController: NavHostController = rememberAnimatedNavController(),
     currentScreen: Screen = remember { Screen.Favorites },
@@ -138,6 +162,7 @@ fun rememberNavigationState(
     scrollLargeBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec)
 ) = remember(drawerState, navController, currentScreen, scrollBehavior, decayAnimationSpec, scrollLargeBehavior) {
     NavigationUiState(
+        context = context,
         drawerState = drawerState,
         navController = navController,
         currentScreen = currentScreen,
@@ -176,50 +201,115 @@ class NavigationViewModel : ViewModel() {
             uiState.currentScreen != Screen.Map && uiState.currentScreen != Screen.Nearby
         }
     }
+
+    fun exit() {
+        (uiState.context as ComponentActivity).finish()
+    }
+
+    fun shouldBackSpaceAgainToExit() {
+        uiState = uiState.copy(shouldExit = true)
+        runWithDelay(2L, TimeUnit.SECONDS) {
+            uiState = uiState.copy(shouldExit = false)
+        }
+    }
 }
 
+/**
+ * Handle manually navigation as the default behavior did not seem to work the way I was expecting it to work
+ */
 class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
+
     private val previous: Stack<Pair<Screen, Map<String, String>>> = Stack()
+
+    init {
+        previous.add(Pair(Screen.Favorites, mapOf()))
+    }
 
     fun navController(): NavHostController {
         return viewModel.uiState.navController
     }
 
     fun navigate(screen: Screen, arguments: Map<String, String> = mapOf()) {
-        Timber.d("Navigate to ${screen.title}");
-        val route = buildRoute(route = screen.route, arguments = arguments)
-        viewModel.uiState.navController.navigate(route) {
-            //popUpTo(viewModel.uiState.navController.graph.startDestinationId)
-            launchSingleTop = true
+        Timber.d("Navigate to ${screen.title}")
+        when {
+            previous.isEmpty() -> navigateTo(screen = screen, arguments = arguments)
+            previous.isNotEmpty() -> {
+                val previousScreen = previous.peek().first
+                when {
+                    previousScreen == Screen.Favorites && screen == Screen.Favorites -> viewModel.shouldBackSpaceAgainToExit()
+                    previousScreen != screen -> navigateTo(screen = screen, arguments = arguments)
+                    else -> Timber.e("Current screen is the same, do not do anything")
+                }
+            }
         }
-        // FIXME, to delete?
-        viewModel.updateScreen(screen = screen)
-        previous.push(Pair(screen, arguments))
         printStackState()
     }
 
     fun navigateBack() {
-        Timber.d("Navigate back");
-        previous.pop()
-        if (previous.isEmpty()) {
-            navigate(screen = Screen.Favorites)
-        } else {
-            val screen = previous.pop()
-            navigate(
-                screen = screen.first,
-                arguments = screen.second,
-            )
+        Timber.d("Navigate back")
+        when {
+            previous.isEmpty() -> Timber.d("Empty, no where to go, this should not happen")
+            previous.isNotEmpty() -> {
+                val currentScreenData = previous.pop()
+                when (currentScreenData.first) {
+                    Screen.Favorites -> {
+                        previous.push(currentScreenData)
+                        if (viewModel.uiState.shouldExit) {
+                            viewModel.exit()
+                        } else {
+                            viewModel.shouldBackSpaceAgainToExit()
+                        }
+
+                    }
+                    else -> {
+                        when {
+                            previous.isEmpty() -> Timber.d("Empty, no where to go, this should not happen")
+                            previous.isNotEmpty() -> {
+                                val previousData = previous.pop()
+                                navigate(screen = previousData.first, arguments = previousData.second)
+                            }
+                        }
+                    }
+                }
+            }
         }
+        // Remove current screen
+        /*      previous.pop()
+              if (previous.isEmpty()) {
+                  if (viewModel.uiState.shouldExit) {
+                      viewModel.exit()
+                  } else {
+                      viewModel.shouldBackSpaceAgainToExit()
+                      //navigate(screen = Screen.Favorites)
+                  }
+              } else {
+                  val screen = previous.pop()
+                  navigate(
+                      screen = screen.first,
+                      arguments = screen.second,
+                  )
+              }*/
         printStackState()
     }
 
-    fun printStackState() {
+    private fun navigateTo(screen: Screen, arguments: Map<String, String>) {
+        val route = buildRoute(route = screen.route, arguments = arguments)
+        viewModel.uiState.navController.navigate(route) {
+            // TODO: this should be used when base activity is no more
+            //popUpTo(viewModel.uiState.navController.graph.startDestinationId)
+            launchSingleTop = true
+        }
+        viewModel.updateScreen(screen = screen)
+        previous.push(Pair(screen, arguments))
+    }
+
+    private fun printStackState() {
         Timber.d("Navigate Stack size: ${previous.size}");
-        var str = "[ ";
+        var str = "[ "
         for (i in previous.size - 1 downTo 0) {
             str = str + previous[i].first.title + " <- "
         }
-        str = str + " ]"
+        str = "$str ]"
         Timber.d("Navigate Stack: $str")
     }
 
@@ -229,17 +319,6 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
             routeWithArguments = routeWithArguments.replace("{" + it.key + "}", URLEncoder.encode(it.value, StandardCharsets.UTF_8.toString()))
         }
         return routeWithArguments
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun topBarBehavior(screen: Screen): TopAppBarScrollBehavior {
-    return if (screen.topBar.type == TopBarType.LARGE) {
-        val decayAnimationSpec = rememberSplineBasedDecay<Float>()
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec)
-    } else {
-        TopAppBarDefaults.pinnedScrollBehavior()
     }
 }
 
