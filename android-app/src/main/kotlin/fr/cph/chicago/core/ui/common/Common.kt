@@ -83,6 +83,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -104,6 +105,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.min
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 private val googleStreetClient = GoogleStreetClient
 
@@ -316,11 +318,12 @@ fun StationDetailsImageView(
     scrollState: ScrollState? = null,
 ) {
     val navController = LocalNavController.current
+    val screenHeight = LocalConfiguration.current.screenHeightDp
 
     Surface(modifier = modifier.zIndex(1f)) {
-        AnimatedVisibility(
+/*        AnimatedVisibility(
             modifier = Modifier
-                .height(200.dp)
+                .height(300.dp)
                 .windowInsetsPadding(
                     WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
                 ),
@@ -328,12 +331,13 @@ fun StationDetailsImageView(
             exit = fadeOut(animationSpec = tween(durationMillis = 300)),
         ) {
             LargeImagePlaceHolderAnimated()
-        }
+        }*/
         AnimatedVisibility(
-            modifier = Modifier.height(200.dp),
+            modifier = Modifier.height((1f / 3 * screenHeight).dp),//.height(300.dp),
             visible = !isLoading && showGoogleStreetImage,
             enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
         ) {
+            Timber.i("image height: ${googleStreetMapImage.height}")
             val imageModifier = if (scrollState != null) {
                 Modifier
                     .fillMaxWidth()
@@ -351,8 +355,8 @@ fun StationDetailsImageView(
                 modifier = imageModifier
             )
         }
-        AnimatedVisibility(
-            modifier = Modifier.height(200.dp),
+/*        AnimatedVisibility(
+            modifier = Modifier.height(300.dp),
             visible = !isLoading && !showGoogleStreetImage,
             enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
             exit = fadeOut(animationSpec = tween(durationMillis = 300)),
@@ -364,6 +368,9 @@ fun StationDetailsImageView(
                         alpha = min(1f, 1 - (scrollState.value / 600f))
                         translationY = -scrollState.value * 0.1f
                     }
+                    .windowInsetsPadding(
+                        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+                    )
             } else {
                 Modifier.fillMaxWidth()
             }
@@ -373,7 +380,7 @@ fun StationDetailsImageView(
                 contentScale = ContentScale.Crop,
                 modifier = imageModifier
             )
-        }
+        }*/
 
         FilledTonalButton(
             modifier = Modifier
