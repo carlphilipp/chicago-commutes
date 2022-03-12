@@ -80,6 +80,7 @@ fun BusStationScreen(
 
     Column {
         DisplayTopBar(viewModel = navigationViewModel)
+
         SwipeRefresh(
             modifier = modifier,
             state = rememberSwipeRefreshState(uiState.isRefreshing),

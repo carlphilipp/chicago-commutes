@@ -59,6 +59,7 @@ import fr.cph.chicago.core.ui.common.AnimatedText
 import fr.cph.chicago.core.ui.common.ShimmerAnimation
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.ShowFavoriteSnackBar
+import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.StationDetailsImageView
 import fr.cph.chicago.core.ui.common.StationDetailsTitleIconView
 import fr.cph.chicago.core.ui.common.loadGoogleStreet
@@ -97,6 +98,7 @@ fun TrainStationScreen(
             onRefresh = { viewModel.refresh() },
         ) {
             Scaffold(
+                snackbarHost = { SnackbarHostInsets(state = uiState.snackbarHostState) },
                 content = {
                     Column(
                         modifier = Modifier

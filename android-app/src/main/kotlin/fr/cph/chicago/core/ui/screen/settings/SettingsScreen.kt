@@ -65,7 +65,7 @@ fun SettingsScreen(
     val navController = LocalNavController.current
     val scope = rememberCoroutineScope()
 
-    // Wrapping with Scaffold as the animation is overriden if it's not the case
+    // Wrapping with Scaffold as the animation is overridden if it's not the case
     Scaffold(
         content = {
             Column {
