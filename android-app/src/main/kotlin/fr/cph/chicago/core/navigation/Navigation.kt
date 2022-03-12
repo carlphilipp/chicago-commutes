@@ -52,6 +52,7 @@ import fr.cph.chicago.core.viewmodel.mainViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.net.URLEncoder
+import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 import java.util.Stack
 import java.util.concurrent.TimeUnit
@@ -316,7 +317,7 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
     private fun buildRoute(route: String, arguments: Map<String, String>): String {
         var routeWithArguments = route
         arguments.forEach {
-            routeWithArguments = routeWithArguments.replace("{" + it.key + "}", URLEncoder.encode(it.value, StandardCharsets.UTF_8.toString()))
+            routeWithArguments = routeWithArguments.replace("{" + it.key + "}", URLEncoder.encode(it.value, "UTF-8"))
         }
         return routeWithArguments
     }
