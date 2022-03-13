@@ -346,7 +346,7 @@ sealed class Screen(
         showOnDrawer = false,
         component = { _, navigationViewModel ->
             ThemeChooserSettingsScreen(
-                title = "Theme color",
+                topBarTitle = "Theme color",
                 viewModel = settingsViewModel,
                 navigationViewModel = navigationViewModel,
             )

@@ -46,6 +46,7 @@ import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
+import fr.cph.chicago.core.theme.ThemeColor
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.launchWithDelay
 import fr.cph.chicago.redux.ResetStateAction
@@ -381,9 +382,9 @@ fun ClearCacheDialog(viewModel: SettingsViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 data class SettingsState(
     val theme: Theme = Theme.AUTO,
+    val themeColor: ThemeColor = ThemeColor.Blue,
     val showThemeChangerDialog: Boolean = false,
     val showClearCacheDialog: Boolean = false,
-    val themeColorAutomatic: Boolean = false,
     val dynamicColorEnabled: Boolean = false,
 )
 
@@ -401,13 +402,13 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
         refreshCurrentTheme()
     }
 
-    fun setDynamicColor(value: Boolean) {
-        preferenceService.saveDynamicColor(value)
+    fun setThemeColor(themeColor: ThemeColor) {
+        preferenceService.saveThemeColor(themeColor)
         refreshCurrentTheme()
     }
 
-    fun setThemeColorAutomatic(value: Boolean) {
-        preferenceService.saveAutomaticThemeColor(value)
+    fun setDynamicColor(value: Boolean) {
+        preferenceService.saveDynamicColor(value)
         refreshCurrentTheme()
     }
 
@@ -446,8 +447,8 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
     private fun refreshCurrentTheme() {
         uiState = uiState.copy(
             theme = preferenceService.getTheme(),
+            themeColor = preferenceService.getThemeColor(),
             dynamicColorEnabled = preferenceService.getDynamicColor(),
-            themeColorAutomatic = preferenceService.isAutomaticThemeColor(),
         )
     }
 }

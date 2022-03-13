@@ -28,6 +28,7 @@ import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.model.dto.PreferencesDTO
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.core.theme.ThemeColor
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.PreferenceRepository
 import fr.cph.chicago.util.Util
@@ -42,14 +43,6 @@ object PreferenceService {
     private val repo = PreferenceRepository
     private val util = Util
 
-    fun getColorSchemeColors(configuration: Configuration): Int {
-        return when (configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-            Configuration.UI_MODE_NIGHT_NO -> Color.BLACK
-            Configuration.UI_MODE_NIGHT_YES -> Color.WHITE
-            else -> Color.BLACK
-        }
-    }
-
     fun getTheme(): Theme {
         return Theme.convert(repo.getTheme())
     }
@@ -58,20 +51,21 @@ object PreferenceService {
         repo.saveTheme(theme.key)
     }
 
+    fun saveThemeColor(themeColor: ThemeColor) {
+        repo.saveThemeColor(themeColor.name)
+    }
+
+    fun getThemeColor(): ThemeColor {
+        val str = repo.getThemeColor()
+        return ThemeColor.getThemeColor(str)
+    }
+
     fun getDynamicColor(): Boolean {
         return repo.getDynamicColor()
     }
 
     fun saveDynamicColor(value: Boolean) {
         return repo.saveDynamicColor(value)
-    }
-
-    fun isAutomaticThemeColor() : Boolean{
-        return repo.isAutomaticThemeColor()
-    }
-
-    fun saveAutomaticThemeColor(value: Boolean) {
-        return repo.saveAutomaticThemeColor(value)
     }
 
     fun isTrainStationFavorite(trainStationId: String): Boolean {

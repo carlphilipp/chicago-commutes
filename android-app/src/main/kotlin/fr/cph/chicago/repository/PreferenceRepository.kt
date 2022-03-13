@@ -26,6 +26,7 @@ import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.model.dto.PreferencesDTO
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.core.theme.ThemeColor
 import fr.cph.chicago.parseNotNull
 import fr.cph.chicago.repository.PrefType.BIKE
 import fr.cph.chicago.repository.PrefType.BIKE_NAME_MAPPING
@@ -113,6 +114,17 @@ object PreferenceRepository {
         val editor = getPrivatePreferences().edit()
         editor.putString(THEME.value, theme)
         editor.apply()
+    }
+
+    fun saveThemeColor(name: String) {
+        val editor = getPrivatePreferences().edit()
+        editor.putString(PrefType.THEME_COLOR.value, name)
+        editor.apply()
+    }
+
+    fun getThemeColor(): String {
+        val sharedPref = getPrivatePreferences()
+        return sharedPref.getString(PrefType.THEME_COLOR.value, ThemeColor.Blue.name)!!
     }
 
     fun getDynamicColor(): Boolean {
@@ -336,6 +348,7 @@ object PreferenceRepository {
 enum class PrefType(val value: String) {
     FAVORITES("ChicagoTrackerFavorites"),
     THEME("ChicagoTrackerTheme"),
+    THEME_COLOR("ChicagoTrackerThemeColor"),
     DYNAMIC_COLOR("ChicagoTrackerThemeDynamicColor"),
     AUTOMATIC_COLOR("ChicagoTrackerThemeAutomaticColor"),
     TRAIN("ChicagoTrackerFavoritesTrain"),

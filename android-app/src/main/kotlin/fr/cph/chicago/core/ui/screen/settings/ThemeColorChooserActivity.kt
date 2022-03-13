@@ -1,6 +1,5 @@
 package fr.cph.chicago.core.ui.screen.settings
 
-import android.os.Build
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Arrangement
@@ -22,36 +21,35 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import com.google.android.material.color.DynamicColors
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.NavigationViewModel
-import fr.cph.chicago.core.theme.blue_line
+import fr.cph.chicago.core.theme.ThemeColor
 import fr.cph.chicago.core.theme.defaultButtonShape
-import fr.cph.chicago.core.theme.green_line
-import fr.cph.chicago.core.theme.red_line
-import fr.cph.chicago.core.theme.yellow_line
 import fr.cph.chicago.core.ui.common.ChipMaterial3
 import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.common.SwitchMaterial3
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 import fr.cph.chicago.core.ui.common.ThemeColorButton
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ThemeChooserSettingsScreen(
     viewModel: SettingsViewModel,
     navigationViewModel: NavigationViewModel,
-    title: String,
+    topBarTitle: String,
 ) {
     val context = LocalContext.current as ComponentActivity
 
@@ -59,7 +57,7 @@ fun ThemeChooserSettingsScreen(
         content = {
             Column {
                 DisplayTopBar(
-                    title = title,
+                    title = topBarTitle,
                     viewModel = navigationViewModel,
                 )
                 LazyColumn(
@@ -70,7 +68,7 @@ fun ThemeChooserSettingsScreen(
                     item {
                         ElevatedCard(modifier = Modifier.padding(start = 15.dp, end = 15.dp, top = 15.dp)) {
                             Column(modifier = Modifier.padding(15.dp)) {
-                                val title = if (viewModel.uiState.themeColorAutomatic) "Using system theme" else "Using manual theme"
+                                val title = "Using color ${MaterialTheme.colorScheme.primary.toArgb()}"
 
                                 Text(
                                     modifier = Modifier,
@@ -78,13 +76,10 @@ fun ThemeChooserSettingsScreen(
                                     style = MaterialTheme.typography.labelLarge,
                                     color = MaterialTheme.colorScheme.primary,
                                 )
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                if (DynamicColors.isDynamicColorAvailable()) {
                                     val subtitle = when {
-                                        viewModel.uiState.dynamicColorEnabled && viewModel.uiState.themeColorAutomatic -> {
+                                        viewModel.uiState.dynamicColorEnabled -> {
                                             "Dynamic colors enabled"
-                                        }
-                                        !viewModel.uiState.themeColorAutomatic -> {
-                                            "Dynamic colors can only be used in automatic"
                                         }
                                         else -> {
                                             "Dynamic color disabled"
@@ -188,54 +183,13 @@ fun ThemeChooserSettingsScreen(
                         }
                     }
                     item {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 15.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            // FIXME: Not sure if there is a better way?
-                            val onClick = { viewModel.setThemeColorAutomatic(!viewModel.uiState.themeColorAutomatic) }
-                            if (viewModel.uiState.themeColorAutomatic) {
-                                Button(
-                                    modifier = Modifier.weight(0.5f),
-                                    onClick = { },
-                                    shape = defaultButtonShape,
-                                ) {
-                                    Text(text = "Automatic")
-                                }
-                                TextButton(
-                                    modifier = Modifier.weight(0.5f),
-                                    onClick = onClick,
-                                    shape = defaultButtonShape,
-                                ) {
-                                    Text(text = "Manual")
-                                }
-                            } else {
-                                TextButton(
-                                    modifier = Modifier.weight(0.4f),
-                                    onClick = onClick,
-                                    shape = defaultButtonShape,
-                                ) {
-                                    Text(text = "Automatic")
-                                }
-                                Button(
-                                    modifier = Modifier.weight(0.4f),
-                                    onClick = {},
-                                    shape = defaultButtonShape,
-                                ) {
-                                    Text(text = "Manual")
-                                }
-                            }
-                        }
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        if (DynamicColors.isDynamicColorAvailable()) {
                             DisplayElementSwitchView(
                                 imageVector = Icons.Outlined.Palette,
                                 title = "Dynamic color",
                                 description = "Use your wallpaper color",
                                 isChecked = viewModel.uiState.dynamicColorEnabled,
-                                enabled = viewModel.uiState.themeColorAutomatic,
+                                enabled = true,
                                 onClick = {
                                     viewModel.setDynamicColor(!viewModel.uiState.dynamicColorEnabled)
                                 }
@@ -250,40 +204,31 @@ fun ThemeChooserSettingsScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            val enable = !viewModel.uiState.themeColorAutomatic
-                            val alpha = if (viewModel.uiState.themeColorAutomatic) 0.2f else 1.0f
+                            val enabled = !(DynamicColors.isDynamicColorAvailable() && viewModel.uiState.dynamicColorEnabled)
+                            val alpha = if (enabled) 1.0f else 0.2f
                             ThemeColorButton(
-                                color = blue_line,
-                                enabled = enable,
+                                color = ThemeColor.Blue.lightTheme.primary,
+                                enabled = enabled,
                                 alpha = alpha,
-                                onClick = {
-                                    Toast.makeText(context, "TODO. Not sure how to", Toast.LENGTH_SHORT).show()
-                                }
+                                onClick = { viewModel.setThemeColor(ThemeColor.Blue) }
                             )
                             ThemeColorButton(
-                                color = red_line,
-                                enabled = enable,
+                                color = ThemeColor.Green.lightTheme.primary,
+                                enabled = enabled,
                                 alpha = alpha,
-                                onClick = {
-                                    Toast.makeText(context, "TODO. Not sure how to", Toast.LENGTH_SHORT).show()
-                                }
+                                onClick = { viewModel.setThemeColor(ThemeColor.Green) }
                             )
                             ThemeColorButton(
-                                color = yellow_line,
-                                enabled = enable,
+                                color = ThemeColor.Purple.lightTheme.primary,
+                                enabled = enabled,
                                 alpha = alpha,
-                                onClick = {
-                                    Toast.makeText(context, "TODO. Not sure how to", Toast.LENGTH_SHORT).show()
-                                }
+                                onClick = { viewModel.setThemeColor(ThemeColor.Purple) }
                             )
                             ThemeColorButton(
-                                color = green_line,
-                                enabled =
-                                enable,
+                                color = ThemeColor.Orange.lightTheme.primary,
+                                enabled = enabled,
                                 alpha = alpha,
-                                onClick = {
-                                    Toast.makeText(context, "TODO. Not sure how to", Toast.LENGTH_SHORT).show()
-                                }
+                                onClick = { viewModel.setThemeColor(ThemeColor.Orange) }
                             )
                         }
                     }
