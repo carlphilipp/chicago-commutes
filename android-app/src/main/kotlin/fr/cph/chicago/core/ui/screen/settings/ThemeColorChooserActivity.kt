@@ -26,9 +26,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.alpha
+import androidx.core.graphics.blue
+import androidx.core.graphics.green
+import androidx.core.graphics.red
 import com.google.android.material.color.DynamicColors
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.DisplayTopBar
@@ -120,8 +125,15 @@ fun ThemeChooserSettingsScreen(
                     item {
                         ElevatedCard(modifier = Modifier.padding(start = 15.dp, end = 15.dp, top = 15.dp)) {
                             Column(modifier = Modifier.padding(15.dp)) {
-                                val color = android.graphics.Color.rgb(MaterialTheme.colorScheme.primary.red.toInt(), MaterialTheme.colorScheme.primary.green.toInt(), MaterialTheme.colorScheme.primary.blue.toInt())
-                                val title = "Using color ${color.toString(16)}"
+                                val hexColor = String.format(
+                                    "#%02x%02x%02x%02x",
+                                    MaterialTheme.colorScheme.primary.toArgb().alpha,
+                                    MaterialTheme.colorScheme.primary.toArgb().red,
+                                    MaterialTheme.colorScheme.primary.toArgb().green,
+                                    MaterialTheme.colorScheme.primary.toArgb().blue
+                                )
+
+                                val title = "Using color $hexColor"
                                 Text(
                                     modifier = Modifier,
                                     text = title,
