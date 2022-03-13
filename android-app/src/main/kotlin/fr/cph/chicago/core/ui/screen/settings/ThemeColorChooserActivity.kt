@@ -26,7 +26,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -42,7 +41,6 @@ import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.common.SwitchMaterial3
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 import fr.cph.chicago.core.ui.common.ThemeColorButton
-import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,33 +64,86 @@ fun ThemeChooserSettingsScreen(
                     verticalArrangement = Arrangement.spacedBy(15.dp),
                 ) {
                     item {
+                        if (DynamicColors.isDynamicColorAvailable()) {
+                            DisplayElementSwitchView(
+                                imageVector = Icons.Outlined.Palette,
+                                title = "Dynamic color",
+                                description = "Use your wallpaper color",
+                                isChecked = viewModel.uiState.dynamicColorEnabled,
+                                enabled = true,
+                                onClick = {
+                                    viewModel.setDynamicColor(!viewModel.uiState.dynamicColorEnabled)
+                                }
+                            )
+                        }
+                    }
+                    item {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 15.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            val enabled = !(DynamicColors.isDynamicColorAvailable() && viewModel.uiState.dynamicColorEnabled)
+                            val alpha = if (enabled) 1.0f else 0.2f
+                            ThemeColorButton(
+                                color = ThemeColor.Blue.lightTheme.primary,
+                                enabled = enabled,
+                                isSelected = viewModel.uiState.themeColor == ThemeColor.Blue,
+                                alpha = alpha,
+                                onClick = { viewModel.setThemeColor(ThemeColor.Blue) }
+                            )
+                            ThemeColorButton(
+                                color = ThemeColor.Green.lightTheme.primary,
+                                enabled = enabled,
+                                isSelected = viewModel.uiState.themeColor == ThemeColor.Green,
+                                alpha = alpha,
+                                onClick = { viewModel.setThemeColor(ThemeColor.Green) }
+                            )
+                            ThemeColorButton(
+                                color = ThemeColor.Purple.lightTheme.primary,
+                                enabled = enabled,
+                                isSelected = viewModel.uiState.themeColor == ThemeColor.Purple,
+                                alpha = alpha,
+                                onClick = { viewModel.setThemeColor(ThemeColor.Purple) }
+                            )
+                            ThemeColorButton(
+                                color = ThemeColor.Orange.lightTheme.primary,
+                                enabled = enabled,
+                                isSelected = viewModel.uiState.themeColor == ThemeColor.Orange,
+                                alpha = alpha,
+                                onClick = { viewModel.setThemeColor(ThemeColor.Orange) }
+                            )
+                        }
+                    }
+                    item {
                         ElevatedCard(modifier = Modifier.padding(start = 15.dp, end = 15.dp, top = 15.dp)) {
                             Column(modifier = Modifier.padding(15.dp)) {
-                                val title = "Using color ${MaterialTheme.colorScheme.primary.toArgb()}"
-
+                                val color = android.graphics.Color.rgb(MaterialTheme.colorScheme.primary.red.toInt(), MaterialTheme.colorScheme.primary.green.toInt(), MaterialTheme.colorScheme.primary.blue.toInt())
+                                val title = "Using color ${color.toString(16)}"
                                 Text(
                                     modifier = Modifier,
                                     text = title,
                                     style = MaterialTheme.typography.labelLarge,
                                     color = MaterialTheme.colorScheme.primary,
                                 )
-                                if (DynamicColors.isDynamicColorAvailable()) {
-                                    val subtitle = when {
-                                        viewModel.uiState.dynamicColorEnabled -> {
-                                            "Dynamic colors enabled"
-                                        }
-                                        else -> {
-                                            "Dynamic color disabled"
-                                        }
+                                val subtitle = when {
+                                    viewModel.uiState.dynamicColorEnabled && DynamicColors.isDynamicColorAvailable() -> {
+                                        "Dynamic colors enabled"
                                     }
-                                    Spacer(modifier = Modifier.padding(4.dp))
-                                    Text(
-                                        modifier = Modifier,
-                                        text = subtitle,
-                                        style = MaterialTheme.typography.labelMedium,
-                                        color = MaterialTheme.colorScheme.primary,
-                                    )
+                                    else -> {
+                                        "Dynamic color disabled"
+                                    }
                                 }
+                                Spacer(modifier = Modifier.padding(4.dp))
+                                Text(
+                                    modifier = Modifier,
+                                    text = subtitle,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
+
                                 Spacer(modifier = Modifier.padding(10.dp))
                                 Text(
                                     modifier = Modifier,
@@ -180,56 +231,6 @@ fun ThemeChooserSettingsScreen(
                                     })
                                 }
                             }
-                        }
-                    }
-                    item {
-                        if (DynamicColors.isDynamicColorAvailable()) {
-                            DisplayElementSwitchView(
-                                imageVector = Icons.Outlined.Palette,
-                                title = "Dynamic color",
-                                description = "Use your wallpaper color",
-                                isChecked = viewModel.uiState.dynamicColorEnabled,
-                                enabled = true,
-                                onClick = {
-                                    viewModel.setDynamicColor(!viewModel.uiState.dynamicColorEnabled)
-                                }
-                            )
-                        }
-                    }
-                    item {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 15.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            val enabled = !(DynamicColors.isDynamicColorAvailable() && viewModel.uiState.dynamicColorEnabled)
-                            val alpha = if (enabled) 1.0f else 0.2f
-                            ThemeColorButton(
-                                color = ThemeColor.Blue.lightTheme.primary,
-                                enabled = enabled,
-                                alpha = alpha,
-                                onClick = { viewModel.setThemeColor(ThemeColor.Blue) }
-                            )
-                            ThemeColorButton(
-                                color = ThemeColor.Green.lightTheme.primary,
-                                enabled = enabled,
-                                alpha = alpha,
-                                onClick = { viewModel.setThemeColor(ThemeColor.Green) }
-                            )
-                            ThemeColorButton(
-                                color = ThemeColor.Purple.lightTheme.primary,
-                                enabled = enabled,
-                                alpha = alpha,
-                                onClick = { viewModel.setThemeColor(ThemeColor.Purple) }
-                            )
-                            ThemeColorButton(
-                                color = ThemeColor.Orange.lightTheme.primary,
-                                enabled = enabled,
-                                alpha = alpha,
-                                onClick = { viewModel.setThemeColor(ThemeColor.Orange) }
-                            )
                         }
                     }
                     item { NavigationBarsSpacer() }

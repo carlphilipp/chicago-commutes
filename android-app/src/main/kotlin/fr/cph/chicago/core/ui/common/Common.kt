@@ -52,8 +52,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Map
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.FilledTonalButton
@@ -100,12 +102,12 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.functions.Consumer
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.util.Locale
-import java.util.concurrent.TimeUnit
-import kotlin.math.min
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.Locale
+import java.util.concurrent.TimeUnit
+import kotlin.math.min
 
 private val googleStreetClient = GoogleStreetClient
 
@@ -625,8 +627,16 @@ fun ThemeColorButton(
     color: Color,
     enabled: Boolean,
     alpha: Float,
+    isSelected: Boolean,
     onClick: () -> Unit
 ) {
+    val colors = if (isSelected) {
+        ButtonDefaults.elevatedButtonColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        )
+    } else {
+        ButtonDefaults.elevatedButtonColors()
+    }
     ElevatedButton(
         modifier = Modifier
             .width(70.dp)
@@ -634,8 +644,9 @@ fun ThemeColorButton(
             .alpha(alpha),
         onClick = onClick,
         enabled = enabled,
+        colors = colors,
         shape = RoundedCornerShape(12.0.dp),
-        contentPadding = PaddingValues(3.dp)
+        contentPadding = PaddingValues(3.dp),
     ) {
         Box(
             modifier = Modifier
@@ -643,6 +654,15 @@ fun ThemeColorButton(
                 .clip(CircleShape)
                 .background(color)
                 .alpha(alpha),
-        )
+        ) {
+            if (isSelected) {
+                Icon(
+                    modifier = Modifier.align(alignment = Alignment.Center),
+                    imageVector = Icons.Filled.Check,
+                    contentDescription = "ticked",
+                    tint = Color.White
+                )
+            }
+        }
     }
 }
