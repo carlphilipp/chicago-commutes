@@ -1,5 +1,8 @@
 package fr.cph.chicago
 
+import android.content.Context
+import android.content.ContextWrapper
+import androidx.activity.ComponentActivity
 import androidx.annotation.NonNull
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -22,3 +25,10 @@ fun CoroutineScope.launchWithDelay(
         block()
     }
 }
+
+fun Context.getActivity(): ComponentActivity = when (this) {
+    is ComponentActivity -> this
+    is ContextWrapper -> baseContext.getActivity()
+    else -> throw RuntimeException("activity not found")
+}
+

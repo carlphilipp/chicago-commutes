@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Train
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import fr.cph.chicago.R
@@ -27,6 +28,7 @@ import fr.cph.chicago.core.ui.screen.settings.ThemeChooserSettingsScreen
 import fr.cph.chicago.core.viewmodel.locationViewModel
 import fr.cph.chicago.core.viewmodel.mainViewModel
 import fr.cph.chicago.core.viewmodel.settingsViewModel
+import fr.cph.chicago.getActivity
 import java.net.URLDecoder
 import kotlin.random.Random
 
@@ -70,14 +72,14 @@ sealed class Screen(
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarBack,
         component = { backStackEntry, navigationViewModel ->
+            val activity = navigationViewModel.uiState.context.getActivity()
             val line = URLDecoder.decode(backStackEntry.arguments?.getString("line", "0") ?: "", "UTF-8")
-            val viewModel: TrainListStationViewModel = viewModel(
-                factory = TrainListStationViewModel.provideFactory(
-                    line = line,
-                    owner = backStackEntry,
-                    defaultArgs = backStackEntry.arguments
-                )
+            val factory = TrainListStationViewModel.provideFactory(
+                owner = navigationViewModel.uiState.context.getActivity(),
+                defaultArgs = backStackEntry.arguments
             )
+            val viewModel = ViewModelProvider(activity, factory)[TrainListStationViewModel::class.java]
+            viewModel.init(line = line)
             TrainLineStopsScreen(
                 viewModel = viewModel,
                 navigationViewModel = navigationViewModel,
