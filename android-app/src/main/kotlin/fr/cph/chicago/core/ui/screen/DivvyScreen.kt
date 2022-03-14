@@ -77,7 +77,10 @@ fun DivvyScreen(
                                 searchBikeStations = search(mainViewModel = mainViewModel, searchText = value.text)
                             }
                         )
-                        LazyColumn(modifier = modifier.fillMaxWidth()) {
+                        LazyColumn(
+                            modifier = modifier.fillMaxWidth(),
+                            state = mainViewModel.uiState.divvyListState
+                        ) {
                             items(searchBikeStations) { bikeStation ->
                                 TextButton(
                                     modifier = Modifier

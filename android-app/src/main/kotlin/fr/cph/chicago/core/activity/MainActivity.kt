@@ -2,12 +2,15 @@ package fr.cph.chicago.core.activity
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.input.TextFieldValue
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.BusStop
@@ -52,11 +55,13 @@ class MainActivity : CustomComponentActivity() {
     }
 }
 
+// FIXME: This should probably be multiple states/viewmodels
 data class MainUiState(
     val isRefreshing: Boolean = false,
 
     val busRoutes: List<BusRoute> = listOf(),
     val busRoutesShowError: Boolean = false,
+    val busSearch: TextFieldValue = TextFieldValue(""),
 
     val bikeStations: List<BikeStation> = listOf(),
     val bikeStationsShowError: Boolean = false,
@@ -83,4 +88,7 @@ data class MainUiState(
     val nearbyDetailsError: Boolean = false,
 
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
+    val favoriteListState: LazyListState = LazyListState(),
+    val divvyListState: LazyListState = LazyListState(),
+    val busListState: LazyListState = LazyListState(),
 )

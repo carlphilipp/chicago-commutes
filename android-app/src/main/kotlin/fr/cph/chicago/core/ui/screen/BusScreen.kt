@@ -44,20 +44,18 @@ import timber.log.Timber
 fun BusScreen(
     modifier: Modifier = Modifier,
     title: String,
-    search: String,
     mainViewModel: MainViewModel,
     navigationViewModel: NavigationViewModel
 ) {
     Timber.d("Compose BusScreen")
     var showDialog by remember { mutableStateOf(false) }
     var selectedBusRoute by remember { mutableStateOf(BusRoute.buildEmpty()) }
-    var searchBusRoutes by remember { mutableStateOf<List<BusRoute>>(listOf()) }
-    var textSearch by remember { mutableStateOf(TextFieldValue(search)) }
+    var searchBusRoutes by remember { mutableStateOf<List<BusRoute>>(search(mainViewModel = mainViewModel, searchText = mainViewModel.uiState.busSearch.text)) }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = Unit, block = {
         scope.launch {
-            searchBusRoutes = search(mainViewModel = mainViewModel, searchText = textSearch.text)
+            searchBusRoutes = search(mainViewModel = mainViewModel, searchText = mainViewModel.uiState.busSearch.text)
         }
     })
 
@@ -75,14 +73,16 @@ fun BusScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 5.dp),
-                            text = textSearch,
+                            text = mainViewModel.uiState.busSearch,
                             onValueChange = { value ->
-                                textSearch = value
+                                mainViewModel.updateBusSearch(value)
+                                //textSearch = value
                                 searchBusRoutes = search(mainViewModel = mainViewModel, searchText = value.text)
                             }
                         )
                         LazyColumn(
-                            modifier = modifier.fillMaxSize()
+                            modifier = modifier.fillMaxSize(),
+                            state = mainViewModel.uiState.busListState
                         ) {
                             items(
                                 items = searchBusRoutes,
@@ -140,7 +140,7 @@ fun BusScreen(
             }
 
             BusRouteDialog(
-                search = textSearch.text,
+                search = mainViewModel.uiState.busSearch.text,
                 showDialog = showDialog,
                 busRoute = selectedBusRoute,
                 hideDialog = { showDialog = false },

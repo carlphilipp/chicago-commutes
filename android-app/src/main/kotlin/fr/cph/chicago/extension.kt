@@ -1,6 +1,10 @@
 package fr.cph.chicago
 
+import android.content.Context
+import android.content.ContextWrapper
+import androidx.activity.ComponentActivity
 import androidx.annotation.NonNull
+import androidx.appcompat.app.AppCompatActivity
 import java.text.SimpleDateFormat
 import java.util.Date
 import kotlinx.coroutines.CoroutineScope
@@ -21,4 +25,10 @@ fun CoroutineScope.launchWithDelay(
         delay(timeMillis)
         block()
     }
+}
+
+fun Context.getActivity(): ComponentActivity = when (this) {
+    is ComponentActivity -> this
+    is ContextWrapper -> baseContext.getActivity()
+    else -> throw RuntimeException("activity not found")
 }

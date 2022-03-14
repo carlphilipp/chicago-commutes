@@ -13,6 +13,7 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.navigation.NavBackStackEntry
 import fr.cph.chicago.core.ui.screen.Screen
+import timber.log.Timber
 
 @OptIn(ExperimentalAnimationApi::class)
 fun fallBackEnterTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition) {
@@ -34,7 +35,6 @@ fun fallBackExitTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> Exi
 @OptIn(ExperimentalAnimationApi::class)
 fun enterTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?) {
     return {
-
         val slideInFromRight = slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(durationMillis = 200))
         val scaleInSettings = scaleIn(
             animationSpec = tween(
@@ -60,9 +60,15 @@ fun enterTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> EnterTrans
                 }
             }
             Screen.BusBound.route -> {
-                when (destination) {
-                    Screen.BusDetails.route -> fadeIn(animationSpec = tween(delayMillis = 100))
-                    else -> slideInFromRight
+                when (origin) {
+                    Screen.BusDetails.route -> {
+                        Timber.i("************* FADE IN $destination")
+                        fadeIn(animationSpec = tween(delayMillis = 100))
+                    }
+                    else -> {
+                        Timber.i("************* slide from right $destination")
+                        slideInFromRight
+                    }
                 }
             }
             Screen.SettingsThemeColorChooser.route, Screen.DeveloperOptions.route -> {

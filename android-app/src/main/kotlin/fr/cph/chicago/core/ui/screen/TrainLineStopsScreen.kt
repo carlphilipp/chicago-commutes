@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -27,7 +28,6 @@ import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
-import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.service.TrainService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
@@ -53,7 +53,8 @@ fun TrainLineStopsScreen(
         LazyColumn(
             modifier = Modifier
                 .padding(start = 10.dp, end = 10.dp)
-                .fillMaxSize()
+                .fillMaxSize(),
+            state = viewModel.uiState.trainListState
         ) {
             items(
                 items = uiState.trainStations,
@@ -79,6 +80,7 @@ data class TrainListStationUiState(
     val title: String = "",
     val trainLine: TrainLine = TrainLine.NA,
     val trainStations: List<TrainStation> = listOf(),
+    val trainListState: LazyListState = LazyListState(),
 )
 
 class TrainListStationViewModel(
