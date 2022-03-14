@@ -191,7 +191,6 @@ fun BusDetailDialog(show: Boolean, busDetailsDTOs: List<BusDetailsDTO>, hideDial
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun BusRouteDialog(
-    search: String,
     showDialog: Boolean,
     busService: BusService = BusService,
     busRoute: BusRoute,
@@ -267,8 +266,7 @@ fun BusRouteDialog(
                                                     "busRouteId" to busRoute.id,
                                                     "busRouteName" to busRoute.name,
                                                     "bound" to lBusDirections[index].text,
-                                                    "boundTitle" to lBusDirections[index].text,
-                                                    "search" to search,
+                                                    "boundTitle" to lBusDirections[index].text
                                                 ),
                                             )
                                             hideDialog()

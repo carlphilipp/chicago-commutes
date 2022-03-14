@@ -258,6 +258,7 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
                         } else {
                             viewModel.shouldBackSpaceAgainToExit()
                         }
+
                     }
                     else -> {
                         when {
@@ -265,7 +266,14 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
                             previous.isNotEmpty() -> {
                                 val previousData = previous.pop()
                                 // Adding search if present in current
-                                val newArgs = buildNewArgs(currentScreenData, previousData)
+                                val newArgs = if (currentScreenData.second.containsKey("search")) {
+                                    val temp = mutableMapOf<String, String>()
+                                    temp.putAll(previousData.second)
+                                    temp["search"] = currentScreenData.second["search"]!!
+                                    temp
+                                } else {
+                                    previousData.second
+                                }
                                 navigate(screen = previousData.first, arguments = newArgs)
                             }
                         }
@@ -274,29 +282,6 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
             }
         }
         printStackState()
-    }
-
-    private fun buildNewArgs(
-        currentScreenData: Pair<Screen, Map<String, String>>,
-        previousData: Pair<Screen, Map<String, String>>,
-    ): Map<String, String> {
-        val newArgs = when {
-            currentScreenData.second.containsKey("search") -> buildNewArgsFor(currentScreenData, previousData, "search")
-            currentScreenData.second.containsKey("searchBusBound") -> buildNewArgsFor(currentScreenData, previousData, "searchBusBound")
-            else -> previousData.second
-        }
-        return newArgs
-    }
-
-    private fun buildNewArgsFor(
-        currentScreenData: Pair<Screen, Map<String, String>>,
-        previousData: Pair<Screen, Map<String, String>>,
-        key : String,
-    ): Map<String, String> {
-        val map = mutableMapOf<String, String>()
-        map.putAll(previousData.second)
-        map[key] = currentScreenData.second[key]!!
-        return map
     }
 
     private fun navigateTo(screen: Screen, arguments: Map<String, String>) {

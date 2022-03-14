@@ -16,7 +16,6 @@ import androidx.compose.material.icons.filled.Train
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import fr.cph.chicago.R
@@ -111,14 +110,12 @@ sealed class Screen(
 
     object Bus : Screen(
         title = App.instance.getString(R.string.menu_bus),
-        route = "bus?search={search}",
+        route = "bus",
         icon = Icons.Filled.DirectionsBus,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { backStackEntry, navigationViewModel ->
-            val search = URLDecoder.decode(backStackEntry.arguments?.getString("search", "") ?: "", "UTF-8")
+        component = { _, navigationViewModel ->
             BusScreen(
                 title = "Bus",
-                search = search,
                 navigationViewModel = navigationViewModel,
                 mainViewModel = mainViewModel,
             )
@@ -159,7 +156,7 @@ sealed class Screen(
 
     object BusBound : Screen(
         title = "Bus bound",
-        route = "bus/bound?busRouteId={busRouteId}&busRouteName={busRouteName}&bound={bound}&boundTitle={boundTitle}&searchBusBound={searchBusBound}",
+        route = "bus/bound?busRouteId={busRouteId}&busRouteName={busRouteName}&bound={bound}&boundTitle={boundTitle}",
         icon = Icons.Filled.DirectionsBus,
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarBack,
@@ -168,14 +165,12 @@ sealed class Screen(
             val busRouteName = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteName", "0") ?: "", "UTF-8")
             val bound = URLDecoder.decode(backStackEntry.arguments?.getString("bound", "0") ?: "", "UTF-8")
             val boundTitle = URLDecoder.decode(backStackEntry.arguments?.getString("boundTitle", "0") ?: "", "UTF-8")
-            val searchBusBound = URLDecoder.decode(backStackEntry.arguments?.getString("searchBusBound", "") ?: "", "UTF-8")
             val viewModel: BusBoundUiViewModel = viewModel(
                 factory = BusBoundUiViewModel.provideFactory(
                     busRouteId = busRouteId,
                     busRouteName = busRouteName,
                     bound = bound,
                     boundTitle = boundTitle,
-                    searchText = TextFieldValue(searchBusBound),
                     owner = backStackEntry,
                     defaultArgs = backStackEntry.arguments
                 )
@@ -183,7 +178,7 @@ sealed class Screen(
             BusBoundScreen(
                 viewModel = viewModel,
                 navigationViewModel = navigationViewModel,
-                title = "$busRouteId - $boundTitle",
+                title = "$busRouteId - $boundTitle"
             )
         }
     )

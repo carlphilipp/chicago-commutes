@@ -13,6 +13,7 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.navigation.NavBackStackEntry
 import fr.cph.chicago.core.ui.screen.Screen
+import timber.log.Timber
 
 @OptIn(ExperimentalAnimationApi::class)
 fun fallBackEnterTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition) {
@@ -51,18 +52,27 @@ fun enterTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> EnterTrans
 
         when (destination) {
             Screen.TrainDetails.route, Screen.BusDetails.route, Screen.DivvyDetails.route -> {
+                Timber.i("Animation enterTransition targetState.destination $destination SLIDE IN LEFT")
                 slideInFromRight
             }
             Screen.TrainList.route -> {
                 when (origin) {
-                    Screen.TrainDetails.route -> fadeIn(animationSpec = tween(delayMillis = 100))
-                    else -> slideInFromRight
+                    Screen.TrainDetails.route -> {
+                        fadeIn(animationSpec = tween(delayMillis = 100))
+                    }
+                    else -> {
+                        Timber.i("Animation enterTransition targetState.destination $destination SLIDE IN LEFT")
+                        slideInFromRight
+                    }
+
                 }
             }
             Screen.BusBound.route -> {
                 when (destination) {
                     Screen.BusDetails.route -> fadeIn(animationSpec = tween(delayMillis = 100))
-                    else -> slideInFromRight
+                    else -> {
+                        slideInFromRight
+                    }
                 }
             }
             Screen.SettingsThemeColorChooser.route, Screen.DeveloperOptions.route -> {
@@ -84,7 +94,10 @@ fun enterTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> EnterTrans
                     else -> scaleInSettings
                 }
             }
-            else -> null
+            else -> {
+                Timber.i("Animation enterTransition targetState.destination ${destination} NO ANIMATION")
+                null
+            }
         }
     }
 }
@@ -97,9 +110,15 @@ fun exitTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransit
         val origin = initialState.destination.route
         val destination = targetState.destination.route
         when (origin) {
-            Screen.TrainDetails.route, Screen.BusDetails.route, Screen.DivvyDetails.route -> slideOutToRight
-            Screen.TrainList.route, Screen.BusBound.route, Screen.AlertDetail.route -> slideOutToRight
+            Screen.TrainDetails.route, Screen.BusDetails.route, Screen.DivvyDetails.route -> {
+                Timber.i("Animation exitTransition initialState.destination $origin SLIDE IN RIGHT")
+                slideOutToRight
+            }
+            Screen.TrainList.route, Screen.BusBound.route, Screen.AlertDetail.route -> {
+                slideOutToRight
+            }
             Screen.SettingsDisplay.route, Screen.SettingsThemeColorChooser.route, Screen.DeveloperOptions.route -> {
+                Timber.i("Animation exitTransition initialState.destination $origin scaleOut")
                 scaleOut(
                     animationSpec = tween(
                         durationMillis = 50,
@@ -110,7 +129,10 @@ fun exitTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransit
                     transformOrigin = TransformOrigin.Center,
                 )
             }
-            else -> null
+            else -> {
+                Timber.i("Animation exitTransition initialState.destination $origin NO ANIMATION")
+                null//ExitTransition.None
+            }
         }
     }
 }
