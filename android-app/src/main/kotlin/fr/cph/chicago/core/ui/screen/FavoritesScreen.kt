@@ -20,7 +20,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,7 +51,6 @@ import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.theme.bike_orange
-import fr.cph.chicago.core.ui.MediumTopBar
 import fr.cph.chicago.core.ui.common.AnimatedText
 import fr.cph.chicago.core.ui.common.BusDetailDialog
 import fr.cph.chicago.core.ui.common.ColoredBox
@@ -78,7 +76,7 @@ fun FavoritesScreen(
 
     Column {
         DisplayTopBar(
-            title =title,
+            title = title,
             viewModel = navigationViewModel,
         )
         SwipeRefresh(
@@ -87,7 +85,10 @@ fun FavoritesScreen(
                 mainViewModel.refresh()
             },
         ) {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                state = mainViewModel.uiState.favLazyListState,
+            ) {
                 items(favorites.size()) { index ->
                     ElevatedCard(
                         modifier = Modifier.padding(horizontal = 15.dp, vertical = 7.dp),

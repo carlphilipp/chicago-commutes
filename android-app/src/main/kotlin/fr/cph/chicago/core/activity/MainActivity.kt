@@ -2,6 +2,7 @@ package fr.cph.chicago.core.activity
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -83,4 +84,5 @@ data class MainUiState(
     val nearbyDetailsError: Boolean = false,
 
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
+    val favLazyListState: LazyListState = LazyListState(),
 )
