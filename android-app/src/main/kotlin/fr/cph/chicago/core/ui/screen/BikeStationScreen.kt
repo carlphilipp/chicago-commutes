@@ -349,22 +349,4 @@ class BikeStationViewModel @Inject constructor(
     fun onStop() {
         store.unsubscribe(this)
     }
-
-    companion object {
-        fun provideFactory(
-            stationId: String,
-            owner: SavedStateRegistryOwner,
-            defaultArgs: Bundle? = null,
-        ): AbstractSavedStateViewModelFactory =
-            object : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(
-                    key: String,
-                    modelClass: Class<T>,
-                    handle: SavedStateHandle
-                ): T {
-                    return BikeStationViewModel(stationId) as T
-                }
-            }
-    }
 }
