@@ -19,10 +19,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,9 +50,8 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,16 +60,8 @@ fun SearchViewScreen(
     navigationViewModel: NavigationViewModel,
     title: String,
 ) {
-    Timber.d("Compose SearchViewScreen ${viewModel.uiState.searchText.text}")
     val uiState = viewModel.uiState
     val navController = LocalNavController.current
-    val scope = rememberCoroutineScope()
-
-    LaunchedEffect(key1 = Unit, block = {
-        scope.launch {
-            viewModel.search(viewModel.uiState.searchText.text)
-        }
-    })
 
     Column {
         DisplayTopBar(
@@ -127,12 +116,7 @@ fun SearchViewScreen(
                                     title = trainStation.name,
                                     colors = trainStation.lines.map { line -> line.color },
                                     onClick = {
-                                        navController.navigate(Screen.TrainDetails,
-                                            mapOf(
-                                                "stationId" to trainStation.id,
-                                                "search" to uiState.searchText.text,
-                                            )
-                                        )
+                                        navController.navigate(Screen.TrainDetails, mapOf("stationId" to trainStation.id))
                                     }
                                 )
                             }
@@ -157,10 +141,7 @@ fun SearchViewScreen(
                                     onClick = {
                                         navController.navigate(
                                             screen = Screen.DivvyDetails,
-                                            arguments = mapOf(
-                                                "stationId" to bikeStation.id,
-                                                "search" to uiState.searchText.text,
-                                            )
+                                            arguments = mapOf("stationId" to bikeStation.id)
                                         )
                                     }
                                 )
@@ -252,19 +233,12 @@ data class SearchUiState(
 )
 
 class SearchViewModel @Inject constructor(
-    searchText: TextFieldValue,
     private val trainService: TrainService = TrainService,
     private val busService: BusService = BusService,
     private val bikeService: BikeService = BikeService,
 ) : ViewModel() {
     var uiState by mutableStateOf(SearchUiState())
         private set
-
-    init {
-        uiState = SearchUiState(
-            searchText = searchText
-        )
-    }
 
     fun updateText(searchText: TextFieldValue) {
         uiState = uiState.copy(searchText = searchText)
@@ -314,7 +288,6 @@ class SearchViewModel @Inject constructor(
 
     companion object {
         fun provideFactory(
-            searchText: TextFieldValue,
             owner: SavedStateRegistryOwner,
             defaultArgs: Bundle? = null,
         ): AbstractSavedStateViewModelFactory =
@@ -325,7 +298,7 @@ class SearchViewModel @Inject constructor(
                     modelClass: Class<T>,
                     handle: SavedStateHandle
                 ): T {
-                    return SearchViewModel(searchText) as T
+                    return SearchViewModel() as T
                 }
             }
     }
