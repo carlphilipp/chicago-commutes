@@ -17,7 +17,7 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
@@ -28,7 +28,6 @@ import fr.cph.chicago.core.ui.screen.settings.ThemeChooserSettingsScreen
 import fr.cph.chicago.core.viewmodel.locationViewModel
 import fr.cph.chicago.core.viewmodel.mainViewModel
 import fr.cph.chicago.core.viewmodel.settingsViewModel
-import fr.cph.chicago.getActivity
 import java.net.URLDecoder
 import kotlin.random.Random
 
@@ -73,14 +72,15 @@ sealed class Screen(
         topBar = ScreenTopBar.MediumTopBarBack,
         component = { backStackEntry, navigationViewModel ->
             val line = URLDecoder.decode(backStackEntry.arguments?.getString("line", "0") ?: "", "UTF-8")
-            val activity = navigationViewModel.uiState.context.getActivity()
-            val viewModelFactory = TrainListStationViewModel.provideFactory(
-                line = line,
-                owner = activity,
-                defaultArgs = backStackEntry.arguments
+            val viewModel: TrainListStationViewModel = viewModel(
+                factory = TrainListStationViewModel.provideFactory(
+                    line = line,
+                    owner = backStackEntry,
+                    defaultArgs = backStackEntry.arguments
+                )
             )
             TrainLineStopsScreen(
-                viewModel = ViewModelProvider(activity, viewModelFactory)[TrainListStationViewModel::class.java],
+                viewModel = viewModel,
                 navigationViewModel = navigationViewModel,
                 title = "$line Line"
             )
@@ -95,14 +95,15 @@ sealed class Screen(
         topBar = ScreenTopBar.None,
         component = { backStackEntry, navigationViewModel ->
             val stationId = backStackEntry.arguments?.getString("stationId", "0") ?: ""
-            val activity = navigationViewModel.uiState.context.getActivity()
-            val viewModelFactory = TrainStationViewModel.provideFactory(
-                stationId = stationId,
-                owner = activity,
-                defaultArgs = backStackEntry.arguments
+            val viewModel: TrainStationViewModel = viewModel(
+                factory = TrainStationViewModel.provideFactory(
+                    stationId = stationId,
+                    owner = backStackEntry,
+                    defaultArgs = backStackEntry.arguments
+                )
             )
             TrainStationScreen(
-                viewModel = ViewModelProvider(activity, viewModelFactory)[TrainStationViewModel::class.java],
+                viewModel = viewModel,
                 navigationViewModel = navigationViewModel
             )
         }
@@ -110,12 +111,14 @@ sealed class Screen(
 
     object Bus : Screen(
         title = App.instance.getString(R.string.menu_bus),
-        route = "/bus",
+        route = "/bus?search={search}",
         icon = Icons.Filled.DirectionsBus,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { _, navigationViewModel ->
+        component = { backStackEntry, navigationViewModel ->
+            val search = URLDecoder.decode(backStackEntry.arguments?.getString("search", "") ?: "", "UTF-8")
             BusScreen(
                 title = "Bus",
+                search = search,
                 navigationViewModel = navigationViewModel,
                 mainViewModel = mainViewModel,
             )
@@ -129,26 +132,27 @@ sealed class Screen(
         showOnDrawer = false,
         topBar = ScreenTopBar.None,
         component = { backStackEntry, navigationViewModel ->
-            val activity = navigationViewModel.uiState.context.getActivity()
             val busStopId = URLDecoder.decode(backStackEntry.arguments?.getString("busStopId", "0") ?: "", "UTF-8")
             val busStopName = URLDecoder.decode(backStackEntry.arguments?.getString("busStopName", "0") ?: "", "UTF-8")
             val busRouteId = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteId", "0") ?: "", "UTF-8")
             val busRouteName = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteName", "0") ?: "", "UTF-8")
             val bound = URLDecoder.decode(backStackEntry.arguments?.getString("bound", "0") ?: "", "UTF-8")
             val boundTitle = URLDecoder.decode(backStackEntry.arguments?.getString("boundTitle", "0") ?: "", "UTF-8")
-            val viewModelFactory = BusStationViewModel.provideFactory(
-                busStopId = busStopId,
-                busStopName = busStopName,
-                busRouteId = busRouteId,
-                busRouteName = busRouteName,
-                bound = bound,
-                boundTitle = boundTitle,
-                owner = activity,
-                defaultArgs = backStackEntry.arguments
+            val viewModel: BusStationViewModel = viewModel(
+                factory = BusStationViewModel.provideFactory(
+                    busStopId = busStopId,
+                    busStopName = busStopName,
+                    busRouteId = busRouteId,
+                    busRouteName = busRouteName,
+                    bound = bound,
+                    boundTitle = boundTitle,
+                    owner = backStackEntry,
+                    defaultArgs = backStackEntry.arguments
+                )
             )
             BusStationScreen(
                 navigationViewModel = navigationViewModel,
-                viewModel = ViewModelProvider(activity, viewModelFactory)[BusStationViewModel::class.java],
+                viewModel = viewModel,
             )
         }
     )
@@ -160,23 +164,24 @@ sealed class Screen(
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarBack,
         component = { backStackEntry, navigationViewModel ->
-            val activity = navigationViewModel.uiState.context.getActivity()
             val busRouteId = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteId", "0") ?: "", "UTF-8")
             val busRouteName = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteName", "0") ?: "", "UTF-8")
             val bound = URLDecoder.decode(backStackEntry.arguments?.getString("bound", "0") ?: "", "UTF-8")
             val boundTitle = URLDecoder.decode(backStackEntry.arguments?.getString("boundTitle", "0") ?: "", "UTF-8")
             val searchBusBound = URLDecoder.decode(backStackEntry.arguments?.getString("searchBusBound", "") ?: "", "UTF-8")
-            val viewModelFactory = BusBoundUiViewModel.provideFactory(
-                busRouteId = busRouteId,
-                busRouteName = busRouteName,
-                bound = bound,
-                boundTitle = boundTitle,
-                searchText = TextFieldValue(searchBusBound),
-                owner = activity,
-                defaultArgs = backStackEntry.arguments
+            val viewModel: BusBoundUiViewModel = viewModel(
+                factory = BusBoundUiViewModel.provideFactory(
+                    busRouteId = busRouteId,
+                    busRouteName = busRouteName,
+                    bound = bound,
+                    boundTitle = boundTitle,
+                    searchText = TextFieldValue(searchBusBound),
+                    owner = backStackEntry,
+                    defaultArgs = backStackEntry.arguments
+                )
             )
             BusBoundScreen(
-                viewModel = ViewModelProvider(activity, viewModelFactory)[BusBoundUiViewModel::class.java],
+                viewModel = viewModel,
                 navigationViewModel = navigationViewModel,
                 title = "$busRouteId - $boundTitle",
             )
@@ -206,15 +211,16 @@ sealed class Screen(
         showOnDrawer = false,
         topBar = ScreenTopBar.None,
         component = { backStackEntry, navigationViewModel ->
-            val activity = navigationViewModel.uiState.context.getActivity()
             val stationId = URLDecoder.decode(backStackEntry.arguments?.getString("stationId", "0") ?: "", "UTF-8")
-            val viewModelFactory = BikeStationViewModel.provideFactory(
-                stationId = stationId,
-                owner = activity,
-                defaultArgs = backStackEntry.arguments
+            val viewModel: BikeStationViewModel = viewModel(
+                factory = BikeStationViewModel.provideFactory(
+                    stationId = stationId,
+                    owner = backStackEntry,
+                    defaultArgs = backStackEntry.arguments
+                )
             )
             BikeStationScreen(
-                viewModel = ViewModelProvider(activity, viewModelFactory)[BikeStationViewModel::class.java],
+                viewModel = viewModel,
                 navigationViewModel = navigationViewModel,
             )
         }
@@ -227,14 +233,14 @@ sealed class Screen(
         showOnDrawer = false,
         topBar = ScreenTopBar.LargeTopBarBack,
         component = { backStackEntry, navigationViewModel ->
-            val activity = navigationViewModel.uiState.context.getActivity()
-            val viewModelFactory = DeveloperOptionsViewModel.provideFactory(
-                owner = activity,
-                defaultArgs = backStackEntry.arguments
+            val viewModel: DeveloperOptionsViewModel = viewModel(
+                factory = DeveloperOptionsViewModel.provideFactory(
+                    owner = backStackEntry,
+                    defaultArgs = backStackEntry.arguments
+                )
             )
-
             DeveloperOptionsScreen(
-                viewModel = ViewModelProvider(activity, viewModelFactory)[DeveloperOptionsViewModel::class.java],
+                viewModel = viewModel,
                 navigationViewModel = navigationViewModel,
                 title = "Developer",
             )
@@ -287,18 +293,19 @@ sealed class Screen(
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarBack,
         component = { backStackEntry, navigationViewModel ->
-            val activity = navigationViewModel.uiState.context.getActivity()
             val routeId = URLDecoder.decode(backStackEntry.arguments?.getString("routeId", "") ?: "", "UTF-8")
             val title = URLDecoder.decode(backStackEntry.arguments?.getString("title", "") ?: "", "UTF-8")
-            val viewModelFactory = AlertDetailsViewModel.provideFactory(
-                routeId = routeId,
-                title = title,
-                owner = activity,
-                defaultArgs = backStackEntry.arguments
+            val viewModel: AlertDetailsViewModel = viewModel(
+                factory = AlertDetailsViewModel.provideFactory(
+                    routeId = routeId,
+                    title = title,
+                    owner = backStackEntry,
+                    defaultArgs = backStackEntry.arguments
+                )
             )
             AlertDetailsScreen(
                 navigationViewModel = navigationViewModel,
-                viewModel = ViewModelProvider(activity, viewModelFactory)[AlertDetailsViewModel::class.java],
+                viewModel = viewModel,
                 title = title,
             )
         }
@@ -359,16 +366,18 @@ sealed class Screen(
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarBack,
         component = { backStackEntry, navigationViewModel ->
-            val activity = navigationViewModel.uiState.context.getActivity()
             val search = URLDecoder.decode(backStackEntry.arguments?.getString("search", "") ?: "", "UTF-8")
-            val viewModelFactory = SearchViewModel.provideFactory(
-                searchText = TextFieldValue(search),
-                owner = activity,
-                defaultArgs = backStackEntry.arguments
+            val viewModel: SearchViewModel = viewModel(
+                factory = SearchViewModel.provideFactory(
+                    searchText = TextFieldValue(search),
+                    owner = backStackEntry,
+                    defaultArgs = backStackEntry.arguments
+                )
             )
+
             SearchViewScreen(
                 title = "Search",
-                viewModel = ViewModelProvider(activity, viewModelFactory)[SearchViewModel::class.java],
+                viewModel = viewModel,
                 navigationViewModel = navigationViewModel,
             )
         }
@@ -444,9 +453,3 @@ val screens = listOf(
 val drawerScreens by lazy {
     screens.filter { screen -> screen.showOnDrawer }
 }
-
-/*class Menu(val screen: Screen, var isSelected: Boolean = false)
-
-val menu by lazy {
-    screens.filter { screen -> screen.showOnDrawer }.map { screen ->  Menu(screen = screen) }
-}*/

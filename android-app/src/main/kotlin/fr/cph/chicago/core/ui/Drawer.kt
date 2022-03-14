@@ -20,10 +20,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,21 +28,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import fr.cph.chicago.R
-import fr.cph.chicago.core.model.Favorites
-import fr.cph.chicago.core.model.LastUpdate
-import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.core.ui.screen.drawerScreens
-import fr.cph.chicago.core.ui.screen.screens
 import timber.log.Timber
 
 @Composable
-fun Drawer(
-    modifier: Modifier = Modifier,
-    viewModel: NavigationViewModel,
-    onDestinationClicked: (route: Screen) -> Unit,
-) {
+fun Drawer(modifier: Modifier = Modifier, currentScreen: Screen, onDestinationClicked: (route: Screen) -> Unit) {
     Timber.d("Compose Drawer")
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item {
@@ -75,11 +63,10 @@ fun Drawer(
             key = { it.id }
         ) { screen ->
             Timber.v("Compose drawing drawer button")
-            var backgroundColor by remember { mutableStateOf(Color.Transparent) }
-            if (screen.route == viewModel.uiState.currentScreen.route) {
-                backgroundColor = MaterialTheme.colorScheme.secondaryContainer
+            val backgroundColor = if (screen.route == currentScreen.route) {
+                MaterialTheme.colorScheme.secondaryContainer
             } else {
-                backgroundColor = Color.Transparent
+                Color.Transparent
             }
             DrawerButton(
                 screen = screen,

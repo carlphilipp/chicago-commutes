@@ -8,19 +8,20 @@ import androidx.compose.material.icons.filled.Train
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.core.activity.MainUiState
+import fr.cph.chicago.core.ui.common.LocationViewModel
+import fr.cph.chicago.core.ui.common.NearbyResult
+import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Favorites
 import fr.cph.chicago.core.model.LastUpdate
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainStation
-import fr.cph.chicago.core.ui.common.LocationViewModel
-import fr.cph.chicago.core.ui.common.NearbyResult
-import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
+import fr.cph.chicago.core.ui.screen.TrainStationViewModel
 import fr.cph.chicago.redux.AlertAction
 import fr.cph.chicago.redux.BikeStationAction
 import fr.cph.chicago.redux.BusRoutesAction
@@ -39,10 +40,10 @@ import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.TimeUtil
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
-import java.util.Calendar
-import javax.inject.Inject
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
+import java.util.Calendar
+import javax.inject.Inject
 
 val settingsViewModel = SettingsViewModel().initModel()
 val locationViewModel = LocationViewModel()
@@ -118,10 +119,6 @@ abstract class MainViewModel @Inject constructor(
 
     fun loadBusRoutes() {
         store.dispatch(BusRoutesAction())
-    }
-
-    fun updateBusSearch(textSearch: TextFieldValue) {
-        uiState = uiState.copy(busSearch = textSearch)
     }
 
     fun loadBikeStations() {

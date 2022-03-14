@@ -49,11 +49,11 @@ import fr.cph.chicago.core.ui.screen.ScreenTopBar
 import fr.cph.chicago.core.ui.screen.TopBarIconAction
 import fr.cph.chicago.core.ui.screen.TopBarType
 import fr.cph.chicago.core.viewmodel.mainViewModel
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.net.URLEncoder
 import java.util.Stack
 import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.launch
-import timber.log.Timber
 
 val LocalNavController = compositionLocalOf<NavHostControllerWrapper> {
     error("No NavHostControllerWrapper provided")
@@ -72,7 +72,7 @@ fun Navigation(viewModel: NavigationViewModel) {
         gesturesEnabled = viewModel.isGestureEnabled(),
         drawerContent = {
             Drawer(
-                viewModel = viewModel,
+                currentScreen = uiState.currentScreen,
                 onDestinationClicked = { screen ->
                     if (screen != Screen.Rate) {
                         scope.launch {
@@ -116,7 +116,7 @@ fun Navigation(viewModel: NavigationViewModel) {
                                 exitTransition = exitTransition(),
                             ) { backStackEntry ->
                                 // Add custom backhandler to all composable so we can handle when someone push the back button
-                                BackHandler(viewModel = viewModel) {
+                                BackHandler {
                                     Timber.v("Compose render -> ${screen.title}")
                                     uiState.currentScreen = screen // FIXME: I don't think it's needed?
                                     screen.component(backStackEntry, viewModel)
@@ -291,7 +291,7 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
     private fun buildNewArgsFor(
         currentScreenData: Pair<Screen, Map<String, String>>,
         previousData: Pair<Screen, Map<String, String>>,
-        key: String,
+        key : String,
     ): Map<String, String> {
         val map = mutableMapOf<String, String>()
         map.putAll(previousData.second)

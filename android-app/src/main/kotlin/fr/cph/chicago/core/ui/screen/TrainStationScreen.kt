@@ -111,6 +111,24 @@ fun TrainStationScreen(
                             .verticalScroll(uiState.scrollState)
                             .fillMaxWidth()
                     ) {
+/*                        Row(modifier = Modifier.weight(2.0f, true)) {
+                            Box (
+                                modifier = Modifier.fillMaxWidth().fillMaxHeight().background(Color.Red),
+                            )
+                        }
+                        Row(modifier = Modifier.weight(1.0f, true)) {
+                            Box (
+                                modifier = Modifier.fillMaxWidth().fillMaxHeight().background(Color.Blue),
+                                //gravity = ContentGravity.Center
+                            ) {
+                                Text(text = "A sample text")
+                            }
+                        }
+                        Row(modifier = Modifier.weight(2.0f, true)) {
+                            Box (
+                                modifier = Modifier.fillMaxWidth().fillMaxHeight().background(Color.Yellow),
+                            )
+                        }*/
                         StationDetailsImageView(
                             showGoogleStreetImage = uiState.showGoogleStreetImage,
                             googleStreetMapImage = uiState.googleStreetMapImage,
