@@ -77,6 +77,7 @@ fun TrainLineStopsScreen(
 }
 
 data class TrainListStationUiState(
+    val line: String = "",
     val title: String = "",
     val trainLine: TrainLine = TrainLine.NA,
     val trainStations: List<TrainStation> = listOf(),
@@ -84,22 +85,24 @@ data class TrainListStationUiState(
 )
 
 class TrainListStationViewModel(
-    val line: String,
     private val trainService: TrainService = TrainService,
 ) : ViewModel() {
 
     var uiState by mutableStateOf(TrainListStationUiState())
         private set
 
-    init {
-        val trainLine = TrainLine.fromString(line)
-        val title = trainLine.toStringWithLine()
+    fun load(line: String) {
+        if (line != uiState.line) {
+            val trainLine = TrainLine.fromString(line)
+            val title = trainLine.toStringWithLine()
 
-        uiState = TrainListStationUiState(
-            title = title,
-            trainLine = trainLine,
-        )
-        loadData(trainLine)
+            uiState = TrainListStationUiState(
+                line = line,
+                title = title,
+                trainLine = trainLine,
+            )
+            loadData(trainLine)
+        }
     }
 
     private fun loadData(trainLine: TrainLine) {
@@ -120,7 +123,6 @@ class TrainListStationViewModel(
 
     companion object {
         fun provideFactory(
-            line: String,
             owner: SavedStateRegistryOwner,
             defaultArgs: Bundle? = null,
         ): AbstractSavedStateViewModelFactory =
@@ -131,7 +133,7 @@ class TrainListStationViewModel(
                     modelClass: Class<T>,
                     handle: SavedStateHandle
                 ): T {
-                    return TrainListStationViewModel(line) as T
+                    return TrainListStationViewModel() as T
                 }
             }
     }
