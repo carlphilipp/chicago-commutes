@@ -150,8 +150,8 @@ fun InfoWindowsDetails(
                         } else {
                             6
                         }
-                        for (i in 0 until max) {
-                            val pair = results[i] // FIXME there are some issue here, not sure what
+                        for (i in 0..max) {
+                            val pair = results[i]
                             EtaView(stopName = pair.first, eta = pair.second)
                         }
                         if (!showAll && max >= 6) {
