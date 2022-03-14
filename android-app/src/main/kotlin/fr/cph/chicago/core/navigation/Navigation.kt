@@ -52,8 +52,6 @@ import fr.cph.chicago.core.viewmodel.mainViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.net.URLEncoder
-import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets
 import java.util.Stack
 import java.util.concurrent.TimeUnit
 
@@ -267,29 +265,22 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
                             previous.isEmpty() -> Timber.d("Empty, no where to go, this should not happen")
                             previous.isNotEmpty() -> {
                                 val previousData = previous.pop()
-                                navigate(screen = previousData.first, arguments = previousData.second)
+                                // Adding search if present in current
+                                val newArgs = if (currentScreenData.second.containsKey("search")) {
+                                    val temp = mutableMapOf<String, String>()
+                                    temp.putAll(previousData.second)
+                                    temp["search"] = currentScreenData.second["search"]!!
+                                    temp
+                                } else {
+                                    previousData.second
+                                }
+                                navigate(screen = previousData.first, arguments = newArgs)
                             }
                         }
                     }
                 }
             }
         }
-        // Remove current screen
-        /*      previous.pop()
-              if (previous.isEmpty()) {
-                  if (viewModel.uiState.shouldExit) {
-                      viewModel.exit()
-                  } else {
-                      viewModel.shouldBackSpaceAgainToExit()
-                      //navigate(screen = Screen.Favorites)
-                  }
-              } else {
-                  val screen = previous.pop()
-                  navigate(
-                      screen = screen.first,
-                      arguments = screen.second,
-                  )
-              }*/
         printStackState()
     }
 
@@ -308,7 +299,7 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
         Timber.d("Navigate Stack size: ${previous.size}");
         var str = "[ "
         for (i in previous.size - 1 downTo 0) {
-            str = str + previous[i].first.title + " <- "
+            str = str + previous[i].first.title + "(${previous[i].second}) <- "
         }
         str = "$str ]"
         Timber.d("Navigate Stack: $str")

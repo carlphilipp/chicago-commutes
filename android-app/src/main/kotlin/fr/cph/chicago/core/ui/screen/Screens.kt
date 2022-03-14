@@ -185,14 +185,16 @@ sealed class Screen(
 
     object Divvy : Screen(
         title = App.instance.getString(R.string.menu_divvy),
-        route = "divvy",
+        route = "divvy?search={search}",
         icon = Icons.Filled.DirectionsBike,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { _, navigationViewModel ->
+        component = { backStackEntry, navigationViewModel ->
+            val search = URLDecoder.decode(backStackEntry.arguments?.getString("search", "") ?: "", "UTF-8")
             DivvyScreen(
                 mainViewModel = mainViewModel,
                 navigationViewModel = navigationViewModel,
-                title = "Divvy"
+                title = "Divvy",
+                search = search,
             )
         }
     )
