@@ -268,6 +268,7 @@ fun BusRouteDialog(
                                                     "busRouteName" to busRoute.name,
                                                     "bound" to lBusDirections[index].text,
                                                     "boundTitle" to lBusDirections[index].text,
+                                                    "search" to search,
                                                 ),
                                             )
                                             hideDialog()

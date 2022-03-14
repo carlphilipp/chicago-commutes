@@ -128,11 +128,6 @@ abstract class MainViewModel @Inject constructor(
         store.dispatch(BikeStationAction())
     }
 
-    fun updateBikeSearch(textSearch: TextFieldValue) {
-        uiState = uiState.copy(bikeSearch = textSearch)
-    }
-
-
     fun resetBusRoutesShowError() {
         uiState = uiState.copy(busRoutesShowError = false)
     }

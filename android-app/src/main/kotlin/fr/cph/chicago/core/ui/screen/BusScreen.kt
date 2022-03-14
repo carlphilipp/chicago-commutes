@@ -76,6 +76,7 @@ fun BusScreen(
                             text = mainViewModel.uiState.busSearch,
                             onValueChange = { value ->
                                 mainViewModel.updateBusSearch(value)
+                                //textSearch = value
                                 searchBusRoutes = search(mainViewModel = mainViewModel, searchText = value.text)
                             }
                         )

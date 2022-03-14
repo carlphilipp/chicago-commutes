@@ -155,7 +155,7 @@ sealed class Screen(
 
     object BusBound : Screen(
         title = "Bus bound",
-        route = "/bus/bound?busRouteId={busRouteId}&busRouteName={busRouteName}&bound={bound}&boundTitle={boundTitle}",
+        route = "/bus/bound?busRouteId={busRouteId}&busRouteName={busRouteName}&bound={bound}&boundTitle={boundTitle}&searchBusBound={searchBusBound}",
         icon = Icons.Filled.DirectionsBus,
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarBack,
@@ -165,12 +165,13 @@ sealed class Screen(
             val busRouteName = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteName", "0") ?: "", "UTF-8")
             val bound = URLDecoder.decode(backStackEntry.arguments?.getString("bound", "0") ?: "", "UTF-8")
             val boundTitle = URLDecoder.decode(backStackEntry.arguments?.getString("boundTitle", "0") ?: "", "UTF-8")
+            val searchBusBound = URLDecoder.decode(backStackEntry.arguments?.getString("searchBusBound", "") ?: "", "UTF-8")
             val viewModelFactory = BusBoundUiViewModel.provideFactory(
                 busRouteId = busRouteId,
                 busRouteName = busRouteName,
                 bound = bound,
                 boundTitle = boundTitle,
-                searchText = TextFieldValue(""),
+                searchText = TextFieldValue(searchBusBound),
                 owner = activity,
                 defaultArgs = backStackEntry.arguments
             )
@@ -184,14 +185,16 @@ sealed class Screen(
 
     object Divvy : Screen(
         title = App.instance.getString(R.string.menu_divvy),
-        route = "/divvy",
+        route = "/divvy?search={search}",
         icon = Icons.Filled.DirectionsBike,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { _, navigationViewModel ->
+        component = { backStackEntry, navigationViewModel ->
+            val search = URLDecoder.decode(backStackEntry.arguments?.getString("search", "") ?: "", "UTF-8")
             DivvyScreen(
                 mainViewModel = mainViewModel,
                 navigationViewModel = navigationViewModel,
                 title = "Divvy",
+                search = search,
             )
         }
     )
@@ -351,13 +354,15 @@ sealed class Screen(
 
     object Search : Screen(
         title = "Search",
-        route = "/search",
+        route = "/search?search={search}",
         icon = Icons.Filled.Search,
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarBack,
         component = { backStackEntry, navigationViewModel ->
             val activity = navigationViewModel.uiState.context.getActivity()
+            val search = URLDecoder.decode(backStackEntry.arguments?.getString("search", "") ?: "", "UTF-8")
             val viewModelFactory = SearchViewModel.provideFactory(
+                searchText = TextFieldValue(search),
                 owner = activity,
                 defaultArgs = backStackEntry.arguments
             )

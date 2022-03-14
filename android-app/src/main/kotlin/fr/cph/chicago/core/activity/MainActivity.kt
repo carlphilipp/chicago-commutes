@@ -65,7 +65,6 @@ data class MainUiState(
 
     val bikeStations: List<BikeStation> = listOf(),
     val bikeStationsShowError: Boolean = false,
-    val bikeSearch: TextFieldValue = TextFieldValue(""),
 
     val startMarket: Boolean = true,
     val startMarketFailed: Boolean = false,

@@ -42,6 +42,7 @@ import timber.log.Timber
 fun DivvyScreen(
     modifier: Modifier = Modifier,
     title: String,
+    search: String,
     mainViewModel: MainViewModel,
     navigationViewModel: NavigationViewModel
 ) {
@@ -50,10 +51,11 @@ fun DivvyScreen(
     val scope = rememberCoroutineScope()
 
     var searchBikeStations by remember { mutableStateOf(listOf<BikeStation>()) }
+    var textSearch by remember { mutableStateOf(TextFieldValue(search)) }
 
     LaunchedEffect(key1 = Unit, block = {
         scope.launch {
-            searchBikeStations = search(mainViewModel = mainViewModel, searchText =  mainViewModel.uiState.bikeSearch.text)
+            searchBikeStations = search(mainViewModel = mainViewModel, searchText = textSearch.text)
         }
     })
 
@@ -69,9 +71,9 @@ fun DivvyScreen(
                     Column(modifier = Modifier.padding(top = 5.dp, bottom = 5.dp)) {
                         TextFieldMaterial3(
                             modifier = Modifier.fillMaxWidth(),
-                            text = mainViewModel.uiState.bikeSearch,
+                            text = textSearch,
                             onValueChange = { value ->
-                                mainViewModel.updateBikeSearch(value)
+                                textSearch = value
                                 searchBikeStations = search(mainViewModel = mainViewModel, searchText = value.text)
                             }
                         )
@@ -89,6 +91,7 @@ fun DivvyScreen(
                                             screen = Screen.DivvyDetails,
                                             arguments = mapOf(
                                                 "stationId" to bikeStation.id,
+                                                "search" to textSearch.text
                                             )
                                         )
                                     }
