@@ -130,7 +130,6 @@ fun SearchViewScreen(
                                         navController.navigate(Screen.TrainDetails,
                                             mapOf(
                                                 "stationId" to trainStation.id,
-                                                "search" to uiState.searchText.text,
                                             )
                                         )
                                     }
@@ -159,7 +158,6 @@ fun SearchViewScreen(
                                             screen = Screen.DivvyDetails,
                                             arguments = mapOf(
                                                 "stationId" to bikeStation.id,
-                                                "search" to uiState.searchText.text,
                                             )
                                         )
                                     }
@@ -252,19 +250,12 @@ data class SearchUiState(
 )
 
 class SearchViewModel @Inject constructor(
-    searchText: TextFieldValue,
     private val trainService: TrainService = TrainService,
     private val busService: BusService = BusService,
     private val bikeService: BikeService = BikeService,
 ) : ViewModel() {
     var uiState by mutableStateOf(SearchUiState())
         private set
-
-    init {
-        uiState = SearchUiState(
-            searchText = searchText
-        )
-    }
 
     fun updateText(searchText: TextFieldValue) {
         uiState = uiState.copy(searchText = searchText)
@@ -314,7 +305,6 @@ class SearchViewModel @Inject constructor(
 
     companion object {
         fun provideFactory(
-            searchText: TextFieldValue,
             owner: SavedStateRegistryOwner,
             defaultArgs: Bundle? = null,
         ): AbstractSavedStateViewModelFactory =
@@ -325,7 +315,7 @@ class SearchViewModel @Inject constructor(
                     modelClass: Class<T>,
                     handle: SavedStateHandle
                 ): T {
-                    return SearchViewModel(searchText) as T
+                    return SearchViewModel() as T
                 }
             }
     }

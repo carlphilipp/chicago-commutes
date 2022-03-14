@@ -106,7 +106,6 @@ fun BusBoundScreen(
                                                     "busRouteName" to uiState.busRouteName,
                                                     "bound" to uiState.bound,
                                                     "boundTitle" to uiState.boundTitle,
-                                                    "searchBusBound" to uiState.searchText.text,
                                                 )
                                             )
                                         },
