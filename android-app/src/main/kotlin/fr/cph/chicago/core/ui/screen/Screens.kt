@@ -21,7 +21,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavBackStackEntry
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.screen.settings.DisplaySettingsScreen
 import fr.cph.chicago.core.ui.screen.settings.SettingsScreen
@@ -126,24 +125,26 @@ sealed class Screen(
         showOnDrawer = false,
         topBar = ScreenTopBar.None,
         component = { backStackEntry, navigationViewModel ->
+            val activity = navigationViewModel.uiState.context.getActivity()
             val busStopId = URLDecoder.decode(backStackEntry.arguments?.getString("busStopId", "0") ?: "", "UTF-8")
             val busStopName = URLDecoder.decode(backStackEntry.arguments?.getString("busStopName", "0") ?: "", "UTF-8")
             val busRouteId = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteId", "0") ?: "", "UTF-8")
             val busRouteName = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteName", "0") ?: "", "UTF-8")
             val bound = URLDecoder.decode(backStackEntry.arguments?.getString("bound", "0") ?: "", "UTF-8")
             val boundTitle = URLDecoder.decode(backStackEntry.arguments?.getString("boundTitle", "0") ?: "", "UTF-8")
-            val busDetails = BusDetailsDTO(
-                stopId = busStopId.toInt(),
-                stopName = busStopName,
+            val viewModelFactory = BusStationViewModel.provideFactory(
+                busStopId = busStopId,
+                busStopName = busStopName,
                 busRouteId = busRouteId,
-                routeName = busRouteName,
+                busRouteName = busRouteName,
                 bound = bound,
                 boundTitle = boundTitle,
+                owner = activity,
+                defaultArgs = backStackEntry.arguments
             )
-            val viewModel = BusStationViewModel(busDetails = busDetails)
             BusStationScreen(
                 navigationViewModel = navigationViewModel,
-                viewModel = viewModel,
+                viewModel = ViewModelProvider(activity, viewModelFactory)[BusStationViewModel::class.java],
             )
         }
     )
@@ -198,10 +199,15 @@ sealed class Screen(
         showOnDrawer = false,
         topBar = ScreenTopBar.None,
         component = { backStackEntry, navigationViewModel ->
+            val activity = navigationViewModel.uiState.context.getActivity()
             val stationId = URLDecoder.decode(backStackEntry.arguments?.getString("stationId", "0") ?: "", "UTF-8")
-            val viewModel = BikeStationViewModel(stationId)
+            val viewModelFactory = BikeStationViewModel.provideFactory(
+                stationId = stationId,
+                owner = activity,
+                defaultArgs = backStackEntry.arguments
+            )
             BikeStationScreen(
-                viewModel = viewModel,
+                viewModel = ViewModelProvider(activity, viewModelFactory)[BikeStationViewModel::class.java],
                 navigationViewModel = navigationViewModel,
             )
         }
