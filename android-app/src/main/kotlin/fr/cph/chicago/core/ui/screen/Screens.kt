@@ -75,13 +75,12 @@ sealed class Screen(
             val line = URLDecoder.decode(backStackEntry.arguments?.getString("line", "0") ?: "", "UTF-8")
             val activity = navigationViewModel.uiState.context.getActivity()
             val viewModelFactory = TrainListStationViewModel.provideFactory(
+                line = line,
                 owner = activity,
                 defaultArgs = backStackEntry.arguments
             )
-            val viewModel = ViewModelProvider(activity, viewModelFactory)[TrainListStationViewModel::class.java]
-            viewModel.load(line)
             TrainLineStopsScreen(
-                viewModel = viewModel,
+                viewModel = ViewModelProvider(activity, viewModelFactory)[TrainListStationViewModel::class.java],
                 navigationViewModel = navigationViewModel,
                 title = "$line Line"
             )
@@ -96,9 +95,14 @@ sealed class Screen(
         topBar = ScreenTopBar.None,
         component = { backStackEntry, navigationViewModel ->
             val stationId = backStackEntry.arguments?.getString("stationId", "0") ?: ""
-            val viewModel = TrainStationViewModel(stationId)
+            val activity = navigationViewModel.uiState.context.getActivity()
+            val viewModelFactory = TrainStationViewModel.provideFactory(
+                stationId = stationId,
+                owner = activity,
+                defaultArgs = backStackEntry.arguments
+            )
             TrainStationScreen(
-                viewModel = viewModel,
+                viewModel = ViewModelProvider(activity, viewModelFactory)[TrainStationViewModel::class.java],
                 navigationViewModel = navigationViewModel
             )
         }
