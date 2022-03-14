@@ -340,7 +340,6 @@ fun StationDetailsImageView(
             visible = !isLoading && showGoogleStreetImage,
             enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
         ) {
-            Timber.i("image height: ${googleStreetMapImage.height}")
             val imageModifier = if (scrollState != null) {
                 Modifier
                     .fillMaxWidth()
