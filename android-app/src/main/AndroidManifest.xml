@@ -43,7 +43,8 @@
         <activity
             android:name=".core.activity.BaseActivity"
             android:alwaysRetainTaskState="true"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -57,21 +58,25 @@
             android:name=".core.activity.ErrorActivity"
             android:configChanges="uiMode"
             android:exported="false"
-            android:label="@string/bus_bound_activity" />
+            android:label="@string/bus_bound_activity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".core.activity.MainActivity"
             android:configChanges="uiMode"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".core.activity.TrainMapActivity"
             android:configChanges="uiMode"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".core.activity.BusMapActivity"
             android:configChanges="uiMode"
-            android:exported="false"/>
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <uses-library
             android:name="org.apache.http.legacy"

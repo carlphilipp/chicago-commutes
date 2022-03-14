@@ -13,7 +13,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,7 +33,6 @@ import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 import fr.cph.chicago.core.viewmodel.MainViewModel
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,24 +40,15 @@ import timber.log.Timber
 fun DivvyScreen(
     modifier: Modifier = Modifier,
     title: String,
-    search: String,
     mainViewModel: MainViewModel,
     navigationViewModel: NavigationViewModel
 ) {
     Timber.d("Compose DivvyScreen")
     val navController = LocalNavController.current
-    val scope = rememberCoroutineScope()
-
     var searchBikeStations by remember { mutableStateOf(listOf<BikeStation>()) }
-    var textSearch by remember { mutableStateOf(TextFieldValue(search)) }
-
-    LaunchedEffect(key1 = Unit, block = {
-        scope.launch {
-            searchBikeStations = mainViewModel.uiState.bikeStations.filter { bikeStation ->
-                bikeStation.name.contains(textSearch.text, true)
-            }
-        }
-    })
+    searchBikeStations = mainViewModel.uiState.bikeStations
+    var textSearch by remember { mutableStateOf(TextFieldValue("")) }
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
@@ -91,8 +80,7 @@ fun DivvyScreen(
                                         navController.navigate(
                                             screen = Screen.DivvyDetails,
                                             arguments = mapOf(
-                                                "stationId" to bikeStation.id,
-                                                "search" to textSearch.text
+                                                "stationId" to bikeStation.id
                                             )
                                         )
                                     }
