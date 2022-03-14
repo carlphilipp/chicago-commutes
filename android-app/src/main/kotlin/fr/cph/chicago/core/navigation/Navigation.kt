@@ -116,7 +116,7 @@ fun Navigation(viewModel: NavigationViewModel) {
                                 exitTransition = exitTransition(),
                             ) { backStackEntry ->
                                 // Add custom backhandler to all composable so we can handle when someone push the back button
-                                BackHandler {
+                                BackHandler(viewModel = viewModel) {
                                     Timber.v("Compose render -> ${screen.title}")
                                     uiState.currentScreen = screen // FIXME: I don't think it's needed?
                                     screen.component(backStackEntry, viewModel)
