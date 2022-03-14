@@ -152,6 +152,7 @@ fun SearchViewScreen(
             }
         )
         BusRouteDialog(
+            search = uiState.searchText.text,
             showDialog = uiState.showBusDialog,
             busRoute = uiState.busRoute,
             hideDialog = {

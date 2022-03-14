@@ -55,9 +55,7 @@ fun DivvyScreen(
 
     LaunchedEffect(key1 = Unit, block = {
         scope.launch {
-            searchBikeStations = mainViewModel.uiState.bikeStations.filter { bikeStation ->
-                bikeStation.name.contains(textSearch.text, true)
-            }
+            searchBikeStations = search(mainViewModel = mainViewModel, searchText = textSearch.text)
         }
     })
 
@@ -76,9 +74,7 @@ fun DivvyScreen(
                             text = textSearch,
                             onValueChange = { value ->
                                 textSearch = value
-                                searchBikeStations = mainViewModel.uiState.bikeStations.filter { bikeStation ->
-                                    bikeStation.name.contains(value.text, true)
-                                }
+                                searchBikeStations = search(mainViewModel = mainViewModel, searchText = value.text)
                             }
                         )
                         LazyColumn(modifier = modifier.fillMaxWidth()) {
@@ -133,4 +129,10 @@ fun DivvyScreen(
                 }
             }
         })
+}
+
+private fun search(mainViewModel: MainViewModel, searchText: String): List<BikeStation> {
+    return mainViewModel.uiState.bikeStations.filter { bikeStation ->
+        bikeStation.name.contains(searchText, true)
+    }
 }

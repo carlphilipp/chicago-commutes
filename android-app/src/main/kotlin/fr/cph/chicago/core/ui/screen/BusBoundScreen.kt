@@ -106,6 +106,7 @@ fun BusBoundScreen(
                                                     "busRouteName" to uiState.busRouteName,
                                                     "bound" to uiState.bound,
                                                     "boundTitle" to uiState.boundTitle,
+                                                    "searchBusBound" to uiState.searchText.text,
                                                 )
                                             )
                                         },
@@ -155,6 +156,7 @@ class BusBoundUiViewModel(
     busRouteName: String,
     bound: String,
     boundTitle: String,
+    searchText: TextFieldValue,
     private val busService: BusService = BusService,
 ) : ViewModel() {
     var uiState by mutableStateOf(BusBoundUiState())
@@ -166,6 +168,7 @@ class BusBoundUiViewModel(
             busRouteName = busRouteName,
             bound = bound,
             boundTitle = boundTitle,
+            searchText = searchText,
         )
         loadData()
     }
@@ -222,6 +225,7 @@ class BusBoundUiViewModel(
             busRouteName: String,
             bound: String,
             boundTitle: String,
+            searchText: TextFieldValue,
             owner: SavedStateRegistryOwner,
             defaultArgs: Bundle? = null,
         ): AbstractSavedStateViewModelFactory =
@@ -237,6 +241,7 @@ class BusBoundUiViewModel(
                         busRouteName = busRouteName,
                         bound = bound,
                         boundTitle = boundTitle,
+                        searchText = searchText
                     ) as T
                 }
             }

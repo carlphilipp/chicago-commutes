@@ -15,6 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +36,7 @@ import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 import fr.cph.chicago.core.viewmodel.MainViewModel
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,6 +44,7 @@ import timber.log.Timber
 fun BusScreen(
     modifier: Modifier = Modifier,
     title: String,
+    search: String,
     mainViewModel: MainViewModel,
     navigationViewModel: NavigationViewModel
 ) {
@@ -49,9 +52,14 @@ fun BusScreen(
     var showDialog by remember { mutableStateOf(false) }
     var selectedBusRoute by remember { mutableStateOf(BusRoute.buildEmpty()) }
     var searchBusRoutes by remember { mutableStateOf<List<BusRoute>>(listOf()) }
-    searchBusRoutes = mainViewModel.uiState.busRoutes
-    var textSearch by remember { mutableStateOf(TextFieldValue("")) }
+    var textSearch by remember { mutableStateOf(TextFieldValue(search)) }
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(key1 = Unit, block = {
+        scope.launch {
+            searchBusRoutes = search(mainViewModel = mainViewModel, searchText = textSearch.text)
+        }
+    })
 
     Scaffold(
         snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
@@ -70,9 +78,7 @@ fun BusScreen(
                             text = textSearch,
                             onValueChange = { value ->
                                 textSearch = value
-                                searchBusRoutes = mainViewModel.uiState.busRoutes.filter { busRoute ->
-                                    busRoute.id.contains(value.text, true) || busRoute.name.contains(value.text, true)
-                                }
+                                searchBusRoutes = search(mainViewModel = mainViewModel, searchText = value.text)
                             }
                         )
                         LazyColumn(
@@ -134,10 +140,16 @@ fun BusScreen(
             }
 
             BusRouteDialog(
+                search = textSearch.text,
                 showDialog = showDialog,
                 busRoute = selectedBusRoute,
                 hideDialog = { showDialog = false },
             )
         })
+}
 
+private fun search(mainViewModel: MainViewModel, searchText: String): List<BusRoute> {
+    return mainViewModel.uiState.busRoutes.filter { busRoute ->
+        busRoute.id.contains(searchText, true) || busRoute.name.contains(searchText, true)
+    }
 }
