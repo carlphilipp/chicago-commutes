@@ -29,7 +29,6 @@ import fr.cph.chicago.core.viewmodel.locationViewModel
 import fr.cph.chicago.core.viewmodel.mainViewModel
 import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.getActivity
-import timber.log.Timber
 import java.net.URLDecoder
 import kotlin.random.Random
 
@@ -76,7 +75,7 @@ sealed class Screen(
             val activity = navigationViewModel.uiState.context.getActivity()
             val line = URLDecoder.decode(backStackEntry.arguments?.getString("line", "0") ?: "", "UTF-8")
             val factory = TrainListStationViewModel.provideFactory(
-                owner = activity,
+                owner = navigationViewModel.uiState.context.getActivity(),
                 defaultArgs = backStackEntry.arguments
             )
             val viewModel = ViewModelProvider(activity, factory)[TrainListStationViewModel::class.java]
@@ -164,35 +163,24 @@ sealed class Screen(
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarBack,
         component = { backStackEntry, navigationViewModel ->
-            Timber.i("In BusBound create BusBoundScreen")
-            val activity = navigationViewModel.uiState.context.getActivity()
             val busRouteId = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteId", "0") ?: "", "UTF-8")
             val busRouteName = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteName", "0") ?: "", "UTF-8")
             val bound = URLDecoder.decode(backStackEntry.arguments?.getString("bound", "0") ?: "", "UTF-8")
             val boundTitle = URLDecoder.decode(backStackEntry.arguments?.getString("boundTitle", "0") ?: "", "UTF-8")
-
-            val factory = BusBoundUiViewModel.provideFactory(
-/*                busRouteId = busRouteId,
-                busRouteName = busRouteName,
-                bound = bound,
-                boundTitle = boundTitle,*/
-                owner = activity,
-                defaultArgs = backStackEntry.arguments
+            val viewModel: BusBoundUiViewModel = viewModel(
+                factory = BusBoundUiViewModel.provideFactory(
+                    busRouteId = busRouteId,
+                    busRouteName = busRouteName,
+                    bound = bound,
+                    boundTitle = boundTitle,
+                    owner = backStackEntry,
+                    defaultArgs = backStackEntry.arguments
+                )
             )
-
-            val viewModel = ViewModelProvider(activity, factory)[BusBoundUiViewModel::class.java]
-
-            viewModel.init(
-                busRouteId = busRouteId,
-                busRouteName = busRouteName,
-                bound = bound,
-                boundTitle = boundTitle,
-            )
-
             BusBoundScreen(
                 viewModel = viewModel,
                 navigationViewModel = navigationViewModel,
-                title =  "$busRouteId - $boundTitle"
+                title = "$busRouteId - $boundTitle"
             )
         }
     )

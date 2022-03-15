@@ -16,10 +16,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -29,9 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.savedstate.SavedStateRegistryOwner
-import com.google.android.gms.maps.CameraUpdateFactory
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
@@ -45,7 +41,6 @@ import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 import fr.cph.chicago.service.BusService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,20 +51,9 @@ fun BusBoundScreen(
     navigationViewModel: NavigationViewModel,
     title: String,
 ) {
-    Timber.i("Compose BusBoundScreen")
     val uiState = viewModel.uiState
     val navController = LocalNavController.current
     val scope = rememberCoroutineScope()
-
-    LaunchedEffect(
-        key1 = "${viewModel.uiState.busRouteId}_${viewModel.uiState.busRouteName}_${viewModel.uiState.bound}_${viewModel.uiState.boundTitle}",
-        block = {
-        scope.launch {
-            if (uiState.busStops.isEmpty()) {
-                viewModel.loadData()
-            }
-        }
-    })
 
     Scaffold(
         modifier = modifier,
@@ -167,40 +151,23 @@ data class BusBoundUiState(
 )
 
 class BusBoundUiViewModel(
-/*    busRouteId: String,
+    busRouteId: String,
     busRouteName: String,
     bound: String,
-    boundTitle: String,*/
+    boundTitle: String,
     private val busService: BusService = BusService,
 ) : ViewModel() {
     var uiState by mutableStateOf(BusBoundUiState())
         private set
 
-/*    init {
+    init {
         uiState = BusBoundUiState(
             busRouteId = busRouteId,
             busRouteName = busRouteName,
             bound = bound,
             boundTitle = boundTitle,
         )
-    }*/
-
-    fun init(
-        busRouteId: String,
-        busRouteName: String,
-        bound: String,
-        boundTitle: String,
-    ) {
-        Timber.i("BusBoundUiViewModel init()")
-        uiState = BusBoundUiState(
-            busRouteId = busRouteId,
-            busRouteName = busRouteName,
-            bound = bound,
-            boundTitle = boundTitle,
-        )
-        /*viewModelScope.launch {
-            loadData()
-        }*/
+        loadData()
     }
 
     fun refresh() {
@@ -216,13 +183,12 @@ class BusBoundUiViewModel(
         )
     }
 
-    fun loadData() {
+    private fun loadData() {
         busService.loadAllBusStopsForRouteBound(uiState.busRouteId, uiState.bound)
             .subscribeOn(Schedulers.computation())
-            //.observeOn(AndroidSchedulers.mainThread())
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { result ->
-                    Timber.i("Result! ${result.size}")
                     val searchBusStops = if (uiState.searchText.text != "") {
                         result.filter { busStop -> busStop.description.contains(uiState.searchText.text, true) }
                     } else {
@@ -238,11 +204,11 @@ class BusBoundUiViewModel(
                 },
                 { throwable ->
                     Timber.e(throwable, "Error while getting bus stops for route bound")
-/*                    uiState = uiState.copy(
+                    uiState = uiState.copy(
                         isRefreshing = false,
                         isErrorState = true,
                         showError = true,
-                    )*/
+                    )
                 })
     }
 
@@ -252,10 +218,10 @@ class BusBoundUiViewModel(
 
     companion object {
         fun provideFactory(
-/*            busRouteId : String,
-            busRouteName :String,
-            bound : String,
-            boundTitle : String,*/
+            busRouteId: String,
+            busRouteName: String,
+            bound: String,
+            boundTitle: String,
             owner: SavedStateRegistryOwner,
             defaultArgs: Bundle? = null,
         ): AbstractSavedStateViewModelFactory =
@@ -267,10 +233,10 @@ class BusBoundUiViewModel(
                     handle: SavedStateHandle
                 ): T {
                     return BusBoundUiViewModel(
-/*                        busRouteId = busRouteId,
+                        busRouteId = busRouteId,
                         busRouteName = busRouteName,
                         bound = bound,
-                        boundTitle = boundTitle,*/
+                        boundTitle = boundTitle,
                     ) as T
                 }
             }
