@@ -38,7 +38,6 @@ import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
-import okhttp3.internal.parseCookie
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,7 +51,7 @@ fun BusScreen(
     Timber.d("Compose BusScreen")
     var showDialog by remember { mutableStateOf(false) }
     var selectedBusRoute by remember { mutableStateOf(BusRoute.buildEmpty()) }
-    var searchBusRoutes by remember { mutableStateOf<List<BusRoute>>(mainViewModel.uiState.busRoutes) }
+    var searchBusRoutes by remember { mutableStateOf(mainViewModel.uiState.busRoutes) }
     val scope = rememberCoroutineScope()
 
     var textSearch by remember { mutableStateOf(TextFieldValue(mainViewModel.uiState.busRouteSearch)) }
