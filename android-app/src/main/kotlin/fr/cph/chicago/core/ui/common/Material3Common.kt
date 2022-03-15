@@ -147,6 +147,7 @@ fun TextFieldMaterial3(modifier: Modifier = Modifier, text: TextFieldValue, onVa
             TextField(
                 value = text,
                 onValueChange = onValueChange,
+                singleLine = true,
                 colors = TextFieldDefaults.textFieldColors(
                     textColor = MaterialTheme.colorScheme.onSecondaryContainer,//LocalContentColor.current.copy(LocalContentAlpha.current),
                     //disabledTextColor = textColor.copy(ContentAlpha.disabled),

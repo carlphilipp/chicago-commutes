@@ -9,6 +9,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.input.TextFieldValue
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.BusStop
@@ -55,6 +56,7 @@ data class MainUiState(
 
     val busRoutes: List<BusRoute> = listOf(),
     val busRoutesShowError: Boolean = false,
+    val busRouteSearch: String = "",
 
     val bikeStations: List<BikeStation> = listOf(),
     val bikeStationsShowError: Boolean = false,

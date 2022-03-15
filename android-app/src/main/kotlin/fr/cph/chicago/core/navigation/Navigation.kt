@@ -274,22 +274,6 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
                 }
             }
         }
-        // Remove current screen
-        /*      previous.pop()
-              if (previous.isEmpty()) {
-                  if (viewModel.uiState.shouldExit) {
-                      viewModel.exit()
-                  } else {
-                      viewModel.shouldBackSpaceAgainToExit()
-                      //navigate(screen = Screen.Favorites)
-                  }
-              } else {
-                  val screen = previous.pop()
-                  navigate(
-                      screen = screen.first,
-                      arguments = screen.second,
-                  )
-              }*/
         printStackState()
     }
 

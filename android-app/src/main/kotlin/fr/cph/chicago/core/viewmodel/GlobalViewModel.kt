@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.Train
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -119,6 +120,13 @@ abstract class MainViewModel @Inject constructor(
 
     fun loadBusRoutes() {
         store.dispatch(BusRoutesAction())
+    }
+
+    fun updateBusRouteSearch(search: String) {
+        Timber.i("Upddate search with $search")
+        uiState = uiState.copy(
+            busRouteSearch = search
+        )
     }
 
     fun loadBikeStations() {
