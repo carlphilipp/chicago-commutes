@@ -111,24 +111,6 @@ fun TrainStationScreen(
                             .verticalScroll(uiState.scrollState)
                             .fillMaxWidth()
                     ) {
-/*                        Row(modifier = Modifier.weight(2.0f, true)) {
-                            Box (
-                                modifier = Modifier.fillMaxWidth().fillMaxHeight().background(Color.Red),
-                            )
-                        }
-                        Row(modifier = Modifier.weight(1.0f, true)) {
-                            Box (
-                                modifier = Modifier.fillMaxWidth().fillMaxHeight().background(Color.Blue),
-                                //gravity = ContentGravity.Center
-                            ) {
-                                Text(text = "A sample text")
-                            }
-                        }
-                        Row(modifier = Modifier.weight(2.0f, true)) {
-                            Box (
-                                modifier = Modifier.fillMaxWidth().fillMaxHeight().background(Color.Yellow),
-                            )
-                        }*/
                         StationDetailsImageView(
                             showGoogleStreetImage = uiState.showGoogleStreetImage,
                             googleStreetMapImage = uiState.googleStreetMapImage,
@@ -142,7 +124,6 @@ fun TrainStationScreen(
                             onMapClick = { viewModel.openMap(context = context, scope = scope) }
                         )
                         uiState.trainStation.stopByLines.keys.forEach { line ->
-                            Timber.i("Loading stops by line ${line.toTextString()}")
                             val stops by remember { mutableStateOf(uiState.trainStation.stopByLines[line]!!.sorted()) }
                             Column(
                                 modifier = Modifier
@@ -170,7 +151,6 @@ fun TrainStationScreen(
                                 Spacer(modifier = Modifier.padding(bottom = 3.dp))
 
                                 stops.forEachIndexed { index, stop ->
-                                    Timber.i("Loading stop ${stop.id}")
                                     val trainStopViewModel by remember { mutableStateOf(TrainStopViewModel()) }
                                     trainStopViewModel.update(
                                         stationId = uiState.trainStation.id,
@@ -430,7 +410,6 @@ class TrainStopViewModel(val preferenceService: PreferenceService = PreferenceSe
             showDivider = showDivider,
             isFiltered = isFiltered(),
         )
-        Timber.i("TestViewModel updated with $stop")
     }
 
     fun switchFiltering(isChecked: Boolean) {

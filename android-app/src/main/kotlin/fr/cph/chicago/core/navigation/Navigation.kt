@@ -108,7 +108,7 @@ fun Navigation(viewModel: NavigationViewModel) {
                         exitTransition = fallBackExitTransition(),
                     ) {
                         uiState.screens.forEach { screen: Screen ->
-                            Timber.d("Compose for each screen -> ${screen.title}")
+                            Timber.v("Compose for each screen -> ${screen.title}")
                             composable(
                                 route = screen.route,
                                 arguments = emptyList(),
@@ -117,7 +117,6 @@ fun Navigation(viewModel: NavigationViewModel) {
                             ) { backStackEntry ->
                                 // Add custom backhandler to all composable so we can handle when someone push the back button
                                 BackHandler {
-                                    Timber.d("Compose render -> ${screen.title}")
                                     uiState.currentScreen = screen // FIXME: I don't think it's needed?
                                     screen.component(backStackEntry, viewModel)
                                 }
@@ -229,7 +228,7 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
     }
 
     fun navigate(screen: Screen, arguments: Map<String, String> = mapOf()) {
-        Timber.d("Navigate to ${screen.title}")
+        Timber.d("Navigate to ${screen.title} with args $arguments")
         when {
             previous.isEmpty() -> navigateTo(screen = screen, arguments = arguments)
             previous.isNotEmpty() -> {
@@ -258,7 +257,6 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
                         } else {
                             viewModel.shouldBackSpaceAgainToExit()
                         }
-
                     }
                     else -> {
                         when {
@@ -266,8 +264,8 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
                             previous.isNotEmpty() -> {
                                 val previousData = previous.pop()
                                 val newArgs = mutableMapOf<String, String>()
+                                newArgs.putAll(previousData.second)
                                 if(currentScreenData.second.containsKey("search")) {
-                                    newArgs.putAll(previousData.second)
                                     newArgs["search"] = currentScreenData.second["search"]!!
                                 }
                                 navigate(screen = previousData.first, arguments = newArgs)
