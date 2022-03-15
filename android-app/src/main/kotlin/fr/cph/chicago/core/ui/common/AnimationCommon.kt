@@ -68,7 +68,7 @@ fun enterTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> EnterTrans
                 }
             }
             Screen.BusBound.route -> {
-                when (destination) {
+                when (origin) {
                     Screen.BusDetails.route -> fadeIn(animationSpec = tween(delayMillis = 100))
                     else -> {
                         slideInFromRight
