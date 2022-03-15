@@ -52,8 +52,6 @@ import fr.cph.chicago.core.viewmodel.mainViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.net.URLEncoder
-import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets
 import java.util.Stack
 import java.util.concurrent.TimeUnit
 
@@ -267,7 +265,12 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
                             previous.isEmpty() -> Timber.d("Empty, no where to go, this should not happen")
                             previous.isNotEmpty() -> {
                                 val previousData = previous.pop()
-                                navigate(screen = previousData.first, arguments = previousData.second)
+                                val newArgs = mutableMapOf<String, String>()
+                                if(currentScreenData.second.containsKey("search")) {
+                                    newArgs.putAll(previousData.second)
+                                    newArgs["search"] = currentScreenData.second["search"]!!
+                                }
+                                navigate(screen = previousData.first, arguments = newArgs)
                             }
                         }
                     }

@@ -169,7 +169,6 @@ sealed class Screen(
             val bound = URLDecoder.decode(backStackEntry.arguments?.getString("bound", "0") ?: "", "UTF-8")
             val boundTitle = URLDecoder.decode(backStackEntry.arguments?.getString("boundTitle", "0") ?: "", "UTF-8")
             val search = URLDecoder.decode(backStackEntry.arguments?.getString("search", "") ?: "", "UTF-8")
-            Timber.i("Search: " + search)
             val viewModel: BusBoundUiViewModel = viewModel(
                 factory = BusBoundUiViewModel.provideFactory(
                     busRouteId = busRouteId,
