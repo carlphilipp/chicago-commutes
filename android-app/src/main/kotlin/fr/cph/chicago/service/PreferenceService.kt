@@ -68,6 +68,14 @@ object PreferenceService {
         return repo.saveDynamicColor(value)
     }
 
+    fun saveShowDebug(value: Boolean) {
+        return repo.saveShowDebug(value)
+    }
+
+    fun getShowDebug(): Boolean {
+        return repo.getShowDebug()
+    }
+
     fun isTrainStationFavorite(trainStationId: String): Boolean {
         return store.state.trainFavorites.any { it == trainStationId }
     }

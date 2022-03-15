@@ -33,6 +33,7 @@ import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.SwitchMaterial3
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.launchWithDelay
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,6 +43,7 @@ fun DisplaySettingsScreen(
     navigationViewModel: NavigationViewModel,
     title: String,
 ) {
+    Timber.d("Compose DisplaySettingsScreen")
     val uiState = viewModel.uiState
     val navController = LocalNavController.current
     val scope = rememberCoroutineScope()
@@ -67,7 +69,7 @@ fun DisplaySettingsScreen(
                         )
                         DisplayElementView(
                             title = "Theme color",
-                            description = "Automatic or choose a color",
+                            description = "Choose a color",
                             onClick = {
                                 scope.launchWithDelay(DEFAULT_SETTINGS_DELAY) {
                                     navController.navigate(screen = Screen.SettingsThemeColorChooser)
@@ -143,7 +145,7 @@ fun DisplaySettingsScreen(
 }
 
 @Composable
-private fun DisplayElementView(
+fun DisplayElementView(
     modifier: Modifier = Modifier,
     imageVector: ImageVector,
     title: String,

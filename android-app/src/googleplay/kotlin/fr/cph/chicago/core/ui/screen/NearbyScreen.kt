@@ -51,7 +51,9 @@ import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.ShowLocationNotFoundSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.runWithDelay
+import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.core.viewmodel.MainViewModel
+import fr.cph.chicago.util.DebugView
 import fr.cph.chicago.util.GoogleMapUtil.getBitmapDescriptor
 import fr.cph.chicago.util.toLatLng
 import java.util.concurrent.TimeUnit
@@ -65,8 +67,10 @@ fun NearbyScreen(
     mainViewModel: MainViewModel,
     locationViewModel: LocationViewModel,
     navigationViewModel: NavigationViewModel,
+    settingsViewModel: SettingsViewModel,
     title: String
 ) {
+    Timber.d("Compose NearbyScreen")
     val scope = rememberCoroutineScope()
     var isMapLoaded by remember { mutableStateOf(false) }
     // Show map after 5 seconds. This is needed because there is no callback from the sdk to know if the map can be loaded or not.
@@ -96,6 +100,7 @@ fun NearbyScreen(
                 NearbyGoogleMapView(
                     onMapLoaded = { isMapLoaded = true },
                     mainViewModel = mainViewModel,
+                    settingsViewModel = settingsViewModel,
                 )
 
                 LoadingCircle(show = !isMapLoaded)
@@ -127,13 +132,13 @@ fun NearbyGoogleMapView(
     modifier: Modifier = Modifier,
     onMapLoaded: () -> Unit,
     mainViewModel: MainViewModel,
+    settingsViewModel: SettingsViewModel,
 ) {
     val uiState = mainViewModel.uiState
     val context = LocalContext.current
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(uiState.nearbyMapCenterLocation.toLatLng(), uiState.nearbyZoomIn)
     }
-    //cameraPositionState.position = CameraPosition.fromLatLngZoom(uiState.nearbyMapCenterLocation.toLatLng(), uiState.nearbyZoomIn)
 
     Timber.d("Set location: ${uiState.nearbyMapCenterLocation.toLatLng()}")
 
@@ -199,7 +204,9 @@ fun NearbyGoogleMapView(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         SearchThisAreaButton(mainViewModel = mainViewModel, cameraPositionState = cameraPositionState)
-        //DebugView(cameraPositionState)
+        if (settingsViewModel.uiState.showMapDebug) {
+            DebugView(cameraPositionState)
+        }
     }
 
     MapStationDetailsView(

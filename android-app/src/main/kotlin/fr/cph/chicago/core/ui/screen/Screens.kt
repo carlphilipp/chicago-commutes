@@ -251,10 +251,12 @@ sealed class Screen(
         icon = Icons.Filled.NearMe,
         topBar = ScreenTopBar.MediumTopBarDrawer,
         component = { _, navigationViewModel ->
+            settingsViewModel.loadShowMapDebug()
             NearbyScreen(
                 mainViewModel = mainViewModel,
                 locationViewModel = locationViewModel,
                 navigationViewModel = navigationViewModel,
+                settingsViewModel = settingsViewModel,
                 title = "Nearby",
             )
         })

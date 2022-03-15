@@ -386,6 +386,7 @@ data class SettingsState(
     val showThemeChangerDialog: Boolean = false,
     val showClearCacheDialog: Boolean = false,
     val dynamicColorEnabled: Boolean = false,
+    val showMapDebug: Boolean = false,
 )
 
 class SettingsViewModel(private val preferenceService: PreferenceService = PreferenceService, private val realmConfig: RealmConfig = RealmConfig) {
@@ -428,6 +429,12 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
         deleteCache(context)
         preferenceService.clearPreferences()
         realmConfig.cleanRealm()
+    }
+
+    fun loadShowMapDebug() {
+        uiState = uiState.copy(
+            showMapDebug = preferenceService.getShowDebug()
+        )
     }
 
     private fun deleteCache(context: Context?) {
