@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,6 +21,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -33,6 +35,7 @@ import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 import fr.cph.chicago.core.viewmodel.MainViewModel
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,10 +48,19 @@ fun DivvyScreen(
 ) {
     Timber.d("Compose DivvyScreen")
     val navController = LocalNavController.current
-    var searchBikeStations by remember { mutableStateOf(listOf<BikeStation>()) }
-    searchBikeStations = mainViewModel.uiState.bikeStations
-    var textSearch by remember { mutableStateOf(TextFieldValue("")) }
     val scope = rememberCoroutineScope()
+    var searchBikeStations by remember { mutableStateOf(listOf<BikeStation>()) }
+    var textSearch by remember { mutableStateOf(TextFieldValue(mainViewModel.uiState.bikeSearch)) }
+    textSearch = TextFieldValue(
+        text = mainViewModel.uiState.bikeSearch,
+        selection = TextRange(mainViewModel.uiState.bikeSearch.length)
+    )
+
+    LaunchedEffect(key1 = Unit, block = {
+        scope.launch {
+            searchBikeStations = search(mainViewModel = mainViewModel, searchText = textSearch.text)
+        }
+    })
 
     Scaffold(
         snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
@@ -64,10 +76,8 @@ fun DivvyScreen(
                             modifier = Modifier.fillMaxWidth(),
                             text = textSearch,
                             onValueChange = { value ->
-                                textSearch = value
-                                searchBikeStations = mainViewModel.uiState.bikeStations.filter { bikeStation ->
-                                    bikeStation.name.contains(value.text, true)
-                                }
+                                mainViewModel.updateBikeSearch(value.text)
+                                searchBikeStations = search(mainViewModel = mainViewModel, searchText = textSearch.text)
                             }
                         )
                         LazyColumn(modifier = modifier.fillMaxWidth()) {
@@ -80,7 +90,8 @@ fun DivvyScreen(
                                         navController.navigate(
                                             screen = Screen.DivvyDetails,
                                             arguments = mapOf(
-                                                "stationId" to bikeStation.id
+                                                "stationId" to bikeStation.id,
+                                                "search" to textSearch.text,
                                             )
                                         )
                                     }
@@ -121,4 +132,10 @@ fun DivvyScreen(
                 }
             }
         })
+}
+
+private fun search(mainViewModel: MainViewModel, searchText: String): List<BikeStation> {
+    return mainViewModel.uiState.bikeStations.filter { bikeStation ->
+        bikeStation.name.contains(searchText, true)
+    }
 }

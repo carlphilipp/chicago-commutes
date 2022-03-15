@@ -56,7 +56,7 @@ fun BusScreen(
 
     var textSearch by remember { mutableStateOf(TextFieldValue(mainViewModel.uiState.busRouteSearch)) }
     textSearch = TextFieldValue(
-        mainViewModel.uiState.busRouteSearch,
+        text = mainViewModel.uiState.busRouteSearch,
         selection = TextRange(mainViewModel.uiState.busRouteSearch.length)
     )
 

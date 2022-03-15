@@ -124,6 +124,12 @@ abstract class MainViewModel @Inject constructor(
         )
     }
 
+    fun updateBikeSearch(search: String) {
+        uiState = uiState.copy(
+            bikeSearch = search
+        )
+    }
+
     fun loadBikeStations() {
         store.dispatch(BikeStationAction())
     }
