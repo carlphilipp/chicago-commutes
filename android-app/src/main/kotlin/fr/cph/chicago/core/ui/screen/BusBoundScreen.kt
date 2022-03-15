@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.TextField
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -106,6 +107,7 @@ fun BusBoundScreen(
                                                     "busRouteName" to uiState.busRouteName,
                                                     "bound" to uiState.bound,
                                                     "boundTitle" to uiState.boundTitle,
+                                                    "search" to uiState.searchText.text,
                                                 )
                                             )
                                         },
@@ -155,6 +157,7 @@ class BusBoundUiViewModel(
     busRouteName: String,
     bound: String,
     boundTitle: String,
+    search: String,
     private val busService: BusService = BusService,
 ) : ViewModel() {
     var uiState by mutableStateOf(BusBoundUiState())
@@ -166,6 +169,7 @@ class BusBoundUiViewModel(
             busRouteName = busRouteName,
             bound = bound,
             boundTitle = boundTitle,
+            searchText = TextFieldValue(search)
         )
         loadData()
     }
@@ -222,6 +226,7 @@ class BusBoundUiViewModel(
             busRouteName: String,
             bound: String,
             boundTitle: String,
+            search: String,
             owner: SavedStateRegistryOwner,
             defaultArgs: Bundle? = null,
         ): AbstractSavedStateViewModelFactory =
@@ -237,6 +242,7 @@ class BusBoundUiViewModel(
                         busRouteName = busRouteName,
                         bound = bound,
                         boundTitle = boundTitle,
+                        search = search,
                     ) as T
                 }
             }

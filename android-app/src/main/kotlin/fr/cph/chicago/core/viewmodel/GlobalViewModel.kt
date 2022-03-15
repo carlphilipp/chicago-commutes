@@ -57,7 +57,6 @@ abstract class MainViewModel @Inject constructor(
         internal set
 
     fun initModel(): MainViewModel {
-        Timber.i("init MainViewModel")
         loadBusRoutesAndBike()
         return this
     }

@@ -31,6 +31,7 @@ import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.getActivity
 import java.net.URLDecoder
 import kotlin.random.Random
+import timber.log.Timber
 
 sealed class Screen(
     val id: Int = Random.nextInt(),
@@ -158,7 +159,7 @@ sealed class Screen(
 
     object BusBound : Screen(
         title = "Bus bound",
-        route = "bus/bound?busRouteId={busRouteId}&busRouteName={busRouteName}&bound={bound}&boundTitle={boundTitle}",
+        route = "bus/bound?busRouteId={busRouteId}&busRouteName={busRouteName}&bound={bound}&boundTitle={boundTitle}&search={search}",
         icon = Icons.Filled.DirectionsBus,
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarBack,
@@ -167,12 +168,15 @@ sealed class Screen(
             val busRouteName = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteName", "0") ?: "", "UTF-8")
             val bound = URLDecoder.decode(backStackEntry.arguments?.getString("bound", "0") ?: "", "UTF-8")
             val boundTitle = URLDecoder.decode(backStackEntry.arguments?.getString("boundTitle", "0") ?: "", "UTF-8")
+            val search = URLDecoder.decode(backStackEntry.arguments?.getString("search", "") ?: "", "UTF-8")
+            Timber.i("Search: " + search)
             val viewModel: BusBoundUiViewModel = viewModel(
                 factory = BusBoundUiViewModel.provideFactory(
                     busRouteId = busRouteId,
                     busRouteName = busRouteName,
                     bound = bound,
                     boundTitle = boundTitle,
+                    search = search,
                     owner = backStackEntry,
                     defaultArgs = backStackEntry.arguments
                 )
