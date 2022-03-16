@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun BackdropScaffoldMaterial3(
+    modifier: Modifier = Modifier,
     appBar: @Composable () -> Unit,
     backLayerContent: @Composable () -> Unit,
     frontLayerContent: @Composable () -> Unit,
@@ -53,14 +54,14 @@ fun BackdropScaffoldMaterial3(
         appBar = appBar,
         backLayerContent = backLayerContent,
         frontLayerContent = frontLayerContent,
-        modifier = Modifier,
+        modifier = modifier,
         scaffoldState = rememberBackdropScaffoldState(BackdropValue.Concealed),
         gesturesEnabled = true,
         peekHeight = BackdropScaffoldDefaults.PeekHeight,
         headerHeight = BackdropScaffoldDefaults.HeaderHeight,
         persistentAppBar = true,
         stickyFrontLayer = true,
-        backLayerBackgroundColor = MaterialTheme.colorScheme.primary,
+        backLayerBackgroundColor = Color.Transparent,
         backLayerContentColor = contentColorFor(MaterialTheme.colorScheme.primary),
         frontLayerShape = BackdropScaffoldDefaults.frontLayerShape,
         frontLayerElevation = BackdropScaffoldDefaults.FrontLayerElevation,
