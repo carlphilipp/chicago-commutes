@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.BackdropScaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FontDownload
 import androidx.compose.material.icons.outlined.Brightness6
@@ -30,6 +31,7 @@ import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
+import fr.cph.chicago.core.ui.common.BackdropScaffoldMaterial3
 import fr.cph.chicago.core.ui.common.SwitchMaterial3
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.launchWithDelay
@@ -48,8 +50,9 @@ fun DisplaySettingsScreen(
     val navController = LocalNavController.current
     val scope = rememberCoroutineScope()
 
-    Scaffold(
-        content = {
+    BackdropScaffoldMaterial3(
+        appBar = {},
+        backLayerContent = {
             Column {
                 DisplayTopBar(
                     title = title,
@@ -141,7 +144,11 @@ fun DisplaySettingsScreen(
                     ThemeChangerDialog(viewModel = viewModel)
                 }
             }
-        })
+        },
+        frontLayerContent = {
+            Text("solut")
+        }
+    )
 }
 
 @Composable
