@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BackdropScaffold
 import androidx.compose.material.BackdropScaffoldDefaults
-import androidx.compose.material.BackdropValue
+import androidx.compose.material.BackdropScaffoldState
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.SnackbarHost
@@ -25,7 +25,6 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.rememberBackdropScaffoldState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -46,6 +45,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun BackdropScaffoldMaterial3(
     modifier: Modifier = Modifier,
+    scaffoldState: BackdropScaffoldState,
     appBar: @Composable () -> Unit,
     backLayerContent: @Composable () -> Unit,
     frontLayerContent: @Composable () -> Unit,
@@ -55,11 +55,11 @@ fun BackdropScaffoldMaterial3(
         backLayerContent = backLayerContent,
         frontLayerContent = frontLayerContent,
         modifier = modifier,
-        scaffoldState = rememberBackdropScaffoldState(BackdropValue.Concealed),
+        scaffoldState = scaffoldState,
         gesturesEnabled = true,
         peekHeight = BackdropScaffoldDefaults.PeekHeight,
-        headerHeight = BackdropScaffoldDefaults.HeaderHeight,
-        persistentAppBar = true,
+        headerHeight = (-300).dp,
+        persistentAppBar = false,
         stickyFrontLayer = true,
         backLayerBackgroundColor = Color.Transparent,
         backLayerContentColor = contentColorFor(MaterialTheme.colorScheme.primary),

@@ -9,56 +9,70 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.BackdropScaffold
+import androidx.compose.material.BackdropScaffoldState
+import androidx.compose.material.BackdropValue
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FontDownload
 import androidx.compose.material.icons.outlined.Brightness6
 import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.FontDownload
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.rememberBackdropScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import fr.cph.chicago.Constants.DEFAULT_SETTINGS_DELAY
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.BackdropScaffoldMaterial3
+import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.common.SwitchMaterial3
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.launchWithDelay
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun DisplaySettingsScreen(
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel,
     navigationViewModel: NavigationViewModel,
+    displaySettingsViewModel: DisplaySettingsViewModel,
     title: String,
 ) {
     Timber.d("Compose DisplaySettingsScreen")
     val uiState = viewModel.uiState
     val navController = LocalNavController.current
+
     val scope = rememberCoroutineScope()
+    val displaySettingsState = rememberDisplaySettings()
+    Timber.i("Status:  ${displaySettingsState.scaffoldState.isConcealed}")
+    displaySettingsViewModel.initModel(displaySettingsState)
 
     BackdropScaffoldMaterial3(
+        scaffoldState = displaySettingsState.scaffoldState,
         appBar = {},
         backLayerContent = {
             Column {
@@ -137,42 +151,47 @@ fun DisplaySettingsScreen(
                             style = MaterialTheme.typography.labelLarge,
                             color = MaterialTheme.colorScheme.primary,
                         )
-                        DisplayElementSwitchView(
+                        DisplayElementView(
                             title = "Fonts",
                             description = "Choose fonts",
                             onClick = {
-
+                                displaySettingsViewModel.showHideFront(scope)
                             },
-                            imageVector = Icons.Default.FontDownload,
-                            isChecked = false,
+                            imageVector = Icons.Outlined.FontDownload,
                         )
                     }
-                }
-                if (uiState.showThemeChangerDialog) {
-                    ThemeChangerDialog(viewModel = viewModel)
+                    item { NavigationBarsSpacer() }
                 }
             }
         },
         frontLayerContent = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(10.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Box(
-                        modifier = modifier
-                            .width(18.dp)
-                            .height(3.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(MaterialTheme.colorScheme.primary),
-                    )
-                }
-                Text("solut")
-            }
-
+            FrontLayer()
         }
     )
+}
+
+@Composable
+fun FrontLayer(
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(
+                modifier = modifier
+                    .width(18.dp)
+                    .height(3.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(MaterialTheme.colorScheme.primary),
+            )
+        }
+        Text("solut")
+    }
 }
 
 @Composable
@@ -273,6 +292,47 @@ fun DisplayElementSwitchView(
                     enabled = enabled,
                     checked = isChecked,
                 )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+data class DisplaySettingsState constructor(
+    val scaffoldState: BackdropScaffoldState = BackdropScaffoldState(BackdropValue.Concealed),
+)
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun rememberDisplaySettings(
+    scaffoldState: BackdropScaffoldState = rememberBackdropScaffoldState(BackdropValue.Concealed),
+) = remember(scaffoldState) {
+    DisplaySettingsState(
+        scaffoldState = scaffoldState
+    )
+}
+
+class DisplaySettingsViewModel() : ViewModel() {
+    var uiState by mutableStateOf(DisplaySettingsState())
+        private set
+
+    fun initModel(state: DisplaySettingsState) {
+        uiState = state
+    }
+
+    @OptIn(ExperimentalMaterialApi::class)
+    fun showHideFront(scope: CoroutineScope) {
+        Timber.i("showHideFront:  ${uiState.scaffoldState.isConcealed}")
+        showHideFront(scope = scope, show = uiState.scaffoldState.isConcealed)
+    }
+
+    @OptIn(ExperimentalMaterialApi::class)
+    fun showHideFront(scope: CoroutineScope, show: Boolean) {
+        scope.launch {
+            if (show) {
+                uiState.scaffoldState.reveal()
+            } else {
+                uiState.scaffoldState.conceal()
             }
         }
     }

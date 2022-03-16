@@ -23,6 +23,7 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.screen.settings.DisplaySettingsScreen
+import fr.cph.chicago.core.ui.screen.settings.DisplaySettingsViewModel
 import fr.cph.chicago.core.ui.screen.settings.SettingsScreen
 import fr.cph.chicago.core.ui.screen.settings.ThemeChooserSettingsScreen
 import fr.cph.chicago.core.viewmodel.locationViewModel
@@ -31,7 +32,6 @@ import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.getActivity
 import java.net.URLDecoder
 import kotlin.random.Random
-import timber.log.Timber
 
 sealed class Screen(
     val id: Int = Random.nextInt(),
@@ -342,6 +342,7 @@ sealed class Screen(
                 title = "Display",
                 viewModel = settingsViewModel,
                 navigationViewModel = navigationViewModel,
+                displaySettingsViewModel = DisplaySettingsViewModel()
             )
         })
 
