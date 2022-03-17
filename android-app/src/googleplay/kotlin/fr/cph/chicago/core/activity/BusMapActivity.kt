@@ -17,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -45,6 +46,7 @@ import fr.cph.chicago.core.ui.common.LoadingCircle
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.viewmodel.settingsViewModel
+import fr.cph.chicago.getActivity
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.GoogleMapUtil.createBitMapDescriptor
 import fr.cph.chicago.util.GoogleMapUtil.defaultZoom
@@ -61,7 +63,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class BusMapActivity : ComponentActivity() {
+class BusMapActivity : CustomComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,6 +93,7 @@ fun BusMapView(
     modifier: Modifier = Modifier,
     viewModel: GoogleMapBusViewModel,
 ) {
+    val context = LocalContext.current
     val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     val scope = rememberCoroutineScope()
     var isMapLoaded by remember { mutableStateOf(false) }
@@ -99,6 +102,7 @@ fun BusMapView(
         modifier = modifier,
         topBar = {
             RefreshTopBar(
+                activity = context.getActivity(),
                 title = viewModel.uiState.busRouteId,
                 showRefresh = true,
                 onRefresh = { viewModel.reloadData() })

@@ -1,5 +1,6 @@
 package fr.cph.chicago.core.ui
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
@@ -71,36 +72,47 @@ fun TopBar(
 
 // TODO refactor and rename cause it does not make sense
 @Composable
-fun RefreshTopBar(title: String, showRefresh: Boolean = false, onRefresh: () -> Unit = {}) {
-    CenterAlignedTopAppBar(
-        title = {
-            Text(
-                modifier = Modifier.padding(start = 15.dp),
-                text = title,
-                style = MaterialTheme.typography.titleLarge,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        },
-        navigationIcon = {
-            IconButton(onClick = { /*activity.finish()*/ }) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Back"
+fun RefreshTopBar(
+    activity: ComponentActivity,
+    title: String,
+    showRefresh: Boolean = false,
+    onRefresh: () -> Unit = {}
+) {
+    val backgroundColor = MaterialTheme.colorScheme.background
+    Surface(color = backgroundColor) {
+        CenterAlignedTopAppBar(
+            title = {
+                Text(
+                    modifier = Modifier.padding(start = 15.dp),
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
-            }
-        },
-        actions = {
-            if (showRefresh) {
-                IconButton(onClick = onRefresh) {
+            },
+            navigationIcon = {
+                IconButton(onClick = { activity.finish() }) {
                     Icon(
-                        imageVector = Icons.Filled.Refresh,
-                        contentDescription = "Refresh"
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = "Back"
                     )
                 }
-            }
-        }
-    )
+            },
+            actions = {
+                if (showRefresh) {
+                    IconButton(onClick = onRefresh) {
+                        Icon(
+                            imageVector = Icons.Filled.Refresh,
+                            contentDescription = "Refresh"
+                        )
+                    }
+                }
+            },
+            modifier = Modifier.windowInsetsPadding(
+                WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+            )
+        )
+    }
 }
 
 @Composable
