@@ -106,7 +106,6 @@ fun NearbyScreen(
                 LoadingCircle(show = !isMapLoaded)
 
                 if (mainViewModel.uiState.nearbyShowLocationError) {
-
                     ShowLocationNotFoundSnackBar(
                         scope = scope,
                         snackbarHostState = mainViewModel.uiState.snackbarHostState,
@@ -215,7 +214,6 @@ fun NearbyGoogleMapView(
         image = mainViewModel.uiState.nearbyDetailsIcon,
         arrivals = mainViewModel.uiState.nearbyDetailsArrivals,
     )
-
 }
 
 @Composable

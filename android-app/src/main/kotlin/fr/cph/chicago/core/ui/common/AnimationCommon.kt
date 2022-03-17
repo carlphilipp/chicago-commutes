@@ -25,6 +25,7 @@ fun fallBackEnterTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> En
 @OptIn(ExperimentalAnimationApi::class)
 fun fallBackExitTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition) {
     return {
+        Timber.i("Fallback exit")
         fadeOut(
             animationSpec = tween(durationMillis = 100),
             targetAlpha = 0f,
@@ -125,7 +126,13 @@ fun exitTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransit
                 )
             }
             else -> {
-                null
+                when(destination) {
+                    Screen.Nearby.route -> {
+                        Timber.i("ExitTransition.None")
+                        ExitTransition.None
+                    }
+                    else -> null
+                }
             }
         }
     }

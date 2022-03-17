@@ -610,7 +610,7 @@ fun LoadingCircle(
         modifier = modifier.fillMaxSize(),
         visible = show,
         enter = EnterTransition.None,
-        //exit = fadeOut()
+        exit = fadeOut()
     ) {
         CircularProgressIndicator(
             modifier = Modifier
