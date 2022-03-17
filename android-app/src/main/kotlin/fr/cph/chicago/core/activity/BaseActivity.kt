@@ -159,7 +159,7 @@ private fun LoadingView(modifier: Modifier = Modifier, show: Boolean) {
                 .toolingGraphicsLayer()
                 .paint(
                     painter = rememberVectorPainter(vec),
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onTertiaryContainer),
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary),
                     contentScale = ContentScale.FillBounds
                 )
         )
