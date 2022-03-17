@@ -23,7 +23,6 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.screen.settings.DisplaySettingsScreen
-import fr.cph.chicago.core.ui.screen.settings.DisplaySettingsViewModel
 import fr.cph.chicago.core.ui.screen.settings.SettingsScreen
 import fr.cph.chicago.core.ui.screen.settings.ThemeChooserSettingsScreen
 import fr.cph.chicago.core.viewmodel.locationViewModel
@@ -342,7 +341,6 @@ sealed class Screen(
                 title = "Display",
                 viewModel = settingsViewModel,
                 navigationViewModel = navigationViewModel,
-                displaySettingsViewModel = DisplaySettingsViewModel()
             )
         })
 
