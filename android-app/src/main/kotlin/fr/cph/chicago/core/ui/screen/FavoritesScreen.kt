@@ -13,12 +13,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsBus
 import androidx.compose.material.icons.filled.Train
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -51,6 +51,7 @@ import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.theme.bike_orange
+import fr.cph.chicago.core.theme.defaultButtonShape
 import fr.cph.chicago.core.ui.common.AnimatedText
 import fr.cph.chicago.core.ui.common.BusDetailDialog
 import fr.cph.chicago.core.ui.common.ColoredBox
@@ -315,15 +316,16 @@ fun FooterCard(modifier: Modifier = Modifier, detailsOnClick: () -> Unit = {}, m
     ) {
         FilledTonalButton(
             onClick = { detailsOnClick() },
-            modifier = Modifier.padding(0.dp),
+            shape = defaultButtonShape,
         ) {
             Text(
                 text = stringResource(id = R.string.fav_details),
             )
         }
-        OutlinedButton(
+        ElevatedButton(
             onClick = { mapOnClick() },
             modifier = Modifier.padding(start = 5.dp),
+            shape = defaultButtonShape,
         ) {
             Text(
                 text = stringResource(id = R.string.fav_show_map),
