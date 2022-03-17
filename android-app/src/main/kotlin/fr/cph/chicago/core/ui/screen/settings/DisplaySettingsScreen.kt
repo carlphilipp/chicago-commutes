@@ -20,7 +20,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -31,6 +35,7 @@ import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
+import fr.cph.chicago.core.ui.common.FontAlertDialog
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.common.SwitchMaterial3
 import fr.cph.chicago.core.ui.screen.Screen
@@ -50,6 +55,7 @@ fun DisplaySettingsScreen(
     val navController = LocalNavController.current
 
     val scope = rememberCoroutineScope()
+    var showFontDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         content = {
@@ -133,6 +139,7 @@ fun DisplaySettingsScreen(
                             title = "Fonts",
                             description = "Choose fonts",
                             onClick = {
+                                showFontDialog = true
                                 // TODO
                             },
                             imageVector = Icons.Outlined.FontDownload,
@@ -141,6 +148,12 @@ fun DisplaySettingsScreen(
                     item { NavigationBarsSpacer() }
                 }
             }
+            FontAlertDialog(
+                showDialog = showFontDialog,
+                hideDialog = {
+                    showFontDialog = false
+                }
+            )
         },
     )
 }
@@ -247,4 +260,3 @@ fun DisplayElementSwitchView(
         }
     }
 }
-

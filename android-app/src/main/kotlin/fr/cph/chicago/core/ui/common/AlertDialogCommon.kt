@@ -305,3 +305,27 @@ fun BusRouteDialog(
         )
     }
 }
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun FontAlertDialog(
+    showDialog: Boolean,
+    hideDialog: () -> Unit,
+) {
+    if(showDialog) {
+        AlertDialog(
+            modifier = Modifier.padding(horizontal = 50.dp),
+            onDismissRequest = hideDialog,
+            // FIXME workaround because the dialog do not resize after loading. Issue: https://issuetracker.google.com/issues/194911971?pli=1
+            properties = DialogProperties(usePlatformDefaultWidth = false),
+            title = {
+                //
+            },
+            text = {
+
+            },
+            confirmButton = {},
+            dismissButton = {},
+        )
+    }
+}
