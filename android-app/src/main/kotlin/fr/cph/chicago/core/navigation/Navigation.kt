@@ -4,8 +4,6 @@ import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.core.DecayAnimationSpec
 import androidx.compose.animation.rememberSplineBasedDecay
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -196,7 +194,7 @@ class NavigationViewModel : ViewModel() {
         return if (uiState.drawerState.isOpen) {
             true
         } else {
-            uiState.currentScreen != Screen.Map && uiState.currentScreen != Screen.Nearby
+            uiState.currentScreen != Screen.Map && uiState.currentScreen != Screen.Nearby && uiState.currentScreen != Screen.TrainMap
         }
     }
 
@@ -313,18 +311,24 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
 fun DisplayTopBar(
     title: String = "",
     viewModel: NavigationViewModel,
+    onClickRightIcon: (() -> Unit)? = null,
 ) {
     if (viewModel.uiState.currentScreen.topBar != ScreenTopBar.None) {
         val screen = viewModel.uiState.currentScreen
         val navController = LocalNavController.current
         val scope = rememberCoroutineScope()
         val openDrawer = { scope.launch { viewModel.uiState.drawerState.open() } }
-        val onClick: () -> Unit = {
-            if (screen.topBar.action == TopBarIconAction.BACK) {
+        val onClickLeftIcon: () -> Unit = {
+            if (screen.topBar.actionLeft == TopBarIconAction.BACK) {
                 navController.navigateBack()
             } else {
                 openDrawer()
             }
+        }
+        val rightClick = if(onClickRightIcon == null) {
+            { navController.navigate(Screen.Search) }
+        } else {
+            onClickRightIcon
         }
         val topBar = screen.topBar
 
@@ -333,9 +337,9 @@ fun DisplayTopBar(
                 title = title,
                 scrollBehavior = viewModel.uiState.scrollBehavior,
                 navigationIcon = {
-                    IconButton(onClick = onClick) {
+                    IconButton(onClick = onClickLeftIcon) {
                         Icon(
-                            imageVector = topBar.icon,
+                            imageVector = topBar.leftIcon,
                             contentDescription = null,
                         )
                     }
@@ -346,19 +350,17 @@ fun DisplayTopBar(
                 title = title,
                 scrollBehavior = viewModel.uiState.scrollBehavior,
                 navigationIcon = {
-                    IconButton(onClick = onClick) {
+                    IconButton(onClick = onClickLeftIcon) {
                         Icon(
-                            imageVector = topBar.icon,
+                            imageVector = topBar.leftIcon,
                             contentDescription = null
                         )
                     }
                 },
                 actions = {
-                    IconButton(onClick = {
-                        navController.navigate(Screen.Search)
-                    }) {
+                    IconButton(onClick = rightClick) {  //navController.navigate(Screen.Search)
                         Icon(
-                            imageVector = Icons.Filled.Search,
+                            imageVector = topBar.rightIcon,
                             contentDescription = null
                         )
                     }

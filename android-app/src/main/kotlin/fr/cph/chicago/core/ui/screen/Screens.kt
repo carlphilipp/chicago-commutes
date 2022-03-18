@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.NearMe
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.StarRate
@@ -46,7 +47,7 @@ sealed class Screen(
         title = App.instance.getString(R.string.menu_favorites),
         route = "fav",
         icon = Icons.Filled.Favorite,
-        topBar = ScreenTopBar.MediumTopBarDrawer,
+        topBar = ScreenTopBar.MediumTopBarDrawerSearch,
         component = { _, navigationViewModel ->
             FavoritesScreen(
                 title = "Favorites",
@@ -60,7 +61,7 @@ sealed class Screen(
         title = App.instance.getString(R.string.menu_train),
         route = "train",
         icon = Icons.Filled.Train,
-        topBar = ScreenTopBar.MediumTopBarDrawer,
+        topBar = ScreenTopBar.MediumTopBarDrawerSearch,
         component = { _, navigationViewModel ->
             TrainScreen(title = "Train", navigationViewModel = navigationViewModel)
         }
@@ -71,7 +72,7 @@ sealed class Screen(
         route = "train/line/{line}",
         icon = Icons.Filled.Train,
         showOnDrawer = false,
-        topBar = ScreenTopBar.MediumTopBarBack,
+        topBar = ScreenTopBar.MediumTopBarBackSearch,
         component = { backStackEntry, navigationViewModel ->
             val activity = navigationViewModel.uiState.context.getActivity()
             val line = URLDecoder.decode(backStackEntry.arguments?.getString("line", "0") ?: "", "UTF-8")
@@ -115,7 +116,7 @@ sealed class Screen(
         title = App.instance.getString(R.string.menu_bus),
         route = "bus",
         icon = Icons.Filled.DirectionsBus,
-        topBar = ScreenTopBar.MediumTopBarDrawer,
+        topBar = ScreenTopBar.MediumTopBarDrawerSearch,
         component = { _, navigationViewModel ->
             BusScreen(
                 title = "Bus",
@@ -162,7 +163,7 @@ sealed class Screen(
         route = "bus/bound?busRouteId={busRouteId}&busRouteName={busRouteName}&bound={bound}&boundTitle={boundTitle}&search={search}",
         icon = Icons.Filled.DirectionsBus,
         showOnDrawer = false,
-        topBar = ScreenTopBar.MediumTopBarBack,
+        topBar = ScreenTopBar.MediumTopBarBackSearch,
         component = { backStackEntry, navigationViewModel ->
             val busRouteId = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteId", "0") ?: "", "UTF-8")
             val busRouteName = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteName", "0") ?: "", "UTF-8")
@@ -192,7 +193,7 @@ sealed class Screen(
         title = App.instance.getString(R.string.menu_divvy),
         route = "divvy",
         icon = Icons.Filled.DirectionsBike,
-        topBar = ScreenTopBar.MediumTopBarDrawer,
+        topBar = ScreenTopBar.MediumTopBarDrawerSearch,
         component = { _, navigationViewModel ->
             DivvyScreen(
                 mainViewModel = mainViewModel,
@@ -229,7 +230,7 @@ sealed class Screen(
         route = "developer",
         icon = Icons.Filled.DeveloperMode,
         showOnDrawer = false,
-        topBar = ScreenTopBar.LargeTopBarBack,
+        topBar = ScreenTopBar.LargeTopBarBackSearch,
         component = { backStackEntry, navigationViewModel ->
             val viewModel: DeveloperOptionsViewModel = viewModel(
                 factory = DeveloperOptionsViewModel.provideFactory(
@@ -249,7 +250,7 @@ sealed class Screen(
         title = App.instance.getString(R.string.menu_nearby),
         route = "nearby",
         icon = Icons.Filled.NearMe,
-        topBar = ScreenTopBar.MediumTopBarDrawer,
+        topBar = ScreenTopBar.MediumTopBarDrawerSearch,
         component = { _, navigationViewModel ->
             settingsViewModel.loadShowMapDebug()
             NearbyScreen(
@@ -265,7 +266,7 @@ sealed class Screen(
         title = App.instance.getString(R.string.menu_cta_map),
         route = "map",
         icon = Icons.Filled.Map,
-        topBar = ScreenTopBar.MediumTopBarDrawer,
+        topBar = ScreenTopBar.MediumTopBarDrawerSearch,
         component = { _, navigationViewModel ->
             Map(
                 navigationViewModel = navigationViewModel,
@@ -277,7 +278,7 @@ sealed class Screen(
         title = App.instance.getString(R.string.menu_cta_alert),
         route = "alerts",
         icon = Icons.Filled.Warning,
-        topBar = ScreenTopBar.MediumTopBarDrawer,
+        topBar = ScreenTopBar.MediumTopBarDrawerSearch,
         component = { _, navigationViewModel ->
             AlertsScreen(
                 mainViewModel = mainViewModel,
@@ -291,7 +292,7 @@ sealed class Screen(
         route = "alerts/{stationId}?title={title}",
         icon = Icons.Filled.Train,
         showOnDrawer = false,
-        topBar = ScreenTopBar.MediumTopBarBack,
+        topBar = ScreenTopBar.MediumTopBarBackSearch,
         component = { backStackEntry, navigationViewModel ->
             val routeId = URLDecoder.decode(backStackEntry.arguments?.getString("routeId", "") ?: "", "UTF-8")
             val title = URLDecoder.decode(backStackEntry.arguments?.getString("title", "") ?: "", "UTF-8")
@@ -315,14 +316,14 @@ sealed class Screen(
         title = App.instance.getString(R.string.menu_rate),
         route = "rate",
         icon = Icons.Filled.StarRate,
-        topBar = ScreenTopBar.MediumTopBarDrawer,
+        topBar = ScreenTopBar.MediumTopBarDrawerSearch,
         component = { _, _ -> RateScreen(mainViewModel = mainViewModel) })
 
     object Settings : Screen(
         title = App.instance.getString(R.string.menu_settings),
         route = "settings",
         icon = Icons.Filled.Settings,
-        topBar = ScreenTopBar.LargeTopBarDrawer,
+        topBar = ScreenTopBar.LargeTopBarDrawerSearch,
         component = { _, navigationViewModel ->
             SettingsScreen(
                 title = "Settings",
@@ -335,7 +336,7 @@ sealed class Screen(
         title = "Display",
         route = "settings/display",
         icon = Icons.Filled.Settings,
-        topBar = ScreenTopBar.LargeTopBarBack,
+        topBar = ScreenTopBar.LargeTopBarBackSearch,
         showOnDrawer = false,
         component = { _, navigationViewModel ->
             DisplaySettingsScreen(
@@ -349,7 +350,7 @@ sealed class Screen(
         title = "Theme color",
         route = "settings/color",
         icon = Icons.Filled.Settings,
-        topBar = ScreenTopBar.LargeTopBarBack,
+        topBar = ScreenTopBar.LargeTopBarBackSearch,
         showOnDrawer = false,
         component = { _, navigationViewModel ->
             ThemeChooserSettingsScreen(
@@ -364,7 +365,7 @@ sealed class Screen(
         route = "search",
         icon = Icons.Filled.Search,
         showOnDrawer = false,
-        topBar = ScreenTopBar.MediumTopBarBack,
+        topBar = ScreenTopBar.MediumTopBarBackSearch,
         component = { backStackEntry, navigationViewModel ->
             val viewModel: SearchViewModel = viewModel(
                 factory = SearchViewModel.provideFactory(
@@ -385,12 +386,12 @@ sealed class Screen(
         route = "map/trains?line={line}",
         icon = Icons.Filled.Search,
         showOnDrawer = false,
-        topBar = ScreenTopBar.MediumTopBarBack,
+        topBar = ScreenTopBar.MediumTopBarBackReload,
         component = { backStackEntry, navigationViewModel ->
             val line = URLDecoder.decode(backStackEntry.arguments?.getString("line", "") ?: "", "UTF-8")
             val trainLine = TrainLine.fromXmlString(line)
 
-            val viewModel = GoogleMapTrainViewModel().initModel(line = trainLine)
+            val viewModel = GoogleMapTrainViewModel(line = trainLine)
             TrainMapViewScreen(
                 viewModel = viewModel,
                 navigationViewModel = navigationViewModel,
@@ -402,42 +403,62 @@ sealed class Screen(
 
 sealed class ScreenTopBar(
     val type: TopBarType,
-    val icon: ImageVector,
-    val action: TopBarIconAction,
+    val leftIcon: ImageVector,
+    val rightIcon: ImageVector,
+    val actionLeft: TopBarIconAction,
+    val actionRight: TopBarIconAction,
 ) {
-    object MediumTopBarDrawer : ScreenTopBar(
+    object MediumTopBarDrawerSearch : ScreenTopBar(
         type = TopBarType.MEDIUM,
-        icon = Icons.Filled.Menu,
-        action = TopBarIconAction.OPEN_DRAWER,
+        leftIcon = Icons.Filled.Menu,
+        rightIcon = Icons.Filled.Search,
+        actionLeft = TopBarIconAction.OPEN_DRAWER,
+        actionRight = TopBarIconAction.SEARCH,
     )
 
-    object MediumTopBarBack : ScreenTopBar(
+    object MediumTopBarBackSearch : ScreenTopBar(
         type = TopBarType.MEDIUM,
-        icon = Icons.Filled.ArrowBack,
-        action = TopBarIconAction.BACK,
+        leftIcon = Icons.Filled.ArrowBack,
+        rightIcon = Icons.Filled.Search,
+        actionLeft = TopBarIconAction.BACK,
+        actionRight = TopBarIconAction.SEARCH,
     )
 
-    object LargeTopBarDrawer : ScreenTopBar(
-        type = TopBarType.LARGE,
-        icon = Icons.Filled.Menu,
-        action = TopBarIconAction.OPEN_DRAWER,
+    object MediumTopBarBackReload : ScreenTopBar(
+        type = TopBarType.MEDIUM,
+        leftIcon = Icons.Filled.ArrowBack,
+        rightIcon = Icons.Filled.Refresh,
+        actionLeft = TopBarIconAction.BACK,
+        actionRight = TopBarIconAction.REFRESH,
     )
 
-    object LargeTopBarBack : ScreenTopBar(
+    object LargeTopBarDrawerSearch : ScreenTopBar(
         type = TopBarType.LARGE,
-        icon = Icons.Filled.ArrowBack,
-        action = TopBarIconAction.BACK,
+        leftIcon = Icons.Filled.Menu,
+        rightIcon = Icons.Filled.Search,
+        actionLeft = TopBarIconAction.OPEN_DRAWER,
+        actionRight = TopBarIconAction.SEARCH,
+    )
+
+    object LargeTopBarBackSearch : ScreenTopBar(
+        type = TopBarType.LARGE,
+        leftIcon = Icons.Filled.ArrowBack,
+        rightIcon = Icons.Filled.Search,
+        actionLeft = TopBarIconAction.BACK,
+        actionRight = TopBarIconAction.SEARCH,
     )
 
     object None : ScreenTopBar(
         type = TopBarType.NONE,
-        icon = Icons.Filled.ArrowBack,
-        action = TopBarIconAction.BACK,
+        leftIcon = Icons.Filled.ArrowBack,
+        rightIcon = Icons.Filled.Search,
+        actionLeft = TopBarIconAction.BACK,
+        actionRight = TopBarIconAction.SEARCH,
     )
 }
 
 enum class TopBarIconAction {
-    BACK, OPEN_DRAWER,
+    BACK, OPEN_DRAWER, REFRESH, SEARCH
 }
 
 enum class TopBarType {

@@ -51,9 +51,9 @@ import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,7 +71,6 @@ fun TrainMapViewScreen(
     if (isMapLoaded) {
         LaunchedEffect(key1 = isMapLoaded, block = {
             scope.launch {
-                Timber.i("LaunchedEffect $isMapLoaded")
                 viewModel.loadPatterns()
                 viewModel.loadStations()
                 viewModel.loadIcons()
@@ -84,6 +83,9 @@ fun TrainMapViewScreen(
         DisplayTopBar(
             title = title,
             viewModel = navigationViewModel,
+            onClickRightIcon = {
+                viewModel.reloadData()
+            }
         )
         Scaffold(
             modifier = modifier,
@@ -94,9 +96,6 @@ fun TrainMapViewScreen(
                     viewModel = viewModel,
                     onMapLoaded = {
                         isMapLoaded = true
-                        // Google Map must be loaded to be able to run these methods
-                        //viewModel.loadIcons()
-                        //viewModel.loadTrains()
                     },
                 )
 
@@ -141,7 +140,7 @@ fun GoogleMapTrainMapView(
         modifier = modifier,
         cameraPositionState = uiState.cameraPositionState,
         properties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false),
-        uiSettings = MapUiSettings(compassEnabled = false, myLocationButtonEnabled = false),
+        uiSettings = MapUiSettings(compassEnabled = false, myLocationButtonEnabled = false, zoomControlsEnabled = false),
         onMapLoaded = onMapLoaded,
     ) {
         TrainLineLayer(
@@ -270,17 +269,11 @@ data class GoogleMapTrainUiState(
 
 @HiltViewModel
 class GoogleMapTrainViewModel @Inject constructor(
+    line: TrainLine,
     private val trainService: TrainService = TrainService,
 ) : ViewModel() {
-    var uiState by mutableStateOf(GoogleMapTrainUiState())
+    var uiState by mutableStateOf(GoogleMapTrainUiState(line = line))
         private set
-
-    fun initModel(line: TrainLine): GoogleMapTrainViewModel {
-        //uiState = uiState.copy(line = line)
-        //loadPatterns()
-        //loadStations()
-        return this
-    }
 
     fun showError(showError: Boolean) {
         uiState = uiState.copy(showError = showError)
@@ -427,6 +420,7 @@ class GoogleMapTrainViewModel @Inject constructor(
     fun loadPatterns() {
         trainService.readPatterns(uiState.line)
             .observeOn(Schedulers.computation())
+            .subscribeOn(Schedulers.io())
             .subscribe(
                 { trainStationPattern ->
                     uiState = uiState.copy(
