@@ -21,8 +21,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.activity.GoogleMapTrainViewModel
-import fr.cph.chicago.core.activity.TrainMapView
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.screen.settings.DisplaySettingsScreen
@@ -393,7 +391,7 @@ sealed class Screen(
             val trainLine = TrainLine.fromXmlString(line)
 
             val viewModel = GoogleMapTrainViewModel().initModel(line = trainLine)
-            TrainMapView(
+            TrainMapViewScreen(
                 viewModel = viewModel,
                 navigationViewModel = navigationViewModel,
                 title = trainLine.toStringWithLine(),

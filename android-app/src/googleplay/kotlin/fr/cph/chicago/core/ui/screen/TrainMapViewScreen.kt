@@ -1,4 +1,4 @@
-package fr.cph.chicago.core.activity
+package fr.cph.chicago.core.ui.screen
 
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.layout.Column
@@ -14,7 +14,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -58,14 +57,13 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TrainMapView(
+fun TrainMapViewScreen(
     modifier: Modifier = Modifier,
     viewModel: GoogleMapTrainViewModel,
     navigationViewModel: NavigationViewModel,
     title: String,
 ) {
     Timber.d("Compose TrainMapView")
-    val context = LocalContext.current
     val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     val scope = rememberCoroutineScope()
     var isMapLoaded by remember { mutableStateOf(false) }
