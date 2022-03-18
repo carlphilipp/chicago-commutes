@@ -6,18 +6,7 @@ import android.os.Bundle
 import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.BusMapActivity
-import fr.cph.chicago.core.activity.TrainMapActivity
 import fr.cph.chicago.core.model.BusDirections
-import fr.cph.chicago.core.model.enumeration.TrainLine
-
-// Trains
-fun startTrainMapActivity(context: Context, trainLine: TrainLine) {
-    val extras = Bundle()
-    val intent = Intent(context, TrainMapActivity::class.java)
-    extras.putString(context.getString(R.string.bundle_train_line), trainLine.toTextString())
-    intent.putExtras(extras)
-    startActivity(context, intent)
-}
 
 // Buses
 fun startBusMapActivity(context: Context, busDirections: BusDirections) {

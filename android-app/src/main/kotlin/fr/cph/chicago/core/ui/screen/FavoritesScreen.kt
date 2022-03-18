@@ -60,9 +60,8 @@ import fr.cph.chicago.core.ui.common.TrainDetailDialog
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.startBusMapActivity
-import fr.cph.chicago.util.startTrainMapActivity
-import java.util.Calendar
 import timber.log.Timber
+import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -116,7 +115,6 @@ fun TrainFavoriteCard(
     lastUpdate: LastUpdate,
     favorites: Favorites,
 ) {
-    val context = LocalContext.current
     val navController = LocalNavController.current
     var showDialog by remember { mutableStateOf(false) }
 
@@ -143,9 +141,9 @@ fun TrainFavoriteCard(
             mapOnClick = {
                 if (trainStation.lines.size == 1) {
                     val line = trainStation.lines.first()
-                    startTrainMapActivity(
-                        context = context,
-                        trainLine = line
+                    navController.navigate(
+                        Screen.TrainMap,
+                        mapOf("line" to line.toTextString())
                     )
                 } else {
                     showDialog = true

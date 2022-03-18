@@ -37,7 +37,6 @@ import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.startBusMapActivity
-import fr.cph.chicago.util.startTrainMapActivity
 import timber.log.Timber
 
 @Composable
@@ -65,6 +64,7 @@ fun TrainDetailDialog(
 ) {
     if (show) {
         val context = LocalContext.current
+        val navController = LocalNavController.current
         AlertDialog(
             modifier = Modifier.padding(horizontal = 50.dp),
             onDismissRequest = hideDialog,
@@ -90,7 +90,8 @@ fun TrainDetailDialog(
                         OutlinedButton(
                             modifier = modifier,
                             onClick = {
-                                startTrainMapActivity(context, trainLine)
+                                //startTrainMapActivity(context, trainLine)
+                                navController.navigate(Screen.TrainMap, mapOf("line" to trainLine.toTextString()))
                                 hideDialog()
                             },
                         ) {
@@ -312,7 +313,7 @@ fun FontAlertDialog(
     showDialog: Boolean,
     hideDialog: () -> Unit,
 ) {
-    if(showDialog) {
+    if (showDialog) {
         AlertDialog(
             modifier = Modifier.padding(horizontal = 50.dp),
             onDismissRequest = hideDialog,

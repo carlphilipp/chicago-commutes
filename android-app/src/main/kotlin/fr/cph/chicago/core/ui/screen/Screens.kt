@@ -21,6 +21,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
+import fr.cph.chicago.core.activity.GoogleMapTrainViewModel
+import fr.cph.chicago.core.activity.TrainMapView
+import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.screen.settings.DisplaySettingsScreen
 import fr.cph.chicago.core.ui.screen.settings.SettingsScreen
@@ -378,6 +381,25 @@ sealed class Screen(
             )
         }
     )
+
+    object TrainMap : Screen(
+        title = "Map",
+        route = "map/trains?line={line}",
+        icon = Icons.Filled.Search,
+        showOnDrawer = false,
+        topBar = ScreenTopBar.MediumTopBarBack,
+        component = { backStackEntry, navigationViewModel ->
+            val line = URLDecoder.decode(backStackEntry.arguments?.getString("line", "") ?: "", "UTF-8")
+            val trainLine = TrainLine.fromXmlString(line)
+
+            val viewModel = GoogleMapTrainViewModel().initModel(line = trainLine)
+            TrainMapView(
+                viewModel = viewModel,
+                navigationViewModel = navigationViewModel,
+                title = trainLine.toStringWithLine(),
+            )
+        }
+    )
 }
 
 sealed class ScreenTopBar(
@@ -444,6 +466,7 @@ val screens = listOf(
     Screen.SettingsDisplay,
     Screen.SettingsThemeColorChooser,
     Screen.Search,
+    Screen.TrainMap,
 )
 
 val drawerScreens by lazy {
