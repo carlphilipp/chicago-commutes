@@ -396,7 +396,7 @@ sealed class Screen(
             val trainLine = TrainLine.fromXmlString(line)
 
             val viewModel = GoogleMapTrainViewModel(line = trainLine)
-            TrainMapViewScreen(
+            TrainMapScreen(
                 viewModel = viewModel,
                 navigationViewModel = navigationViewModel,
                 title = trainLine.toStringWithLine(),

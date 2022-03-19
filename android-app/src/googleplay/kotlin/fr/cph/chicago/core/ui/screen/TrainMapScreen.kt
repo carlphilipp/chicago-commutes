@@ -57,7 +57,7 @@ import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TrainMapViewScreen(
+fun TrainMapScreen(
     modifier: Modifier = Modifier,
     viewModel: GoogleMapTrainViewModel,
     navigationViewModel: NavigationViewModel,
@@ -131,7 +131,7 @@ fun GoogleMapTrainMapView(
     if (uiState.moveCamera != null && uiState.moveCameraZoom != null) {
         LaunchedEffect(key1 = Unit, block = {
             scope.launch {
-                uiState.cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(uiState.moveCamera, uiState.moveCameraZoom));
+                uiState.cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(uiState.moveCamera, uiState.moveCameraZoom))
             }
         })
     }
