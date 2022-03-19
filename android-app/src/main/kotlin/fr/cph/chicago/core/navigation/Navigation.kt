@@ -194,7 +194,7 @@ class NavigationViewModel : ViewModel() {
         return if (uiState.drawerState.isOpen) {
             true
         } else {
-            uiState.currentScreen != Screen.Map && uiState.currentScreen != Screen.Nearby && uiState.currentScreen != Screen.TrainMap
+            uiState.currentScreen.isGestureEnabled
         }
     }
 
@@ -263,7 +263,7 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
                                 val previousData = previous.pop()
                                 val newArgs = mutableMapOf<String, String>()
                                 newArgs.putAll(previousData.second)
-                                if(currentScreenData.second.containsKey("search")) {
+                                if (currentScreenData.second.containsKey("search")) {
                                     newArgs["search"] = currentScreenData.second["search"]!!
                                 }
                                 navigate(screen = previousData.first, arguments = newArgs)
@@ -325,7 +325,7 @@ fun DisplayTopBar(
                 openDrawer()
             }
         }
-        val rightClick = if(onClickRightIcon == null) {
+        val rightClick = if (onClickRightIcon == null) {
             { navController.navigate(Screen.Search) }
         } else {
             onClickRightIcon

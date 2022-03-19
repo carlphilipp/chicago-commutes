@@ -40,6 +40,7 @@ sealed class Screen(
     val route: String,
     val icon: ImageVector,
     val showOnDrawer: Boolean = true,
+    val isGestureEnabled: Boolean = true,
     val topBar: ScreenTopBar,
     val component: @Composable (NavBackStackEntry, NavigationViewModel) -> Unit
 ) {
@@ -251,6 +252,7 @@ sealed class Screen(
         route = "nearby",
         icon = Icons.Filled.NearMe,
         topBar = ScreenTopBar.MediumTopBarDrawerSearch,
+        isGestureEnabled = false,
         component = { _, navigationViewModel ->
             settingsViewModel.loadShowMapDebug()
             NearbyScreen(
@@ -267,6 +269,7 @@ sealed class Screen(
         route = "map",
         icon = Icons.Filled.Map,
         topBar = ScreenTopBar.MediumTopBarDrawerSearch,
+        isGestureEnabled = false,
         component = { _, navigationViewModel ->
             Map(
                 navigationViewModel = navigationViewModel,
@@ -386,6 +389,7 @@ sealed class Screen(
         route = "map/trains?line={line}",
         icon = Icons.Filled.Search,
         showOnDrawer = false,
+        isGestureEnabled = false,
         topBar = ScreenTopBar.MediumTopBarBackReload,
         component = { backStackEntry, navigationViewModel ->
             val line = URLDecoder.decode(backStackEntry.arguments?.getString("line", "") ?: "", "UTF-8")

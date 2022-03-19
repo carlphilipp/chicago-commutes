@@ -109,7 +109,6 @@ fun DrawerButton(
                     imageVector = screen.icon,
                     contentDescription = "Icon",
                     modifier = Modifier,
-                    //colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer),
                 )
                 Spacer(Modifier.width(16.dp))
                 Text(
