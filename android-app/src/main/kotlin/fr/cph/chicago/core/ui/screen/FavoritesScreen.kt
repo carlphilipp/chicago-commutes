@@ -29,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -59,7 +58,6 @@ import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.common.TrainDetailDialog
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.util.TimeUtil
-import fr.cph.chicago.util.startBusMapActivity
 import timber.log.Timber
 import java.util.Calendar
 
@@ -165,7 +163,6 @@ fun BusFavoriteCard(
     lastUpdate: LastUpdate,
     favorites: Favorites,
 ) {
-    val context = LocalContext.current
     val navController = LocalNavController.current
     var showDialog by remember { mutableStateOf(false) }
 
@@ -218,9 +215,9 @@ fun BusFavoriteCard(
                 }
             },
             mapOnClick = {
-                startBusMapActivity(
-                    context = context,
-                    busRouteId = busRoute.id,
+                navController.navigate(
+                    screen = Screen.BusMap,
+                    arguments = mapOf("busRouteId" to busRoute.id)
                 )
             }
         )

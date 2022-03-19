@@ -41,6 +41,7 @@ import fr.cph.chicago.core.ui.common.LoadingBar
 import fr.cph.chicago.core.ui.common.LoadingCircle
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
+import fr.cph.chicago.core.ui.common.runWithDelay
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.GoogleMapUtil.createBitMapDescriptor
 import fr.cph.chicago.util.GoogleMapUtil.defaultZoom
@@ -54,6 +55,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,10 +65,18 @@ fun TrainMapScreen(
     navigationViewModel: NavigationViewModel,
     title: String,
 ) {
-    Timber.d("Compose TrainMapView")
+    Timber.d("Compose TrainMapScreen")
     val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     val scope = rememberCoroutineScope()
     var isMapLoaded by remember { mutableStateOf(false) }
+    // Show map after 5 seconds. This is needed because there is no callback from the sdk to know if the map can be loaded or not.
+    // Meaning that we can have a situation where the onMapLoaded method is never triggered, while the map view has been populated
+    // with some error messages from the google sdk like: "Play store needs to be updated"
+    if (!isMapLoaded) {
+        runWithDelay(5L, TimeUnit.SECONDS) {
+            isMapLoaded = true
+        }
+    }
 
     if (isMapLoaded) {
         LaunchedEffect(key1 = isMapLoaded, block = {

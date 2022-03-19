@@ -1,9 +1,7 @@
-package fr.cph.chicago.core.activity
+package fr.cph.chicago.core.ui.screen
 
 import android.graphics.BitmapFactory
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
@@ -17,7 +15,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -39,14 +36,13 @@ import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.core.theme.ChicagoCommutesTheme
-import fr.cph.chicago.core.ui.RefreshTopBar
+import fr.cph.chicago.core.navigation.DisplayTopBar
+import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.LoadingBar
 import fr.cph.chicago.core.ui.common.LoadingCircle
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
-import fr.cph.chicago.core.viewmodel.settingsViewModel
-import fr.cph.chicago.getActivity
+import fr.cph.chicago.core.ui.common.runWithDelay
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.GoogleMapUtil.createBitMapDescriptor
 import fr.cph.chicago.util.GoogleMapUtil.defaultZoom
@@ -59,81 +55,76 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
-
-class BusMapActivity : CustomComponentActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        val busRouteId = if (savedInstanceState != null)
-            savedInstanceState.getString(getString(R.string.bundle_bus_route_id)) ?: ""
-        else
-            intent.getStringExtra(getString(R.string.bundle_bus_route_id)) ?: ""
-
-        val viewModel = GoogleMapBusViewModel().initModel(
-            busRouteId = busRouteId,
-        )
-
-        setContent {
-            ChicagoCommutesTheme(settingsViewModel = settingsViewModel) {
-                BusMapView(
-                    viewModel = viewModel,
-                )
-            }
-        }
-    }
-}
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BusMapView(
+fun BusMapScreen(
     modifier: Modifier = Modifier,
     viewModel: GoogleMapBusViewModel,
+    navigationViewModel: NavigationViewModel,
+    title: String,
 ) {
-    val context = LocalContext.current
+    Timber.d("Compose BusMapScreen")
     val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     val scope = rememberCoroutineScope()
     var isMapLoaded by remember { mutableStateOf(false) }
-
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            RefreshTopBar(
-                activity = context.getActivity(),
-                title = viewModel.uiState.busRouteId,
-                showRefresh = true,
-                onRefresh = { viewModel.reloadData() })
-        },
-        snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
-        content = {
-
-            GoogleMapBusMapView(
-                viewModel = viewModel,
-                onMapLoaded = {
-                    isMapLoaded = true
-                    // Google Map must be loaded to be able to run these methods
-                    viewModel.loadIcons()
-                    viewModel.loadBuses()
-                },
-            )
-
-            LoadingBar(show = viewModel.uiState.isLoading)
-
-            LoadingCircle(show = !isMapLoaded)
-
-            if (viewModel.uiState.showError) {
-                ShowErrorMessageSnackBar(
-                    scope = scope,
-                    snackbarHostState = snackbarHostState,
-                    showError = viewModel.uiState.showError,
-                    onComplete = { viewModel.showError(false) }
-                )
-            }
+    // Show map after 5 seconds. This is needed because there is no callback from the sdk to know if the map can be loaded or not.
+    // Meaning that we can have a situation where the onMapLoaded method is never triggered, while the map view has been populated
+    // with some error messages from the google sdk like: "Play store needs to be updated"
+    if (!isMapLoaded) {
+        runWithDelay(5L, TimeUnit.SECONDS) {
+            isMapLoaded = true
         }
-    )
+    }
+
+    if (isMapLoaded) {
+        LaunchedEffect(key1 = isMapLoaded, block = {
+            scope.launch {
+                viewModel.loadPatterns()
+                viewModel.loadIcons()
+                viewModel.loadBuses()
+            }
+        })
+    }
+
+    Column {
+        DisplayTopBar(
+            title = title,
+            viewModel = navigationViewModel,
+            onClickRightIcon = {
+                viewModel.reloadData()
+            }
+        )
+
+        Scaffold(
+            modifier = modifier,
+            snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
+            content = {
+
+                GoogleMapBusMapView(
+                    viewModel = viewModel,
+                    onMapLoaded = { isMapLoaded = true },
+                )
+
+                LoadingBar(show = viewModel.uiState.isLoading)
+
+                LoadingCircle(show = !isMapLoaded)
+
+                if (viewModel.uiState.showError) {
+                    ShowErrorMessageSnackBar(
+                        scope = scope,
+                        snackbarHostState = snackbarHostState,
+                        showError = viewModel.uiState.showError,
+                        onComplete = { viewModel.showError(false) }
+                    )
+                }
+            }
+        )
+    }
 }
 
 @Composable
@@ -149,7 +140,7 @@ fun GoogleMapBusMapView(
 
         LaunchedEffect(key1 = Unit, block = {
             scope.launch {
-                uiState.cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(uiState.moveCamera, uiState.moveCameraZoom));
+                uiState.cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(uiState.moveCamera, uiState.moveCameraZoom))
             }
         })
     }
@@ -158,7 +149,7 @@ fun GoogleMapBusMapView(
         modifier = modifier,
         cameraPositionState = uiState.cameraPositionState,
         properties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false),
-        uiSettings = MapUiSettings(compassEnabled = false, myLocationButtonEnabled = false),
+        uiSettings = MapUiSettings(compassEnabled = false, myLocationButtonEnabled = false, zoomControlsEnabled = false),
         onMapLoaded = onMapLoaded,
     ) {
         BusLineLayer(
@@ -290,16 +281,11 @@ data class GoogleMapBusUiState(
 
 @HiltViewModel
 class GoogleMapBusViewModel @Inject constructor(
+    busRouteId: String,
     private val busService: BusService = BusService,
 ) : ViewModel() {
-    var uiState by mutableStateOf(GoogleMapBusUiState())
+    var uiState by mutableStateOf(GoogleMapBusUiState(busRouteId = busRouteId))
         private set
-
-    fun initModel(busRouteId: String): GoogleMapBusViewModel {
-        uiState = uiState.copy(busRouteId = busRouteId)
-        loadPatterns()
-        return this
-    }
 
     fun showError(showError: Boolean) {
         uiState = uiState.copy(showError = showError)
@@ -448,7 +434,7 @@ class GoogleMapBusViewModel @Inject constructor(
         }
     }
 
-    private fun loadPatterns() {
+    fun loadPatterns() {
         Observable.fromCallable {
             val patterns: MutableList<BusPattern> = mutableListOf()
             busService.loadBusPattern(uiState.busRouteId).blockingGet().forEach { patterns.add(it) }

@@ -403,6 +403,25 @@ sealed class Screen(
             )
         }
     )
+
+    object BusMap : Screen (
+        title = "Map",
+        route = "map/buses?busRouteId={busRouteId}",
+        icon = Icons.Filled.Search,
+        showOnDrawer = false,
+        isGestureEnabled = false,
+        topBar = ScreenTopBar.MediumTopBarBackReload,
+        component = { backStackEntry, navigationViewModel ->
+            val busRouteId = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteId", "") ?: "", "UTF-8")
+
+            val viewModel = GoogleMapBusViewModel(busRouteId = busRouteId)
+            BusMapScreen(
+                viewModel = viewModel,
+                navigationViewModel = navigationViewModel,
+                title = busRouteId,
+            )
+        }
+    )
 }
 
 sealed class ScreenTopBar(
@@ -490,6 +509,7 @@ val screens = listOf(
     Screen.SettingsThemeColorChooser,
     Screen.Search,
     Screen.TrainMap,
+    Screen.BusMap,
 )
 
 val drawerScreens by lazy {
