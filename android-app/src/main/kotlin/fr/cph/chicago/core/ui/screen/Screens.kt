@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Train
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
@@ -36,7 +37,7 @@ import kotlin.random.Random
 
 sealed class Screen(
     val id: Int = Random.nextInt(),
-    val title: String,
+    val title: String = "",
     val route: String,
     val icon: ImageVector,
     val showOnDrawer: Boolean = true,
@@ -51,7 +52,7 @@ sealed class Screen(
         topBar = ScreenTopBar.MediumTopBarDrawerSearch,
         component = { _, navigationViewModel ->
             FavoritesScreen(
-                title = "Favorites",
+                title = stringResource(R.string.screen_favorites),
                 mainViewModel = mainViewModel,
                 navigationViewModel = navigationViewModel
             )
@@ -64,12 +65,14 @@ sealed class Screen(
         icon = Icons.Filled.Train,
         topBar = ScreenTopBar.MediumTopBarDrawerSearch,
         component = { _, navigationViewModel ->
-            TrainScreen(title = "Train", navigationViewModel = navigationViewModel)
+            TrainScreen(
+                title = stringResource(R.string.screen_train),
+                navigationViewModel = navigationViewModel
+            )
         }
     )
 
     object TrainList : Screen(
-        title = "Train station list",
         route = "train/line/{line}",
         icon = Icons.Filled.Train,
         showOnDrawer = false,
@@ -92,7 +95,6 @@ sealed class Screen(
     )
 
     object TrainDetails : Screen(
-        title = "Train station details",
         route = "train/details/{stationId}",
         icon = Icons.Filled.Train,
         showOnDrawer = false,
@@ -120,7 +122,7 @@ sealed class Screen(
         topBar = ScreenTopBar.MediumTopBarDrawerSearch,
         component = { _, navigationViewModel ->
             BusScreen(
-                title = "Bus",
+                title = stringResource(R.string.screen_bus),
                 navigationViewModel = navigationViewModel,
                 mainViewModel = mainViewModel,
             )
@@ -128,7 +130,6 @@ sealed class Screen(
     )
 
     object BusDetails : Screen(
-        title = "Bus details",
         route = "bus/details?busStopId={busStopId}&busStopName={busStopName}&busRouteId={busRouteId}&busRouteName={busRouteName}&bound={bound}&boundTitle={boundTitle}",
         icon = Icons.Filled.DirectionsBus,
         showOnDrawer = false,
@@ -160,7 +161,6 @@ sealed class Screen(
     )
 
     object BusBound : Screen(
-        title = "Bus bound",
         route = "bus/bound?busRouteId={busRouteId}&busRouteName={busRouteName}&bound={bound}&boundTitle={boundTitle}&search={search}",
         icon = Icons.Filled.DirectionsBus,
         showOnDrawer = false,
@@ -199,13 +199,12 @@ sealed class Screen(
             DivvyScreen(
                 mainViewModel = mainViewModel,
                 navigationViewModel = navigationViewModel,
-                title = "Divvy"
+                title = stringResource(R.string.screen_divvy),
             )
         }
     )
 
     object DivvyDetails : Screen(
-        title = "Divvy station details",
         route = "divvy/details/{stationId}",
         icon = Icons.Filled.Train,
         showOnDrawer = false,
@@ -227,7 +226,6 @@ sealed class Screen(
     )
 
     object DeveloperOptions : Screen(
-        title = "Developer options",
         route = "developer",
         icon = Icons.Filled.DeveloperMode,
         showOnDrawer = false,
@@ -242,7 +240,7 @@ sealed class Screen(
             DeveloperOptionsScreen(
                 viewModel = viewModel,
                 navigationViewModel = navigationViewModel,
-                title = "Developer",
+                title = stringResource(R.string.screen_settings_develop),
             )
         }
     )
@@ -260,7 +258,7 @@ sealed class Screen(
                 locationViewModel = locationViewModel,
                 navigationViewModel = navigationViewModel,
                 settingsViewModel = settingsViewModel,
-                title = "Nearby",
+                title = stringResource(R.string.screen_nearby),
             )
         })
 
@@ -273,7 +271,7 @@ sealed class Screen(
         component = { _, navigationViewModel ->
             Map(
                 navigationViewModel = navigationViewModel,
-                title = "CTA Map",
+                title = stringResource(R.string.screen_map),
             )
         })
 
@@ -286,7 +284,7 @@ sealed class Screen(
             AlertsScreen(
                 mainViewModel = mainViewModel,
                 navigationViewModel = navigationViewModel,
-                title = "CTA Alerts",
+                title = stringResource(R.string.screen_alerts),
             )
         })
 
@@ -329,42 +327,39 @@ sealed class Screen(
         topBar = ScreenTopBar.LargeTopBarDrawerSearch,
         component = { _, navigationViewModel ->
             SettingsScreen(
-                title = "Settings",
+                title = stringResource(R.string.screen_settings),
                 viewModel = settingsViewModel,
                 navigationViewModel = navigationViewModel,
             )
         })
 
     object SettingsDisplay : Screen(
-        title = "Display",
         route = "settings/display",
         icon = Icons.Filled.Settings,
         topBar = ScreenTopBar.LargeTopBarBackSearch,
         showOnDrawer = false,
         component = { _, navigationViewModel ->
             DisplaySettingsScreen(
-                title = "Display",
+                title = stringResource(R.string.screen_settings_display),
                 viewModel = settingsViewModel,
                 navigationViewModel = navigationViewModel,
             )
         })
 
     object SettingsThemeColorChooser : Screen(
-        title = "Theme color",
         route = "settings/color",
         icon = Icons.Filled.Settings,
         topBar = ScreenTopBar.LargeTopBarBackSearch,
         showOnDrawer = false,
         component = { _, navigationViewModel ->
             ThemeChooserSettingsScreen(
-                topBarTitle = "Theme color",
+                topBarTitle = stringResource(R.string.screen_settings_theme),
                 viewModel = settingsViewModel,
                 navigationViewModel = navigationViewModel,
             )
         })
 
     object Search : Screen(
-        title = "Search",
         route = "search",
         icon = Icons.Filled.Search,
         showOnDrawer = false,
@@ -377,7 +372,7 @@ sealed class Screen(
                 )
             )
             SearchViewScreen(
-                title = "Search",
+                title = stringResource(R.string.screen_search),
                 viewModel = viewModel,
                 navigationViewModel = navigationViewModel,
             )
@@ -385,7 +380,6 @@ sealed class Screen(
     )
 
     object TrainMap : Screen(
-        title = "Map",
         route = "map/trains?line={line}",
         icon = Icons.Filled.Search,
         showOnDrawer = false,
@@ -404,8 +398,7 @@ sealed class Screen(
         }
     )
 
-    object BusMap : Screen (
-        title = "Map",
+    object BusMap : Screen(
         route = "map/buses?busRouteId={busRouteId}",
         icon = Icons.Filled.Search,
         showOnDrawer = false,
