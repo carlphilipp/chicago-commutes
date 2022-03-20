@@ -16,6 +16,7 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,7 +47,7 @@ import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.core.ui.screen.ScreenTopBar
 import fr.cph.chicago.core.ui.screen.TopBarIconAction
 import fr.cph.chicago.core.ui.screen.TopBarType
-import fr.cph.chicago.core.viewmodel.mainViewModel
+import fr.cph.chicago.core.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.net.URLEncoder
@@ -59,72 +60,84 @@ val LocalNavController = compositionLocalOf<NavHostControllerWrapper> {
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.animation.ExperimentalAnimationApi::class)
 @Composable
-fun Navigation(viewModel: NavigationViewModel) {
-    Timber.d("Compose Navigation")
-    val uiState = viewModel.uiState
-    val navController = remember { NavHostControllerWrapper(viewModel) }
-    val scope = rememberCoroutineScope()
+fun Navigation(
+    show: Boolean,
+    mainViewModel: MainViewModel,
+    viewModel: NavigationViewModel,
+) {
+    if (show) {
+        Timber.d("Compose Navigation")
+        val uiState = viewModel.uiState
+        val navController = remember { NavHostControllerWrapper(viewModel) }
+        val scope = rememberCoroutineScope()
 
-    ModalNavigationDrawer(
-        drawerState = uiState.drawerState,
-        gesturesEnabled = viewModel.isGestureEnabled(),
-        drawerContent = {
-            Drawer(
-                currentScreen = uiState.currentScreen,
-                onDestinationClicked = { screen ->
-                    if (screen != Screen.Rate) {
-                        scope.launch {
-                            uiState.drawerState.close()
-                            navController.navigate(screen)
+        LaunchedEffect(key1 = Unit, block = {
+            scope.launch {
+                mainViewModel.loadBusRoutesAndBike()
+            }
+        })
+
+        ModalNavigationDrawer(
+            drawerState = uiState.drawerState,
+            gesturesEnabled = viewModel.isGestureEnabled(),
+            drawerContent = {
+                Drawer(
+                    currentScreen = uiState.currentScreen,
+                    onDestinationClicked = { screen ->
+                        if (screen != Screen.Rate) {
+                            scope.launch {
+                                uiState.drawerState.close()
+                                navController.navigate(screen)
+                            }
                         }
                     }
-                }
-            )
-        },
-        content = {
-            Timber.d("Compose Navigation content")
-            // Add custom nav controller in local provider so it can be retrieve easily downstream
-            CompositionLocalProvider(LocalNavController provides navController) {
-                Scaffold(
-                    snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
-                    modifier = Modifier.nestedScroll(viewModel.uiState.scrollBehavior.nestedScrollConnection),
-                ) {
-                    if (viewModel.uiState.shouldExit) {
-                        ShowSnackBar(
-                            scope = scope,
-                            snackbarHostState = mainViewModel.uiState.snackbarHostState,
-                            element = viewModel.uiState.shouldExit,
-                            message = "Press BACK again to exit",
-                            onComplete = {},
-                            withDismissAction = false,
-                        )
-                    }
-                    AnimatedNavHost(
-                        navController = navController.navController(),
-                        startDestination = Screen.Favorites.route,
-                        enterTransition = fallBackEnterTransition(),
-                        exitTransition = fallBackExitTransition(),
+                )
+            },
+            content = {
+                Timber.d("Compose Navigation content")
+                // Add custom nav controller in local provider so it can be retrieve easily downstream
+                CompositionLocalProvider(LocalNavController provides navController) {
+                    Scaffold(
+                        snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
+                        modifier = Modifier.nestedScroll(viewModel.uiState.scrollBehavior.nestedScrollConnection),
                     ) {
-                        uiState.screens.forEach { screen: Screen ->
-                            Timber.v("Compose for each screen -> ${screen.title}")
-                            composable(
-                                route = screen.route,
-                                arguments = emptyList(),
-                                enterTransition = enterTransition(),
-                                exitTransition = exitTransition(),
-                            ) { backStackEntry ->
-                                // Add custom backhandler to all composable so we can handle when someone push the back button
-                                BackHandler {
-                                    uiState.currentScreen = screen // FIXME: I don't think it's needed?
-                                    screen.component(backStackEntry, viewModel)
+                        if (viewModel.uiState.shouldExit) {
+                            ShowSnackBar(
+                                scope = scope,
+                                snackbarHostState = mainViewModel.uiState.snackbarHostState,
+                                element = viewModel.uiState.shouldExit,
+                                message = "Press BACK again to exit",
+                                onComplete = {},
+                                withDismissAction = false,
+                            )
+                        }
+                        AnimatedNavHost(
+                            navController = navController.navController(),
+                            startDestination = Screen.Favorites.route,
+                            enterTransition = fallBackEnterTransition(),
+                            exitTransition = fallBackExitTransition(),
+                        ) {
+                            uiState.screens.forEach { screen: Screen ->
+                                Timber.v("Compose for each screen -> ${screen.title}")
+                                composable(
+                                    route = screen.route,
+                                    arguments = emptyList(),
+                                    enterTransition = enterTransition(),
+                                    exitTransition = exitTransition(),
+                                ) { backStackEntry ->
+                                    // Add custom backhandler to all composable so we can handle when someone push the back button
+                                    BackHandler {
+                                        uiState.currentScreen = screen // FIXME: I don't think it's needed?
+                                        screen.component(backStackEntry, viewModel)
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
-    )
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

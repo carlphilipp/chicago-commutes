@@ -56,11 +56,6 @@ abstract class MainViewModel @Inject constructor(
     var uiState by mutableStateOf(MainUiState())
         internal set
 
-    fun initModel(): MainViewModel {
-        loadBusRoutesAndBike()
-        return this
-    }
-
     override fun newState(state: State) {
         Timber.d("new state")
         Favorites.refreshFavorites()
@@ -277,7 +272,7 @@ abstract class MainViewModel @Inject constructor(
         }.subscribe({}, { error -> Timber.e(error) })
     }
 
-    private fun loadBusRoutesAndBike() {
+    fun loadBusRoutesAndBike() {
         store.dispatch(BusRoutesAndBikeStationAction())
     }
 

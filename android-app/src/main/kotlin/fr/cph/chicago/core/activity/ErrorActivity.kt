@@ -44,7 +44,7 @@ class ErrorActivity : CustomComponentActivity() {
                 val context = LocalContext.current
                 AnimatedErrorView(
                     onClick = {
-                        val intent = Intent(this@ErrorActivity, BaseActivity::class.java)
+                        val intent = Intent(this@ErrorActivity, MainActivity::class.java)
                         finish()
                         startActivity(context, intent, null)
                     }

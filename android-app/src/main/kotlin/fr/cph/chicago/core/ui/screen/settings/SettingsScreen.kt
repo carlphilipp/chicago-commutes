@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.Constants.DEFAULT_SETTINGS_DELAY
-import fr.cph.chicago.core.activity.BaseActivity
+import fr.cph.chicago.core.activity.MainActivity
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
@@ -446,7 +446,7 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
 
     fun restartApp(context: Context, activity: ComponentActivity) {
         store.dispatch(ResetStateAction())
-        val intent = Intent(context, BaseActivity::class.java)
+        val intent = Intent(context, MainActivity::class.java)
         activity.finish()
         startActivity(context, intent, null)
     }
