@@ -73,6 +73,7 @@ fun FavoritesScreen(
 
     Column {
         DisplayTopBar(
+            screen = Screen.Favorites,
             title = title,
             viewModel = navigationViewModel,
         )

@@ -71,6 +71,7 @@ fun BusScreen(
         content = {
             Column {
                 DisplayTopBar(
+                    screen = Screen.Bus,
                     title = title,
                     viewModel = navigationViewModel,
                 )

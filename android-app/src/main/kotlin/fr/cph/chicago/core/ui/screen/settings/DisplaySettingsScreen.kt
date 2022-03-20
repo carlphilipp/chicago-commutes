@@ -61,6 +61,7 @@ fun DisplaySettingsScreen(
         content = {
             Column {
                 DisplayTopBar(
+                    screen = Screen.SettingsDisplay,
                     title = title,
                     viewModel = navigationViewModel,
                 )

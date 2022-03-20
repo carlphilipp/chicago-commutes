@@ -322,11 +322,11 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
 @Composable
 fun DisplayTopBar(
     title: String = "",
+    screen: Screen,
     viewModel: NavigationViewModel,
     onClickRightIcon: (() -> Unit)? = null,
 ) {
-    if (viewModel.uiState.currentScreen.topBar != ScreenTopBar.None) {
-        val screen = viewModel.uiState.currentScreen
+    if (screen.topBar != ScreenTopBar.None) {
         val navController = LocalNavController.current
         val scope = rememberCoroutineScope()
         val openDrawer = { scope.launch { viewModel.uiState.drawerState.open() } }

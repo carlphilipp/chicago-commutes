@@ -47,6 +47,7 @@ fun TrainLineStopsScreen(
 
     Column {
         DisplayTopBar(
+            screen = Screen.TrainList,
             title = title,
             viewModel = navigationViewModel,
         )

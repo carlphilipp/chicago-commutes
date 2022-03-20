@@ -77,7 +77,10 @@ fun BikeStationScreen(
     val context = LocalContext.current
 
     Column {
-        DisplayTopBar(viewModel = navigationViewModel)
+        DisplayTopBar(
+            screen = Screen.DivvyDetails,
+            viewModel = navigationViewModel
+        )
         SwipeRefresh(
             modifier = modifier,
             state = rememberSwipeRefreshState(uiState.isRefreshing),

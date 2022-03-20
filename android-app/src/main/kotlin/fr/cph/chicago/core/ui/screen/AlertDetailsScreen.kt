@@ -50,6 +50,7 @@ fun AlertDetailsScreen(
     val scope = rememberCoroutineScope()
     Column {
         DisplayTopBar(
+            screen = Screen.AlertDetail,
             title = title,
             viewModel = navigationViewModel,
         )

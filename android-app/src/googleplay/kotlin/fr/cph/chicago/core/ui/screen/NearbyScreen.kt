@@ -89,6 +89,7 @@ fun NearbyScreen(
 
     Column {
         DisplayTopBar(
+            screen = Screen.Nearby,
             title = title,
             viewModel = navigationViewModel,
         )

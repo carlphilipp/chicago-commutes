@@ -65,6 +65,7 @@ fun SearchViewScreen(
 
     Column {
         DisplayTopBar(
+            screen = Screen.Search,
             title = title,
             viewModel = navigationViewModel,
         )

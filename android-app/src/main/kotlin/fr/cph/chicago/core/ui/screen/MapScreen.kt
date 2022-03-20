@@ -16,6 +16,7 @@ fun Map(
     // FIXME: Check double click zoom default
     Column {
         DisplayTopBar(
+            screen = Screen.Map,
             title = title,
             viewModel = navigationViewModel,
         )

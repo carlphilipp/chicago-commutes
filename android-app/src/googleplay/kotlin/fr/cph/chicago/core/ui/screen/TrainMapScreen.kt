@@ -91,6 +91,7 @@ fun TrainMapScreen(
 
     Column {
         DisplayTopBar(
+            screen = Screen.TrainMap,
             title = title,
             viewModel = navigationViewModel,
             onClickRightIcon = {

@@ -67,6 +67,7 @@ fun AlertsScreen(
 
     Column {
         DisplayTopBar(
+            screen = Screen.Alerts,
             title = title,
             viewModel = navigationViewModel,
         )

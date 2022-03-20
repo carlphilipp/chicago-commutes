@@ -67,6 +67,7 @@ fun DivvyScreen(
         content = {
             Column {
                 DisplayTopBar(
+                    screen = Screen.Divvy,
                     title = title,
                     viewModel = navigationViewModel,
                 )

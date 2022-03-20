@@ -46,6 +46,7 @@ import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.common.SwitchMaterial3
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 import fr.cph.chicago.core.ui.common.ThemeColorButton
+import fr.cph.chicago.core.ui.screen.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,6 +61,7 @@ fun ThemeChooserSettingsScreen(
         content = {
             Column {
                 DisplayTopBar(
+                    screen = Screen.SettingsThemeColorChooser,
                     title = topBarTitle,
                     viewModel = navigationViewModel,
                 )

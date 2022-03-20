@@ -93,6 +93,7 @@ fun BusMapScreen(
 
     Column {
         DisplayTopBar(
+            screen = Screen.BusMap,
             title = title,
             viewModel = navigationViewModel,
             onClickRightIcon = {

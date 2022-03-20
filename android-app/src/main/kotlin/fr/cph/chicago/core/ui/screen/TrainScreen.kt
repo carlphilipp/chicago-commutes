@@ -35,6 +35,7 @@ fun TrainScreen(modifier: Modifier = Modifier, title: String, navigationViewMode
 
     Column {
         DisplayTopBar(
+            screen = Screen.Train,
             title = title,
             viewModel = navigationViewModel,
         )

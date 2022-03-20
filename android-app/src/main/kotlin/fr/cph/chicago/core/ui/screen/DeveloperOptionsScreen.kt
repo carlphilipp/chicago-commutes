@@ -49,6 +49,7 @@ fun DeveloperOptionsScreen(
         content = {
             Column {
                 DisplayTopBar(
+                    screen = Screen.DeveloperOptions,
                     title = title,
                     viewModel = navigationViewModel,
                 )

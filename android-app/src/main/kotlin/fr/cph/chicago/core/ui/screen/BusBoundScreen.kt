@@ -61,6 +61,7 @@ fun BusBoundScreen(
         content = {
             Column {
                 DisplayTopBar(
+                    screen = Screen.BusBound,
                     title = title,
                     viewModel = navigationViewModel,
                 )

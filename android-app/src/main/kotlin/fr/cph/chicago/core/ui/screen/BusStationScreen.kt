@@ -79,7 +79,10 @@ fun BusStationScreen(
     val busArrivalsKeys = uiState.busArrivalStopDTO.keys.toList()
 
     Column {
-        DisplayTopBar(viewModel = navigationViewModel)
+        DisplayTopBar(
+            screen = Screen.BusDetails,
+            viewModel = navigationViewModel
+        )
 
         SwipeRefresh(
             modifier = modifier,
