@@ -64,7 +64,7 @@ import javax.inject.Inject
 @Composable
 fun BusMapScreen(
     modifier: Modifier = Modifier,
-    viewModel: GoogleMapBusViewModel,
+    viewModel: MapBusViewModel,
     navigationViewModel: NavigationViewModel,
     title: String,
 ) {
@@ -130,7 +130,7 @@ fun BusMapScreen(
 @Composable
 fun GoogleMapBusMapView(
     modifier: Modifier = Modifier,
-    viewModel: GoogleMapBusViewModel,
+    viewModel: MapBusViewModel,
     onMapLoaded: () -> Unit,
 ) {
     val uiState = viewModel.uiState
@@ -184,7 +184,7 @@ fun GoogleMapBusMapView(
 
 @Composable
 fun BusLineLayer(
-    viewModel: GoogleMapBusViewModel,
+    viewModel: MapBusViewModel,
 ) {
     viewModel.uiState.busPatterns.forEachIndexed { index, busPattern ->
         Polyline(
@@ -197,7 +197,7 @@ fun BusLineLayer(
 
 @Composable
 fun BusStopsMarkers(
-    viewModel: GoogleMapBusViewModel,
+    viewModel: MapBusViewModel,
     cameraPositionState: CameraPositionState,
 ) {
     viewModel.showHideStops(cameraPositionState.position.zoom)
@@ -222,7 +222,7 @@ fun BusStopsMarkers(
 
 @Composable
 fun BusOnMapLayer(
-    viewModel: GoogleMapBusViewModel,
+    viewModel: MapBusViewModel,
     cameraPositionState: CameraPositionState,
 ) {
     viewModel.updateIconOnZoomChange(cameraPositionState.position.zoom)
@@ -280,7 +280,7 @@ data class GoogleMapBusUiState(
 )
 
 @HiltViewModel
-class GoogleMapBusViewModel @Inject constructor(
+class MapBusViewModel @Inject constructor(
     busRouteId: String,
     private val busService: BusService = BusService,
 ) : ViewModel() {

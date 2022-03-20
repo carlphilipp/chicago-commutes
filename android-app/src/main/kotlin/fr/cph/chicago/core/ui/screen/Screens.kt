@@ -389,7 +389,7 @@ sealed class Screen(
             val line = URLDecoder.decode(backStackEntry.arguments?.getString("line", "") ?: "", "UTF-8")
             val trainLine = TrainLine.fromXmlString(line)
 
-            val viewModel = GoogleMapTrainViewModel(line = trainLine)
+            val viewModel = MapTrainViewModel(line = trainLine)
             TrainMapScreen(
                 viewModel = viewModel,
                 navigationViewModel = navigationViewModel,
@@ -407,7 +407,7 @@ sealed class Screen(
         component = { backStackEntry, navigationViewModel ->
             val busRouteId = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteId", "") ?: "", "UTF-8")
 
-            val viewModel = GoogleMapBusViewModel(busRouteId = busRouteId)
+            val viewModel = MapBusViewModel(busRouteId = busRouteId)
             BusMapScreen(
                 viewModel = viewModel,
                 navigationViewModel = navigationViewModel,

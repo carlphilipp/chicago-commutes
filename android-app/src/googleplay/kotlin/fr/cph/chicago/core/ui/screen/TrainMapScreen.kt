@@ -61,7 +61,7 @@ import java.util.concurrent.TimeUnit
 @Composable
 fun TrainMapScreen(
     modifier: Modifier = Modifier,
-    viewModel: GoogleMapTrainViewModel,
+    viewModel: MapTrainViewModel,
     navigationViewModel: NavigationViewModel,
     title: String,
 ) {
@@ -132,7 +132,7 @@ fun TrainMapScreen(
 @Composable
 fun GoogleMapTrainMapView(
     modifier: Modifier = Modifier,
-    viewModel: GoogleMapTrainViewModel,
+    viewModel: MapTrainViewModel,
     onMapLoaded: () -> Unit,
 ) {
     val uiState = viewModel.uiState
@@ -185,7 +185,7 @@ fun GoogleMapTrainMapView(
 
 @Composable
 fun TrainLineLayer(
-    viewModel: GoogleMapTrainViewModel,
+    viewModel: MapTrainViewModel,
 ) {
     Polyline(
         points = viewModel.uiState.polyLine,
@@ -196,7 +196,7 @@ fun TrainLineLayer(
 
 @Composable
 fun TrainStationsMarkers(
-    viewModel: GoogleMapTrainViewModel,
+    viewModel: MapTrainViewModel,
     cameraPositionState: CameraPositionState,
 ) {
     viewModel.showHideStations(cameraPositionState.position.zoom)
@@ -215,7 +215,7 @@ fun TrainStationsMarkers(
 
 @Composable
 fun TrainsOnMapLayer(
-    viewModel: GoogleMapTrainViewModel,
+    viewModel: MapTrainViewModel,
     cameraPositionState: CameraPositionState,
 ) {
     viewModel.updateIconOnZoomChange(cameraPositionState.position.zoom)
@@ -278,7 +278,7 @@ data class GoogleMapTrainUiState(
 )
 
 @HiltViewModel
-class GoogleMapTrainViewModel @Inject constructor(
+class MapTrainViewModel @Inject constructor(
     line: TrainLine,
     private val trainService: TrainService = TrainService,
 ) : ViewModel() {
