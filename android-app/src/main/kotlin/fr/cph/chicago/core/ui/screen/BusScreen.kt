@@ -23,6 +23,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
@@ -53,6 +54,7 @@ fun BusScreen(
     var selectedBusRoute by remember { mutableStateOf(BusRoute.buildEmpty()) }
     var searchBusRoutes by remember { mutableStateOf(mainViewModel.uiState.busRoutes) }
     val scope = rememberCoroutineScope()
+    val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.busScrollBehavior) }
 
     var textSearch by remember { mutableStateOf(TextFieldValue(mainViewModel.uiState.busRouteSearch)) }
     textSearch = TextFieldValue(
@@ -67,6 +69,7 @@ fun BusScreen(
     })
 
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
         content = {
             Column {
@@ -74,6 +77,7 @@ fun BusScreen(
                     screen = Screen.Bus,
                     title = title,
                     viewModel = navigationViewModel,
+                    scrollBehavior = scrollBehavior
                 )
                 if (mainViewModel.uiState.busRoutes.isNotEmpty()) {
                     Column(modifier = Modifier.padding(top = 5.dp, bottom = 5.dp)) {

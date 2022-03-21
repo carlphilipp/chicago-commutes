@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -65,15 +66,18 @@ fun SettingsScreen(
     val uiState = viewModel.uiState
     val navController = LocalNavController.current
     val scope = rememberCoroutineScope()
+    val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.settingsScrollBehavior) }
 
     // Wrapping with Scaffold as the animation is overridden if it's not the case
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         content = {
             Column {
                 DisplayTopBar(
                     screen = Screen.Settings,
                     title = title,
                     viewModel = navigationViewModel,
+                    scrollBehavior = scrollBehavior,
                 )
                 LazyColumn(
                     modifier = modifier

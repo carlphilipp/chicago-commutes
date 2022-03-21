@@ -16,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -64,19 +66,23 @@ fun AlertsScreen(
     var textSearch by remember { mutableStateOf(TextFieldValue("")) }
     var searchRoutesAlerts by remember { mutableStateOf<List<RoutesAlertsDTO>>(listOf()) }
     searchRoutesAlerts = uiState.routesAlerts
+    val scrollBehavior by remember { mutableStateOf(TopAppBarDefaults.pinnedScrollBehavior()) }
 
     Column {
         DisplayTopBar(
             screen = Screen.Alerts,
             title = title,
             viewModel = navigationViewModel,
+            scrollBehavior = scrollBehavior,
         )
         SwipeRefresh(
             state = rememberSwipeRefreshState(mainViewModel.uiState.isRefreshing),
             onRefresh = { mainViewModel.loadAlerts() },
         ) {
             Scaffold(
-                modifier = modifier.fillMaxWidth(),
+                modifier = modifier
+                    .fillMaxWidth()
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
                 snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
                 content = {
 

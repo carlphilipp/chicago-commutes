@@ -18,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.DisplayTopBar
@@ -32,15 +33,18 @@ fun TrainScreen(modifier: Modifier = Modifier, title: String, navigationViewMode
     Timber.d("Compose TrainScreen")
     val navController = LocalNavController.current
     val lines by remember { mutableStateOf(TrainLine.values().filter { line -> line != TrainLine.NA }) }
+    val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.trainScrollBehavior) }
 
     Column {
         DisplayTopBar(
             screen = Screen.Train,
             title = title,
             viewModel = navigationViewModel,
+            scrollBehavior = scrollBehavior,
         )
         // Wrapping with Scaffold as the animation is overriden if it's not the case
         Scaffold(
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             content = {
                 LazyColumn(modifier = modifier.fillMaxWidth()) {
                     items(lines) { line ->

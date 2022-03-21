@@ -22,11 +22,13 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -56,14 +58,17 @@ fun ThemeChooserSettingsScreen(
     topBarTitle: String,
 ) {
     val context = LocalContext.current as ComponentActivity
+    val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.settingsThemeColorScrollBehavior) }
 
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         content = {
             Column {
                 DisplayTopBar(
                     screen = Screen.SettingsThemeColorChooser,
                     title = topBarTitle,
                     viewModel = navigationViewModel,
+                    scrollBehavior = scrollBehavior,
                 )
                 LazyColumn(
                     modifier = Modifier

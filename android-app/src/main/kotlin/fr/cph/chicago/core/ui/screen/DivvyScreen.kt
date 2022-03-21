@@ -21,6 +21,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
@@ -56,6 +57,7 @@ fun DivvyScreen(
         text = mainViewModel.uiState.bikeSearch,
         selection = TextRange(mainViewModel.uiState.bikeSearch.length)
     )
+    val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.divvyScrollBehavior) }
 
     LaunchedEffect(key1 = Unit, block = {
         scope.launch {
@@ -64,6 +66,7 @@ fun DivvyScreen(
     })
 
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
         content = {
             Column {
@@ -71,6 +74,7 @@ fun DivvyScreen(
                     screen = Screen.Divvy,
                     title = title,
                     viewModel = navigationViewModel,
+                    scrollBehavior = scrollBehavior,
                 )
                 if (mainViewModel.uiState.bikeStations.isNotEmpty()) {
                     Column(modifier = Modifier.padding(top = 5.dp, bottom = 5.dp)) {

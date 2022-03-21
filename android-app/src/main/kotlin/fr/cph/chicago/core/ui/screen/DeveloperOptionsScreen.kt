@@ -18,8 +18,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
@@ -45,13 +47,17 @@ fun DeveloperOptionsScreen(
     title: String,
 ) {
     Timber.d("Compose DeveloperOptionsScreen")
+    val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.settingsDeveloperScrollBehavior) }
+
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         content = {
             Column {
                 DisplayTopBar(
                     screen = Screen.DeveloperOptions,
                     title = title,
                     viewModel = navigationViewModel,
+                    scrollBehavior =scrollBehavior,
                 )
                 LazyColumn(
                     modifier = Modifier

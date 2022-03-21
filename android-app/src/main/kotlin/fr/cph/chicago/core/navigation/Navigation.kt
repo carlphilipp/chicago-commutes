@@ -157,6 +157,7 @@ data class NavigationUiState constructor(
     val nearbyScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     val ctaMapScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     val alertsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    val searchScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     val settingsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     val settingsDisplayScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     val settingsDeveloperScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
@@ -344,6 +345,7 @@ fun DisplayTopBar(
     title: String = "",
     screen: Screen,
     viewModel: NavigationViewModel,
+    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     onClickRightIcon: (() -> Unit)? = null,
 ) {
     if (screen.topBar != ScreenTopBar.None) {
@@ -363,7 +365,6 @@ fun DisplayTopBar(
             onClickRightIcon
         }
         val topBar = screen.topBar
-        val scrollBehavior = getScrollBehavior(screen = screen, viewModel = viewModel)
 
         if (topBar.type == TopBarType.LARGE) {
             LargeTopBar(
@@ -400,26 +401,5 @@ fun DisplayTopBar(
                 },
             )
         }
-    }
-}
-
-private fun getScrollBehavior(screen: Screen, viewModel: NavigationViewModel): TopAppBarScrollBehavior {
-    return when (screen) {
-        Screen.Favorites -> viewModel.uiState.favScrollBehavior
-        Screen.Train -> viewModel.uiState.trainScrollBehavior
-        Screen.Bus -> viewModel.uiState.busScrollBehavior
-        Screen.Divvy -> viewModel.uiState.divvyScrollBehavior
-        Screen.Nearby -> viewModel.uiState.nearbyScrollBehavior
-        Screen.Map -> viewModel.uiState.ctaMapScrollBehavior
-        Screen.Alerts -> viewModel.uiState.alertsScrollBehavior
-        Screen.Settings -> viewModel.uiState.settingsScrollBehavior
-
-        Screen.TrainList -> viewModel.uiState.trainLineScrollBehavior
-        Screen.BusBound -> viewModel.uiState.busBoundScrollBehavior
-
-        Screen.SettingsDisplay -> viewModel.uiState.settingsDisplayScrollBehavior
-        Screen.DeveloperOptions -> viewModel.uiState.settingsDeveloperScrollBehavior
-        Screen.SettingsThemeColorChooser -> viewModel.uiState.settingsThemeColorScrollBehavior
-        else -> viewModel.uiState.favScrollBehavior
     }
 }

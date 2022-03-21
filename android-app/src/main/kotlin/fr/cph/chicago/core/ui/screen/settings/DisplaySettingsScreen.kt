@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import fr.cph.chicago.Constants.DEFAULT_SETTINGS_DELAY
 import fr.cph.chicago.core.model.Theme
@@ -56,14 +57,17 @@ fun DisplaySettingsScreen(
 
     val scope = rememberCoroutineScope()
     var showFontDialog by remember { mutableStateOf(false) }
+    val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.settingsDisplayScrollBehavior) }
 
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         content = {
             Column {
                 DisplayTopBar(
                     screen = Screen.SettingsDisplay,
                     title = title,
                     viewModel = navigationViewModel,
+                    scrollBehavior = scrollBehavior,
                 )
                 LazyColumn(
                     modifier = modifier

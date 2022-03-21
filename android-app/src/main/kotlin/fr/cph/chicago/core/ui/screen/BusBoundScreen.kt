@@ -18,10 +18,12 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
@@ -54,9 +56,10 @@ fun BusBoundScreen(
     val uiState = viewModel.uiState
     val navController = LocalNavController.current
     val scope = rememberCoroutineScope()
+    val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.busBoundScrollBehavior) }
 
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         snackbarHost = { SnackbarHostInsets(state = uiState.snackbarHostState) },
         content = {
             Column {
@@ -64,6 +67,7 @@ fun BusBoundScreen(
                     screen = Screen.BusBound,
                     title = title,
                     viewModel = navigationViewModel,
+                    scrollBehavior = scrollBehavior,
                 )
                 when {
                     uiState.isRefreshing && uiState.busStops.isEmpty() -> {

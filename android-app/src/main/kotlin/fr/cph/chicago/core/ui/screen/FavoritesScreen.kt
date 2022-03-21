@@ -18,6 +18,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -70,40 +72,46 @@ fun FavoritesScreen(
 ) {
     Timber.d("Compose FavoritesScreen")
     val lastUpdate: LastUpdate = favorites.time.value
+    val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.favScrollBehavior) }
 
-    Column {
-        DisplayTopBar(
-            screen = Screen.Favorites,
-            title = title,
-            viewModel = navigationViewModel,
-        )
-        SwipeRefresh(
-            state = rememberSwipeRefreshState(mainViewModel.uiState.isRefreshing),
-            onRefresh = {
-                mainViewModel.refresh()
-            },
-        ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                state = mainViewModel.uiState.favLazyListState,
-            ) {
-                items(favorites.size()) { index ->
-                    ElevatedCard(
-                        modifier = Modifier.padding(horizontal = 15.dp, vertical = 7.dp),
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        content = {
+        Column {
+                DisplayTopBar(
+                    screen = Screen.Favorites,
+                    title = title,
+                    viewModel = navigationViewModel,
+                    scrollBehavior = scrollBehavior,
+                )
+                SwipeRefresh(
+                    state = rememberSwipeRefreshState(mainViewModel.uiState.isRefreshing),
+                    onRefresh = {
+                        mainViewModel.refresh()
+                    },
+                ) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        state = mainViewModel.uiState.favLazyListState,
                     ) {
-                        Column {
-                            when (val model = favorites.getObject(index)) {
-                                is TrainStation -> TrainFavoriteCard(trainStation = model, lastUpdate = lastUpdate, favorites = favorites)
-                                is BusRoute -> BusFavoriteCard(busRoute = model, lastUpdate = lastUpdate, favorites = favorites)
-                                is BikeStation -> BikeFavoriteCard(bikeStation = model)
+                        items(favorites.size()) { index ->
+                            ElevatedCard(
+                                modifier = Modifier.padding(horizontal = 15.dp, vertical = 7.dp),
+                            ) {
+                                Column {
+                                    when (val model = favorites.getObject(index)) {
+                                        is TrainStation -> TrainFavoriteCard(trainStation = model, lastUpdate = lastUpdate, favorites = favorites)
+                                        is BusRoute -> BusFavoriteCard(busRoute = model, lastUpdate = lastUpdate, favorites = favorites)
+                                        is BikeStation -> BikeFavoriteCard(bikeStation = model)
+                                    }
+                                }
                             }
                         }
+                        item { NavigationBarsSpacer() }
                     }
                 }
-                item { NavigationBarsSpacer() }
             }
-        }
-    }
+    })
 }
 
 @Composable

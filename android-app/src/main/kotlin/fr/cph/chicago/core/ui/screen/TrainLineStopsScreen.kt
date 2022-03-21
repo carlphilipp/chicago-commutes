@@ -9,13 +9,16 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
@@ -44,37 +47,43 @@ fun TrainLineStopsScreen(
     Timber.d("Compose TrainLineStopsScreen")
     val uiState = viewModel.uiState
     val navController = LocalNavController.current
+    val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.trainLineScrollBehavior) }
 
-    Column {
-        DisplayTopBar(
-            screen = Screen.TrainList,
-            title = title,
-            viewModel = navigationViewModel,
-        )
-        LazyColumn(
-            modifier = Modifier
-                .padding(start = 10.dp, end = 10.dp)
-                .fillMaxSize(),
-            state = viewModel.uiState.listState,
-        ) {
-            items(
-                items = uiState.trainStations,
-                key = { it.id }
-            ) { station ->
-                TextButton(onClick = { navController.navigate(Screen.TrainDetails, mapOf("stationId" to station.id)) }) {
-                    Text(
-                        text = station.name,
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.weight(1f),
-                    )
-                    station.lines.forEach { line ->
-                        ColoredBox(modifier = Modifier.padding(start = 5.dp), color = line.color)
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        content = {
+            Column {
+                DisplayTopBar(
+                    screen = Screen.TrainList,
+                    title = title,
+                    viewModel = navigationViewModel,
+                    scrollBehavior = scrollBehavior,
+                )
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(start = 10.dp, end = 10.dp)
+                        .fillMaxSize(),
+                    state = viewModel.uiState.listState,
+                ) {
+                    items(
+                        items = uiState.trainStations,
+                        key = { it.id }
+                    ) { station ->
+                        TextButton(onClick = { navController.navigate(Screen.TrainDetails, mapOf("stationId" to station.id)) }) {
+                            Text(
+                                text = station.name,
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.weight(1f),
+                            )
+                            station.lines.forEach { line ->
+                                ColoredBox(modifier = Modifier.padding(start = 5.dp), color = line.color)
+                            }
+                        }
                     }
+                    item { NavigationBarsSpacer() }
                 }
             }
-            item { NavigationBarsSpacer() }
-        }
-    }
+        })
 }
 
 data class TrainListStationUiState(
