@@ -35,7 +35,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BikeStation
@@ -46,7 +45,6 @@ import fr.cph.chicago.core.model.LastUpdate
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
-import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
@@ -56,11 +54,12 @@ import fr.cph.chicago.core.ui.common.AnimatedText
 import fr.cph.chicago.core.ui.common.BusDetailDialog
 import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
+import fr.cph.chicago.core.ui.common.SwipeRefreshThemed
 import fr.cph.chicago.core.ui.common.TrainDetailDialog
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.util.TimeUtil
-import timber.log.Timber
 import java.util.Calendar
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,15 +76,15 @@ fun FavoritesScreen(
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         content = {
-        Column {
+            Column {
                 DisplayTopBar(
                     screen = Screen.Favorites,
                     title = title,
                     viewModel = navigationViewModel,
                     scrollBehavior = scrollBehavior,
                 )
-                SwipeRefresh(
-                    state = rememberSwipeRefreshState(mainViewModel.uiState.isRefreshing),
+                SwipeRefreshThemed(
+                    swipeRefreshState = rememberSwipeRefreshState(mainViewModel.uiState.isRefreshing),
                     onRefresh = {
                         mainViewModel.refresh()
                     },
@@ -111,7 +110,7 @@ fun FavoritesScreen(
                     }
                 }
             }
-    })
+        })
 }
 
 @Composable

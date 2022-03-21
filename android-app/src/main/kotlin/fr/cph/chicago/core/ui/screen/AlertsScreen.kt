@@ -31,7 +31,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.core.model.dto.AlertType
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
@@ -43,6 +42,7 @@ import fr.cph.chicago.core.ui.common.AnimatedPlaceHolderList
 import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
+import fr.cph.chicago.core.ui.common.SwipeRefreshThemed
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 import fr.cph.chicago.core.viewmodel.MainViewModel
 
@@ -75,8 +75,8 @@ fun AlertsScreen(
             viewModel = navigationViewModel,
             scrollBehavior = scrollBehavior,
         )
-        SwipeRefresh(
-            state = rememberSwipeRefreshState(mainViewModel.uiState.isRefreshing),
+        SwipeRefreshThemed(
+            swipeRefreshState = rememberSwipeRefreshState(mainViewModel.uiState.isRefreshing),
             onRefresh = { mainViewModel.loadAlerts() },
         ) {
             Scaffold(

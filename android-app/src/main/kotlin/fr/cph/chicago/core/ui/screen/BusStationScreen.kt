@@ -32,7 +32,6 @@ import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
-import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.core.model.BusArrival
@@ -48,6 +47,7 @@ import fr.cph.chicago.core.ui.common.ShowFavoriteSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.StationDetailsImageView
 import fr.cph.chicago.core.ui.common.StationDetailsTitleIconView
+import fr.cph.chicago.core.ui.common.SwipeRefreshThemed
 import fr.cph.chicago.core.ui.common.loadGoogleStreet
 import fr.cph.chicago.core.ui.common.openExternalMapApplication
 import fr.cph.chicago.redux.AddBusFavoriteAction
@@ -84,9 +84,9 @@ fun BusStationScreen(
             viewModel = navigationViewModel
         )
 
-        SwipeRefresh(
+        SwipeRefreshThemed(
             modifier = modifier,
-            state = rememberSwipeRefreshState(uiState.isRefreshing),
+            swipeRefreshState = rememberSwipeRefreshState(uiState.isRefreshing),
             onRefresh = { viewModel.refresh() },
         ) {
             Scaffold(

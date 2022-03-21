@@ -25,7 +25,6 @@ import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
-import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.core.model.dto.RouteAlertsDTO
@@ -35,10 +34,11 @@ import fr.cph.chicago.core.ui.common.AnimatedErrorView
 import fr.cph.chicago.core.ui.common.AnimatedPlaceHolderList
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
+import fr.cph.chicago.core.ui.common.SwipeRefreshThemed
 import fr.cph.chicago.service.AlertService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,9 +63,9 @@ fun AlertDetailsScreen(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             snackbarHost = { SnackbarHostInsets(state = uiState.snackbarHostState) },
             content = {
-                SwipeRefresh(
+                SwipeRefreshThemed(
                     modifier = modifier,
-                    state = rememberSwipeRefreshState(uiState.isRefreshing),
+                    swipeRefreshState = rememberSwipeRefreshState(uiState.isRefreshing),
                     onRefresh = { viewModel.loadAlertDetails() },
                 ) {
                     if (uiState.isRefreshing && uiState.routeAlertsDTOS.isEmpty()) {

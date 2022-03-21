@@ -93,6 +93,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
+import com.google.accompanist.swiperefresh.SwipeRefreshState
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.model.Position
@@ -102,11 +105,11 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.functions.Consumer
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 private val googleStreetClient = GoogleStreetClient
 
@@ -668,4 +671,28 @@ fun ThemeColorButton(
             }
         }
     }
+}
+
+@Composable
+fun SwipeRefreshThemed(
+    modifier: Modifier = Modifier,
+    swipeRefreshState: SwipeRefreshState,
+    onRefresh: () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    SwipeRefresh(
+        modifier = modifier,
+        state = swipeRefreshState,
+        onRefresh = onRefresh,
+        indicator = { state, trigger ->
+            SwipeRefreshIndicator(
+                state = state,
+                refreshTriggerDistance = trigger,
+                scale = true,
+                backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSurface,
+            )
+        },
+        content = content
+    )
 }
