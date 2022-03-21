@@ -162,13 +162,8 @@ data class NavigationUiState constructor(
     val settingsDisplayScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     val settingsDeveloperScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     val settingsThemeColorScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-
     val trainLineScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     val busBoundScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    //val decayAnimationSpec: DecayAnimationSpec<Float>? = null,
-    //val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    //val scrollMediumBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    //val scrollLargeBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
 )
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.animation.ExperimentalAnimationApi::class)
@@ -178,14 +173,12 @@ fun rememberNavigationState(
     drawerState: DrawerState = rememberDrawerState(DrawerValue.Closed),
     navController: NavHostController = rememberAnimatedNavController(),
     currentScreen: Screen = remember { Screen.Favorites },
-    //scrollBehavior: TopAppBarScrollBehavior = remember { TopAppBarDefaults.pinnedScrollBehavior() },
     decayAnimationSpec: DecayAnimationSpec<Float> = rememberSplineBasedDecay(),
     settingsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec),
     settingsDisplayScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec),
     settingsDeveloperScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec),
     settingsThemeColorScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec),
-    //scrollLargeBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec)
-) = remember(drawerState, navController, currentScreen, decayAnimationSpec /*scrollBehavior, decayAnimationSpec, scrollLargeBehavior*/) {
+) = remember(drawerState, navController, currentScreen, decayAnimationSpec) {
     NavigationUiState(
         context = context,
         drawerState = drawerState,
@@ -195,9 +188,6 @@ fun rememberNavigationState(
         settingsDisplayScrollBehavior = settingsDisplayScrollBehavior,
         settingsDeveloperScrollBehavior = settingsDeveloperScrollBehavior,
         settingsThemeColorScrollBehavior = settingsThemeColorScrollBehavior,
-        //scrollBehavior = scrollBehavior,
-        //decayAnimationSpec = decayAnimationSpec,
-        //scrollLargeBehavior = scrollLargeBehavior
     )
 }
 
@@ -212,15 +202,7 @@ class NavigationViewModel : ViewModel() {
     }
 
     fun updateScreen(screen: Screen) {
-/*        val scrollBehavior = if (screen.topBar.type == TopBarType.LARGE) {
-            uiState.scrollLargeBehavior
-        } else {
-            uiState.scrollMediumBehavior
-        }*/
-        uiState = uiState.copy(
-            currentScreen = screen,
-            //scrollBehavior = scrollBehavior,
-        )
+        uiState = uiState.copy(currentScreen = screen,)
     }
 
     fun isGestureEnabled(): Boolean {
