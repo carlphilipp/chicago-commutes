@@ -88,7 +88,8 @@ fun BusScreen(
                             }
                         )
                         LazyColumn(
-                            modifier = modifier.fillMaxSize()
+                            modifier = modifier.fillMaxSize(),
+                            state = mainViewModel.uiState.busLazyListState
                         ) {
                             items(
                                 items = searchBusRoutes,

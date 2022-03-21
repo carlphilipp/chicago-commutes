@@ -145,6 +145,8 @@ data class MainUiState(
 
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
     val favLazyListState: LazyListState = LazyListState(),
+    val busLazyListState: LazyListState = LazyListState(),
+    val divvyLazyListState: LazyListState = LazyListState(),
 )
 
 @OptIn(ExperimentalMaterial3Api::class)

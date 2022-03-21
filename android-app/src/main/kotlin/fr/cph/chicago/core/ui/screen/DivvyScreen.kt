@@ -48,8 +48,9 @@ fun DivvyScreen(
 ) {
     Timber.d("Compose DivvyScreen")
     val navController = LocalNavController.current
+    var searchBikeStations by remember { mutableStateOf(mainViewModel.uiState.bikeStations) }
     val scope = rememberCoroutineScope()
-    var searchBikeStations by remember { mutableStateOf(listOf<BikeStation>()) }
+
     var textSearch by remember { mutableStateOf(TextFieldValue(mainViewModel.uiState.bikeSearch)) }
     textSearch = TextFieldValue(
         text = mainViewModel.uiState.bikeSearch,
@@ -74,15 +75,23 @@ fun DivvyScreen(
                 if (mainViewModel.uiState.bikeStations.isNotEmpty()) {
                     Column(modifier = Modifier.padding(top = 5.dp, bottom = 5.dp)) {
                         TextFieldMaterial3(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 5.dp),
                             text = textSearch,
                             onValueChange = { value ->
                                 mainViewModel.updateBikeSearch(value.text)
                                 searchBikeStations = search(mainViewModel = mainViewModel, searchText = textSearch.text)
                             }
                         )
-                        LazyColumn(modifier = modifier.fillMaxWidth()) {
-                            items(searchBikeStations) { bikeStation ->
+                        LazyColumn(
+                            modifier = modifier.fillMaxWidth(),
+                            state = mainViewModel.uiState.divvyLazyListState
+                        ) {
+                            items(
+                                items = searchBikeStations,
+                                key = { it.id }
+                            ) { bikeStation ->
                                 TextButton(
                                     modifier = Modifier
                                         .fillMaxWidth()
