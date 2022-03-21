@@ -23,8 +23,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
@@ -99,7 +97,7 @@ fun Navigation(
                 CompositionLocalProvider(LocalNavController provides navController) {
                     Scaffold(
                         snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
-                        modifier = Modifier.nestedScroll(viewModel.uiState.scrollBehavior.nestedScrollConnection),
+                        //modifier = Modifier.nestedScroll(viewModel.uiState.scrollBehavior.nestedScrollConnection),
                     ) {
                         if (viewModel.uiState.shouldExit) {
                             ShowSnackBar(
@@ -152,10 +150,24 @@ data class NavigationUiState constructor(
     val shouldExit: Boolean = false,
 
     // Scroll behavior
-    val decayAnimationSpec: DecayAnimationSpec<Float>? = null,
-    val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val scrollMediumBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val scrollLargeBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    val favScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    val trainScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    val busScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    val divvyScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    val nearbyScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    val ctaMapScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    val alertsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    val settingsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    val settingsDisplayScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    val settingsDeveloperScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    val settingsThemeColorScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+
+    val trainLineScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    val busBoundScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    //val decayAnimationSpec: DecayAnimationSpec<Float>? = null,
+    //val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    //val scrollMediumBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    //val scrollLargeBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
 )
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.animation.ExperimentalAnimationApi::class)
@@ -165,18 +177,26 @@ fun rememberNavigationState(
     drawerState: DrawerState = rememberDrawerState(DrawerValue.Closed),
     navController: NavHostController = rememberAnimatedNavController(),
     currentScreen: Screen = remember { Screen.Favorites },
-    scrollBehavior: TopAppBarScrollBehavior = remember { TopAppBarDefaults.pinnedScrollBehavior() },
+    //scrollBehavior: TopAppBarScrollBehavior = remember { TopAppBarDefaults.pinnedScrollBehavior() },
     decayAnimationSpec: DecayAnimationSpec<Float> = rememberSplineBasedDecay(),
-    scrollLargeBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec)
-) = remember(drawerState, navController, currentScreen, scrollBehavior, decayAnimationSpec, scrollLargeBehavior) {
+    settingsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec),
+    settingsDisplayScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec),
+    settingsDeveloperScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec),
+    settingsThemeColorScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec),
+    //scrollLargeBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec)
+) = remember(drawerState, navController, currentScreen, decayAnimationSpec /*scrollBehavior, decayAnimationSpec, scrollLargeBehavior*/) {
     NavigationUiState(
         context = context,
         drawerState = drawerState,
         navController = navController,
         currentScreen = currentScreen,
-        scrollBehavior = scrollBehavior,
-        decayAnimationSpec = decayAnimationSpec,
-        scrollLargeBehavior = scrollLargeBehavior
+        settingsScrollBehavior = settingsScrollBehavior,
+        settingsDisplayScrollBehavior = settingsDisplayScrollBehavior,
+        settingsDeveloperScrollBehavior = settingsDeveloperScrollBehavior,
+        settingsThemeColorScrollBehavior = settingsThemeColorScrollBehavior,
+        //scrollBehavior = scrollBehavior,
+        //decayAnimationSpec = decayAnimationSpec,
+        //scrollLargeBehavior = scrollLargeBehavior
     )
 }
 
@@ -191,14 +211,14 @@ class NavigationViewModel : ViewModel() {
     }
 
     fun updateScreen(screen: Screen) {
-        val scrollBehavior = if (screen.topBar.type == TopBarType.LARGE) {
+/*        val scrollBehavior = if (screen.topBar.type == TopBarType.LARGE) {
             uiState.scrollLargeBehavior
         } else {
             uiState.scrollMediumBehavior
-        }
+        }*/
         uiState = uiState.copy(
             currentScreen = screen,
-            scrollBehavior = scrollBehavior,
+            //scrollBehavior = scrollBehavior,
         )
     }
 
@@ -343,11 +363,12 @@ fun DisplayTopBar(
             onClickRightIcon
         }
         val topBar = screen.topBar
+        val scrollBehavior = getScrollBehavior(screen = screen, viewModel = viewModel)
 
         if (topBar.type == TopBarType.LARGE) {
             LargeTopBar(
                 title = title,
-                scrollBehavior = viewModel.uiState.scrollBehavior,
+                scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     IconButton(onClick = onClickLeftIcon) {
                         Icon(
@@ -360,7 +381,7 @@ fun DisplayTopBar(
         } else {
             MediumTopBar(
                 title = title,
-                scrollBehavior = viewModel.uiState.scrollBehavior,
+                scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     IconButton(onClick = onClickLeftIcon) {
                         Icon(
@@ -370,7 +391,7 @@ fun DisplayTopBar(
                     }
                 },
                 actions = {
-                    IconButton(onClick = rightClick) {  //navController.navigate(Screen.Search)
+                    IconButton(onClick = rightClick) {
                         Icon(
                             imageVector = topBar.rightIcon,
                             contentDescription = null
@@ -379,5 +400,26 @@ fun DisplayTopBar(
                 },
             )
         }
+    }
+}
+
+private fun getScrollBehavior(screen: Screen, viewModel: NavigationViewModel): TopAppBarScrollBehavior {
+    return when (screen) {
+        Screen.Favorites -> viewModel.uiState.favScrollBehavior
+        Screen.Train -> viewModel.uiState.trainScrollBehavior
+        Screen.Bus -> viewModel.uiState.busScrollBehavior
+        Screen.Divvy -> viewModel.uiState.divvyScrollBehavior
+        Screen.Nearby -> viewModel.uiState.nearbyScrollBehavior
+        Screen.Map -> viewModel.uiState.ctaMapScrollBehavior
+        Screen.Alerts -> viewModel.uiState.alertsScrollBehavior
+        Screen.Settings -> viewModel.uiState.settingsScrollBehavior
+
+        Screen.TrainList -> viewModel.uiState.trainLineScrollBehavior
+        Screen.BusBound -> viewModel.uiState.busBoundScrollBehavior
+
+        Screen.SettingsDisplay -> viewModel.uiState.settingsDisplayScrollBehavior
+        Screen.DeveloperOptions -> viewModel.uiState.settingsDeveloperScrollBehavior
+        Screen.SettingsThemeColorChooser -> viewModel.uiState.settingsThemeColorScrollBehavior
+        else -> viewModel.uiState.favScrollBehavior
     }
 }
