@@ -132,7 +132,7 @@ fun TrainFavoriteCard(
             val arrivals = favorites.getTrainArrivalByStopDirection(trainStation.id, trainLine)
             for (entry in arrivals.entries) {
                 Arrivals(
-                    trainLine = trainLine,
+                    color = trainLine.color,
                     destination = entry.key.destination,
                     direction = entry.key.trainDirection.toString(),
                     arrivals = entry.value,
@@ -338,7 +338,7 @@ fun FooterCard(modifier: Modifier = Modifier, detailsOnClick: () -> Unit = {}, m
 }
 
 @Composable
-fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA, destination: String, direction: String? = null, arrivals: List<String>) {
+fun Arrivals(modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.secondaryContainer, destination: String, direction: String? = null, arrivals: List<String>) {
     ConstraintLayout(
         modifier = modifier
             .fillMaxWidth()
@@ -353,7 +353,7 @@ fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA,
                 width = Dimension.fillToConstraints
             }
         ) {
-            ColoredBox(color = trainLine.color)
+            ColoredBox(color = color)
             Column(modifier = Modifier.padding(horizontal = 10.dp)) {
                 Text(
                     text = destination,

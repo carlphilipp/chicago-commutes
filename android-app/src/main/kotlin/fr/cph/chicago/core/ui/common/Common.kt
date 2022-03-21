@@ -161,13 +161,18 @@ fun NavigationBarsSpacer(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ColoredBox(modifier: Modifier = Modifier, color: Color = Color.Black) {
-    Box(
-        modifier = modifier
-            .size(20.dp)
-            .clip(RoundedCornerShape(3.dp))
-            .background(color),
-    )
+fun ColoredBox(modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.secondaryContainer) {
+    Surface(
+        tonalElevation = 2.dp,
+        shadowElevation = 2.dp,
+    ) {
+        Box(
+            modifier = modifier
+                .size(20.dp)
+                .clip(RoundedCornerShape(3.dp))
+                .background(color),
+        )
+    }
 }
 
 @OptIn(ExperimentalAnimationApi::class)

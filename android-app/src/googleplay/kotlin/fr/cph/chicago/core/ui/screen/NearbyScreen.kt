@@ -254,7 +254,7 @@ fun MapStationDetailsView(showView: Boolean, title: String, image: ImageVector, 
                         Arrivals(
                             destination = entry.key.destination,
                             arrivals = entry.value,
-                            trainLine = entry.key.trainLine,
+                            color = entry.key.trainLine.color,
                             direction = entry.key.direction
                         )
                     }
