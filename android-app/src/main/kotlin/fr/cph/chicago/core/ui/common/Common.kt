@@ -89,6 +89,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -420,7 +421,7 @@ fun StationDetailsTitleIconView(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 7.dp),
+                    .padding(vertical = 7.dp, horizontal = 20.dp),
             ) {
                 Row(
                     modifier = Modifier
@@ -430,8 +431,9 @@ fun StationDetailsTitleIconView(
                     Text(
                         text = title,
                         style = MaterialTheme.typography.titleLarge,
-                        maxLines = 1,
+                        maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.Center
                     )
                 }
                 if (subTitle != "") {
