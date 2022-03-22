@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -15,7 +16,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
@@ -42,7 +43,6 @@ import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.TextFieldMaterial3
 import fr.cph.chicago.service.BusService
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
 
@@ -54,10 +54,17 @@ fun BusBoundScreen(
     navigationViewModel: NavigationViewModel,
     title: String,
 ) {
+    Timber.d("Compose BusBoundScreen")
     val uiState = viewModel.uiState
     val navController = LocalNavController.current
     val scope = rememberCoroutineScope()
-    val scrollBehavior by remember { mutableStateOf(TopAppBarDefaults.pinnedScrollBehavior()) }
+    val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.busBoundScrollBehavior) }
+
+    var textSearch by remember { mutableStateOf(TextFieldValue(viewModel.uiState.search)) }
+    textSearch = TextFieldValue(
+        text = viewModel.uiState.search,
+        selection = TextRange(viewModel.uiState.search.length)
+    )
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -71,7 +78,7 @@ fun BusBoundScreen(
                     scrollBehavior = scrollBehavior,
                 )
                 when {
-                    uiState.isRefreshing && uiState.busStops.isEmpty() -> {
+                    uiState.isRefreshing /*&& uiState.busStops.isEmpty()*/ -> {
                         AnimatedPlaceHolderList(isLoading = uiState.isRefreshing)
                     }
                     uiState.isErrorState -> {
@@ -91,18 +98,25 @@ fun BusBoundScreen(
                         Column(modifier = Modifier.padding(top = 5.dp, bottom = 5.dp)) {
                             TextFieldMaterial3(
                                 modifier = Modifier.fillMaxWidth(),
-                                text = uiState.searchText,
+                                text = textSearch,
                                 onValueChange = { textFieldValue ->
-                                    viewModel.updateSearch(textFieldValue = textFieldValue)
+                                    viewModel.updateSearch(search = textFieldValue.text)
                                 }
                             )
-                            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                                items(uiState.searchBusStops) { busStop ->
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                state = viewModel.uiState.lazyListState
+                            ) {
+                                items(
+                                    items = uiState.searchBusStops,
+                                    key = { it.id }
+                                ) { busStop ->
                                     TextButton(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(horizontal = 20.dp),
                                         onClick = {
+                                            Timber.i("********* Navigate to ${uiState.busRouteId} ${uiState.bound}")
                                             navController.navigate(
                                                 screen = Screen.BusDetails,
                                                 arguments = mapOf(
@@ -112,7 +126,7 @@ fun BusBoundScreen(
                                                     "busRouteName" to uiState.busRouteName,
                                                     "bound" to uiState.bound,
                                                     "boundTitle" to uiState.boundTitle,
-                                                    "search" to uiState.searchText.text,
+                                                    "search" to uiState.search,
                                                 )
                                             )
                                         },
@@ -141,20 +155,21 @@ fun BusBoundScreen(
 }
 
 data class BusBoundUiState(
-    val busRouteId: String = "",
-    val busRouteName: String = "",
-    val bound: String = "",
-    val boundTitle: String = "",
+    val busRouteId: String,
+    val busRouteName: String,
+    val bound: String,
+    val boundTitle: String,
 
     val busStops: List<BusStop> = listOf(),
 
     val searchBusStops: List<BusStop> = listOf(),
-    val searchText: TextFieldValue = TextFieldValue(),
+    val search: String,
 
     val isRefreshing: Boolean = true,
     val isErrorState: Boolean = false,
     val showError: Boolean = false,
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
+    val lazyListState: LazyListState = LazyListState(),
 )
 
 class BusBoundUiViewModel(
@@ -165,41 +180,64 @@ class BusBoundUiViewModel(
     search: String,
     private val busService: BusService = BusService,
 ) : ViewModel() {
-    var uiState by mutableStateOf(BusBoundUiState())
-        private set
-
-    init {
-        uiState = BusBoundUiState(
+    var uiState by mutableStateOf(
+        BusBoundUiState(
             busRouteId = busRouteId,
             busRouteName = busRouteName,
             bound = bound,
             boundTitle = boundTitle,
-            searchText = TextFieldValue(search)
+            search = search
         )
-        loadData()
+    )
+        private set
+
+    init {
+        loadBusStops()
+    }
+
+    fun initModel(
+        busRouteId: String,
+        busRouteName: String,
+        bound: String,
+        boundTitle: String,
+        search: String,
+    ) {
+        if (busRouteId != uiState.busRouteId ||  bound != uiState.bound) {
+            uiState = uiState.copy(
+                busRouteId = busRouteId,
+                busRouteName = busRouteName,
+                bound = bound,
+                boundTitle = boundTitle,
+                search = search,
+                busStops = listOf(),
+                searchBusStops = listOf(),
+                isRefreshing = true,
+            )
+            loadBusStops()
+        }
     }
 
     fun refresh() {
         Timber.d("Start Refreshing")
         uiState = uiState.copy(isRefreshing = true)
-        loadData()
+        loadBusStops()
     }
 
-    fun updateSearch(textFieldValue: TextFieldValue) {
+    fun updateSearch(search: String) {
         uiState = uiState.copy(
-            searchText = textFieldValue,
-            searchBusStops = uiState.busStops.filter { busStop -> busStop.description.contains(textFieldValue.text, true) }
+            search = search,
+            searchBusStops = uiState.busStops.filter { busStop -> busStop.description.contains(search, true) }
         )
     }
 
-    private fun loadData() {
+    private fun loadBusStops() {
         busService.loadAllBusStopsForRouteBound(uiState.busRouteId, uiState.bound)
             .subscribeOn(Schedulers.computation())
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(Schedulers.computation())
             .subscribe(
                 { result ->
-                    val searchBusStops = if (uiState.searchText.text != "") {
-                        result.filter { busStop -> busStop.description.contains(uiState.searchText.text, true) }
+                    val searchBusStops = if (uiState.search != "") {
+                        result.filter { busStop -> busStop.description.contains(uiState.search, true) }
                     } else {
                         result
                     }

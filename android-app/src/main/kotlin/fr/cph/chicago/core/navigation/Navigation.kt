@@ -97,7 +97,6 @@ fun Navigation(
                 CompositionLocalProvider(LocalNavController provides navController) {
                     Scaffold(
                         snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
-                        //modifier = Modifier.nestedScroll(viewModel.uiState.scrollBehavior.nestedScrollConnection),
                     ) {
                         if (viewModel.uiState.shouldExit) {
                             ShowSnackBar(
@@ -153,6 +152,7 @@ data class NavigationUiState constructor(
     val favScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     val trainScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     val busScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    val busBoundScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     val divvyScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     val nearbyScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     val ctaMapScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
