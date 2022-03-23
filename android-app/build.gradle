@@ -162,7 +162,7 @@ dependencies {
 
     // Jetpack
     // FIXME clean reorganize new dependencies
-    def composeVersion = "1.2.0-alpha04"
+    def composeVersion = "1.2.0-alpha05"
     implementation("androidx.compose.animation:animation:" + composeVersion)
     implementation("androidx.compose.foundation:foundation:" + composeVersion)
     implementation("androidx.compose.foundation:foundation-layout:" + composeVersion)
@@ -182,7 +182,7 @@ dependencies {
     implementation("androidx.navigation:navigation-runtime-ktx:2.5.0-alpha03")
     implementation("androidx.work:work-runtime-ktx:2.8.0-alpha01")
 
-    def accompanistVersion = "0.24.3-alpha"
+    def accompanistVersion = "0.24.4-alpha"
     implementation("com.google.accompanist:accompanist-appcompat-theme:" + accompanistVersion)
     implementation("com.google.accompanist:accompanist-swiperefresh:"+ accompanistVersion)
     implementation("com.google.accompanist:accompanist-systemuicontroller:"+ accompanistVersion)
