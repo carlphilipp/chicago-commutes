@@ -186,7 +186,6 @@ dependencies {
     implementation("com.google.accompanist:accompanist-appcompat-theme:" + accompanistVersion)
     implementation("com.google.accompanist:accompanist-swiperefresh:"+ accompanistVersion)
     implementation("com.google.accompanist:accompanist-systemuicontroller:"+ accompanistVersion)
-    implementation("com.google.accompanist:accompanist-insets-ui:"+ accompanistVersion)
     implementation("com.google.accompanist:accompanist-navigation-animation:"+ accompanistVersion)
 
     implementation("androidx.hilt:hilt-work:1.0.0")

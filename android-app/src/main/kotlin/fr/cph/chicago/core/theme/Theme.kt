@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.material.color.DynamicColors
 import fr.cph.chicago.core.model.Theme
@@ -43,13 +42,11 @@ fun ChicagoCommutesTheme(
         }
     }
 
-    ProvideWindowInsets {
-        MaterialTheme(
-            colorScheme = colorScheme,
-            typography = ChicagoCommutesTypography,
-            content = content
-        )
-    }
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = ChicagoCommutesTypography,
+        content = content
+    )
 
     SystemUiSetup(isDarkTheme)
 }
