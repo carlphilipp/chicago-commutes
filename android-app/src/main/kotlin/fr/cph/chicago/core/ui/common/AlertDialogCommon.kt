@@ -423,7 +423,6 @@ fun FontSizeAlertDialog(
                                 })
                             Text(
                                 text = it.description,
-                                //style = MaterialTheme.typography.titleMedium,
                                 fontSize = (20 + it.offset).sp,
                                 textAlign = TextAlign.Center
                             )

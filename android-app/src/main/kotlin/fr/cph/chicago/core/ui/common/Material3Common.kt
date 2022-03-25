@@ -91,8 +91,8 @@ fun SwitchMaterial3(
     onCheckedChange: ((Boolean) -> Unit)? = {},
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     colors: SwitchColors = SwitchDefaults.colors(
-        checkedThumbColor = MaterialTheme.colorScheme.secondary,
-        checkedTrackColor = MaterialTheme.colorScheme.secondary,
+        checkedThumbColor = MaterialTheme.colorScheme.primary,
+        checkedTrackColor = MaterialTheme.colorScheme.primary,
         checkedTrackAlpha = 0.54f,
         uncheckedThumbColor = MaterialTheme.colorScheme.surface,
         uncheckedTrackColor = MaterialTheme.colorScheme.onSurface,
