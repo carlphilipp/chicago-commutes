@@ -12,8 +12,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Brightness6
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.FontDownload
+import androidx.compose.material.icons.outlined.FormatSize
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.TextFormat
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -148,7 +150,7 @@ fun DisplaySettingsScreen(
                             onClick = {
                                 showFontTypefaceDialog = true
                             },
-                            imageVector = Icons.Outlined.FontDownload,
+                            imageVector = Icons.Outlined.TextFormat,
                         )
                         DisplayElementView(
                             title = "Font size",
@@ -156,7 +158,7 @@ fun DisplaySettingsScreen(
                             onClick = {
                                 showFontSizeDialog = true
                             },
-                            imageVector = Icons.Outlined.FontDownload,
+                            imageVector = Icons.Outlined.FormatSize,
                         )
                     }
                     item { NavigationBarsSpacer() }
