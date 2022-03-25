@@ -141,11 +141,10 @@ fun DisplaySettingsScreen(
                             color = MaterialTheme.colorScheme.primary,
                         )
                         DisplayElementView(
-                            title = "Fonts",
-                            description = "Choose fonts",
+                            title = "Font",
+                            description = "Choose a font",
                             onClick = {
                                 showFontDialog = true
-                                // TODO
                             },
                             imageVector = Icons.Outlined.FontDownload,
                         )

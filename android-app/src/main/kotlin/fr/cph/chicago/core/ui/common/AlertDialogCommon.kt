@@ -1,5 +1,6 @@
 package fr.cph.chicago.core.ui.common
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -335,7 +336,11 @@ fun FontAlertDialog(
                 ) {
                     availableFonts.forEach {
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    fontSelected.value = it.key
+                                },
                             horizontalArrangement = Arrangement.Start,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {

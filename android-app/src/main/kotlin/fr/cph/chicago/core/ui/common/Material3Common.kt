@@ -67,7 +67,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -84,7 +83,6 @@ private val SwitchWidth = TrackWidth
 private val SwitchHeight = ThumbDiameter
 
 @OptIn(ExperimentalMaterialApi::class)
-@Preview
 @Composable
 fun SwitchMaterial3(
     modifier: Modifier = Modifier,
