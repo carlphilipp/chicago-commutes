@@ -29,7 +29,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.toFontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BusDirections
@@ -37,6 +39,7 @@ import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
+import fr.cph.chicago.core.theme.FontSize
 import fr.cph.chicago.core.theme.availableFonts
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
@@ -315,13 +318,13 @@ fun BusRouteDialog(
 
 @OptIn(ExperimentalComposeUiApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
-fun FontAlertDialog(
+fun FontTypefaceAlertDialog(
     viewModel: SettingsViewModel,
     showDialog: Boolean,
     hideDialog: () -> Unit,
 ) {
     if (showDialog) {
-        val fontSelected = remember { mutableStateOf(viewModel.uiState.font) }
+        val fontSelected = remember { mutableStateOf(viewModel.uiState.fontTypeFace) }
         AlertDialog(
             modifier = Modifier.padding(horizontal = 50.dp),
             onDismissRequest = hideDialog,
@@ -361,7 +364,76 @@ fun FontAlertDialog(
             },
             confirmButton = {
                 FilledTonalButton(onClick = {
-                    viewModel.setFont(fontSelected.value)
+                    viewModel.setFontTypeFace(fontSelected.value)
+                    hideDialog()
+                }) {
+                    Text(
+                        text = "Save",
+                    )
+                }
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = {
+                        hideDialog()
+                    },
+                ) {
+                    Text(
+                        text = "Cancel",
+                    )
+                }
+            },
+        )
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
+@Composable
+fun FontSizeAlertDialog(
+    viewModel: SettingsViewModel,
+    showDialog: Boolean,
+    hideDialog: () -> Unit,
+) {
+    if (showDialog) {
+        val fontSelected = remember { mutableStateOf(viewModel.uiState.fontSize) }
+        AlertDialog(
+            modifier = Modifier.padding(horizontal = 50.dp),
+            onDismissRequest = hideDialog,
+            // FIXME workaround because the dialog do not resize after loading. Issue: https://issuetracker.google.com/issues/194911971?pli=1
+            properties = DialogProperties(usePlatformDefaultWidth = false),
+            title = {
+                Text(text = "Pick a font size")
+            },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    FontSize.values().forEach {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { fontSelected.value = it },
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            RadioButton(
+                                selected = it == fontSelected.value,
+                                onClick = {
+                                    fontSelected.value = it
+                                })
+                            Text(
+                                text = it.description,
+                                //style = MaterialTheme.typography.titleMedium,
+                                fontSize = (20 + it.offset).sp,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                FilledTonalButton(onClick = {
+                    viewModel.setFontSize(fontSelected.value)
                     hideDialog()
                 }) {
                     Text(

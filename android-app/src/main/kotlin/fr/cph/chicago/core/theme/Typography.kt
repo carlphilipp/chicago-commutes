@@ -8,9 +8,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.toFontFamily
 import androidx.compose.ui.unit.sp
 import fr.cph.chicago.R
-import timber.log.Timber
 
 const val defaultFontName = "Product Sans"
+
+enum class FontSize(val description: String, val offset: Int) {
+    REGULAR("Regular", 0),
+    MEDIUM("Medium", 2),
+    LARGE("Large", 4);
+
+    companion object {
+        fun fromString(str: String): FontSize {
+            return values()
+                .find { str == it.description }
+                ?: REGULAR
+        }
+    }
+}
 
 val availableFonts = mapOf(
     "Actor" to Font(R.font.actor),
@@ -23,117 +36,141 @@ val availableFonts = mapOf(
     "Source Sans Pro" to Font(R.font.source_sans_pro),
 )
 
+private val fontSizes = mapOf(
+    "displayLarge" to 57,
+    "displayMedium" to 45,
+    "displaySmall" to 36,
+    "headlineLarge" to 32,
+    "headlineMedium" to 28,
+    "headlineSmall" to 24,
+    "titleLarge" to 25,
+    "titleMedium" to 20,
+    "titleSmall" to 14,
+    "labelLarge" to 14,
+    "bodyLarge" to 16,
+    "bodyMedium" to 14,
+    "bodySmall" to 12,
+    "labelMedium" to 12,
+    "labelSmall" to 11,
+)
+
 private var defaultFont = availableFonts[defaultFontName]!!
 
-fun getTypographyWithFont(font: String): Typography {
-    val fontFamily = (availableFonts[font]?: defaultFont).toFontFamily()
-    return generateTypography(fontFamily)
+fun getTypographyWithFont(
+    font: String,
+    fontSize: FontSize,
+): Typography {
+    val fontFamily = (availableFonts[font] ?: defaultFont).toFontFamily()
+    return generateTypography(fontFamily, fontSize)
 }
 
-private fun generateTypography(fontFamily: FontFamily): Typography {
+private fun generateTypography(
+    fontFamily: FontFamily,
+    fontSize: FontSize = FontSize.REGULAR,
+): Typography {
     return Typography(
         displayLarge = TextStyle(
             fontFamily = fontFamily,
             fontWeight = FontWeight.W400,
-            fontSize = 57.sp,
+            fontSize = (fontSizes["displayLarge"]!! + fontSize.offset).sp,
             lineHeight = 64.sp,
             letterSpacing = (-0.25).sp,
         ),
         displayMedium = TextStyle(
             fontFamily = fontFamily,
             fontWeight = FontWeight.W400,
-            fontSize = 45.sp,
+            fontSize = (fontSizes["displayMedium"]!! + fontSize.offset).sp,
             lineHeight = 52.sp,
             letterSpacing = 0.sp,
         ),
         displaySmall = TextStyle(
             fontFamily = fontFamily,
             fontWeight = FontWeight.W400,
-            fontSize = 36.sp,
+            fontSize = (fontSizes["displaySmall"]!! + fontSize.offset).sp,
             lineHeight = 44.sp,
             letterSpacing = 0.sp,
         ),
         headlineLarge = TextStyle(
             fontFamily = fontFamily,
             fontWeight = FontWeight.W400,
-            fontSize = 32.sp,
+            fontSize = (fontSizes["headlineLarge"]!! + fontSize.offset).sp,
             lineHeight = 40.sp,
             letterSpacing = 0.sp,
         ),
         headlineMedium = TextStyle(
             fontFamily = fontFamily,
             fontWeight = FontWeight.W400,
-            fontSize = 28.sp,
+            fontSize = (fontSizes["headlineMedium"]!! + fontSize.offset).sp,
             lineHeight = 36.sp,
             letterSpacing = 0.sp,
         ),
         headlineSmall = TextStyle(
             fontFamily = fontFamily,
             fontWeight = FontWeight.W400,
-            fontSize = 24.sp,
+            fontSize = (fontSizes["headlineSmall"]!! + fontSize.offset).sp,
             lineHeight = 32.sp,
             letterSpacing = 0.sp,
         ),
         titleLarge = TextStyle(
             fontFamily = fontFamily,
             fontWeight = FontWeight.W400,
-            fontSize = 25.sp,
+            fontSize = (fontSizes["titleLarge"]!! + fontSize.offset).sp,
             lineHeight = 28.sp,
             letterSpacing = 0.sp,
         ),
         titleMedium = TextStyle(
             fontFamily = fontFamily,
             fontWeight = FontWeight.Medium,
-            fontSize = 20.sp,
+            fontSize = (fontSizes["titleMedium"]!! + fontSize.offset).sp,
             lineHeight = 24.sp,
             letterSpacing = 0.1.sp,
         ),
         titleSmall = TextStyle(
             fontFamily = fontFamily,
             fontWeight = FontWeight.Medium,
-            fontSize = 14.sp,
+            fontSize = (fontSizes["titleSmall"]!! + fontSize.offset).sp,
             lineHeight = 20.sp,
             letterSpacing = 0.1.sp,
         ),
         labelLarge = TextStyle(
             fontFamily = fontFamily,
             fontWeight = FontWeight.Medium,
-            fontSize = 14.sp,
+            fontSize = (fontSizes["labelLarge"]!! + fontSize.offset).sp,
             lineHeight = 20.sp,
             letterSpacing = 0.1.sp,
         ),
         bodyLarge = TextStyle(
             fontFamily = fontFamily,
             fontWeight = FontWeight.W400,
-            fontSize = 16.sp,
+            fontSize = (fontSizes["bodyLarge"]!! + fontSize.offset).sp,
             lineHeight = 24.sp,
             letterSpacing = 0.5.sp,
         ),
         bodyMedium = TextStyle(
             fontFamily = fontFamily,
             fontWeight = FontWeight.W400,
-            fontSize = 14.sp,
+            fontSize = (fontSizes["bodyMedium"]!! + fontSize.offset).sp,
             lineHeight = 20.sp,
             letterSpacing = 0.25.sp,
         ),
         bodySmall = TextStyle(
             fontFamily = fontFamily,
             fontWeight = FontWeight.W400,
-            fontSize = 12.sp,
+            fontSize = (fontSizes["bodySmall"]!! + fontSize.offset).sp,
             lineHeight = 16.sp,
             letterSpacing = 0.4.sp,
         ),
         labelMedium = TextStyle(
             fontFamily = fontFamily,
             fontWeight = FontWeight.Medium,
-            fontSize = 12.sp,
+            fontSize = (fontSizes["labelMedium"]!! + fontSize.offset).sp,
             lineHeight = 16.sp,
             letterSpacing = 0.5.sp,
         ),
         labelSmall = TextStyle(
             fontFamily = fontFamily,
             fontWeight = FontWeight.Medium,
-            fontSize = 11.sp,
+            fontSize = (fontSizes["labelSmall"]!! + fontSize.offset).sp,
             lineHeight = 16.sp,
             letterSpacing = 0.5.sp,
         ),

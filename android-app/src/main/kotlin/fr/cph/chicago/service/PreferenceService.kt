@@ -19,15 +19,13 @@
 
 package fr.cph.chicago.service
 
-import android.content.res.Configuration
-import android.graphics.Color
 import fr.cph.chicago.Constants.REQUEST_ROUTE
 import fr.cph.chicago.Constants.REQUEST_STOP_ID
-import fr.cph.chicago.R
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.model.dto.PreferencesDTO
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.core.theme.FontSize
 import fr.cph.chicago.core.theme.ThemeColor
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.PreferenceRepository
@@ -74,6 +72,14 @@ object PreferenceService {
 
     fun saveFont(font: String) {
         return repo.saveFont(font)
+    }
+
+    fun getFontSize(): FontSize {
+        return FontSize.fromString(repo.getFontSize())
+    }
+
+    fun saveFontSize(value: FontSize) {
+        return repo.saveFontSize(value.description)
     }
 
     fun saveShowDebug(value: Boolean) {

@@ -47,6 +47,7 @@ import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
+import fr.cph.chicago.core.theme.FontSize
 import fr.cph.chicago.core.theme.ThemeColor
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.launchWithDelay
@@ -392,7 +393,8 @@ data class SettingsState(
     val showClearCacheDialog: Boolean = false,
     val dynamicColorEnabled: Boolean = false,
     val showMapDebug: Boolean = false,
-    val font: String = "",
+    val fontTypeFace: String = "",
+    val fontSize: FontSize = FontSize.REGULAR,
 )
 
 class SettingsViewModel(private val preferenceService: PreferenceService = PreferenceService, private val realmConfig: RealmConfig = RealmConfig) {
@@ -419,8 +421,13 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
         refreshCurrentTheme()
     }
 
-    fun setFont(font: String) {
+    fun setFontTypeFace(font: String) {
         preferenceService.saveFont(font)
+        refreshCurrentTheme()
+    }
+
+    fun setFontSize(value: FontSize) {
+        preferenceService.saveFontSize(value)
         refreshCurrentTheme()
     }
 
@@ -467,7 +474,8 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
             theme = preferenceService.getTheme(),
             themeColor = preferenceService.getThemeColor(),
             dynamicColorEnabled = preferenceService.getDynamicColor(),
-            font = preferenceService.getFont(),
+            fontTypeFace = preferenceService.getFont(),
+            fontSize = preferenceService.getFontSize(),
         )
     }
 }

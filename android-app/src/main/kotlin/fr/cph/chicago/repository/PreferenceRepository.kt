@@ -26,6 +26,7 @@ import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.model.dto.PreferencesDTO
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.core.theme.FontSize
 import fr.cph.chicago.core.theme.ThemeColor
 import fr.cph.chicago.core.theme.defaultFontName
 import fr.cph.chicago.parseNotNull
@@ -148,6 +149,17 @@ object PreferenceRepository {
     fun saveFont(font: String) {
         val editor = getPrivatePreferences().edit()
         editor.putString(PrefType.FONT.value, font)
+        editor.apply()
+    }
+
+    fun getFontSize(): String {
+        val sharedPref = getPrivatePreferences()
+        return sharedPref.getString(PrefType.FONT_SIZE.value, FontSize.REGULAR.description)!!
+    }
+
+    fun saveFontSize(fontSize: String) {
+        val editor = getPrivatePreferences().edit()
+        editor.putString(PrefType.FONT_SIZE.value, fontSize)
         editor.apply()
     }
 
@@ -365,6 +377,7 @@ enum class PrefType(val value: String) {
     THEME_COLOR("ChicagoTrackerThemeColor"),
     DYNAMIC_COLOR("ChicagoTrackerThemeDynamicColor"),
     FONT("ChicagoTrackerThemeFont"),
+    FONT_SIZE("ChicagoTrackerThemeFontSize"),
     DEBUG_MAP("ChicagoTrackerDebugMap"),
     TRAIN("ChicagoTrackerFavoritesTrain"),
     TRAIN_FILTER("ChicagoTrackerFavoritesTrainFilter"),

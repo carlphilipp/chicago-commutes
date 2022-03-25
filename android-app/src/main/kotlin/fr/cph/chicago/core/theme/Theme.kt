@@ -33,7 +33,10 @@ fun ChicagoCommutesTheme(
         else -> settingsViewModel.uiState.themeColor.lightTheme
     }
 
-    val typography = getTypographyWithFont(settingsViewModel.uiState.font)
+    val typography = getTypographyWithFont(
+        settingsViewModel.uiState.fontTypeFace,
+        settingsViewModel.uiState.fontSize,
+    )
 
     MaterialTheme(
         colorScheme = colorScheme,

@@ -36,7 +36,8 @@ import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
-import fr.cph.chicago.core.ui.common.FontAlertDialog
+import fr.cph.chicago.core.ui.common.FontSizeAlertDialog
+import fr.cph.chicago.core.ui.common.FontTypefaceAlertDialog
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.common.SwitchMaterial3
 import fr.cph.chicago.core.ui.screen.Screen
@@ -56,7 +57,8 @@ fun DisplaySettingsScreen(
     val navController = LocalNavController.current
 
     val scope = rememberCoroutineScope()
-    var showFontDialog by remember { mutableStateOf(false) }
+    var showFontTypefaceDialog by remember { mutableStateOf(false) }
+    var showFontSizeDialog by remember { mutableStateOf(false) }
     val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.settingsDisplayScrollBehavior) }
 
     Scaffold(
@@ -141,10 +143,18 @@ fun DisplaySettingsScreen(
                             color = MaterialTheme.colorScheme.primary,
                         )
                         DisplayElementView(
-                            title = "Font",
+                            title = "Font type",
                             description = "Choose a font",
                             onClick = {
-                                showFontDialog = true
+                                showFontTypefaceDialog = true
+                            },
+                            imageVector = Icons.Outlined.FontDownload,
+                        )
+                        DisplayElementView(
+                            title = "Font size",
+                            description = "Choose a font size",
+                            onClick = {
+                                showFontSizeDialog = true
                             },
                             imageVector = Icons.Outlined.FontDownload,
                         )
@@ -152,11 +162,18 @@ fun DisplaySettingsScreen(
                     item { NavigationBarsSpacer() }
                 }
             }
-            FontAlertDialog(
+            FontTypefaceAlertDialog(
                 viewModel = viewModel,
-                showDialog = showFontDialog,
+                showDialog = showFontTypefaceDialog,
                 hideDialog = {
-                    showFontDialog = false
+                    showFontTypefaceDialog = false
+                }
+            )
+            FontSizeAlertDialog(
+                viewModel = viewModel,
+                showDialog = showFontSizeDialog,
+                hideDialog = {
+                    showFontSizeDialog = false
                 }
             )
         },
