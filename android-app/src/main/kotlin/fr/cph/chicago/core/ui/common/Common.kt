@@ -165,7 +165,7 @@ fun NavigationBarsSpacer(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ColoredBox(modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.secondaryContainer) {
+fun ColoredBox(modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.tertiary) {
     Box(
         modifier = modifier
             .size(20.dp)

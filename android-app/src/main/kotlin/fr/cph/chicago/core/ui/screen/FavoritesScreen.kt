@@ -337,7 +337,7 @@ fun FooterCard(modifier: Modifier = Modifier, detailsOnClick: () -> Unit = {}, m
 }
 
 @Composable
-fun Arrivals(modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.secondaryContainer, destination: String, direction: String? = null, arrivals: List<String>) {
+fun Arrivals(modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.tertiary, destination: String, direction: String? = null, arrivals: List<String>) {
     ConstraintLayout(
         modifier = modifier
             .fillMaxWidth()
