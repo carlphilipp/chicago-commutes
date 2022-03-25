@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBike
@@ -18,16 +19,21 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -53,6 +59,7 @@ import fr.cph.chicago.service.TrainService
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,7 +71,20 @@ fun SearchViewScreen(
 ) {
     val uiState = viewModel.uiState
     val navController = LocalNavController.current
-    val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.searchScrollBehavior) }
+    val scope = rememberCoroutineScope()
+    val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.busScrollBehavior) }
+
+    var textSearch by remember { mutableStateOf(TextFieldValue(viewModel.uiState.search)) }
+    textSearch = TextFieldValue(
+        text = viewModel.uiState.search,
+        selection = TextRange(viewModel.uiState.search.length)
+    )
+
+    LaunchedEffect(key1 = Unit, block = {
+        scope.launch {
+            viewModel.search(textSearch.text)
+        }
+    })
 
     Column {
         DisplayTopBar(
@@ -78,10 +98,10 @@ fun SearchViewScreen(
             content = {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     TextFieldMaterial3(
-                        text = uiState.searchText,
-                        onValueChange = { textFieldValue ->
-                            viewModel.updateText(textFieldValue)
-                            viewModel.search(textFieldValue.text)
+                        text = textSearch,
+                        onValueChange = { value ->
+                            viewModel.updateText(value.text)
+                            viewModel.search(value.text)
                         }
                     )
                     Row(
@@ -114,8 +134,14 @@ fun SearchViewScreen(
                             }
                         )
                     }
-                    LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                        items(uiState.trains) { trainStation ->
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth(),
+                        state = viewModel.uiState.searchLazyListState,
+                    ) {
+                        items(
+                            items = uiState.trains,
+                            key = { it.id }
+                        ) { trainStation ->
                             Row {
                                 SearchRow(
                                     imageVector = Icons.Filled.Train,
@@ -127,7 +153,10 @@ fun SearchViewScreen(
                                 )
                             }
                         }
-                        items(uiState.busRoutes) { busRoute ->
+                        items(
+                            items = uiState.busRoutes,
+                            key = { it.id }
+                        ) { busRoute ->
                             Row {
                                 SearchRow(
                                     imageVector = Icons.Filled.DirectionsBus,
@@ -139,7 +168,10 @@ fun SearchViewScreen(
                                 )
                             }
                         }
-                        items(uiState.bikeStations) { bikeStation ->
+                        items(
+                            items = uiState.bikeStations,
+                            key = { it.id }
+                        ) { bikeStation ->
                             Row {
                                 SearchRow(
                                     imageVector = Icons.Filled.DirectionsBike,
@@ -222,8 +254,10 @@ private fun SearchRow(
     }
 }
 
-data class SearchUiState(
-    val searchText: TextFieldValue = TextFieldValue(""),
+data class SearchUiState @OptIn(ExperimentalMaterial3Api::class) constructor(
+    val search: String = "",
+    val searchLazyListState: LazyListState = LazyListState(),
+    val searchScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
 
     val isTrainSelected: Boolean = true,
     val trains: List<TrainStation> = listOf(),
@@ -245,8 +279,8 @@ class SearchViewModel @Inject constructor(
     var uiState by mutableStateOf(SearchUiState())
         private set
 
-    fun updateText(searchText: TextFieldValue) {
-        uiState = uiState.copy(searchText = searchText)
+    fun updateText(searchText: String) {
+        uiState = uiState.copy(search = searchText)
     }
 
     fun search(query: String) {
@@ -270,17 +304,17 @@ class SearchViewModel @Inject constructor(
 
     fun trainSelect(value: Boolean) {
         uiState = uiState.copy(isTrainSelected = value)
-        search(uiState.searchText.text)
+        search(uiState.search)
     }
 
     fun busSelect(value: Boolean) {
         uiState = uiState.copy(isBusSelected = value)
-        search(uiState.searchText.text)
+        search(uiState.search)
     }
 
     fun bikeSelect(value: Boolean) {
         uiState = uiState.copy(isBikeSelected = value)
-        search(uiState.searchText.text)
+        search(uiState.search)
     }
 
     fun showBusDialog(value: Boolean) {

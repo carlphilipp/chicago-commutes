@@ -375,12 +375,12 @@ sealed class Screen(
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarBackSearch,
         component = { backStackEntry, navigationViewModel ->
-            val viewModel: SearchViewModel = viewModel(
-                factory = SearchViewModel.provideFactory(
-                    owner = backStackEntry,
-                    defaultArgs = backStackEntry.arguments
-                )
+            val activity = navigationViewModel.uiState.context.getActivity()
+            val factory = SearchViewModel.provideFactory(
+                owner = activity,
+                defaultArgs = backStackEntry.arguments
             )
+            val viewModel = ViewModelProvider(activity, factory)[SearchViewModel::class.java]
             SearchViewScreen(
                 title = stringResource(R.string.screen_search),
                 viewModel = viewModel,
