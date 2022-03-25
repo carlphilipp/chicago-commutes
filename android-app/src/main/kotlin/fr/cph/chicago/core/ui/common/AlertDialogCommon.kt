@@ -13,6 +13,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,6 +25,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.toFontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -34,7 +36,9 @@ import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
+import fr.cph.chicago.core.theme.availableFonts
 import fr.cph.chicago.core.ui.screen.Screen
+import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.service.BusService
 import timber.log.Timber
 
@@ -308,26 +312,69 @@ fun BusRouteDialog(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun FontAlertDialog(
+    viewModel: SettingsViewModel,
     showDialog: Boolean,
     hideDialog: () -> Unit,
 ) {
     if (showDialog) {
+        val fontSelected = remember { mutableStateOf(viewModel.uiState.font) }
         AlertDialog(
             modifier = Modifier.padding(horizontal = 50.dp),
             onDismissRequest = hideDialog,
             // FIXME workaround because the dialog do not resize after loading. Issue: https://issuetracker.google.com/issues/194911971?pli=1
             properties = DialogProperties(usePlatformDefaultWidth = false),
             title = {
-                //
+                Text(text = "Pick a font")
             },
             text = {
-
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    availableFonts.forEach {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            RadioButton(
+                                selected = it.key == fontSelected.value,
+                                onClick = {
+                                    fontSelected.value = it.key
+                                })
+                            Text(
+                                text = it.key,
+                                fontFamily = it.value.toFontFamily(),
+                                style = MaterialTheme.typography.titleMedium,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
             },
-            confirmButton = {},
-            dismissButton = {},
+            confirmButton = {
+                FilledTonalButton(onClick = {
+                    viewModel.setFont(fontSelected.value)
+                    hideDialog()
+                }) {
+                    Text(
+                        text = "Save",
+                    )
+                }
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = {
+                        hideDialog()
+                    },
+                ) {
+                    Text(
+                        text = "Cancel",
+                    )
+                }
+            },
         )
     }
 }

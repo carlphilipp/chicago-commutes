@@ -154,6 +154,7 @@ fun DisplaySettingsScreen(
                 }
             }
             FontAlertDialog(
+                viewModel = viewModel,
                 showDialog = showFontDialog,
                 hideDialog = {
                     showFontDialog = false

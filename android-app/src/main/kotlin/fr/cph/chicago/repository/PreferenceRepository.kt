@@ -27,6 +27,7 @@ import fr.cph.chicago.core.model.dto.PreferencesDTO
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.theme.ThemeColor
+import fr.cph.chicago.core.theme.defaultFontName
 import fr.cph.chicago.parseNotNull
 import fr.cph.chicago.repository.PrefType.BIKE
 import fr.cph.chicago.repository.PrefType.BIKE_NAME_MAPPING
@@ -39,12 +40,12 @@ import fr.cph.chicago.repository.PrefType.TRAIN
 import fr.cph.chicago.repository.PrefType.TRAIN_FILTER
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
+import timber.log.Timber
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.regex.Pattern
-import timber.log.Timber
 
 /**
  * Class that store user preferences into the device
@@ -135,6 +136,18 @@ object PreferenceRepository {
     fun saveDynamicColor(enabled: Boolean) {
         val editor = getPrivatePreferences().edit()
         editor.putBoolean(PrefType.DYNAMIC_COLOR.value, enabled)
+        editor.apply()
+    }
+
+    // Font
+    fun getFont(): String {
+        val sharedPref = getPrivatePreferences()
+        return sharedPref.getString(PrefType.FONT.value, defaultFontName)!!
+    }
+
+    fun saveFont(font: String) {
+        val editor = getPrivatePreferences().edit()
+        editor.putString(PrefType.FONT.value, font)
         editor.apply()
     }
 
@@ -351,6 +364,7 @@ enum class PrefType(val value: String) {
     THEME("ChicagoTrackerTheme"),
     THEME_COLOR("ChicagoTrackerThemeColor"),
     DYNAMIC_COLOR("ChicagoTrackerThemeDynamicColor"),
+    FONT("ChicagoTrackerThemeFont"),
     DEBUG_MAP("ChicagoTrackerDebugMap"),
     TRAIN("ChicagoTrackerFavoritesTrain"),
     TRAIN_FILTER("ChicagoTrackerFavoritesTrainFilter"),

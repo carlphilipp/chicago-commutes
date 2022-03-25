@@ -392,6 +392,7 @@ data class SettingsState(
     val showClearCacheDialog: Boolean = false,
     val dynamicColorEnabled: Boolean = false,
     val showMapDebug: Boolean = false,
+    val font: String = "",
 )
 
 class SettingsViewModel(private val preferenceService: PreferenceService = PreferenceService, private val realmConfig: RealmConfig = RealmConfig) {
@@ -415,6 +416,11 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
 
     fun setDynamicColor(value: Boolean) {
         preferenceService.saveDynamicColor(value)
+        refreshCurrentTheme()
+    }
+
+    fun setFont(font: String) {
+        preferenceService.saveFont(font)
         refreshCurrentTheme()
     }
 
@@ -461,6 +467,7 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
             theme = preferenceService.getTheme(),
             themeColor = preferenceService.getThemeColor(),
             dynamicColorEnabled = preferenceService.getDynamicColor(),
+            font = preferenceService.getFont(),
         )
     }
 }

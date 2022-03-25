@@ -27,24 +27,17 @@ fun ChicagoCommutesTheme(
 
     val dynamicColor = settingsViewModel.uiState.dynamicColorEnabled && DynamicColors.isDynamicColorAvailable()
     val colorScheme = when {
-        dynamicColor && isDarkTheme -> {
-            dynamicDarkColorScheme(LocalContext.current)
-        }
-        dynamicColor && !isDarkTheme -> {
-            dynamicLightColorScheme(LocalContext.current)
-        }
-
-        isDarkTheme -> {
-            settingsViewModel.uiState.themeColor.darkTheme
-        }
-        else -> {
-            settingsViewModel.uiState.themeColor.lightTheme
-        }
+        dynamicColor && isDarkTheme -> dynamicDarkColorScheme(LocalContext.current)
+        dynamicColor && !isDarkTheme -> dynamicLightColorScheme(LocalContext.current)
+        isDarkTheme -> settingsViewModel.uiState.themeColor.darkTheme
+        else -> settingsViewModel.uiState.themeColor.lightTheme
     }
+
+    val typography = getTypography(settingsViewModel.uiState.font)
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = ChicagoCommutesTypography,
+        typography = typography,
         content = content
     )
 

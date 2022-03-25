@@ -68,6 +68,14 @@ object PreferenceService {
         return repo.saveDynamicColor(value)
     }
 
+    fun getFont(): String {
+        return repo.getFont()
+    }
+
+    fun saveFont(font: String) {
+        return repo.saveFont(font)
+    }
+
     fun saveShowDebug(value: Boolean) {
         return repo.saveShowDebug(value)
     }
