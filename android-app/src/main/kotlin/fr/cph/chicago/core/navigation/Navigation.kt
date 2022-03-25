@@ -374,11 +374,13 @@ fun DisplayTopBar(
                     }
                 },
                 actions = {
-                    IconButton(onClick = rightClick) {
-                        Icon(
-                            imageVector = topBar.rightIcon,
-                            contentDescription = null
-                        )
+                    topBar.rightIcon?.run {
+                        IconButton(onClick = rightClick) {
+                            Icon(
+                                imageVector = topBar.rightIcon,
+                                contentDescription = null
+                            )
+                        }
                     }
                 },
             )

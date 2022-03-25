@@ -69,6 +69,7 @@ fun SearchViewScreen(
     navigationViewModel: NavigationViewModel,
     title: String,
 ) {
+    Timber.d("Compose SearchViewScreen")
     val uiState = viewModel.uiState
     val navController = LocalNavController.current
     val scope = rememberCoroutineScope()

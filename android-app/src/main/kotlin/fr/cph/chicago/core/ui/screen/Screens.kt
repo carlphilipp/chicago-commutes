@@ -373,7 +373,7 @@ sealed class Screen(
         route = "search",
         icon = Icons.Filled.Search,
         showOnDrawer = false,
-        topBar = ScreenTopBar.MediumTopBarBackSearch,
+        topBar = ScreenTopBar.MediumTopBarBack,
         component = { backStackEntry, navigationViewModel ->
             val activity = navigationViewModel.uiState.context.getActivity()
             val factory = SearchViewModel.provideFactory(
@@ -430,16 +430,20 @@ sealed class Screen(
 sealed class ScreenTopBar(
     val type: TopBarType,
     val leftIcon: ImageVector,
-    val rightIcon: ImageVector,
+    val rightIcon: ImageVector? = null,
     val actionLeft: TopBarIconAction,
-    val actionRight: TopBarIconAction,
 ) {
+    object MediumTopBarBack : ScreenTopBar(
+        type = TopBarType.MEDIUM,
+        leftIcon = Icons.Filled.ArrowBack,
+        actionLeft = TopBarIconAction.BACK,
+    )
+
     object MediumTopBarDrawerSearch : ScreenTopBar(
         type = TopBarType.MEDIUM,
         leftIcon = Icons.Filled.Menu,
         rightIcon = Icons.Filled.Search,
         actionLeft = TopBarIconAction.OPEN_DRAWER,
-        actionRight = TopBarIconAction.SEARCH,
     )
 
     object MediumTopBarBackSearch : ScreenTopBar(
@@ -447,7 +451,6 @@ sealed class ScreenTopBar(
         leftIcon = Icons.Filled.ArrowBack,
         rightIcon = Icons.Filled.Search,
         actionLeft = TopBarIconAction.BACK,
-        actionRight = TopBarIconAction.SEARCH,
     )
 
     object MediumTopBarBackReload : ScreenTopBar(
@@ -455,7 +458,6 @@ sealed class ScreenTopBar(
         leftIcon = Icons.Filled.ArrowBack,
         rightIcon = Icons.Filled.Refresh,
         actionLeft = TopBarIconAction.BACK,
-        actionRight = TopBarIconAction.REFRESH,
     )
 
     object LargeTopBarDrawerSearch : ScreenTopBar(
@@ -463,7 +465,6 @@ sealed class ScreenTopBar(
         leftIcon = Icons.Filled.Menu,
         rightIcon = Icons.Filled.Search,
         actionLeft = TopBarIconAction.OPEN_DRAWER,
-        actionRight = TopBarIconAction.SEARCH,
     )
 
     object LargeTopBarBackSearch : ScreenTopBar(
@@ -471,7 +472,6 @@ sealed class ScreenTopBar(
         leftIcon = Icons.Filled.ArrowBack,
         rightIcon = Icons.Filled.Search,
         actionLeft = TopBarIconAction.BACK,
-        actionRight = TopBarIconAction.SEARCH,
     )
 
     object None : ScreenTopBar(
@@ -479,12 +479,11 @@ sealed class ScreenTopBar(
         leftIcon = Icons.Filled.ArrowBack,
         rightIcon = Icons.Filled.Search,
         actionLeft = TopBarIconAction.BACK,
-        actionRight = TopBarIconAction.SEARCH,
     )
 }
 
 enum class TopBarIconAction {
-    BACK, OPEN_DRAWER, REFRESH, SEARCH
+    BACK, OPEN_DRAWER, REFRESH, SEARCH, NONE,
 }
 
 enum class TopBarType {
