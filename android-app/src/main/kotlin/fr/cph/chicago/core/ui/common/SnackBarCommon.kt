@@ -24,6 +24,7 @@ fun SnackbarHostInsets(state: SnackbarHostState) {
             modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)),
             snackbarData = data,
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }
