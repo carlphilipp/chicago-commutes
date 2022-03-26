@@ -11,9 +11,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Train
@@ -42,10 +47,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.AbstractSavedStateViewModelFactory
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.savedstate.SavedStateRegistryOwner
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
-import fr.cph.chicago.core.App
 import fr.cph.chicago.core.App.Companion.exceptionHandler
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
@@ -73,10 +81,10 @@ import fr.cph.chicago.task.RefreshTaskLifecycleEventObserver
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import javax.inject.Inject
 import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
@@ -85,42 +93,37 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         // Turn off the decor fitting system windows (top and bottom)
         // It means that now we need to handle manually the top padding
-        // This allow to have a somewhat fullscreen
+        // This allows to have a somewhat fullscreen
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        try {
-            setContent {
-                val mainViewModel = mainViewModel
-                val baseViewModel = SplashViewModel(
-                    ctaTrainKey = stringResource(R.string.cta_train_key),
-                    ctaBusKey = stringResource(R.string.cta_bus_key),
-                    googleStreetKey = stringResource(R.string.google_maps_api_key),
+        setContent {
+            val mainViewModel = mainViewModel
+            val factory = SplashViewModel.provideFactory(
+                ctaTrainKey = stringResource(R.string.cta_train_key),
+                ctaBusKey = stringResource(R.string.cta_bus_key),
+                googleStreetKey = stringResource(R.string.google_maps_api_key),
+                owner = this,
+                defaultArgs = savedInstanceState,
+            )
+            val splashViewModel = ViewModelProvider(this, factory)[SplashViewModel::class.java]
+
+            ChicagoCommutesTheme(settingsViewModel = settingsViewModel) {
+                SplashScreen(
+                    show = !splashViewModel.uiState.isLoaded,
+                    viewModel = splashViewModel,
                 )
-
-                ChicagoCommutesTheme(settingsViewModel = settingsViewModel) {
-
-                    SplashScreen(
-                        show = !baseViewModel.uiState.isLoaded,
-                        viewModel = baseViewModel,
-                    )
-
-                    Navigation(
-                        show = baseViewModel.uiState.isLoaded,
-                        mainViewModel = mainViewModel,
-                        viewModel = NavigationViewModel().initModel(rememberNavigationState()),
-                    )
-
-                    DisposableEffect(key1 = mainViewModel) {
-                        mainViewModel.onStart()
-                        onDispose { mainViewModel.onStop() }
-                    }
+                Navigation(
+                    show = splashViewModel.uiState.isLoaded,
+                    mainViewModel = mainViewModel,
+                    navigationViewModel = NavigationViewModel().initModel(rememberNavigationState()),
+                )
+                DisposableEffect(key1 = mainViewModel) {
+                    mainViewModel.onStart()
+                    onDispose { mainViewModel.onStop() }
                 }
             }
-            lifecycle.addObserver(RefreshTaskLifecycleEventObserver())
-        } catch (ex: Exception) {
-            Timber.e(ex, "Unexpected exception caught in MainActivity")
-            App.startErrorActivity()
         }
+        lifecycle.addObserver(RefreshTaskLifecycleEventObserver())
     }
 }
 
@@ -168,6 +171,7 @@ fun SplashScreen(
     show: Boolean,
     viewModel: SplashViewModel
 ) {
+    Timber.d("Compose SplashScreen")
     if (show) {
         val scope = rememberCoroutineScope()
 
@@ -182,6 +186,7 @@ fun SplashScreen(
             content = {
                 LoadingView(show = !viewModel.uiState.isError)
                 AnimatedErrorView(
+                    modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)),
                     visible = viewModel.uiState.isError,
                     onClick = { viewModel.setUpDefaultSettings() }
                 )
@@ -283,6 +288,9 @@ class SplashViewModel @Inject constructor(
     }
 
     fun setUpDefaultSettings() {
+        if (uiState.isError) {
+            uiState = uiState.copy(isError = false)
+        }
         Single.fromCallable { realmConfig.setUpRealm() }
             .subscribeOn(Schedulers.computation())
             .observeOn(Schedulers.computation())
@@ -340,5 +348,25 @@ class SplashViewModel @Inject constructor(
 
     fun onStop() {
         store.unsubscribe(this)
+    }
+
+    companion object {
+        fun provideFactory(
+            ctaTrainKey: String,
+            ctaBusKey: String,
+            googleStreetKey: String,
+            owner: SavedStateRegistryOwner,
+            defaultArgs: Bundle? = null,
+        ): AbstractSavedStateViewModelFactory =
+            object : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(
+                    key: String,
+                    modelClass: Class<T>,
+                    handle: SavedStateHandle
+                ): T {
+                    return SplashViewModel(ctaTrainKey, ctaBusKey, googleStreetKey) as T
+                }
+            }
     }
 }

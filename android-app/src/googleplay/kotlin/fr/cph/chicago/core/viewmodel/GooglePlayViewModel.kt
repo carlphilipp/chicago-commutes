@@ -8,7 +8,7 @@ import timber.log.Timber
 
 val mainViewModel = GooglePlayMainViewModel()
 
-class GooglePlayMainViewModel() : MainViewModel() {
+class GooglePlayMainViewModel : MainViewModel() {
     override fun startMarket(context: Context) {
         val intent = Intent(Intent.ACTION_VIEW)
         try {

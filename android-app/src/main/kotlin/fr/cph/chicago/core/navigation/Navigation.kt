@@ -61,12 +61,12 @@ val LocalNavController = compositionLocalOf<NavHostControllerWrapper> {
 fun Navigation(
     show: Boolean,
     mainViewModel: MainViewModel,
-    viewModel: NavigationViewModel,
+    navigationViewModel: NavigationViewModel,
 ) {
     if (show) {
         Timber.d("Compose Navigation")
-        val uiState = viewModel.uiState
-        val navController = remember { NavHostControllerWrapper(viewModel) }
+        val uiState = navigationViewModel.uiState
+        val navController = remember { NavHostControllerWrapper(navigationViewModel) }
         val scope = rememberCoroutineScope()
 
         LaunchedEffect(key1 = Unit, block = {
@@ -77,7 +77,7 @@ fun Navigation(
 
         ModalNavigationDrawer(
             drawerState = uiState.drawerState,
-            gesturesEnabled = viewModel.isGestureEnabled(),
+            gesturesEnabled = navigationViewModel.isGestureEnabled(),
             drawerContent = {
                 Drawer(
                     currentScreen = uiState.currentScreen,
@@ -98,11 +98,11 @@ fun Navigation(
                     Scaffold(
                         snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
                     ) {
-                        if (viewModel.uiState.shouldExit) {
+                        if (navigationViewModel.uiState.shouldExit) {
                             ShowSnackBar(
                                 scope = scope,
                                 snackbarHostState = mainViewModel.uiState.snackbarHostState,
-                                element = viewModel.uiState.shouldExit,
+                                element = navigationViewModel.uiState.shouldExit,
                                 message = "Press BACK again to exit",
                                 onComplete = {},
                                 withDismissAction = false,
@@ -125,7 +125,7 @@ fun Navigation(
                                     // Add custom backhandler to all composable so we can handle when someone push the back button
                                     BackHandler {
                                         uiState.currentScreen = screen
-                                        screen.component(backStackEntry, viewModel)
+                                        screen.component(backStackEntry, navigationViewModel)
                                     }
                                 }
                             }
@@ -294,8 +294,6 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
     private fun navigateTo(screen: Screen, arguments: Map<String, String>) {
         val route = buildRoute(route = screen.route, arguments = arguments)
         viewModel.uiState.navController.navigate(route) {
-            // TODO: this should be used when base activity is no more
-            //popUpTo(viewModel.uiState.navController.graph.startDestinationId)
             launchSingleTop = true
         }
         viewModel.updateScreen(screen = screen)
