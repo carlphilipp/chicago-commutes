@@ -51,6 +51,7 @@ import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.savedstate.SavedStateRegistryOwner
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
@@ -82,6 +83,7 @@ import fr.cph.chicago.util.MapUtil.chicagoPosition
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
@@ -293,7 +295,6 @@ class SplashViewModel @Inject constructor(
         }
         Single.fromCallable { realmConfig.setUpRealm() }
             .subscribeOn(Schedulers.computation())
-            .observeOn(Schedulers.computation())
             .doOnSuccess {
                 Timber.d("Realm setup, dispatching default settings action and base action")
                 val defaultSettingsAction = DefaultSettingsAction(
@@ -319,6 +320,7 @@ class SplashViewModel @Inject constructor(
     }
 
     override fun newState(state: State) {
+        Timber.d("SplashViewModel new state thread: ${Thread.currentThread().name}")
         when (state.status) {
             Status.SUCCESS -> {
                 store.unsubscribe(this)
@@ -343,11 +345,17 @@ class SplashViewModel @Inject constructor(
     }
 
     fun onStart() {
-        store.subscribe(this)
+        val current = this
+        viewModelScope.launch(Dispatchers.Default) {
+            store.subscribe(current)
+        }
     }
 
     fun onStop() {
-        store.unsubscribe(this)
+        val current = this
+        viewModelScope.launch(Dispatchers.Default) {
+            store.unsubscribe(current)
+        }
     }
 
     companion object {

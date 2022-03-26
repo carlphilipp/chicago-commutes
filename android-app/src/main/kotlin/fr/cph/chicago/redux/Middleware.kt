@@ -36,19 +36,18 @@ import org.rekotlin.Middleware
 import org.rekotlin.StateType
 import timber.log.Timber
 
-private val mixedService = MixedService
-private val trainService = TrainService
-private val busService = BusService
-private val bikeService = BikeService
-private val alertService = AlertService
-private val preferenceService = PreferenceService
+private val mixedService by lazy { MixedService }
+private val trainService by lazy { TrainService }
+private val busService by lazy { BusService }
+private val bikeService by lazy { BikeService }
+private val alertService by lazy { AlertService }
+private val preferenceService by lazy { PreferenceService }
 
 internal val baseMiddleware: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->
             (action as? BaseAction)?.let {
                 mixedService.baseData()
-                    .observeOn(AndroidSchedulers.mainThread())
                     .map { baseDTO ->
                         BaseAction(
                             trainArrivalsDTO = baseDTO.trainArrivalsDTO,
@@ -59,7 +58,6 @@ internal val baseMiddleware: Middleware<StateType> = { _, _ ->
                             bikeFavorites = baseDTO.bikeFavorites,
                         )
                     }
-                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                         { newAction -> next(newAction) },
                         { throwable ->

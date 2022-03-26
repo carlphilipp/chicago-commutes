@@ -10,21 +10,29 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import timber.log.Timber
 
-val objectMapper: ObjectMapper = jacksonObjectMapper()
-    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-    .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
-    .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-
-private val connectionPool = ConnectionPool(5, 10000, TimeUnit.MILLISECONDS)
-
-private var loggingInterceptor: HttpLoggingInterceptor = HttpLoggingInterceptor { message ->
-    Timber.tag("OkHttp").d(message)
+val objectMapper: ObjectMapper by lazy {
+    jacksonObjectMapper()
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+        .setSerializationInclusion(JsonInclude.Include.NON_NULL)
 }
-    .setLevel(HttpLoggingInterceptor.Level.BODY)
 
-val httpClient = OkHttpClient.Builder()
-    .readTimeout(5, TimeUnit.SECONDS)
-    .connectTimeout(5, TimeUnit.SECONDS)
-    .connectionPool(connectionPool)
-    .addInterceptor(loggingInterceptor)
-    .build()
+private val connectionPool by lazy {
+    ConnectionPool(5, 10000, TimeUnit.MILLISECONDS)
+}
+
+private val loggingInterceptor by lazy {
+    HttpLoggingInterceptor { message ->
+        Timber.tag("OkHttp").d(message)
+    }
+        .setLevel(HttpLoggingInterceptor.Level.BODY)
+}
+
+val httpClient by lazy {
+    OkHttpClient.Builder()
+        .readTimeout(5, TimeUnit.SECONDS)
+        .connectTimeout(5, TimeUnit.SECONDS)
+        .connectionPool(connectionPool)
+        .addInterceptor(loggingInterceptor)
+        .build()
+}

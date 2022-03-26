@@ -6,7 +6,9 @@ import android.net.Uri
 import androidx.core.content.ContextCompat
 import timber.log.Timber
 
-val mainViewModel = GooglePlayMainViewModel()
+val mainViewModel by lazy {
+    GooglePlayMainViewModel()
+}
 
 class GooglePlayMainViewModel : MainViewModel() {
     override fun startMarket(context: Context) {

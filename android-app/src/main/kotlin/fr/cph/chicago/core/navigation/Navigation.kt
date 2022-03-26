@@ -115,7 +115,7 @@ fun Navigation(
                             exitTransition = fallBackExitTransition(),
                         ) {
                             uiState.screens.forEach { screen: Screen ->
-                                Timber.v("Compose for each screen -> ${screen.title}")
+                                Timber.v("Compose screen -> ${screen.title}")
                                 composable(
                                     route = screen.route,
                                     arguments = emptyList(),
@@ -301,7 +301,7 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
     }
 
     private fun printStackState() {
-        Timber.d("Navigate Stack size: ${previous.size}");
+        Timber.d("Navigate Stack size: ${previous.size}")
         var str = "[ "
         for (i in previous.size - 1 downTo 0) {
             str = str + previous[i].first.title + " <- "
