@@ -1,6 +1,7 @@
 package fr.cph.chicago.core.activity
 
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -40,9 +41,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
+import fr.cph.chicago.core.App
+import fr.cph.chicago.core.App.Companion.exceptionHandler
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.BusStop
@@ -75,39 +79,48 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
-class MainActivity : CustomComponentActivity() {
+class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Turn off the decor fitting system windows (top and bottom)
+        // It means that now we need to handle manually the top padding
+        // This allow to have a somewhat fullscreen
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        setContent {
-            val mainViewModel = mainViewModel
-            val baseViewModel = SplashViewModel(
-                ctaTrainKey = stringResource(R.string.cta_train_key),
-                ctaBusKey = stringResource(R.string.cta_bus_key),
-                googleStreetKey = stringResource(R.string.google_maps_api_key),
-            )
-
-            ChicagoCommutesTheme(settingsViewModel = settingsViewModel) {
-
-                SplashScreen(
-                    show = !baseViewModel.uiState.isLoaded,
-                    viewModel = baseViewModel,
+        try {
+            setContent {
+                val mainViewModel = mainViewModel
+                val baseViewModel = SplashViewModel(
+                    ctaTrainKey = stringResource(R.string.cta_train_key),
+                    ctaBusKey = stringResource(R.string.cta_bus_key),
+                    googleStreetKey = stringResource(R.string.google_maps_api_key),
                 )
 
-                Navigation(
-                    show = baseViewModel.uiState.isLoaded,
-                    mainViewModel = mainViewModel,
-                    viewModel = NavigationViewModel().initModel(rememberNavigationState()),
-                )
+                ChicagoCommutesTheme(settingsViewModel = settingsViewModel) {
 
-                DisposableEffect(key1 = mainViewModel) {
-                    mainViewModel.onStart()
-                    onDispose { mainViewModel.onStop() }
+                    SplashScreen(
+                        show = !baseViewModel.uiState.isLoaded,
+                        viewModel = baseViewModel,
+                    )
+
+                    Navigation(
+                        show = baseViewModel.uiState.isLoaded,
+                        mainViewModel = mainViewModel,
+                        viewModel = NavigationViewModel().initModel(rememberNavigationState()),
+                    )
+
+                    DisposableEffect(key1 = mainViewModel) {
+                        mainViewModel.onStart()
+                        onDispose { mainViewModel.onStop() }
+                    }
                 }
             }
+            lifecycle.addObserver(RefreshTaskLifecycleEventObserver())
+        } catch (ex: Exception) {
+            Timber.e(ex, "Unexpected exception caught in MainActivity")
+            App.startErrorActivity()
         }
-        lifecycle.addObserver(RefreshTaskLifecycleEventObserver())
     }
 }
 
@@ -159,7 +172,7 @@ fun SplashScreen(
         val scope = rememberCoroutineScope()
 
         LaunchedEffect(key1 = Unit, block = {
-            scope.launch {
+            scope.launch(exceptionHandler) {
                 viewModel.setUpDefaultSettings()
             }
         })

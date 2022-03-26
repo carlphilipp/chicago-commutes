@@ -35,7 +35,7 @@ import fr.cph.chicago.core.viewmodel.settingsViewModel
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class ErrorActivity : CustomComponentActivity() {
+class ErrorActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
