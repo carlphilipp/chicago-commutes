@@ -59,9 +59,10 @@ fun SnackbarHostInsets(state: SnackbarHostState) {
             } else {
                 null
             }
-        val modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
         Snackbar(
-            modifier = modifier.padding(12.dp),
+            modifier = Modifier
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
+                .padding(12.dp),
             action = actionComposable,
             dismissAction = dismissActionComposable,
             actionOnNewLine = false,
