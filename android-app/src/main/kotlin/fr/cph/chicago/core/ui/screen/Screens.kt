@@ -32,7 +32,6 @@ import fr.cph.chicago.core.viewmodel.locationViewModel
 import fr.cph.chicago.core.viewmodel.mainViewModel
 import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.getActivity
-import timber.log.Timber
 import java.net.URLDecoder
 import kotlin.random.Random
 

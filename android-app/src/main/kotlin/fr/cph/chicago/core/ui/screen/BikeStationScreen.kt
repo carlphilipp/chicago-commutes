@@ -60,13 +60,13 @@ import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.TimeUtil
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.util.Calendar
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
+import java.util.Calendar
+import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -132,7 +132,7 @@ fun BikeStationScreen(
                                     )
                                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
                                         var availableBikes by remember { mutableStateOf(uiState.bikeStation.availableBikes.toString()) }
-                                        availableBikes = uiState.bikeStation.availableBikes.toString()
+                                        availableBikes = if (uiState.bikeStation.availableBikes == -1) "?" else uiState.bikeStation.availableBikes.toString()
                                         AnimatedText(
                                             text = availableBikes,
                                             style = MaterialTheme.typography.bodyLarge,
@@ -148,7 +148,7 @@ fun BikeStationScreen(
                                     )
                                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
                                         var availableDocks by remember { mutableStateOf(uiState.bikeStation.availableDocks.toString()) }
-                                        availableDocks = uiState.bikeStation.availableDocks.toString()
+                                        availableDocks = if (uiState.bikeStation.availableDocks == -1) "?" else uiState.bikeStation.availableDocks.toString()
 
                                         AnimatedText(
                                             text = availableDocks,
@@ -174,7 +174,6 @@ fun BikeStationScreen(
         }
 
         if (uiState.showErrorMessage) {
-
             ShowErrorMessageSnackBar(
                 scope = scope,
                 snackbarHostState = viewModel.uiState.snackbarHostState,
@@ -212,9 +211,11 @@ class BikeStationViewModel @Inject constructor(
     stationId: String,
     private val preferenceService: PreferenceService = PreferenceService,
 ) : ViewModel(), StoreSubscriber<State> {
-    var uiState by mutableStateOf(BikeStationUiState(
-        stationId = stationId
-    ))
+    var uiState by mutableStateOf(
+        BikeStationUiState(
+            stationId = stationId
+        )
+    )
         private set
 
     fun load() {
@@ -250,9 +251,14 @@ class BikeStationViewModel @Inject constructor(
         Timber.d("BikeStationViewModel new state ${state.busStopStatus} thread: ${Thread.currentThread().name}")
         when (state.bikeStationsStatus) {
             Status.SUCCESS -> {
-                uiState = uiState.copy(
-                    bikeStation = store.state.bikeStations.first { bikeStation -> bikeStation.id == uiState.bikeStation.id }
-                )
+                val bikeStation = store.state.bikeStations.firstOrNull { bikeStation ->
+                    bikeStation.id == uiState.bikeStation.id
+                }
+                uiState = if (bikeStation == null) {
+                    uiState.copy(showErrorMessage = true)
+                } else {
+                    uiState.copy(bikeStation = bikeStation)
+                }
                 if (shouldLoadGoogleMapImage()) {
                     loadGoogleStreetImage(uiState.bikeStation.latitude, uiState.bikeStation.longitude)
                 }
