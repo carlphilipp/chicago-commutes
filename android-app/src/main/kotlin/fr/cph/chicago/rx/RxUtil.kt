@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.rx
 
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Scheduler
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -28,7 +27,7 @@ import timber.log.Timber
 
 object RxUtil {
 
-    fun <T> singleFromCallable(supplier: Callable<T>, subscribeOn: Scheduler = Schedulers.io(), observeOn: Scheduler = AndroidSchedulers.mainThread()): Single<T> {
+    fun <T> singleFromCallable(supplier: Callable<T>, subscribeOn: Scheduler = Schedulers.io(), observeOn: Scheduler = Schedulers.computation()): Single<T> {
         return Single.fromCallable(supplier)
             .subscribeOn(subscribeOn)
             .observeOn(observeOn)

@@ -37,8 +37,8 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.TimeUtil
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 import java.util.Calendar
@@ -194,7 +194,7 @@ abstract class MainViewModel @Inject constructor(
             .map { trainArrival ->
                 NearbyResult(arrivals = NearbyResult.toArrivals(trainArrival.trainEtas.filter { trainEta -> trainEta.trainStation.id == trainStation.id }))
             }
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(Schedulers.computation())
             .subscribe(
                 {
                     uiState = uiState.copy(
@@ -213,7 +213,7 @@ abstract class MainViewModel @Inject constructor(
     fun loadNearbyBusDetails(busStop: BusStop) {
         busService.loadBusArrivals(busStop)
             .map { busArrivals -> NearbyResult(arrivals = NearbyResult.toArrivals(busArrivals)) }
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(Schedulers.computation())
             .subscribe(
                 {
                     uiState = uiState.copy(
@@ -237,7 +237,7 @@ abstract class MainViewModel @Inject constructor(
                     lastUpdate = LastUpdate(TimeUtil.formatTimeDifference(bikeStation.lastReported, Calendar.getInstance().time))
                 )
             }
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(Schedulers.computation())
             .subscribe(
                 {
                     uiState = uiState.copy(

@@ -34,7 +34,6 @@ import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.screen.settings.DisplayElementSwitchView
 import fr.cph.chicago.core.ui.screen.settings.DisplayElementView
 import fr.cph.chicago.service.PreferenceService
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
@@ -161,7 +160,7 @@ class DeveloperOptionsViewModel(private val preferenceService: PreferenceService
             .flatMapObservable { preferences -> Observable.fromIterable(preferences) }
             .filter { preference -> preference.favorites.isNotEmpty() }
             .sorted { preference1, preference2 -> preference1.name.value.compareTo(preference2.name.value) }
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(Schedulers.computation())
             .subscribe(
                 { preference ->
                     val newPreferences = uiState.preferences + preference

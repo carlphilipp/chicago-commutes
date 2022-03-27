@@ -60,7 +60,6 @@ import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.PreferenceService
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -351,7 +350,7 @@ class BusStationViewModel @Inject constructor(
         busService.getStopPosition(uiState.busDetails.busRouteId, uiState.busDetails.boundTitle, uiState.busDetails.stopId.toString())
             .observeOn(Schedulers.computation())
             .doOnSuccess { position -> loadGoogleStreetImage(position) }
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(Schedulers.computation())
             .subscribe(
                 { position ->
                     uiState = uiState.copy(position = Position(position.latitude, position.longitude))

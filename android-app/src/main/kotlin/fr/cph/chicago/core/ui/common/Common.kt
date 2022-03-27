@@ -102,7 +102,6 @@ import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.favorite_yellow
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.functions.Consumer
 import io.reactivex.rxjava3.schedulers.Schedulers

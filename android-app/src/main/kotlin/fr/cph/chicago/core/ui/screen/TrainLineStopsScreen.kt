@@ -32,7 +32,6 @@ import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.service.TrainService
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
@@ -116,7 +115,7 @@ class TrainListStationViewModel(
     private fun loadData(trainLine: TrainLine) {
         Single.fromCallable { trainService.getStationsForLine(trainLine) }
             .subscribeOn(Schedulers.computation())
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(Schedulers.computation())
             .subscribe(
                 { result ->
                     uiState = uiState.copy(

@@ -43,14 +43,12 @@ import fr.cph.chicago.repository.BusRepository
 import fr.cph.chicago.rx.RxUtil.handleListError
 import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import fr.cph.chicago.util.Util
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.annotations.NonNull
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.text.WordUtils
 import timber.log.Timber
-import java.lang.RuntimeException
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.Callable
@@ -277,7 +275,7 @@ object BusService {
     }
 
     private fun getBusArrivals(stopIds: List<String>? = null, routes: List<String>? = null, busId: String? = null): Single<List<BusArrival>> {
-        return ctaClient.getBusArrivals(stopIds?.map { it.toString() }, routes, busId)
+        return ctaClient.getBusArrivals(stopIds?.map { it }, routes, busId)
             .map { result ->
                 when (result.bustimeResponse.prd) {
                     null -> {

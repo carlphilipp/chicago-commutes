@@ -51,7 +51,6 @@ import fr.cph.chicago.util.InfoWindowsDetails
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.toLatLng
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -307,7 +306,7 @@ class MapBusViewModel @Inject constructor(
             detailsShowAll = showAll,
         )
         busService.loadFollowBus(bus.id.toString())
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(Schedulers.computation())
             .subscribe(
                 { busArrivals ->
                     uiState = uiState.copy(
