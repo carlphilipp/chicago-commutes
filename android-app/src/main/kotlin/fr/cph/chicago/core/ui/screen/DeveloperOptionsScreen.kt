@@ -16,9 +16,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -36,6 +38,7 @@ import fr.cph.chicago.core.ui.screen.settings.DisplayElementView
 import fr.cph.chicago.service.PreferenceService
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,6 +50,14 @@ fun DeveloperOptionsScreen(
 ) {
     Timber.d("Compose DeveloperOptionsScreen")
     val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.settingsDeveloperScrollBehavior) }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(key1 = Unit, block = {
+        scope.launch {
+            viewModel.getAllFavorites()
+            viewModel.setMapDebug()
+        }
+    })
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -56,7 +67,7 @@ fun DeveloperOptionsScreen(
                     screen = Screen.DeveloperOptions,
                     title = title,
                     viewModel = navigationViewModel,
-                    scrollBehavior =scrollBehavior,
+                    scrollBehavior = scrollBehavior,
                 )
                 LazyColumn(
                     modifier = Modifier
@@ -131,10 +142,10 @@ class DeveloperOptionsViewModel(private val preferenceService: PreferenceService
     var uiState by mutableStateOf(DeveloperOptionsState())
         private set
 
-    init {
+    /*init {
         getAllFavorites()
         setMapDebug()
-    }
+    }*/
 
     fun showMapDebug(value: Boolean) {
         preferenceService.saveShowDebug(value)
@@ -146,13 +157,13 @@ class DeveloperOptionsViewModel(private val preferenceService: PreferenceService
         uiState = uiState.copy(showCache = !uiState.showCache)
     }
 
-    private fun setMapDebug() {
+    fun setMapDebug() {
         uiState = uiState.copy(
             showMapDebug = preferenceService.getShowDebug()
         )
     }
 
-    private fun getAllFavorites() {
+    fun getAllFavorites() {
         uiState = uiState.copy(preferences = listOf())
         preferenceService.getAllFavorites()
             .observeOn(Schedulers.computation())
