@@ -13,9 +13,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -34,6 +36,7 @@ import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.service.TrainService
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,6 +50,13 @@ fun TrainLineStopsScreen(
     val uiState = viewModel.uiState
     val navController = LocalNavController.current
     val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.trainLineScrollBehavior) }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(key1 = uiState.trainLine, block = {
+        scope.launch {
+            viewModel.loadData(uiState.trainLine)
+        }
+    })
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -104,15 +114,15 @@ class TrainListStationViewModel(
             val trainLine = TrainLine.fromString(line)
             val title = trainLine.toStringWithLine()
 
-            uiState = TrainListStationUiState(
+            uiState = uiState.copy(
                 title = title,
                 trainLine = trainLine,
+                trainStations = listOf(),
             )
-            loadData(trainLine)
         }
     }
 
-    private fun loadData(trainLine: TrainLine) {
+    fun loadData(trainLine: TrainLine) {
         Single.fromCallable { trainService.getStationsForLine(trainLine) }
             .subscribeOn(Schedulers.computation())
             .observeOn(Schedulers.computation())
