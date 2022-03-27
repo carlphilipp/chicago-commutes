@@ -77,7 +77,7 @@ sealed class Screen(
         route = "train/line/{line}",
         icon = Icons.Filled.Train,
         showOnDrawer = false,
-        topBar = ScreenTopBar.MediumTopBarBackSearch,
+        topBar = ScreenTopBar.MediumTopBarBack,
         component = { backStackEntry, navigationViewModel ->
             val activity = navigationViewModel.uiState.context.getActivity()
             val line = URLDecoder.decode(backStackEntry.arguments?.getString("line", "0") ?: "", "UTF-8")
@@ -165,7 +165,7 @@ sealed class Screen(
         route = "bus/bound?busRouteId={busRouteId}&busRouteName={busRouteName}&bound={bound}&boundTitle={boundTitle}&search={search}",
         icon = Icons.Filled.DirectionsBus,
         showOnDrawer = false,
-        topBar = ScreenTopBar.MediumTopBarBackSearch,
+        topBar = ScreenTopBar.MediumTopBarBack,
         component = { backStackEntry, navigationViewModel ->
             val activity = navigationViewModel.uiState.context.getActivity()
             val busRouteId = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteId", "0") ?: "", "UTF-8")
@@ -259,7 +259,7 @@ sealed class Screen(
         title = App.instance.getString(R.string.menu_nearby),
         route = "nearby",
         icon = Icons.Filled.NearMe,
-        topBar = ScreenTopBar.MediumTopBarDrawerSearch,
+        topBar = ScreenTopBar.MediumTopBarDrawer,
         isGestureEnabled = false,
         component = { _, navigationViewModel ->
             settingsViewModel.loadShowMapDebug()
@@ -276,7 +276,7 @@ sealed class Screen(
         title = App.instance.getString(R.string.menu_cta_map),
         route = "map",
         icon = Icons.Filled.Map,
-        topBar = ScreenTopBar.MediumTopBarDrawerSearch,
+        topBar = ScreenTopBar.MediumTopBarDrawer,
         isGestureEnabled = false,
         component = { _, navigationViewModel ->
             Map(
@@ -289,7 +289,7 @@ sealed class Screen(
         title = App.instance.getString(R.string.menu_cta_alert),
         route = "alerts",
         icon = Icons.Filled.Warning,
-        topBar = ScreenTopBar.MediumTopBarDrawerSearch,
+        topBar = ScreenTopBar.MediumTopBarDrawer,
         component = { _, navigationViewModel ->
             AlertsScreen(
                 mainViewModel = mainViewModel,
@@ -443,6 +443,12 @@ sealed class ScreenTopBar(
         type = TopBarType.MEDIUM,
         leftIcon = Icons.Filled.Menu,
         rightIcon = Icons.Filled.Search,
+        actionLeft = TopBarIconAction.OPEN_DRAWER,
+    )
+
+    object MediumTopBarDrawer : ScreenTopBar(
+        type = TopBarType.MEDIUM,
+        leftIcon = Icons.Filled.Menu,
         actionLeft = TopBarIconAction.OPEN_DRAWER,
     )
 
