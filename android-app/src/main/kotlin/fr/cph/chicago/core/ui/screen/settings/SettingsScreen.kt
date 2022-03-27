@@ -1,9 +1,6 @@
 package fr.cph.chicago.core.ui.screen.settings
 
-import android.content.Context
-import android.content.Intent
 import android.os.Build
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -37,12 +34,9 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import androidx.core.content.ContextCompat.startActivity
 import fr.cph.chicago.Constants.DEFAULT_SETTINGS_DELAY
-import fr.cph.chicago.core.activity.MainActivity
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
@@ -51,9 +45,6 @@ import fr.cph.chicago.core.theme.FontSize
 import fr.cph.chicago.core.theme.ThemeColor
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.launchWithDelay
-import fr.cph.chicago.redux.ResetStateAction
-import fr.cph.chicago.redux.store
-import fr.cph.chicago.repository.RealmConfig
 import fr.cph.chicago.service.PreferenceService
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -120,83 +111,9 @@ fun SettingsScreen(
                             }
                         )
                     }
-/*        item {
-        item {
-            // Data cache
-            Column(
-                modifier
-                    .fillMaxWidth()
-                    .clickable { viewModel.showClearCache(true) }) {
-                Row(modifier = cellModifier) {
-                    Column {
-                        Text(
-                            text = stringResource(id = R.string.preferences_data_cache_title),
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        Spacer(modifier = Modifier.height(5.dp))
-                        Text(
-                            text = stringResource(id = R.string.preferences_clear_cache_title),
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                        Text(
-                            text = stringResource(id = R.string.preferences_clear_cache_desc),
-                            style = MaterialTheme.typography.bodySmall,
-                        )
-                    }
                 }
-                Divider(thickness = 1.dp)
-            }
-        }
-        item {
-            Column(
-                modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        val intent = Intent(context, DeveloperOptionsActivity::class.java)
-                        startActivity(context, intent, null)
-                    }) {
-                // Developer options
-                Row(modifier = cellModifier) {
-                    Column {
-                        Text(
-                            text = stringResource(id = R.string.preferences_developer_options),
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        Spacer(modifier = Modifier.height(5.dp))
-                        Text(
-                            text = stringResource(id = R.string.preferences_developer_options_show),
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
-                }
-
-                Divider(thickness = 1.dp)
-            }
-        }
-        item {
-            // About
-            Row(modifier = cellModifier) {
-                Column {
-                    Text(
-                        text = stringResource(id = R.string.preferences_about_title),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    Spacer(modifier = Modifier.height(5.dp))
-                    Text(
-                        text = stringResource(id = R.string.preferences_version) + " ${util.getCurrentVersion()}",
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-            }
-        }*/
-                }
-
                 if (uiState.showThemeChangerDialog) {
                     ThemeChangerDialog(viewModel = viewModel)
-                }
-
-                if (uiState.showClearCacheDialog) {
-                    ClearCacheDialog(viewModel = viewModel)
                 }
             }
         })
@@ -269,7 +186,6 @@ fun ThemeChangerDialog(viewModel: SettingsViewModel) {
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         RadioButton(
-                            // modifier = Modifier.padding(10.dp),
                             selected = theme == currentThemeState,
                             onClick = { currentThemeState = theme }
                         )
@@ -321,83 +237,18 @@ fun ThemeChangerDialog(viewModel: SettingsViewModel) {
     )
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun ClearCacheDialog(viewModel: SettingsViewModel) {
-    val context = LocalContext.current
-    val activity = (context as ComponentActivity)
-    AlertDialog(
-        modifier = Modifier.padding(horizontal = 50.dp),
-        onDismissRequest = { viewModel.showClearCache(false) },
-        // FIXME workaround because the dialog do not resize after loading. Issue: https://issuetracker.google.com/issues/194911971?pli=1
-        properties = DialogProperties(usePlatformDefaultWidth = false),
-        title = {
-            Text(
-                text = "Clear cache",
-            )
-        },
-        text = {
-            Column {
-                Text(
-                    modifier = Modifier.padding(bottom = 15.dp),
-                    text = "This is going to:",
-                    style = MaterialTheme.typography.bodyLarge,
-                )
-                Text(
-                    text = "- Delete all your favorites",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                Text(
-                    text = "- Clear application cache",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                Text(
-                    text = "- Reload the application",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-
-        },
-        confirmButton = {
-            FilledTonalButton(
-                onClick = {
-                    viewModel.showClearCache(false)
-                    viewModel.clearLocalData(context = context)
-                    viewModel.restartApp(context = context, activity = activity)
-                },
-            ) {
-                Text(
-                    text = "Clear cache",
-                )
-            }
-        },
-        dismissButton = {
-            OutlinedButton(
-                onClick = {
-                    viewModel.showClearCache(false)
-                },
-            ) {
-                Text(
-                    text = "Cancel",
-                )
-            }
-        },
-    )
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 data class SettingsState(
     val theme: Theme = Theme.AUTO,
     val themeColor: ThemeColor = ThemeColor.Blue,
     val showThemeChangerDialog: Boolean = false,
-    val showClearCacheDialog: Boolean = false,
     val dynamicColorEnabled: Boolean = false,
     val showMapDebug: Boolean = false,
     val fontTypeFace: String = "",
     val fontSize: FontSize = FontSize.REGULAR,
 )
 
-class SettingsViewModel(private val preferenceService: PreferenceService = PreferenceService, private val realmConfig: RealmConfig = RealmConfig) {
+class SettingsViewModel(private val preferenceService: PreferenceService = PreferenceService) {
     var uiState by mutableStateOf(SettingsState())
         private set
 
@@ -437,36 +288,10 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
         )
     }
 
-    fun showClearCache(show: Boolean) {
-        uiState = uiState.copy(
-            showClearCacheDialog = show
-        )
-    }
-
-    fun clearLocalData(context: Context) {
-        deleteCache(context)
-        preferenceService.clearPreferences()
-        realmConfig.cleanRealm()
-    }
-
     fun loadShowMapDebug() {
         uiState = uiState.copy(
             showMapDebug = preferenceService.getShowDebug()
         )
-    }
-
-    private fun deleteCache(context: Context?) {
-        try {
-            context?.cacheDir?.deleteRecursively()
-        } catch (ignored: Exception) {
-        }
-    }
-
-    fun restartApp(context: Context, activity: ComponentActivity) {
-        store.dispatch(ResetStateAction())
-        val intent = Intent(context, MainActivity::class.java)
-        activity.finish()
-        startActivity(context, intent, null)
     }
 
     private fun refreshCurrentTheme() {

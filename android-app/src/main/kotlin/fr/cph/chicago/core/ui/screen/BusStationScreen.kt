@@ -219,6 +219,7 @@ class BusStationViewModel @Inject constructor(
         private set
 
     init {
+        // FIXME: this should probably not be in the init
         val defaultedArrivals = ArrayMap<String, MutableList<BusArrival>>()
         defaultedArrivals["Unknown"] = mutableListOf()
         uiState = uiState.copy(

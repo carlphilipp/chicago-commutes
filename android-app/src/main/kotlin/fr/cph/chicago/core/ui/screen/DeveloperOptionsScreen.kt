@@ -1,6 +1,9 @@
 package fr.cph.chicago.core.ui.screen
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,10 +12,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Clear
+import androidx.compose.material.icons.outlined.DataObject
 import androidx.compose.material.icons.outlined.DeveloperMode
+import androidx.compose.material.icons.outlined.Insights
 import androidx.compose.material.icons.outlined.Map
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,19 +31,27 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
+import fr.cph.chicago.core.activity.MainActivity
 import fr.cph.chicago.core.model.dto.PreferenceDTO
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.screen.settings.DisplayElementSwitchView
 import fr.cph.chicago.core.ui.screen.settings.DisplayElementView
+import fr.cph.chicago.redux.ResetStateAction
+import fr.cph.chicago.redux.store
+import fr.cph.chicago.repository.RealmConfig
 import fr.cph.chicago.service.PreferenceService
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -86,13 +103,19 @@ fun DeveloperOptionsScreen(
                     }
                     item {
                         Column {
+                            Text(
+                                modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 5.dp),
+                                text = "Data Local",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
                             DisplayElementView(
-                                title = "Data cache",
-                                description = "Show cache",
+                                title = "Show cache",
+                                description = "Show local data",
                                 onClick = {
                                     viewModel.showHideCacheData()
                                 },
-                                imageVector = Icons.Outlined.DeveloperMode,
+                                imageVector = Icons.Outlined.Insights,
                             )
                             if (viewModel.uiState.showCache) {
                                 Column(modifier = Modifier.padding(horizontal = 20.dp)) {
@@ -102,10 +125,24 @@ fun DeveloperOptionsScreen(
                             }
                         }
                     }
+                    item {
+                        DisplayElementView(
+                            title = "Clear cache",
+                            description = "Delete local data",
+                            onClick = {
+                                viewModel.showClearCache(true)
+                            },
+                            imageVector = Icons.Outlined.Clear,
+                        )
+                    }
                     item { NavigationBarsSpacer() }
                 }
             }
         })
+
+    if (viewModel.uiState.showClearCacheDialog) {
+        ClearCacheDialog(viewModel = viewModel)
+    }
 }
 
 @Composable
@@ -132,20 +169,83 @@ fun CacheDetail(viewModel: DeveloperOptionsViewModel) {
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun ClearCacheDialog(viewModel: DeveloperOptionsViewModel) {
+    val context = LocalContext.current
+    val activity = (context as ComponentActivity)
+    AlertDialog(
+        modifier = Modifier.padding(horizontal = 50.dp),
+        onDismissRequest = { viewModel.showClearCache(false) },
+        // FIXME workaround because the dialog do not resize after loading. Issue: https://issuetracker.google.com/issues/194911971?pli=1
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        title = {
+            Text(
+                text = "Clear cache",
+            )
+        },
+        text = {
+            Column {
+                Text(
+                    modifier = Modifier.padding(bottom = 15.dp),
+                    text = "This is going to:",
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+                Text(
+                    text = "- Delete all your favorites",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    text = "- Clear application cache",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    text = "- Reload the application",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+
+        },
+        confirmButton = {
+            FilledTonalButton(
+                onClick = {
+                    viewModel.showClearCache(false)
+                    viewModel.clearLocalData(context = context)
+                    viewModel.restartApp(context = context, activity = activity)
+                },
+            ) {
+                Text(
+                    text = "Clear cache",
+                )
+            }
+        },
+        dismissButton = {
+            OutlinedButton(
+                onClick = {
+                    viewModel.showClearCache(false)
+                },
+            ) {
+                Text(
+                    text = "Cancel",
+                )
+            }
+        },
+    )
+}
+
 data class DeveloperOptionsState(
     val showCache: Boolean = false,
     val showMapDebug: Boolean = false,
+    val showClearCacheDialog: Boolean = false,
     val preferences: List<PreferenceDTO> = listOf(),
 )
 
-class DeveloperOptionsViewModel(private val preferenceService: PreferenceService = PreferenceService) : ViewModel() {
+class DeveloperOptionsViewModel(
+    private val preferenceService: PreferenceService = PreferenceService,
+    private val realmConfig: RealmConfig = RealmConfig,
+) : ViewModel() {
     var uiState by mutableStateOf(DeveloperOptionsState())
         private set
-
-    /*init {
-        getAllFavorites()
-        setMapDebug()
-    }*/
 
     fun showMapDebug(value: Boolean) {
         preferenceService.saveShowDebug(value)
@@ -182,6 +282,32 @@ class DeveloperOptionsViewModel(private val preferenceService: PreferenceService
                 { throwable ->
                     Timber.e(throwable)
                 })
+    }
+
+    fun restartApp(context: Context, activity: ComponentActivity) {
+        store.dispatch(ResetStateAction())
+        val intent = Intent(context, MainActivity::class.java)
+        activity.finish()
+        ContextCompat.startActivity(context, intent, null)
+    }
+
+    fun showClearCache(show: Boolean) {
+        uiState = uiState.copy(
+            showClearCacheDialog = show
+        )
+    }
+
+    fun clearLocalData(context: Context) {
+        deleteCache(context)
+        preferenceService.clearPreferences()
+        realmConfig.cleanRealm()
+    }
+
+    private fun deleteCache(context: Context?) {
+        try {
+            context?.cacheDir?.deleteRecursively()
+        } catch (ignored: Exception) {
+        }
     }
 
     companion object {

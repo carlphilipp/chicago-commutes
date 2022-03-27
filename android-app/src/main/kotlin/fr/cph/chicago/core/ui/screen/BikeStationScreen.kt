@@ -211,11 +211,7 @@ class BikeStationViewModel @Inject constructor(
     stationId: String,
     private val preferenceService: PreferenceService = PreferenceService,
 ) : ViewModel(), StoreSubscriber<State> {
-    var uiState by mutableStateOf(
-        BikeStationUiState(
-            stationId = stationId
-        )
-    )
+    var uiState by mutableStateOf(BikeStationUiState(stationId = stationId))
         private set
 
     fun load() {
