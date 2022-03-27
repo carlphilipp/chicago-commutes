@@ -120,7 +120,7 @@ object TrainService {
         return ctaClient.getTrainFollow(runNumber)
             .map { trainArrivalResponse: TrainArrivalResponse ->
                 val arrivals = getTrainArrivalsInternal(trainArrivalResponse)
-                var trainEta = mutableListOf<TrainEta>()
+                val trainEta = mutableListOf<TrainEta>()
                 arrivals.forEach { entry ->
                     val etas = entry.value.trainEtas
                     if (entry.value.trainEtas.size != 0) {
@@ -215,7 +215,7 @@ object TrainService {
     }
 
     private fun getTrainArrivals(stationsIds: Set<String>): Single<MutableMap<String, TrainArrival>> {
-        return ctaClient.getTrainArrivals(stationsIds.map { it.toString() })
+        return ctaClient.getTrainArrivals(stationsIds.map { it })
             .map { trainArrivalResponse -> getTrainArrivalsInternal(trainArrivalResponse) }
     }
 

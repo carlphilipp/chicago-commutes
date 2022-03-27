@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.savedstate.SavedStateRegistryOwner
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -76,6 +77,8 @@ import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
@@ -252,7 +255,7 @@ class TrainStationViewModel @Inject constructor(
     }
 
     override fun newState(state: State) {
-        Timber.d("new state ${state.trainStationStatus}")
+        Timber.d("TrainStationViewModel new state ${state.trainStationStatus} thread: ${Thread.currentThread().name}")
         when (state.trainStationStatus) {
             Status.SUCCESS -> {
                 uiState = uiState.copy(
@@ -352,11 +355,17 @@ class TrainStationViewModel @Inject constructor(
     }
 
     fun onStart() {
-        store.subscribe(this)
+        val current = this
+        viewModelScope.launch(Dispatchers.Default) {
+            store.subscribe(current)
+        }
     }
 
     fun onStop() {
-        store.unsubscribe(this)
+        val current = this
+        viewModelScope.launch(Dispatchers.Default) {
+            store.unsubscribe(current)
+        }
     }
 
     companion object {

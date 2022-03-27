@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.savedstate.SavedStateRegistryOwner
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -63,6 +64,8 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 
@@ -229,7 +232,7 @@ class BusStationViewModel @Inject constructor(
     }
 
     override fun newState(state: State) {
-        Timber.d("new state ${state.busStopStatus}")
+        Timber.d("BusStationViewModel new state ${state.busStopStatus} thread: ${Thread.currentThread().name}")
         when (state.busStopStatus) {
             Status.SUCCESS -> {
                 uiState = uiState.copy(
@@ -367,11 +370,17 @@ class BusStationViewModel @Inject constructor(
     }
 
     fun onStart() {
-        store.subscribe(this)
+        val current = this
+        viewModelScope.launch(Dispatchers.Default) {
+            store.subscribe(current)
+        }
     }
 
     fun onStop() {
-        store.unsubscribe(this)
+        val current = this
+        viewModelScope.launch(Dispatchers.Default) {
+            store.unsubscribe(current)
+        }
     }
 
     companion object {
