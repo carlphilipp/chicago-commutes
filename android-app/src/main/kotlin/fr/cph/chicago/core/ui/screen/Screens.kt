@@ -240,12 +240,12 @@ sealed class Screen(
         showOnDrawer = false,
         topBar = ScreenTopBar.LargeTopBarBackSearch,
         component = { backStackEntry, navigationViewModel ->
-            val viewModel: DeveloperOptionsViewModel = viewModel(
-                factory = DeveloperOptionsViewModel.provideFactory(
-                    owner = backStackEntry,
-                    defaultArgs = backStackEntry.arguments
-                )
+            val activity = navigationViewModel.uiState.context.getActivity()
+            val factory = DeveloperOptionsViewModel.provideFactory(
+                owner = activity,
+                defaultArgs = backStackEntry.arguments
             )
+            val viewModel = ViewModelProvider(activity, factory)[DeveloperOptionsViewModel::class.java]
             DeveloperOptionsScreen(
                 viewModel = viewModel,
                 navigationViewModel = navigationViewModel,
