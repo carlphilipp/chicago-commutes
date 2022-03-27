@@ -489,7 +489,7 @@ sealed class ScreenTopBar(
 }
 
 enum class TopBarIconAction {
-    BACK, OPEN_DRAWER, REFRESH, SEARCH, NONE,
+    BACK, OPEN_DRAWER, NONE,
 }
 
 enum class TopBarType {
