@@ -202,7 +202,7 @@ class NavigationViewModel : ViewModel() {
     }
 
     fun updateScreen(screen: Screen) {
-        uiState = uiState.copy(currentScreen = screen,)
+        uiState = uiState.copy(currentScreen = screen)
     }
 
     fun isGestureEnabled(): Boolean {

@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,9 +37,10 @@ import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.SwipeRefreshThemed
 import fr.cph.chicago.service.AlertService
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import javax.inject.Inject
+import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,6 +53,12 @@ fun AlertDetailsScreen(
     val uiState = viewModel.uiState
     val scope = rememberCoroutineScope()
     val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.alertsScrollBehavior) }
+
+    LaunchedEffect(key1 = Unit, block = {
+        scope.launch {
+            viewModel.loadAlertDetails()
+        }
+    })
 
     Column {
         DisplayTopBar(
@@ -111,7 +119,6 @@ fun AlertDetailsScreen(
                                 }
                             )
                             if (uiState.showErrorSnackBar) {
-
                                 ShowErrorMessageSnackBar(
                                     scope = scope,
                                     snackbarHostState = uiState.snackbarHostState,
@@ -128,8 +135,8 @@ fun AlertDetailsScreen(
 }
 
 data class AlertDetailsUiState(
-    val routeId: String = "",
-    val title: String = "",
+    val routeId: String,
+    val title: String,
     val isRefreshing: Boolean = false,
     val routeAlertsDTOS: List<RouteAlertsDTO> = listOf(),
     val isError: Boolean = false,
@@ -143,21 +150,18 @@ class AlertDetailsViewModel @Inject constructor(
     title: String,
     private val alertService: AlertService = AlertService
 ) : ViewModel() {
-    var uiState by mutableStateOf(AlertDetailsUiState())
-        private set
-
-    init {
-        uiState = AlertDetailsUiState(
+    var uiState by mutableStateOf(
+        AlertDetailsUiState(
             routeId = routeId,
             title = title,
         )
-        loadAlertDetails()
-    }
+    )
+        private set
 
     fun loadAlertDetails() {
         uiState = uiState.copy(isRefreshing = true)
         alertService.routeAlertForId(uiState.routeId)
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(Schedulers.computation())
             .subscribe(
                 { routeAlertsDTOS ->
                     uiState = uiState.copy(

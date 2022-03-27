@@ -135,7 +135,7 @@ fun openExternalMapApplication(context: Context, scope: CoroutineScope, snackbar
 
 fun loadGoogleStreet(position: Position, onSuccess: Consumer<Bitmap>, onError: Consumer<Throwable>) {
     googleStreetClient.getImage(position.latitude, position.longitude, 1000, 400)
-        .observeOn(AndroidSchedulers.mainThread())
+        .observeOn(Schedulers.computation())
         .subscribe(onSuccess, onError)
 }
 

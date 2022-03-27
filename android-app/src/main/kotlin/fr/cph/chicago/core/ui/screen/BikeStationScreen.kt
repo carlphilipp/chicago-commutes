@@ -18,6 +18,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -78,6 +79,12 @@ fun BikeStationScreen(
     val uiState = viewModel.uiState
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+
+    LaunchedEffect(key1 = Unit, block = {
+        scope.launch {
+            viewModel.load()
+        }
+    })
 
     Column {
         DisplayTopBar(
@@ -188,6 +195,7 @@ fun BikeStationScreen(
 
 
 data class BikeStationUiState(
+    val stationId: String,
     val bikeStation: BikeStation = BikeStation.buildUnknownStation(),
     val position: Position = Position(),
     val isFavorite: Boolean = false,
@@ -205,16 +213,17 @@ class BikeStationViewModel @Inject constructor(
     stationId: String,
     private val preferenceService: PreferenceService = PreferenceService,
 ) : ViewModel(), StoreSubscriber<State> {
-    var uiState by mutableStateOf(BikeStationUiState())
+    var uiState by mutableStateOf(BikeStationUiState(
+        stationId = stationId
+    ))
         private set
 
-    init {
+    fun load() {
         Single.fromCallable {
             store.state.bikeStations
-                .find { bikeStation -> bikeStation.id == stationId }
+                .find { bikeStation -> bikeStation.id == uiState.stationId }
                 ?: BikeStation.buildUnknownStation()
         }
-            .observeOn(AndroidSchedulers.mainThread())
             .map { bikeStation ->
                 uiState = uiState.copy(
                     bikeStation = bikeStation,
