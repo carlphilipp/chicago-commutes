@@ -323,7 +323,7 @@ fun StationDetailsImageView(
 ) {
     val navController = LocalNavController.current
     val screenHeight = LocalConfiguration.current.screenHeightDp
-    val height = (1f / 3 * screenHeight).dp
+    val height = (1f / 3f * screenHeight).dp
 
     Surface(modifier = modifier.zIndex(1f)) {
         AnimatedVisibility(
@@ -338,7 +338,7 @@ fun StationDetailsImageView(
             LargeImagePlaceHolderAnimated()
         }
         AnimatedVisibility(
-            modifier = Modifier.height(height),//.height(300.dp),
+            modifier = Modifier.height(height),
             visible = !isLoading && showGoogleStreetImage,
             enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
         ) {
@@ -388,7 +388,7 @@ fun StationDetailsImageView(
 
         FilledTonalButton(
             modifier = Modifier
-                .padding(start = 20.dp)
+                .padding(start = 10.dp, top = 5.dp)
                 .windowInsetsPadding(
                     WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
                 ),

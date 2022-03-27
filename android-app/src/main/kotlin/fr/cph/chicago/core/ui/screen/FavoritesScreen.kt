@@ -58,8 +58,8 @@ import fr.cph.chicago.core.ui.common.SwipeRefreshThemed
 import fr.cph.chicago.core.ui.common.TrainDetailDialog
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.util.TimeUtil
-import java.util.Calendar
 import timber.log.Timber
+import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -337,7 +337,13 @@ fun FooterCard(modifier: Modifier = Modifier, detailsOnClick: () -> Unit = {}, m
 }
 
 @Composable
-fun Arrivals(modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.tertiary, destination: String, direction: String? = null, arrivals: List<String>) {
+fun Arrivals(
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.tertiary,
+    destination: String,
+    direction: String? = null,
+    arrivals: List<String>
+) {
     ConstraintLayout(
         modifier = modifier
             .fillMaxWidth()
@@ -380,10 +386,10 @@ fun Arrivals(modifier: Modifier = Modifier, color: Color = MaterialTheme.colorSc
         ) {
             arrivals.forEach {
                 var currentTime by remember { mutableStateOf(it) }
-                var color = Color.Unspecified
+                var textColor = Color.Unspecified
                 if (it == DEFAULT_AVAILABLE.toString()) {
                     currentTime = "?"
-                    color = bike_orange
+                    textColor = bike_orange
                 } else {
                     currentTime = it
                 }
@@ -391,7 +397,7 @@ fun Arrivals(modifier: Modifier = Modifier, color: Color = MaterialTheme.colorSc
                     text = currentTime,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(start = 3.dp),
-                    color = color
+                    color = textColor
                 )
             }
         }
