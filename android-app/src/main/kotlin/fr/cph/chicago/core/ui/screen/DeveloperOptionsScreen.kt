@@ -1,9 +1,7 @@
 package fr.cph.chicago.core.ui.screen
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,8 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Clear
-import androidx.compose.material.icons.outlined.DataObject
-import androidx.compose.material.icons.outlined.DeveloperMode
 import androidx.compose.material.icons.outlined.Insights
 import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material3.AlertDialog
@@ -37,26 +33,24 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
-import fr.cph.chicago.core.activity.MainActivity
+import com.jakewharton.processphoenix.ProcessPhoenix
 import fr.cph.chicago.core.model.dto.PreferenceDTO
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.screen.settings.DisplayElementSwitchView
 import fr.cph.chicago.core.ui.screen.settings.DisplayElementView
-import fr.cph.chicago.redux.ResetStateAction
-import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.RealmConfig
 import fr.cph.chicago.service.PreferenceService
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.launch
 import timber.log.Timber
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -173,7 +167,6 @@ fun CacheDetail(viewModel: DeveloperOptionsViewModel) {
 @Composable
 fun ClearCacheDialog(viewModel: DeveloperOptionsViewModel) {
     val context = LocalContext.current
-    val activity = (context as ComponentActivity)
     AlertDialog(
         modifier = Modifier.padding(horizontal = 50.dp),
         onDismissRequest = { viewModel.showClearCache(false) },
@@ -211,7 +204,7 @@ fun ClearCacheDialog(viewModel: DeveloperOptionsViewModel) {
                 onClick = {
                     viewModel.showClearCache(false)
                     viewModel.clearLocalData(context = context)
-                    viewModel.restartApp(context = context, activity = activity)
+                    viewModel.restartApp(context = context)
                 },
             ) {
                 Text(
@@ -284,11 +277,8 @@ class DeveloperOptionsViewModel(
                 })
     }
 
-    fun restartApp(context: Context, activity: ComponentActivity) {
-        store.dispatch(ResetStateAction())
-        val intent = Intent(context, MainActivity::class.java)
-        activity.finish()
-        ContextCompat.startActivity(context, intent, null)
+    fun restartApp(context: Context) {
+        ProcessPhoenix.triggerRebirth(context)
     }
 
     fun showClearCache(show: Boolean) {
@@ -307,6 +297,7 @@ class DeveloperOptionsViewModel(
         try {
             context?.cacheDir?.deleteRecursively()
         } catch (ignored: Exception) {
+            Timber.e(ignored, "Could not delete cache")
         }
     }
 

@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
@@ -35,6 +36,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.savedstate.SavedStateRegistryOwner
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BikeStation.Companion.DEFAULT_AVAILABLE
 import fr.cph.chicago.core.model.Position
@@ -56,6 +58,7 @@ import fr.cph.chicago.redux.ResetBikeStationStatusAction
 import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
+import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.TimeUtil
 import io.reactivex.rxjava3.core.Single
@@ -127,7 +130,7 @@ fun BikeStationScreen(
                                     horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
-                                        text = "Available bikes",
+                                        text = stringResource(R.string.bike_available_bikes),
                                         style = MaterialTheme.typography.bodyLarge,
                                     )
                                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
@@ -143,7 +146,7 @@ fun BikeStationScreen(
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     Text(
-                                        text = "Available docks",
+                                        text = stringResource(R.string.bike_available_docks),
                                         style = MaterialTheme.typography.bodyLarge,
                                     )
                                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
@@ -209,6 +212,7 @@ data class BikeStationUiState(
 @HiltViewModel
 class BikeStationViewModel @Inject constructor(
     stationId: String,
+    private val bikeService: BikeService = BikeService,
     private val preferenceService: PreferenceService = PreferenceService,
 ) : ViewModel(), StoreSubscriber<State> {
     var uiState by mutableStateOf(BikeStationUiState(stationId = stationId))
@@ -218,7 +222,7 @@ class BikeStationViewModel @Inject constructor(
         Single.fromCallable {
             store.state.bikeStations
                 .find { bikeStation -> bikeStation.id == uiState.stationId }
-                ?: BikeStation.buildUnknownStation()
+                ?: bikeService.createEmptyBikeStation(uiState.stationId)
         }
             .map { bikeStation ->
                 uiState = uiState.copy(

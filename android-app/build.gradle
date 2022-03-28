@@ -192,6 +192,8 @@ dependencies {
     implementation("androidx.hilt:hilt-work:1.0.0")
     kapt("androidx.hilt:hilt-compiler:1.0.0")
 
+    implementation group: 'com.jakewharton', name: 'process-phoenix', version: '2.1.2'
+
     // Google
     implementation(Lib.material)
 

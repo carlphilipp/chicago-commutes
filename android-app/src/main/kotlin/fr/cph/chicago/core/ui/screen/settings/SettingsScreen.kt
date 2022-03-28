@@ -46,6 +46,7 @@ import fr.cph.chicago.core.theme.ThemeColor
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.launchWithDelay
 import fr.cph.chicago.service.PreferenceService
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -253,6 +254,7 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
         private set
 
     fun initModel(): SettingsViewModel {
+        Timber.i("Init Settings view")
         refreshCurrentTheme()
         return this
     }
