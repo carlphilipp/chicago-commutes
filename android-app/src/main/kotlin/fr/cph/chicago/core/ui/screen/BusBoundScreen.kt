@@ -16,6 +16,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -58,7 +60,7 @@ fun BusBoundScreen(
     val uiState = viewModel.uiState
     val navController = LocalNavController.current
     val scope = rememberCoroutineScope()
-    val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.busBoundScrollBehavior) }
+    val scrollBehavior by remember { mutableStateOf(viewModel.uiState.scrollBehavior) }
 
     var textSearch by remember { mutableStateOf(TextFieldValue(viewModel.uiState.search)) }
     textSearch = TextFieldValue(
@@ -154,7 +156,8 @@ fun BusBoundScreen(
     )
 }
 
-data class BusBoundUiState(
+@OptIn(ExperimentalMaterial3Api::class)
+data class BusBoundUiState constructor(
     val busRouteId: String,
     val busRouteName: String,
     val bound: String,
@@ -170,6 +173,7 @@ data class BusBoundUiState(
     val showError: Boolean = false,
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
     val lazyListState: LazyListState = LazyListState(),
+    val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
 )
 
 class BusBoundUiViewModel(
@@ -195,6 +199,7 @@ class BusBoundUiViewModel(
         loadBusStops()
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun initModel(
         busRouteId: String,
         busRouteName: String,
@@ -212,6 +217,8 @@ class BusBoundUiViewModel(
                 busStops = listOf(),
                 searchBusStops = listOf(),
                 isRefreshing = true,
+                lazyListState = LazyListState(),
+                scrollBehavior= TopAppBarDefaults.pinnedScrollBehavior(),
             )
             loadBusStops()
         }
