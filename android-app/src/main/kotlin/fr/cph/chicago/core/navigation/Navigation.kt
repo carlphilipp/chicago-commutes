@@ -124,7 +124,6 @@ fun Navigation(
                                 ) { backStackEntry ->
                                     // Add custom backhandler to all composable so we can handle when someone push the back button
                                     BackHandler {
-                                        uiState.currentScreen = screen
                                         screen.component(backStackEntry, navigationViewModel)
                                     }
                                 }
@@ -141,7 +140,7 @@ fun Navigation(
 data class NavigationUiState constructor(
     val gesturesEnabled: Boolean = true,
     val screens: List<Screen> = fr.cph.chicago.core.ui.screen.screens,
-    var currentScreen: Screen = Screen.Favorites,
+    val currentScreen: Screen = Screen.Favorites,
     val drawerState: DrawerState = DrawerState(DrawerValue.Closed),
     val navController: NavHostController = NavHostController(App.instance.applicationContext),
 
