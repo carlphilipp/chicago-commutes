@@ -16,7 +16,7 @@ import fr.cph.chicago.core.ui.screen.Screen
 
 private const val drawerSlideDuration: Int = 400
 private const val slideDuration: Int = 800
-private const val fadeDuration: Int = 100
+private const val fadeDuration: Int = 600
 private const val scaleDuration: Int = 100
 private const val settingsScaleDuration: Int = 50
 
@@ -156,7 +156,7 @@ fun enterTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBa
 @OptIn(ExperimentalAnimationApi::class)
 fun exitTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?) {
     return {
-        val slideOutToRight = slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(animationSpeed.slideDuration))
+        val slideOutToRight = slideOutOfContainer(AnimatedContentScope.SlideDirection.Right)
 
         val origin = initialState.destination.route
         val destination = targetState.destination.route
