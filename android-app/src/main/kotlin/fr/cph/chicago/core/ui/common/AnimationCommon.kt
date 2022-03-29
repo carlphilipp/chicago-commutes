@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.navigation.NavBackStackEntry
 import fr.cph.chicago.core.ui.screen.Screen
 
+private const val drawerSlideDuration: Int = 400
 private const val slideDuration: Int = 800
 private const val fadeDuration: Int = 100
 private const val scaleDuration: Int = 100
@@ -21,6 +22,7 @@ private const val settingsScaleDuration: Int = 50
 
 sealed class AnimationSpeed(
     val name: String,
+    val drawerSlideDuration: Int,
     val slideDuration: Int,
     val fadeDuration: Int,
     val scaleDuration: Int,
@@ -28,6 +30,7 @@ sealed class AnimationSpeed(
 ) {
     object Normal : AnimationSpeed(
         name = "Normal",
+        drawerSlideDuration = drawerSlideDuration,
         slideDuration = slideDuration,
         fadeDuration = fadeDuration,
         scaleDuration = scaleDuration,
@@ -36,6 +39,7 @@ sealed class AnimationSpeed(
 
     object Slow : AnimationSpeed(
         name = "Slow",
+        drawerSlideDuration = drawerSlideDuration * 2,
         slideDuration = slideDuration * 2,
         fadeDuration = fadeDuration * 2,
         scaleDuration = scaleDuration * 2,
@@ -44,6 +48,7 @@ sealed class AnimationSpeed(
 
     object Fast : AnimationSpeed(
         name = "Fast",
+        drawerSlideDuration = drawerSlideDuration / 2,
         slideDuration = slideDuration / 2,
         fadeDuration = fadeDuration / 2,
         scaleDuration = scaleDuration / 2,

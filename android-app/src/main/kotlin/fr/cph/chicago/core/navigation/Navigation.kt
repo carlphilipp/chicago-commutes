@@ -3,6 +3,7 @@ package fr.cph.chicago.core.navigation
 import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.core.DecayAnimationSpec
+import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -47,6 +48,7 @@ import fr.cph.chicago.core.ui.screen.TopBarIconAction
 import fr.cph.chicago.core.ui.screen.TopBarType
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.core.viewmodel.MainViewModel
+import fr.cph.chicago.core.viewmodel.settingsViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.net.URLEncoder
@@ -330,7 +332,11 @@ fun DisplayTopBar(
     if (screen.topBar != ScreenTopBar.None) {
         val navController = LocalNavController.current
         val scope = rememberCoroutineScope()
-        val openDrawer = { scope.launch { viewModel.uiState.drawerState.open() } }
+        val openDrawer = {
+            scope.launch {
+                viewModel.uiState.drawerState.animateTo(DrawerValue.Open, TweenSpec(durationMillis = settingsViewModel.uiState.animationSpeed.drawerSlideDuration))
+            }
+        }
         val onClickLeftIcon: () -> Unit = {
             if (screen.topBar.actionLeft == TopBarIconAction.BACK) {
                 navController.navigateBack()
