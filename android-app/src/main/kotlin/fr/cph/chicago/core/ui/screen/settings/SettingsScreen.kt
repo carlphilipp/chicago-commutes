@@ -43,10 +43,10 @@ import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.theme.FontSize
 import fr.cph.chicago.core.theme.ThemeColor
+import fr.cph.chicago.core.ui.common.AnimationSpeed
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.launchWithDelay
 import fr.cph.chicago.service.PreferenceService
-import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -247,6 +247,7 @@ data class SettingsState(
     val showMapDebug: Boolean = false,
     val fontTypeFace: String = "",
     val fontSize: FontSize = FontSize.REGULAR,
+    val animationSpeed: AnimationSpeed = AnimationSpeed.Normal,
 )
 
 class SettingsViewModel(private val preferenceService: PreferenceService = PreferenceService) {
@@ -254,9 +255,13 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
         private set
 
     fun initModel(): SettingsViewModel {
-        Timber.i("Init Settings view")
         refreshCurrentTheme()
         return this
+    }
+
+    fun setAnimationSpeed(animationSpeed: AnimationSpeed) {
+        preferenceService.saveAnimationSpeed(animationSpeed)
+        refreshCurrentTheme()
     }
 
     fun setTheme(theme: Theme) {
@@ -303,6 +308,7 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
             dynamicColorEnabled = preferenceService.getDynamicColor(),
             fontTypeFace = preferenceService.getFont(),
             fontSize = preferenceService.getFontSize(),
+            animationSpeed = preferenceService.getAnimationSpeed(),
         )
     }
 }

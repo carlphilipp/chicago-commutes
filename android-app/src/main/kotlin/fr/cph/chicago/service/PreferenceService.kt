@@ -27,6 +27,7 @@ import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.theme.FontSize
 import fr.cph.chicago.core.theme.ThemeColor
+import fr.cph.chicago.core.ui.common.AnimationSpeed
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.PreferenceRepository
 import fr.cph.chicago.util.Util
@@ -35,11 +36,23 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.Date
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
+import timber.log.Timber
 
 object PreferenceService {
 
     private val repo = PreferenceRepository
     private val util = Util
+
+    fun saveAnimationSpeed(animationSpeed: AnimationSpeed) {
+        repo.saveAnimationSpeed(animationSpeed.name)
+    }
+
+    fun getAnimationSpeed(): AnimationSpeed {
+        val animationSpeed = repo.getAnimationSpeed()
+        val c =  AnimationSpeed.fromString(animationSpeed)
+        Timber.i("Get animation speed $c")
+        return c
+    }
 
     fun getTheme(): Theme {
         return Theme.convert(repo.getTheme())

@@ -45,6 +45,7 @@ import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.core.ui.screen.ScreenTopBar
 import fr.cph.chicago.core.ui.screen.TopBarIconAction
 import fr.cph.chicago.core.ui.screen.TopBarType
+import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -62,6 +63,7 @@ fun Navigation(
     show: Boolean,
     mainViewModel: MainViewModel,
     navigationViewModel: NavigationViewModel,
+    settingsViewModel: SettingsViewModel,
 ) {
     if (show) {
         Timber.d("Compose Navigation")
@@ -112,15 +114,15 @@ fun Navigation(
                             navController = navController.navController(),
                             startDestination = Screen.Favorites.route,
                             enterTransition = fallBackEnterTransition(),
-                            exitTransition = fallBackExitTransition(),
+                            exitTransition = fallBackExitTransition(settingsViewModel.uiState.animationSpeed),
                         ) {
                             uiState.screens.forEach { screen: Screen ->
                                 Timber.v("Compose screen -> ${screen.title}")
                                 composable(
                                     route = screen.route,
                                     arguments = emptyList(),
-                                    enterTransition = enterTransition(),
-                                    exitTransition = exitTransition(),
+                                    enterTransition = enterTransition(settingsViewModel.uiState.animationSpeed),
+                                    exitTransition = exitTransition(settingsViewModel.uiState.animationSpeed),
                                 ) { backStackEntry ->
                                     // Add custom backhandler to all composable so we can handle when someone push the back button
                                     BackHandler {

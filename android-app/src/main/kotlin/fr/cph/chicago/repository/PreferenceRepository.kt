@@ -29,6 +29,7 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.theme.FontSize
 import fr.cph.chicago.core.theme.ThemeColor
 import fr.cph.chicago.core.theme.defaultFontName
+import fr.cph.chicago.core.ui.common.AnimationSpeed
 import fr.cph.chicago.parseNotNull
 import fr.cph.chicago.repository.PrefType.BIKE
 import fr.cph.chicago.repository.PrefType.BIKE_NAME_MAPPING
@@ -104,6 +105,19 @@ object PreferenceRepository {
         getPrivatePreferencesBusRouteMapping().edit().clear().apply()
         getPrivatePreferencesBikeMapping().edit().clear().apply()
         getPrivatePreferencesTrainFilter().edit().clear().apply()
+    }
+
+    // Animation speed
+    fun saveAnimationSpeed(name: String) {
+        Timber.i("Save animation speed: $name")
+        val editor = getPrivatePreferences().edit()
+        editor.putString(PrefType.ANIMATION_SPEED.value, name)
+        editor.apply()
+    }
+
+    fun getAnimationSpeed(): String {
+        val sharedPref = getPrivatePreferences()
+        return sharedPref.getString(PrefType.ANIMATION_SPEED.value, AnimationSpeed.Normal.name)!!
     }
 
     // Themes
@@ -375,6 +389,7 @@ enum class PrefType(val value: String) {
     FAVORITES("ChicagoTrackerFavorites"),
     THEME("ChicagoTrackerTheme"),
     THEME_COLOR("ChicagoTrackerThemeColor"),
+    ANIMATION_SPEED("ChicagoTrackerFavoritesAnimationSpeed"),
     DYNAMIC_COLOR("ChicagoTrackerThemeDynamicColor"),
     FONT("ChicagoTrackerThemeFont"),
     FONT_SIZE("ChicagoTrackerThemeFontSize"),

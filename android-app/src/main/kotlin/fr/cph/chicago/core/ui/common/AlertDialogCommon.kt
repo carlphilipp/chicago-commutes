@@ -29,7 +29,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.toFontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
@@ -433,6 +432,74 @@ fun FontSizeAlertDialog(
             confirmButton = {
                 FilledTonalButton(onClick = {
                     viewModel.setFontSize(fontSelected.value)
+                    hideDialog()
+                }) {
+                    Text(
+                        text = "Save",
+                    )
+                }
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = {
+                        hideDialog()
+                    },
+                ) {
+                    Text(
+                        text = "Cancel",
+                    )
+                }
+            },
+        )
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
+@Composable
+fun AnimationSpeedDialog(
+    viewModel: SettingsViewModel,
+    showDialog: Boolean,
+    hideDialog: () -> Unit,
+) {
+    if (showDialog) {
+        val speedSelected = remember { mutableStateOf(viewModel.uiState.animationSpeed) }
+        AlertDialog(
+            modifier = Modifier.padding(horizontal = 50.dp),
+            onDismissRequest = hideDialog,
+            // FIXME workaround because the dialog do not resize after loading. Issue: https://issuetracker.google.com/issues/194911971?pli=1
+            properties = DialogProperties(usePlatformDefaultWidth = false),
+            title = {
+                Text(text = "Pick the animation speed")
+            },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    AnimationSpeed.allAnimationsSpeed().forEach {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { speedSelected.value = it },
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            RadioButton(
+                                selected = it == speedSelected.value,
+                                onClick = {
+                                    speedSelected.value = it
+                                })
+                            Text(
+                                text = it.name,
+                                style = MaterialTheme.typography.bodyMedium,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                FilledTonalButton(onClick = {
+                    viewModel.setAnimationSpeed(speedSelected.value)
                     hideDialog()
                 }) {
                     Text(

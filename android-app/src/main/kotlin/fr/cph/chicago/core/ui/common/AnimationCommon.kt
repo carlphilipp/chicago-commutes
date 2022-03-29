@@ -13,7 +13,57 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.navigation.NavBackStackEntry
 import fr.cph.chicago.core.ui.screen.Screen
-import timber.log.Timber
+
+private const val slideDuration: Int = 800
+private const val fadeDuration: Int = 100
+private const val scaleDuration: Int = 100
+private const val settingsScaleDuration: Int = 50
+
+sealed class AnimationSpeed(
+    val name: String,
+    val slideDuration: Int,
+    val fadeDuration: Int,
+    val scaleDuration: Int,
+    val settingsScaleDuration: Int,
+) {
+    object Normal : AnimationSpeed(
+        name = "Normal",
+        slideDuration = slideDuration,
+        fadeDuration = fadeDuration,
+        scaleDuration = scaleDuration,
+        settingsScaleDuration = settingsScaleDuration,
+    )
+
+    object Slow : AnimationSpeed(
+        name = "Slow",
+        slideDuration = slideDuration * 2,
+        fadeDuration = fadeDuration * 2,
+        scaleDuration = scaleDuration * 2,
+        settingsScaleDuration = settingsScaleDuration * 2,
+    )
+
+    object Fast : AnimationSpeed(
+        name = "Fast",
+        slideDuration = slideDuration / 2,
+        fadeDuration = fadeDuration / 2,
+        scaleDuration = scaleDuration / 2,
+        settingsScaleDuration = settingsScaleDuration / 2,
+    )
+
+    companion object {
+        fun allAnimationsSpeed(): List<AnimationSpeed> {
+            return listOf(Slow, Normal, Fast)
+        }
+
+        fun fromString(str: String): AnimationSpeed {
+            return when (str) {
+                "Slow" -> Slow
+                "Fast" -> Fast
+                else -> Normal
+            }
+        }
+    }
+}
 
 @OptIn(ExperimentalAnimationApi::class)
 fun fallBackEnterTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition) {
@@ -23,23 +73,22 @@ fun fallBackEnterTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> En
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-fun fallBackExitTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition) {
+fun fallBackExitTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition) {
     return {
         fadeOut(
-            animationSpec = tween(durationMillis = 100),
+            animationSpec = tween(durationMillis = animationSpeed.fadeDuration),
             targetAlpha = 0f,
         )
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-fun enterTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?) {
+fun enterTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?) {
     return {
-
-        val slideInFromRight = slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(durationMillis = 200))
+        val slideInFromRight = slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(durationMillis = animationSpeed.slideDuration))
         val scaleInSettings = scaleIn(
             animationSpec = tween(
-                durationMillis = 100,
+                durationMillis = animationSpeed.scaleDuration,
                 delayMillis = 0,
                 easing = FastOutSlowInEasing
             ),
@@ -57,7 +106,7 @@ fun enterTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> EnterTrans
             Screen.TrainList.route -> {
                 when (origin) {
                     Screen.TrainDetails.route -> {
-                        fadeIn(animationSpec = tween(delayMillis = 100))
+                        fadeIn(animationSpec = tween(delayMillis = animationSpeed.fadeDuration))
                     }
                     else -> {
                         slideInFromRight
@@ -67,7 +116,7 @@ fun enterTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> EnterTrans
             }
             Screen.BusBound.route -> {
                 when (origin) {
-                    Screen.BusDetails.route -> fadeIn(animationSpec = tween(delayMillis = 100))
+                    Screen.BusDetails.route -> fadeIn(animationSpec = tween(delayMillis = animationSpeed.fadeDuration))
                     else -> {
                         slideInFromRight
                     }
@@ -86,7 +135,7 @@ fun enterTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> EnterTrans
             }
             Screen.SettingsDisplay.route -> {
                 when (origin) {
-                    Screen.SettingsThemeColorChooser.route -> { // FIXME: Add font here when it exists
+                    Screen.SettingsThemeColorChooser.route -> {
                         EnterTransition.None
                     }
                     else -> scaleInSettings
@@ -100,9 +149,9 @@ fun enterTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> EnterTrans
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-fun exitTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?) {
+fun exitTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?) {
     return {
-        val slideOutToRight = slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(200))
+        val slideOutToRight = slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(animationSpeed.slideDuration))
 
         val origin = initialState.destination.route
         val destination = targetState.destination.route
@@ -116,7 +165,7 @@ fun exitTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransit
             Screen.SettingsDisplay.route, Screen.SettingsThemeColorChooser.route, Screen.DeveloperOptions.route -> {
                 scaleOut(
                     animationSpec = tween(
-                        durationMillis = 50,
+                        durationMillis = animationSpeed.settingsScaleDuration,
                         delayMillis = 0,
                         easing = FastOutSlowInEasing
                     ),

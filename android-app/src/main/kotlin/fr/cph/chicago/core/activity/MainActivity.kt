@@ -118,6 +118,7 @@ class MainActivity : ComponentActivity() {
                     show = splashViewModel.uiState.isLoaded,
                     mainViewModel = mainViewModel,
                     navigationViewModel = NavigationViewModel().initModel(rememberNavigationState()),
+                    settingsViewModel = settingsViewModel,
                 )
                 DisposableEffect(key1 = mainViewModel) {
                     mainViewModel.onStart()

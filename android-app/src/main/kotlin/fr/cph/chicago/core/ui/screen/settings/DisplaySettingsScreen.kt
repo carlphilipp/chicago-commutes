@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Animation
 import androidx.compose.material.icons.outlined.Brightness6
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.FormatSize
@@ -37,6 +38,7 @@ import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
+import fr.cph.chicago.core.ui.common.AnimationSpeedDialog
 import fr.cph.chicago.core.ui.common.FontSizeAlertDialog
 import fr.cph.chicago.core.ui.common.FontTypefaceAlertDialog
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
@@ -58,6 +60,7 @@ fun DisplaySettingsScreen(
     val navController = LocalNavController.current
 
     val scope = rememberCoroutineScope()
+    var showAnimationSpeedDialog by remember { mutableStateOf(false) }
     var showFontTypefaceDialog by remember { mutableStateOf(false) }
     var showFontSizeDialog by remember { mutableStateOf(false) }
     val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.settingsDisplayScrollBehavior) }
@@ -160,6 +163,22 @@ fun DisplaySettingsScreen(
                             imageVector = Icons.Outlined.FormatSize,
                         )
                     }
+                    item {
+                        Text(
+                            modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 5.dp, bottom = 5.dp),
+                            text = "Animations",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                        DisplayElementView(
+                            title = "Animations speed",
+                            description = "Choose how fast the animation are rendered",
+                            onClick = {
+                                showAnimationSpeedDialog = true
+                            },
+                            imageVector = Icons.Outlined.Animation,
+                        )
+                    }
                     item { NavigationBarsSpacer() }
                 }
             }
@@ -175,6 +194,13 @@ fun DisplaySettingsScreen(
                 showDialog = showFontSizeDialog,
                 hideDialog = {
                     showFontSizeDialog = false
+                }
+            )
+            AnimationSpeedDialog(
+                viewModel = viewModel,
+                showDialog = showAnimationSpeedDialog,
+                hideDialog = {
+                    showAnimationSpeedDialog = false
                 }
             )
         },
