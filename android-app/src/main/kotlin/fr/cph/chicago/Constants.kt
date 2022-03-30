@@ -56,5 +56,6 @@ object Constants {
     const val STOP_FILE_PATH = "bus_stops.txt"
 
     // Settings
+    // FIXME: Add that to animation speed, it needs to depends on the user settings
     const val DEFAULT_SETTINGS_DELAY = 100L
 }

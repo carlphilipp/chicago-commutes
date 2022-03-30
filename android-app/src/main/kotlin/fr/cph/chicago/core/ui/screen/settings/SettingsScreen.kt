@@ -44,6 +44,7 @@ import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.theme.FontSize
 import fr.cph.chicago.core.theme.ThemeColor
 import fr.cph.chicago.core.ui.common.AnimationSpeed
+import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.launchWithDelay
 import fr.cph.chicago.service.PreferenceService
@@ -112,6 +113,7 @@ fun SettingsScreen(
                             }
                         )
                     }
+                    item { NavigationBarsSpacer() }
                 }
                 if (uiState.showThemeChangerDialog) {
                     ThemeChangerDialog(viewModel = viewModel)

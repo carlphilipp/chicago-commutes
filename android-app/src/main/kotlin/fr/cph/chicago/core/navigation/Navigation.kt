@@ -88,7 +88,7 @@ fun Navigation(
                     onDestinationClicked = { screen ->
                         if (screen != Screen.Rate) {
                             scope.launch {
-                                uiState.drawerState.animateTo(DrawerValue.Closed, TweenSpec(durationMillis = fr.cph.chicago.core.viewmodel.settingsViewModel.uiState.animationSpeed.closeDrawerSlideDuration))
+                                uiState.drawerState.animateTo(DrawerValue.Closed, TweenSpec(durationMillis = settingsViewModel.uiState.animationSpeed.closeDrawerSlideDuration))
                                 navController.navigate(screen)
                             }
                         }

@@ -93,6 +93,7 @@ fun enterTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBa
 
         val origin = initialState.destination.route
         val destination = targetState.destination.route
+        Timber.v("EnterTransition Origin: $origin - Destination: $destination")
         when {
             // Fav -> Details
             origin == Screen.Favorites.route && (destination == Screen.TrainDetails.route || destination == Screen.BusDetails.route || destination == Screen.DivvyDetails.route) -> {
@@ -122,14 +123,12 @@ fun enterTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBa
             destination == Screen.Search.route -> {
                 slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(durationMillis = animationSpeed.slideDuration))
             }
-            // Settings
-            (origin == Screen.SettingsDisplay.route || origin == Screen.DeveloperOptions.route) && destination == Screen.Settings.route -> {
-                EnterTransition.None
+            // Settings -> Display/Developer
+            origin == Screen.Settings.route && (destination == Screen.SettingsDisplay.route || destination == Screen.DeveloperOptions.route) -> {
+                scaleIn
             }
-            origin == Screen.SettingsThemeColorChooser.route && destination == Screen.SettingsDisplay.route -> {
-                EnterTransition.None
-            }
-            destination == Screen.SettingsThemeColorChooser.route || destination == Screen.SettingsDisplay.route || destination == Screen.DeveloperOptions.route -> {
+            // Display -> ThemeChooser
+            origin == Screen.SettingsDisplay.route && destination == Screen.SettingsThemeColorChooser.route -> {
                 scaleIn
             }
             else -> null
@@ -144,6 +143,7 @@ fun exitTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBac
 
         val origin = initialState.destination.route
         val destination = targetState.destination.route
+        Timber.v("ExitTransition Origin: $origin - Destination: $destination")
         when {
             // Details -> Fav
             (origin == Screen.TrainDetails.route || origin == Screen.BusDetails.route || origin == Screen.DivvyDetails.route) && destination == Screen.Favorites.route -> {
@@ -173,9 +173,16 @@ fun exitTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBac
             origin == Screen.Search.route -> {
                 slideOutOfContainer(AnimatedContentScope.SlideDirection.Down, animationSpec = tween(durationMillis = animationSpeed.slideDuration))
             }
-            // Settings
-            origin == Screen.SettingsDisplay.route || origin == Screen.SettingsThemeColorChooser.route || origin == Screen.DeveloperOptions.route -> {
-                Timber.e("********* slideOutOfContainer")
+            // Display -> Settings
+            origin == Screen.SettingsDisplay.route && destination == Screen.Settings.route -> {
+                null
+            }
+            // ThemeChooser -> Display
+            origin == Screen.SettingsThemeColorChooser.route && destination == Screen.SettingsDisplay.route -> {
+                null
+            }
+            // Developer -> Settings
+            origin == Screen.DeveloperOptions.route && destination == Screen.Settings.route -> {
                 null
             }
             else -> null

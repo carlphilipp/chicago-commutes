@@ -51,9 +51,9 @@ import timber.log.Timber
 @Composable
 fun DisplaySettingsScreen(
     modifier: Modifier = Modifier,
+    title: String,
     viewModel: SettingsViewModel,
     navigationViewModel: NavigationViewModel,
-    title: String,
 ) {
     Timber.d("Compose DisplaySettingsScreen")
     val uiState = viewModel.uiState
