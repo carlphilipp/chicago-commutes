@@ -88,7 +88,7 @@ fun Navigation(
                     onDestinationClicked = { screen ->
                         if (screen != Screen.Rate) {
                             scope.launch {
-                                uiState.drawerState.close()
+                                uiState.drawerState.animateTo(DrawerValue.Closed, TweenSpec(durationMillis = fr.cph.chicago.core.viewmodel.settingsViewModel.uiState.animationSpeed.closeDrawerSlideDuration))
                                 navController.navigate(screen)
                             }
                         }
@@ -115,7 +115,7 @@ fun Navigation(
                         AnimatedNavHost(
                             navController = navController.navController(),
                             startDestination = Screen.Favorites.route,
-                            enterTransition = fallBackEnterTransition(),
+                            enterTransition = fallBackEnterTransition(settingsViewModel.uiState.animationSpeed),
                             exitTransition = fallBackExitTransition(settingsViewModel.uiState.animationSpeed),
                         ) {
                             uiState.screens.forEach { screen: Screen ->
@@ -334,7 +334,7 @@ fun DisplayTopBar(
         val scope = rememberCoroutineScope()
         val openDrawer = {
             scope.launch {
-                viewModel.uiState.drawerState.animateTo(DrawerValue.Open, TweenSpec(durationMillis = settingsViewModel.uiState.animationSpeed.drawerSlideDuration))
+                viewModel.uiState.drawerState.animateTo(DrawerValue.Open, TweenSpec(durationMillis = settingsViewModel.uiState.animationSpeed.openDrawerSlideDuration))
             }
         }
         val onClickLeftIcon: () -> Unit = {
