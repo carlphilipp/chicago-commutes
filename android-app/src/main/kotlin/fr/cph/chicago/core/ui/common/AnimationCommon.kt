@@ -140,6 +140,15 @@ fun enterTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBa
 fun exitTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?) {
     return {
         val slideOutToRight = slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(durationMillis = animationSpeed.slideDuration))
+        val scaleOut = scaleOut(
+            animationSpec = tween(
+                durationMillis = 100,
+                delayMillis = 0,
+                easing = FastOutSlowInEasing
+            ),
+            targetScale = 0.0f,
+            transformOrigin = TransformOrigin.Center,
+        )
 
         val origin = initialState.destination.route
         val destination = targetState.destination.route
@@ -175,15 +184,15 @@ fun exitTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBac
             }
             // Display -> Settings
             origin == Screen.SettingsDisplay.route && destination == Screen.Settings.route -> {
-                null
+                scaleOut
             }
             // ThemeChooser -> Display
             origin == Screen.SettingsThemeColorChooser.route && destination == Screen.SettingsDisplay.route -> {
-                null
+                scaleOut
             }
             // Developer -> Settings
             origin == Screen.DeveloperOptions.route && destination == Screen.Settings.route -> {
-                null
+                scaleOut
             }
             else -> null
         }
