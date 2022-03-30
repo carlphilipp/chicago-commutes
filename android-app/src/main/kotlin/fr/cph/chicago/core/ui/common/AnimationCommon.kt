@@ -13,6 +13,7 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.navigation.NavBackStackEntry
 import fr.cph.chicago.core.ui.screen.Screen
+import timber.log.Timber
 
 private const val drawerSlideDuration: Int = 400
 private const val slideDuration: Int = 800
@@ -73,24 +74,26 @@ sealed class AnimationSpeed(
 @OptIn(ExperimentalAnimationApi::class)
 fun fallBackEnterTransition(): (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition) {
     return {
-        fadeIn()
+        //slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(durationMillis = 1000))
+        fadeIn(animationSpec = tween(durationMillis = 2000))
+        //EnterTransition.None
+        //fadeIn()
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 fun fallBackExitTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition) {
     return {
-        fadeOut(
-            animationSpec = tween(durationMillis = animationSpeed.fadeDuration),
-            targetAlpha = 0f,
-        )
+        //ExitTransition.None
+        fadeOut(animationSpec = tween(durationMillis = 2000), targetAlpha = 0f)
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 fun enterTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?) {
     return {
-        val slideInFromRight = slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(durationMillis = animationSpeed.slideDuration))
+        Timber.e("************* Enter transition")
+        val slideInFromRight = slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(durationMillis = 2000))
         val scaleInSettings = scaleIn(
             animationSpec = tween(
                 durationMillis = animationSpeed.scaleDuration,
@@ -103,8 +106,20 @@ fun enterTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBa
 
         val origin = initialState.destination.route
         val destination = targetState.destination.route
+        when {
+            // Fav -> Details
+            origin == Screen.Favorites.route && (destination == Screen.TrainDetails.route || destination == Screen.BusDetails.route || destination == Screen.DivvyDetails.route) -> {
+                slideInFromRight
+            }
+            // Train Details -> Fav
+            (origin == Screen.TrainDetails.route || origin == Screen.BusDetails.route || origin == Screen.DivvyDetails.route) && destination == Screen.Favorites.route -> {
+                fadeIn(animationSpec = tween(durationMillis = 2000))
+            }
+            else -> null
+        }
+        //null
 
-        when (destination) {
+/*        when (destination) {
             Screen.TrainDetails.route, Screen.BusDetails.route, Screen.DivvyDetails.route -> {
                 slideInFromRight
             }
@@ -149,25 +164,41 @@ fun enterTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBa
             else -> {
                 null
             }
-        }
+        }*/
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 fun exitTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?) {
     return {
-        val slideOutToRight = slideOutOfContainer(AnimatedContentScope.SlideDirection.Right)
+        Timber.e("************* Exit transition")
+        val slideOutToRight = slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(durationMillis = 2000))
 
         val origin = initialState.destination.route
         val destination = targetState.destination.route
-        when (origin) {
-            Screen.TrainDetails.route, Screen.BusDetails.route, Screen.DivvyDetails.route -> {
+        when {
+            // Fav -> Details
+            origin == Screen.Favorites.route && (destination == Screen.TrainDetails.route || destination == Screen.BusDetails.route || destination == Screen.DivvyDetails.route) -> {
+                fadeOut(animationSpec = tween(durationMillis = 2000), targetAlpha = 0f)
+            }
+            // Details -> Fav
+            (origin == Screen.TrainDetails.route || origin == Screen.BusDetails.route || origin == Screen.DivvyDetails.route) && destination == Screen.Favorites.route -> {
                 slideOutToRight
             }
+            else -> ExitTransition.None
+        }
+/*        when (origin) {
+            Screen.TrainDetails.route, Screen.BusDetails.route, Screen.DivvyDetails.route -> {
+                Timber.e("************* origin $origin slide to right")
+                //slideOutOfContainer(AnimatedContentScope.SlideDirection.Down, animationSpec = tween(1400))
+                //slideOutToRight
+            }
             Screen.TrainList.route, Screen.BusBound.route, Screen.AlertDetail.route -> {
+                Timber.e("************* origin $origin slide to right")
                 slideOutToRight
             }
             Screen.SettingsDisplay.route, Screen.SettingsThemeColorChooser.route, Screen.DeveloperOptions.route -> {
+                Timber.e("************* origin $origin scale out")
                 scaleOut(
                     animationSpec = tween(
                         durationMillis = animationSpeed.settingsScaleDuration,
@@ -179,6 +210,6 @@ fun exitTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBac
                 )
             }
             else -> null
-        }
+        }*/
     }
 }
