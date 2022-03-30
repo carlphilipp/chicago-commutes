@@ -33,7 +33,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
-import fr.cph.chicago.Constants.DEFAULT_SETTINGS_DELAY
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
@@ -91,7 +90,7 @@ fun DisplaySettingsScreen(
                             title = "Theme color",
                             description = "Choose a color",
                             onClick = {
-                                scope.launchWithDelay(DEFAULT_SETTINGS_DELAY) {
+                                scope.launchWithDelay(viewModel.uiState.animationSpeed.clickDelay) {
                                     navController.navigate(screen = Screen.SettingsThemeColorChooser)
                                 }
                             },

@@ -19,7 +19,9 @@ private const val openDrawerSlideDuration: Int = 400
 private const val closeDrawerSlideDuration: Int = 200
 private const val slideDuration: Int = 800
 private const val fadeDuration: Int = 600
-private const val scaleDuration: Int = 600
+private const val scaleInDuration: Int = 600
+private const val scaleOutDuration: Int = 100
+private const val clickDelay: Long = 100L
 
 sealed class AnimationSpeed(
     val name: String,
@@ -27,7 +29,9 @@ sealed class AnimationSpeed(
     val closeDrawerSlideDuration: Int,
     val slideDuration: Int,
     val fadeDuration: Int,
-    val scaleDuration: Int,
+    val scaleInDuration: Int,
+    val scaleOutDuration: Int,
+    val clickDelay: Long,
 ) {
     object Normal : AnimationSpeed(
         name = "Normal",
@@ -35,7 +39,9 @@ sealed class AnimationSpeed(
         closeDrawerSlideDuration = closeDrawerSlideDuration,
         slideDuration = slideDuration,
         fadeDuration = fadeDuration,
-        scaleDuration = scaleDuration,
+        scaleInDuration = scaleInDuration,
+        scaleOutDuration = scaleOutDuration,
+        clickDelay = clickDelay,
     )
 
     object Slow : AnimationSpeed(
@@ -44,7 +50,9 @@ sealed class AnimationSpeed(
         closeDrawerSlideDuration = closeDrawerSlideDuration * 2,
         slideDuration = slideDuration * 2,
         fadeDuration = fadeDuration * 2,
-        scaleDuration = scaleDuration * 2,
+        scaleInDuration = scaleInDuration * 2,
+        scaleOutDuration = scaleOutDuration * 2,
+        clickDelay = clickDelay * 2,
     )
 
     object Fast : AnimationSpeed(
@@ -53,7 +61,9 @@ sealed class AnimationSpeed(
         closeDrawerSlideDuration = closeDrawerSlideDuration / 2,
         slideDuration = slideDuration / 2,
         fadeDuration = fadeDuration / 2,
-        scaleDuration = scaleDuration / 2,
+        scaleInDuration = scaleInDuration / 2,
+        scaleOutDuration = scaleOutDuration / 2,
+        clickDelay = clickDelay / 2,
     )
 
     companion object {
@@ -89,7 +99,7 @@ fun fallBackExitTransition(animationSpeed: AnimationSpeed): (AnimatedContentScop
 fun enterTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?) {
     return {
         val slideInFromRight = slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(durationMillis = animationSpeed.slideDuration))
-        val scaleIn = scaleIn(animationSpec = tween(durationMillis = animationSpeed.scaleDuration), initialScale = 0.9f)
+        val scaleIn = scaleIn(animationSpec = tween(durationMillis = animationSpeed.scaleInDuration), initialScale = 0.9f)
 
         val origin = initialState.destination.route
         val destination = targetState.destination.route
@@ -142,7 +152,7 @@ fun exitTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBac
         val slideOutToRight = slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(durationMillis = animationSpeed.slideDuration))
         val scaleOut = scaleOut(
             animationSpec = tween(
-                durationMillis = 100,
+                durationMillis = animationSpeed.scaleOutDuration,
                 delayMillis = 0,
                 easing = FastOutSlowInEasing
             ),

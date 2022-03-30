@@ -36,7 +36,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import fr.cph.chicago.Constants.DEFAULT_SETTINGS_DELAY
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
@@ -83,7 +82,7 @@ fun SettingsScreen(
                             title = "Display",
                             description = "Theme, dark mode and fonts",
                             onClick = {
-                                scope.launchWithDelay(DEFAULT_SETTINGS_DELAY) {
+                                scope.launchWithDelay(viewModel.uiState.animationSpeed.clickDelay) {
                                     navController.navigate(screen = Screen.SettingsDisplay)
                                 }
                             }
@@ -95,7 +94,7 @@ fun SettingsScreen(
                             title = "Developer options",
                             description = "Beep boop",
                             onClick = {
-                                scope.launchWithDelay(DEFAULT_SETTINGS_DELAY) {
+                                scope.launchWithDelay(viewModel.uiState.animationSpeed.clickDelay) {
                                     navController.navigate(screen = Screen.DeveloperOptions)
                                 }
                             }
@@ -107,7 +106,7 @@ fun SettingsScreen(
                             title = "About",
                             description = "Chicago commutes",
                             onClick = {
-                                scope.launchWithDelay(DEFAULT_SETTINGS_DELAY) {
+                                scope.launchWithDelay(viewModel.uiState.animationSpeed.clickDelay) {
 
                                 }
                             }
