@@ -1,6 +1,5 @@
 package fr.cph.chicago.core.ui.screen.settings
 
-import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,15 +11,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Brightness6
 import androidx.compose.material.icons.outlined.DeveloperMode
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,12 +23,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
@@ -56,7 +47,6 @@ fun SettingsScreen(
     navigationViewModel: NavigationViewModel,
     title: String,
 ) {
-    val uiState = viewModel.uiState
     val navController = LocalNavController.current
     val scope = rememberCoroutineScope()
     val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.settingsScrollBehavior) }
@@ -95,7 +85,7 @@ fun SettingsScreen(
                             description = "Beep boop",
                             onClick = {
                                 scope.launchWithDelay(viewModel.uiState.animationSpeed.clickDelay) {
-                                    navController.navigate(screen = Screen.DeveloperOptions)
+                                    navController.navigate(screen = Screen.SettingsDeveloperOptions)
                                 }
                             }
                         )
@@ -107,15 +97,12 @@ fun SettingsScreen(
                             description = "Chicago commutes",
                             onClick = {
                                 scope.launchWithDelay(viewModel.uiState.animationSpeed.clickDelay) {
-
+                                    navController.navigate(screen = Screen.SettingsAbout)
                                 }
                             }
                         )
                     }
                     item { NavigationBarsSpacer() }
-                }
-                if (uiState.showThemeChangerDialog) {
-                    ThemeChangerDialog(viewModel = viewModel)
                 }
             }
         })
@@ -162,81 +149,6 @@ fun SettingsElementView(
             }
         }
     }
-}
-
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
-@Composable
-fun ThemeChangerDialog(viewModel: SettingsViewModel) {
-    var currentThemeState by remember { mutableStateOf(viewModel.uiState.theme) }
-    currentThemeState = viewModel.uiState.theme
-    var currentDynamicColor by remember { mutableStateOf(viewModel.uiState.dynamicColorEnabled) }
-    currentDynamicColor = viewModel.uiState.dynamicColorEnabled
-
-    AlertDialog(
-        modifier = Modifier.padding(horizontal = 50.dp),
-        onDismissRequest = { viewModel.showThemeChangerDialog(false) },
-        // FIXME workaround because the dialog do not resize after loading. Issue: https://issuetracker.google.com/issues/194911971?pli=1
-        properties = DialogProperties(usePlatformDefaultWidth = false),
-        title = { Text(text = "Theme change") },
-        text = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Theme.values().forEach { theme ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { currentThemeState = theme },
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        RadioButton(
-                            selected = theme == currentThemeState,
-                            onClick = { currentThemeState = theme }
-                        )
-                        Text(
-                            text = theme.description,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
-                }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    Divider(thickness = 2.dp)
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Checkbox(
-                            checked = currentDynamicColor,
-                            onCheckedChange = { currentDynamicColor = !currentDynamicColor }
-                        )
-                        Text(
-                            text = "Enable dynamic colors"
-                        )
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            FilledTonalButton(
-                onClick = {
-                    viewModel.setTheme(currentThemeState)
-                    viewModel.setDynamicColor(currentDynamicColor)
-                    viewModel.showThemeChangerDialog(false)
-                },
-            ) {
-                Text(
-                    text = "Save",
-                )
-            }
-        },
-        dismissButton = {
-            OutlinedButton(
-                onClick = { viewModel.showThemeChangerDialog(false) },
-            ) {
-                Text(
-                    text = "Cancel",
-                )
-            }
-        },
-    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -288,12 +200,6 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
     fun setFontSize(value: FontSize) {
         preferenceService.saveFontSize(value)
         refreshCurrentTheme()
-    }
-
-    fun showThemeChangerDialog(show: Boolean) {
-        uiState = uiState.copy(
-            showThemeChangerDialog = show
-        )
     }
 
     fun loadShowMapDebug() {

@@ -25,6 +25,9 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.NavigationViewModel
+import fr.cph.chicago.core.ui.screen.settings.AboutScreen
+import fr.cph.chicago.core.ui.screen.settings.DeveloperOptionsScreen
+import fr.cph.chicago.core.ui.screen.settings.DeveloperOptionsViewModel
 import fr.cph.chicago.core.ui.screen.settings.DisplaySettingsScreen
 import fr.cph.chicago.core.ui.screen.settings.SettingsScreen
 import fr.cph.chicago.core.ui.screen.settings.ThemeChooserSettingsScreen
@@ -234,7 +237,7 @@ sealed class Screen(
         }
     )
 
-    object DeveloperOptions : Screen(
+    object SettingsDeveloperOptions : Screen(
         route = "developer",
         icon = Icons.Filled.DeveloperMode,
         showOnDrawer = false,
@@ -362,6 +365,19 @@ sealed class Screen(
         showOnDrawer = false,
         component = { _, navigationViewModel ->
             ThemeChooserSettingsScreen(
+                topBarTitle = stringResource(R.string.screen_settings_theme),
+                viewModel = settingsViewModel,
+                navigationViewModel = navigationViewModel,
+            )
+        })
+
+    object SettingsAbout : Screen(
+        route = "settings/about",
+        icon = Icons.Filled.Settings,
+        topBar = ScreenTopBar.LargeTopBarBackSearch, // FIXME: we need a large top bar back without search
+        showOnDrawer = false,
+        component = { _, navigationViewModel ->
+            AboutScreen(
                 topBarTitle = stringResource(R.string.screen_settings_theme),
                 viewModel = settingsViewModel,
                 navigationViewModel = navigationViewModel,
@@ -503,7 +519,7 @@ val screens = listOf(
     Screen.Bus,
     Screen.BusBound,
     Screen.BusDetails,
-    Screen.DeveloperOptions,
+    Screen.SettingsDeveloperOptions,
     Screen.Divvy,
     Screen.DivvyDetails,
     Screen.Nearby,
@@ -517,6 +533,7 @@ val screens = listOf(
     Screen.Search,
     Screen.TrainMap,
     Screen.BusMap,
+    Screen.SettingsAbout,
 )
 
 val drawerScreens by lazy {

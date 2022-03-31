@@ -133,8 +133,8 @@ fun enterTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBa
             destination == Screen.Search.route -> {
                 slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(durationMillis = animationSpeed.slideDuration))
             }
-            // Settings -> Display/Developer
-            origin == Screen.Settings.route && (destination == Screen.SettingsDisplay.route || destination == Screen.DeveloperOptions.route) -> {
+            // Settings -> Display/Developer/About
+            origin == Screen.Settings.route && (destination == Screen.SettingsDisplay.route || destination == Screen.SettingsDeveloperOptions.route || destination == Screen.SettingsAbout.route) -> {
                 scaleIn
             }
             // Display -> ThemeChooser
@@ -201,7 +201,11 @@ fun exitTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBac
                 scaleOut
             }
             // Developer -> Settings
-            origin == Screen.DeveloperOptions.route && destination == Screen.Settings.route -> {
+            origin == Screen.SettingsDeveloperOptions.route && destination == Screen.Settings.route -> {
+                scaleOut
+            }
+            // About -> Settings
+            origin == Screen.SettingsAbout.route && destination == Screen.Settings.route -> {
                 scaleOut
             }
             else -> null

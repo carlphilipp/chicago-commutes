@@ -1,4 +1,4 @@
-package fr.cph.chicago.core.ui.screen
+package fr.cph.chicago.core.ui.screen.settings
 
 import android.content.Context
 import android.os.Bundle
@@ -42,15 +42,13 @@ import fr.cph.chicago.core.model.dto.PreferenceDTO
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
-import fr.cph.chicago.core.ui.screen.settings.DisplayElementSwitchView
-import fr.cph.chicago.core.ui.screen.settings.DisplayElementView
+import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.repository.RealmConfig
 import fr.cph.chicago.service.PreferenceService
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.launch
 import timber.log.Timber
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,7 +73,7 @@ fun DeveloperOptionsScreen(
         content = {
             Column {
                 DisplayTopBar(
-                    screen = Screen.DeveloperOptions,
+                    screen = Screen.SettingsDeveloperOptions,
                     title = title,
                     viewModel = navigationViewModel,
                     scrollBehavior = scrollBehavior,

@@ -42,6 +42,7 @@
     <string name="screen_settings_display">Display</string>
     <string name="screen_settings_develop">Developer</string>
     <string name="screen_settings_theme">Theme color</string>
+    <string name="screen_settings_about">About</string>
 
     <!-- Bundle -->
     <string name="bundle_bike_station">station</string>
