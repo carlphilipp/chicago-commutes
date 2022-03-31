@@ -17,10 +17,10 @@ import timber.log.Timber
 
 private const val openDrawerSlideDuration: Int = 400
 private const val closeDrawerSlideDuration: Int = 200
-private const val slideDuration: Int = 800
+private const val slideDuration: Int = 500
 private const val fadeDuration: Int = 600
-private const val scaleInDuration: Int = 600
-private const val scaleOutDuration: Int = 100
+private const val scaleInDuration: Int = 150
+private const val scaleOutDuration: Int = 150
 private const val clickDelay: Long = 100L
 
 sealed class AnimationSpeed(
@@ -156,7 +156,7 @@ fun exitTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBac
                 delayMillis = 0,
                 easing = FastOutSlowInEasing
             ),
-            targetScale = 0.0f,
+            targetScale = 0.9f,
             transformOrigin = TransformOrigin.Center,
         )
 
