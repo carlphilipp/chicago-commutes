@@ -44,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.savedstate.SavedStateRegistryOwner
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -75,12 +74,10 @@ import fr.cph.chicago.redux.TrainStationAction
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
+import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -355,17 +352,11 @@ class TrainStationViewModel @Inject constructor(
     }
 
     fun onStart() {
-        val current = this
-        viewModelScope.launch(Dispatchers.Default) {
-            store.subscribe(current)
-        }
+        store.subscribe(this)
     }
 
     fun onStop() {
-        val current = this
-        viewModelScope.launch(Dispatchers.Default) {
-            store.unsubscribe(current)
-        }
+        store.unsubscribe(this)
     }
 
     companion object {
@@ -519,7 +510,10 @@ fun TrainStop(
                 }
             if (stopUiState.showDivider) {
                 Row(Modifier.padding(top = 8.dp, bottom = 8.dp)) {
-                    Divider(thickness = 1.dp)
+                    Divider(
+                        thickness = 1.dp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
+                    )
                 }
             }
         }

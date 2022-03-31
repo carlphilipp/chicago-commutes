@@ -9,7 +9,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.core.activity.MainUiState
 import fr.cph.chicago.core.model.BikeStation
@@ -43,8 +42,6 @@ import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 import java.util.Calendar
 import javax.inject.Inject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 val settingsViewModel = SettingsViewModel().initModel()
 val locationViewModel = LocationViewModel()
@@ -280,16 +277,10 @@ abstract class MainViewModel @Inject constructor(
     }
 
     fun onStart() {
-        val current = this
-        viewModelScope.launch(Dispatchers.Default) {
-            store.subscribe(current)
-        }
+        store.subscribe(this)
     }
 
     fun onStop() {
-        val current = this
-        viewModelScope.launch(Dispatchers.Default) {
-            store.unsubscribe(current)
-        }
+        store.unsubscribe(this)
     }
 }

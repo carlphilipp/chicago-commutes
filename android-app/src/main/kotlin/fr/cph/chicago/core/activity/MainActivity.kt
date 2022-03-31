@@ -346,17 +346,11 @@ class SplashViewModel @Inject constructor(
     }
 
     fun onStart() {
-        val current = this
-        viewModelScope.launch(Dispatchers.Default) {
-            store.subscribe(current)
-        }
+        store.subscribe(this)
     }
 
     fun onStop() {
-        val current = this
-        viewModelScope.launch(Dispatchers.Default) {
-            store.unsubscribe(current)
-        }
+        store.unsubscribe(this)
     }
 
     companion object {
