@@ -46,7 +46,7 @@ import fr.cph.chicago.core.ui.common.ChipMaterial3
 import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.common.SwitchMaterial3
-import fr.cph.chicago.core.ui.common.TextFieldMaterial3
+import fr.cph.chicago.core.ui.common.SearchTextField
 import fr.cph.chicago.core.ui.common.ThemeColorButton
 import fr.cph.chicago.core.ui.screen.Screen
 
@@ -213,10 +213,10 @@ fun ThemeChooserSettingsScreen(
                                 }
                                 Spacer(modifier = Modifier.padding(10.dp))
                                 val textValue = remember { mutableStateOf(TextFieldValue()) }
-                                TextFieldMaterial3(
-                                    text = textValue.value,
+                                SearchTextField(
+                                    text = textValue.value.text,
                                     onValueChange = {
-                                        textValue.value = it
+                                        textValue.value = TextFieldValue(it)
                                     }
                                 )
                                 Spacer(modifier = Modifier.padding(10.dp))

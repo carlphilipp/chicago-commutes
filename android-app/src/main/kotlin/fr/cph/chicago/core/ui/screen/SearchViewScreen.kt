@@ -52,7 +52,7 @@ import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.BusRouteDialog
 import fr.cph.chicago.core.ui.common.ChipMaterial3
 import fr.cph.chicago.core.ui.common.ColoredBox
-import fr.cph.chicago.core.ui.common.TextFieldMaterial3
+import fr.cph.chicago.core.ui.common.SearchTextField
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
@@ -98,11 +98,12 @@ fun SearchViewScreen(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             content = {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    TextFieldMaterial3(
-                        text = textSearch,
+                    SearchTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = textSearch.text,
                         onValueChange = { value ->
-                            viewModel.updateText(value.text)
-                            viewModel.search(value.text)
+                            viewModel.updateText(value)
+                            viewModel.search(value)
                         }
                     )
                     Row(

@@ -43,7 +43,7 @@ import fr.cph.chicago.core.ui.common.AnimatedPlaceHolderList
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
-import fr.cph.chicago.core.ui.common.TextFieldMaterial3
+import fr.cph.chicago.core.ui.common.SearchTextField
 import fr.cph.chicago.service.BusService
 import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
@@ -98,11 +98,11 @@ fun BusBoundScreen(
                     }
                     else -> {
                         Column(modifier = Modifier.padding(top = 5.dp, bottom = 5.dp)) {
-                            TextFieldMaterial3(
-                                modifier = Modifier.fillMaxWidth(),
-                                text = textSearch,
-                                onValueChange = { textFieldValue ->
-                                    viewModel.updateSearch(search = textFieldValue.text)
+                            SearchTextField(
+                                modifier = Modifier,
+                                text = textSearch.text,
+                                onValueChange = { value ->
+                                    viewModel.updateSearch(search = value)
                                 }
                             )
                             LazyColumn(

@@ -294,6 +294,7 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
     }
 
     private fun navigateTo(screen: Screen, arguments: Map<String, String>) {
+        // FIXME: check if keyboard is displayed and hide it if it is
         val route = buildRoute(route = screen.route, arguments = arguments)
         viewModel.uiState.navController.navigate(route) {
             launchSingleTop = true

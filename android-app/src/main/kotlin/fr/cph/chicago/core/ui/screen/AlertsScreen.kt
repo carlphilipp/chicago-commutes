@@ -43,7 +43,7 @@ import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.SwipeRefreshThemed
-import fr.cph.chicago.core.ui.common.TextFieldMaterial3
+import fr.cph.chicago.core.ui.common.SearchTextField
 import fr.cph.chicago.core.viewmodel.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -91,13 +91,13 @@ fun AlertsScreen(
                     } else {
                         if (!uiState.routeAlertErrorState) {
                             Column {
-                                TextFieldMaterial3(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    text = textSearch,
+                                SearchTextField(
+                                    modifier = Modifier,
+                                    text = textSearch.text,
                                     onValueChange = { value ->
-                                        textSearch = value
+                                        textSearch = TextFieldValue(value)
                                         searchRoutesAlerts = uiState.routesAlerts.filter { alert ->
-                                            alert.id.contains(value.text, true) || alert.routeName.contains(value.text, true)
+                                            alert.id.contains(value, true) || alert.routeName.contains(value, true)
                                         }
                                     }
                                 )

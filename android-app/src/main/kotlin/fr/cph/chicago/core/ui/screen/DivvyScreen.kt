@@ -34,7 +34,7 @@ import fr.cph.chicago.core.ui.common.AnimatedErrorView
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
-import fr.cph.chicago.core.ui.common.TextFieldMaterial3
+import fr.cph.chicago.core.ui.common.SearchTextField
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -78,13 +78,11 @@ fun DivvyScreen(
                 )
                 if (mainViewModel.uiState.bikeStations.isNotEmpty()) {
                     Column(modifier = Modifier.padding(top = 5.dp, bottom = 5.dp)) {
-                        TextFieldMaterial3(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 5.dp),
-                            text = textSearch,
+                        SearchTextField(
+                            modifier = Modifier,
+                            text = textSearch.text,
                             onValueChange = { value ->
-                                mainViewModel.updateBikeSearch(value.text)
+                                mainViewModel.updateBikeSearch(value)
                                 searchBikeStations = search(mainViewModel = mainViewModel, searchText = textSearch.text)
                             }
                         )

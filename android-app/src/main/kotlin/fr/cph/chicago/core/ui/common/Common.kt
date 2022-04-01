@@ -55,6 +55,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
@@ -68,6 +69,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -79,6 +81,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
@@ -690,5 +693,34 @@ fun SwipeRefreshThemed(
             )
         },
         content = content
+    )
+}
+
+@Composable
+fun SearchTextField(
+    modifier: Modifier = Modifier,
+    text: String,
+    onValueChange: (String) -> Unit
+) {
+    TextField(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(start = 20.dp, end = 20.dp, top = 5.dp, bottom = 5.dp),
+        value = text,
+        singleLine = true,
+        leadingIcon = {
+            Image(
+                modifier = Modifier.padding(start = 15.dp),
+                imageVector = Icons.Filled.Search,
+                contentDescription = "Icon",
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer),
+            )
+        },
+        onValueChange = onValueChange,
+        shape = RoundedCornerShape(28.0.dp),
+        colors = androidx.compose.material3.TextFieldDefaults.textFieldColors(
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+        ),
     )
 }
