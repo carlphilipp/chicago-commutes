@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Android
-import androidx.compose.material.icons.outlined.Brightness6
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -19,7 +18,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import fr.cph.chicago.R
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.screen.Screen
@@ -56,10 +57,8 @@ fun AboutScreen(
                             style = MaterialTheme.typography.labelLarge,
                             color = MaterialTheme.colorScheme.primary,
                         )
-                    }
-                    item {
                         SettingsElementView(
-                            imageVector = Icons.Outlined.Android,
+                            painter = painterResource(R.drawable.ic_launcher),
                             title = "Chicago commutes Flavor",
                             description = "Version",
                             onClick = {
@@ -68,8 +67,7 @@ fun AboutScreen(
                                 }
                             }
                         )
-                    }
-                    item {
+
                         SettingsElementView(
                             imageVector = Icons.Outlined.Android,
                             title = "Rate this app",
@@ -80,8 +78,7 @@ fun AboutScreen(
                                 }
                             }
                         )
-                    }
-                    item {
+
                         SettingsElementView(
                             imageVector = Icons.Outlined.Android,
                             title = "GitHub",
@@ -92,8 +89,6 @@ fun AboutScreen(
                                 }
                             }
                         )
-                    }
-                    item {
                         SettingsElementView(
                             imageVector = Icons.Outlined.Android,
                             title = "License",
@@ -107,6 +102,5 @@ fun AboutScreen(
                     }
                 }
             }
-        }
-    )
+        })
 }

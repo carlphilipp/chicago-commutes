@@ -378,7 +378,7 @@ sealed class Screen(
         showOnDrawer = false,
         component = { _, navigationViewModel ->
             AboutScreen(
-                topBarTitle = stringResource(R.string.screen_settings_theme),
+                topBarTitle = stringResource(R.string.screen_settings_about),
                 viewModel = settingsViewModel,
                 navigationViewModel = navigationViewModel,
             )

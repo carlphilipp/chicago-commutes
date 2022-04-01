@@ -24,6 +24,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
@@ -116,7 +117,7 @@ fun SettingsElementView(
     description: String,
     onClick: () -> Unit
 ) {
-    Row(
+/*    Row(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
@@ -133,6 +134,86 @@ fun SettingsElementView(
                 imageVector = imageVector,
                 contentDescription = null
             )
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start,
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+        }
+    }*/
+    SettingsElementView(
+        modifier = modifier,
+        icon = {
+            Icon(
+                modifier = Modifier.padding(end = 20.dp),
+                imageVector = imageVector,
+                contentDescription = null
+            )
+        },
+        title = title,
+        description = description,
+        onClick = onClick,
+    )
+}
+
+@Composable
+fun SettingsElementView(
+    modifier: Modifier = Modifier,
+    painter: Painter,
+    title: String,
+    description: String,
+    onClick: () -> Unit
+) {
+    SettingsElementView(
+        modifier = modifier,
+        icon = {
+            Icon(
+                modifier = Modifier.padding(end = 20.dp),
+                painter = painter,
+                contentDescription = null
+            )
+        },
+        title = title,
+        description = description,
+        onClick = onClick,
+    )
+}
+
+@Composable
+private fun SettingsElementView(
+    modifier: Modifier = Modifier,
+    icon: @Composable () -> Unit = {},
+    title: String,
+    description: String,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+    ) {
+        Row(
+            modifier = modifier
+                .padding(horizontal = 20.dp, vertical = 15.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            /*Icon(
+                modifier = Modifier.padding(end = 20.dp),
+                painter = painter,
+                contentDescription = null
+            )*/
+            icon()
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.Center,
