@@ -7,10 +7,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.RateReview
@@ -23,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -34,7 +33,9 @@ import androidx.compose.ui.unit.dp
 import fr.cph.chicago.R
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.NavigationViewModel
+import fr.cph.chicago.core.ui.common.RateView
 import fr.cph.chicago.core.ui.screen.Screen
+import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.launchWithDelay
 import fr.cph.chicago.util.Util
 
@@ -43,11 +44,14 @@ import fr.cph.chicago.util.Util
 fun AboutScreen(
     viewModel: SettingsViewModel,
     navigationViewModel: NavigationViewModel,
+    mainViewModel: MainViewModel,
     topBarTitle: String,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.settingsAboutScrollBehavior) }
+    var startMarket by remember { mutableStateOf(false) }
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         content = {
@@ -92,11 +96,11 @@ fun AboutScreen(
                     item {
                         SettingsElementView(
                             imageVector = Icons.Outlined.RateReview,
-                            title = "Rate app!",
+                            title = "Rate application",
                             description = "Rate our app on the market",
                             onClick = {
                                 scope.launchWithDelay(viewModel.uiState.animationSpeed.clickDelay) {
-
+                                    startMarket = true
                                 }
                             }
                         )
@@ -126,4 +130,13 @@ fun AboutScreen(
                 }
             }
         })
+
+    RateView(
+        startMarket = startMarket,
+        mainViewModel = mainViewModel,
+        onComplete = {
+            startMarket = false
+        }
+    )
+
 }

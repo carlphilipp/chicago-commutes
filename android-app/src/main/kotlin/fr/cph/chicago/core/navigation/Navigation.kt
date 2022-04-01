@@ -49,11 +49,11 @@ import fr.cph.chicago.core.ui.screen.TopBarType
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.core.viewmodel.settingsViewModel
-import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.net.URLEncoder
 import java.util.Stack
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
 val LocalNavController = compositionLocalOf<NavHostControllerWrapper> {
     error("No NavHostControllerWrapper provided")
@@ -86,11 +86,9 @@ fun Navigation(
                 Drawer(
                     currentScreen = uiState.currentScreen,
                     onDestinationClicked = { screen ->
-                        if (screen != Screen.Rate) {
-                            scope.launch {
-                                uiState.drawerState.animateTo(DrawerValue.Closed, TweenSpec(durationMillis = settingsViewModel.uiState.animationSpeed.closeDrawerSlideDuration))
-                                navController.navigate(screen)
-                            }
+                        scope.launch {
+                            uiState.drawerState.animateTo(DrawerValue.Closed, TweenSpec(durationMillis = settingsViewModel.uiState.animationSpeed.closeDrawerSlideDuration))
+                            navController.navigate(screen)
                         }
                     }
                 )

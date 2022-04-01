@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.NearMe
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.StarRate
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
@@ -325,13 +324,6 @@ sealed class Screen(
         }
     )
 
-    object Rate : Screen(
-        title = App.instance.getString(R.string.menu_rate),
-        route = "rate",
-        icon = Icons.Filled.StarRate,
-        topBar = ScreenTopBar.MediumTopBarDrawerSearch,
-        component = { _, _ -> RateScreen(mainViewModel = mainViewModel) })
-
     object Settings : Screen(
         title = App.instance.getString(R.string.menu_settings),
         route = "settings",
@@ -381,6 +373,7 @@ sealed class Screen(
                 topBarTitle = stringResource(R.string.screen_settings_about),
                 viewModel = settingsViewModel,
                 navigationViewModel = navigationViewModel,
+                mainViewModel = mainViewModel,
             )
         })
 
@@ -526,7 +519,6 @@ val screens = listOf(
     Screen.Map,
     Screen.Alerts,
     Screen.AlertDetail,
-    Screen.Rate,
     Screen.Settings,
     Screen.SettingsDisplay,
     Screen.SettingsThemeColorChooser,
