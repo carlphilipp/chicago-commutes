@@ -1,5 +1,6 @@
 package fr.cph.chicago.core.ui.screen.settings
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,7 +28,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import fr.cph.chicago.R
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
@@ -176,10 +180,11 @@ fun SettingsElementView(
     SettingsElementView(
         modifier = modifier,
         icon = {
-            Icon(
+            Image(
                 modifier = Modifier.padding(end = 20.dp),
                 painter = painter,
-                contentDescription = null
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
             )
         },
         title = title,
