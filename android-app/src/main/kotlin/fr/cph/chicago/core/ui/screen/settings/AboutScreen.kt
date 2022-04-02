@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import fr.cph.chicago.R
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.NavigationViewModel
+import fr.cph.chicago.core.ui.common.LicenseDialog
 import fr.cph.chicago.core.ui.common.RateView
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.core.viewmodel.MainViewModel
@@ -51,6 +52,7 @@ fun AboutScreen(
     val scope = rememberCoroutineScope()
     val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.settingsAboutScrollBehavior) }
     var startMarket by remember { mutableStateOf(false) }
+    var showLicense by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -122,7 +124,7 @@ fun AboutScreen(
                             description = "Apache License 2.0",
                             onClick = {
                                 scope.launchWithDelay(viewModel.uiState.animationSpeed.clickDelay) {
-
+                                    showLicense = true
                                 }
                             }
                         )
@@ -134,9 +136,11 @@ fun AboutScreen(
     RateView(
         startMarket = startMarket,
         mainViewModel = mainViewModel,
-        onComplete = {
-            startMarket = false
-        }
+        onComplete = { startMarket = false },
     )
 
+    LicenseDialog(
+        show = showLicense,
+        hideDialog = { showLicense = false },
+    )
 }
