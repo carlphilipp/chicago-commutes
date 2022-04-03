@@ -288,7 +288,7 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
         refreshCurrentTheme()
     }
 
-    private fun refreshCurrentTheme() {
+    fun refreshCurrentTheme() {
         uiState = uiState.copy(
             showMapDebug = preferenceService.getShowDebug(),
             theme = preferenceService.getTheme(),

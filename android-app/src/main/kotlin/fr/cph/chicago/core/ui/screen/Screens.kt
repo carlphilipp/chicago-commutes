@@ -249,9 +249,10 @@ sealed class Screen(
             )
             val viewModel = ViewModelProvider(activity, factory)[DeveloperOptionsViewModel::class.java]
             DeveloperOptionsScreen(
+                title = stringResource(R.string.screen_settings_develop),
                 viewModel = viewModel,
                 navigationViewModel = navigationViewModel,
-                title = stringResource(R.string.screen_settings_develop),
+                settingsViewModel = settingsViewModel,
             )
         }
     )

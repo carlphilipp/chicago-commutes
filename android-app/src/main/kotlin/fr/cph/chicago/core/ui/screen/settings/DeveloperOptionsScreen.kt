@@ -53,9 +53,10 @@ import timber.log.Timber
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeveloperOptionsScreen(
+    title: String,
     viewModel: DeveloperOptionsViewModel,
     navigationViewModel: NavigationViewModel,
-    title: String,
+    settingsViewModel: SettingsViewModel,
 ) {
     Timber.d("Compose DeveloperOptionsScreen")
     val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.settingsDeveloperScrollBehavior) }
@@ -88,6 +89,7 @@ fun DeveloperOptionsScreen(
                             description = "Show debug info on map",
                             onClick = {
                                 viewModel.showMapDebug(!viewModel.uiState.showMapDebug)
+                                settingsViewModel.refreshCurrentTheme()
                             },
                             imageVector = Icons.Outlined.Map,
                             isChecked = viewModel.uiState.showMapDebug,
