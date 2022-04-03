@@ -3,10 +3,7 @@ package fr.cph.chicago.core.ui.common
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Rect
-import android.inputmethodservice.Keyboard
 import android.net.Uri
-import android.view.ViewTreeObserver
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
@@ -53,8 +50,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.BottomDrawerValue
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -76,8 +71,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -98,7 +91,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -118,11 +110,11 @@ import fr.cph.chicago.core.theme.favorite_yellow
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.functions.Consumer
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 private val googleStreetClient = GoogleStreetClient
 
@@ -150,35 +142,6 @@ fun loadGoogleStreet(position: Position, onSuccess: Consumer<Bitmap>, onError: C
         .observeOn(Schedulers.computation())
         .subscribe(onSuccess, onError)
 }
-
-/*@OptIn(ExperimentalMaterialApi::class, androidx.compose.ui.ExperimentalComposeUiApi::class)
-@Composable
-fun keyboardAsState(): State<Keyboard> {
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    val keyboardState = remember { mutableStateOf(Keyboard.Closed) }
-    val view = LocalView.current
-    DisposableEffect(view) {
-        val onGlobalListener = ViewTreeObserver.OnGlobalLayoutListener {
-            val rect = Rect()
-            view.getWindowVisibleDisplayFrame(rect)
-            val screenHeight = view.rootView.height
-            val keypadHeight = screenHeight - rect.bottom
-            keyboardState.value = if (keypadHeight > screenHeight * 0.15) {
-                Keyboard.Opened
-            } else {
-                Keyboard.Closed
-            }
-        }
-        view.viewTreeObserver.addOnGlobalLayoutListener(onGlobalListener)
-
-        onDispose {
-            view.viewTreeObserver.removeOnGlobalLayoutListener(onGlobalListener)
-        }
-    }
-
-    return keyboardState
-}*/
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
