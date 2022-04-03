@@ -8,15 +8,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import fr.cph.chicago.core.navigation.NavigationViewModel
+import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.service.BikeService
-import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BikeMapScreen(
     modifier: Modifier = Modifier,
-    viewModel: BikesBusViewModel,
+    viewModel: MapBikesViewModel,
     navigationViewModel: NavigationViewModel,
+    settingsViewModel: SettingsViewModel,
     title: String,
 ) {
 
@@ -26,7 +27,7 @@ data class GoogleMapBikeUiState(
     val id: String,
 )
 
-class BikesBusViewModel @Inject constructor(
+class MapBikesViewModel constructor(
     id: String,
     private val bikeService: BikeService = BikeService,
 ) : ViewModel() {
