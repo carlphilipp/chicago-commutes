@@ -1,10 +1,16 @@
 package fr.cph.chicago.core.ui.screen
 
 import android.graphics.BitmapFactory
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -12,7 +18,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -24,13 +32,14 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
-import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerInfoWindow
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.NavigationViewModel
+import fr.cph.chicago.core.ui.common.AnimatedText
 import fr.cph.chicago.core.ui.common.LoadingBar
 import fr.cph.chicago.core.ui.common.LoadingCircle
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
@@ -159,7 +168,7 @@ fun BikeStationMarker(
     viewModel: MapBikesViewModel,
     cameraPositionState: CameraPositionState
 ) {
-    Marker(
+    MarkerInfoWindow(
         position = Position(
             latitude = viewModel.uiState.bikeStation.latitude,
             longitude = viewModel.uiState.bikeStation.longitude
@@ -167,7 +176,47 @@ fun BikeStationMarker(
         icon = viewModel.uiState.bikeStationIcon,
         title = viewModel.uiState.bikeStation.name,
         visible = true,
-        //snippet = busPattern.direction,
+        //snippet = viewModel.uiState.bikeStation.address,
+        content = { _ ->
+            Surface() {
+                Column() {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(R.string.bike_available_bikes),
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+                            var availableBikes by remember { mutableStateOf(viewModel.uiState.bikeStation.availableBikes.toString()) }
+                            availableBikes = if (viewModel.uiState.bikeStation.availableBikes == -1) "?" else viewModel.uiState.bikeStation.availableBikes.toString()
+                            AnimatedText(
+                                text = availableBikes,
+                                style = MaterialTheme.typography.bodyLarge,
+                            )
+                        }
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = stringResource(R.string.bike_available_docks),
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+                            var availableDocks by remember { mutableStateOf(viewModel.uiState.bikeStation.availableDocks.toString()) }
+                            availableDocks = if (viewModel.uiState.bikeStation.availableDocks == -1) "?" else viewModel.uiState.bikeStation.availableDocks.toString()
+
+                            AnimatedText(
+                                text = availableDocks,
+                                style = MaterialTheme.typography.bodyLarge,
+                            )
+                        }
+                    }
+                }
+            }
+        }
     )
 }
 
