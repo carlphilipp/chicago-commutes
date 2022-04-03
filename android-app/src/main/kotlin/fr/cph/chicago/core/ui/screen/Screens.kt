@@ -263,7 +263,6 @@ sealed class Screen(
         topBar = ScreenTopBar.MediumTopBarDrawer,
         isGestureEnabled = false,
         component = { _, navigationViewModel ->
-            settingsViewModel.loadShowMapDebug()
             NearbyScreen(
                 mainViewModel = mainViewModel,
                 locationViewModel = locationViewModel,
@@ -433,6 +432,25 @@ sealed class Screen(
             )
         }
     )
+
+    object BikeMap : Screen(
+        route = "map/bikes?id={id}",
+        icon = Icons.Filled.Search,
+        showOnDrawer = false,
+        isGestureEnabled = false,
+        topBar = ScreenTopBar.MediumTopBarBackReload,
+        component = { backStackEntry, navigationViewModel ->
+            val id = URLDecoder.decode(backStackEntry.arguments?.getString("id", "") ?: "", "UTF-8")
+
+            val viewModel = MapBikesViewModel(id = id)
+            BikeMapScreen(
+                viewModel = viewModel,
+                navigationViewModel = navigationViewModel,
+                settingsViewModel = settingsViewModel,
+                title = "Bike station",
+            )
+        }
+    )
 }
 
 sealed class ScreenTopBar(
@@ -525,6 +543,7 @@ val screens = listOf(
     Screen.Search,
     Screen.TrainMap,
     Screen.BusMap,
+    Screen.BikeMap,
     Screen.SettingsAbout,
 )
 

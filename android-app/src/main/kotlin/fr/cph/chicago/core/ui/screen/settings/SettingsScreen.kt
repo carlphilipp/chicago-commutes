@@ -288,14 +288,9 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
         refreshCurrentTheme()
     }
 
-    fun loadShowMapDebug() {
-        uiState = uiState.copy(
-            showMapDebug = preferenceService.getShowDebug()
-        )
-    }
-
     private fun refreshCurrentTheme() {
         uiState = uiState.copy(
+            showMapDebug = preferenceService.getShowDebug(),
             theme = preferenceService.getTheme(),
             themeColor = preferenceService.getThemeColor(),
             dynamicColorEnabled = preferenceService.getDynamicColor(),

@@ -263,6 +263,12 @@ fun BikeFavoriteCard(modifier: Modifier = Modifier, bikeStation: BikeStation) {
                     screen = Screen.DivvyDetails,
                     arguments = mapOf("stationId" to bikeStation.id)
                 )
+            },
+            mapOnClick = {
+                navController.navigate(
+                    screen = Screen.BikeMap,
+                    arguments = mapOf("id" to bikeStation.id)
+                )
             }
         )
     }

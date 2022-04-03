@@ -28,7 +28,6 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.Polyline
-import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Bus
@@ -57,7 +56,6 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -279,8 +277,7 @@ data class GoogleMapBusUiState(
     val detailsShowAll: Boolean = false,
 )
 
-@HiltViewModel
-class MapBusViewModel @Inject constructor(
+class MapBusViewModel constructor(
     busRouteId: String,
     private val busService: BusService = BusService,
 ) : ViewModel() {
