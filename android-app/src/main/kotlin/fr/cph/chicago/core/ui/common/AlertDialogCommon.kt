@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
@@ -140,6 +141,7 @@ fun TrainDetailDialog(
 fun BusDetailDialog(show: Boolean, busDetailsDTOs: List<BusDetailsDTO>, hideDialog: () -> Unit) {
     if (show) {
         val navController = LocalNavController.current
+        val keyboardController = LocalSoftwareKeyboardController.current
         AlertDialog(
             modifier = Modifier.padding(horizontal = 50.dp),
             onDismissRequest = hideDialog,
@@ -174,7 +176,10 @@ fun BusDetailDialog(show: Boolean, busDetailsDTOs: List<BusDetailsDTO>, hideDial
                                         "busRouteName" to busDetailsDTO.routeName,
                                         "bound" to busDetailsDTO.bound,
                                         "boundTitle" to busDetailsDTO.boundTitle,
-                                    )
+                                    ),
+                                    closeKeyboard = {
+                                        keyboardController?.hide()
+                                    }
                                 )
                                 hideDialog()
                             },

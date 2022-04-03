@@ -240,8 +240,9 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
         return viewModel.uiState.navController
     }
 
-    fun navigate(screen: Screen, arguments: Map<String, String> = mapOf()) {
+    fun navigate(screen: Screen, arguments: Map<String, String> = mapOf(), closeKeyboard: () -> Unit = {}) {
         Timber.d("Navigate to ${screen.title} with args $arguments")
+        closeKeyboard()
         when {
             previous.isEmpty() -> navigateTo(screen = screen, arguments = arguments)
             previous.isNotEmpty() -> {

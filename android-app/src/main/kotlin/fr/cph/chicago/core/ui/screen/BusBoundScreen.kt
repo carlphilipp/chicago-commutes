@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -41,14 +42,14 @@ import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.AnimatedErrorView
 import fr.cph.chicago.core.ui.common.AnimatedPlaceHolderList
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
+import fr.cph.chicago.core.ui.common.SearchTextField
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
-import fr.cph.chicago.core.ui.common.SearchTextField
 import fr.cph.chicago.service.BusService
 import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.ui.ExperimentalComposeUiApi::class)
 @Composable
 fun BusBoundScreen(
     modifier: Modifier = Modifier,
@@ -113,12 +114,12 @@ fun BusBoundScreen(
                                     items = uiState.searchBusStops,
                                     key = { it.id }
                                 ) { busStop ->
+                                    val keyboardController = LocalSoftwareKeyboardController.current
                                     TextButton(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(horizontal = 20.dp),
                                         onClick = {
-                                            Timber.i("********* Navigate to ${uiState.busRouteId} ${uiState.bound}")
                                             navController.navigate(
                                                 screen = Screen.BusDetails,
                                                 arguments = mapOf(
@@ -129,7 +130,10 @@ fun BusBoundScreen(
                                                     "bound" to uiState.bound,
                                                     "boundTitle" to uiState.boundTitle,
                                                     "search" to uiState.search,
-                                                )
+                                                ),
+                                                closeKeyboard = {
+                                                    keyboardController?.hide()
+                                                }
                                             )
                                         },
                                     ) {
@@ -207,7 +211,7 @@ class BusBoundUiViewModel(
         boundTitle: String,
         search: String,
     ) {
-        if (busRouteId != uiState.busRouteId ||  bound != uiState.bound) {
+        if (busRouteId != uiState.busRouteId || bound != uiState.bound) {
             uiState = uiState.copy(
                 busRouteId = busRouteId,
                 busRouteName = busRouteName,
@@ -218,7 +222,7 @@ class BusBoundUiViewModel(
                 searchBusStops = listOf(),
                 isRefreshing = true,
                 lazyListState = LazyListState(),
-                scrollBehavior= TopAppBarDefaults.pinnedScrollBehavior(),
+                scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
             )
             loadBusStops()
         }

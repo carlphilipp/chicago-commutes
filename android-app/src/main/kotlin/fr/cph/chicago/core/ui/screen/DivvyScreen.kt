@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
@@ -39,7 +40,7 @@ import fr.cph.chicago.core.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.ui.ExperimentalComposeUiApi::class)
 @Composable
 fun DivvyScreen(
     modifier: Modifier = Modifier,
@@ -51,6 +52,7 @@ fun DivvyScreen(
     val navController = LocalNavController.current
     var searchBikeStations by remember { mutableStateOf(mainViewModel.uiState.bikeStations) }
     val scope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     var textSearch by remember { mutableStateOf(TextFieldValue(mainViewModel.uiState.bikeSearch)) }
     textSearch = TextFieldValue(
@@ -104,7 +106,10 @@ fun DivvyScreen(
                                             arguments = mapOf(
                                                 "stationId" to bikeStation.id,
                                                 "search" to textSearch.text,
-                                            )
+                                            ),
+                                            closeKeyboard = {
+                                                keyboardController?.hide()
+                                            }
                                         )
                                     }
                                 ) {

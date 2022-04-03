@@ -26,10 +26,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -163,6 +165,7 @@ fun TrainFavoriteCard(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun BusFavoriteCard(
     modifier: Modifier = Modifier,
@@ -172,6 +175,7 @@ fun BusFavoriteCard(
 ) {
     val navController = LocalNavController.current
     var showDialog by remember { mutableStateOf(false) }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     FavoriteCardWrapper(modifier = modifier) {
         HeaderCard(
@@ -215,7 +219,10 @@ fun BusFavoriteCard(
                             "busRouteName" to busDetailsDTOs[0].routeName,
                             "bound" to busDetailsDTOs[0].bound,
                             "boundTitle" to busDetailsDTOs[0].boundTitle,
-                        )
+                        ),
+                        closeKeyboard = {
+                            keyboardController?.hide()
+                        }
                     )
                 } else {
                     showDialog = true
