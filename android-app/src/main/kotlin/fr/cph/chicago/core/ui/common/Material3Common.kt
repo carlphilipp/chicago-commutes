@@ -245,7 +245,7 @@ fun ChipMaterial3(
     val backgroundColor: Color
     val border: BorderStroke
     if (isSelected) {
-        backgroundColor = MaterialTheme.colorScheme.secondaryContainer
+        backgroundColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
         border = BorderStroke(0.dp, MaterialTheme.colorScheme.secondaryContainer)
     } else {
         backgroundColor = Color.Transparent
