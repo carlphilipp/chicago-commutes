@@ -171,16 +171,16 @@ private fun GoogleBikeBusMapView(
         onMapLoaded = onMapLoaded,
     ) {
         BikeStationMarker(
+            show = true,
             viewModel = viewModel,
             bikeStation = viewModel.uiState.bikeStation,
         )
-        if (viewModel.uiState.showAllStations) {
-            viewModel.uiState.bikeStations.forEach { bikeStation ->
-                BikeStationMarker(
-                    viewModel = viewModel,
-                    bikeStation = bikeStation,
-                )
-            }
+        viewModel.uiState.bikeStations.forEach { bikeStation ->
+            BikeStationMarker(
+                show = viewModel.uiState.showAllStations,
+                viewModel = viewModel,
+                bikeStation = bikeStation,
+            )
         }
     }
 
@@ -199,7 +199,11 @@ private fun GoogleBikeBusMapView(
 }
 
 @Composable
-fun BikeStationMarker(viewModel: MapBikesViewModel, bikeStation: BikeStation) {
+fun BikeStationMarker(
+    show: Boolean,
+    viewModel: MapBikesViewModel,
+    bikeStation: BikeStation
+) {
     MarkerInfoWindowContent(
         position = Position(
             latitude = bikeStation.latitude,
@@ -207,7 +211,7 @@ fun BikeStationMarker(viewModel: MapBikesViewModel, bikeStation: BikeStation) {
         ).toLatLng(),
         icon = viewModel.uiState.bikeStationIcon,
         title = bikeStation.name,
-        visible = true,
+        visible = show,
         content = { _ ->
             val color = Color.Black
             Column() {
