@@ -42,6 +42,7 @@ import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.AnimatedText
+import fr.cph.chicago.core.ui.common.ChipMaterial3
 import fr.cph.chicago.core.ui.common.LoadingBar
 import fr.cph.chicago.core.ui.common.LoadingCircle
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
@@ -114,7 +115,6 @@ fun BikeMapScreen(
                 modifier = modifier,
                 snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
                 content = {
-
                     GoogleBikeBusMapView(
                         viewModel = viewModel,
                         settingsViewModel = settingsViewModel,
@@ -172,34 +172,47 @@ private fun GoogleBikeBusMapView(
     ) {
         BikeStationMarker(
             viewModel = viewModel,
-            cameraPositionState = uiState.cameraPositionState,
+            bikeStation = viewModel.uiState.bikeStation,
         )
+        if (viewModel.uiState.showAllStations) {
+            viewModel.uiState.bikeStations.forEach { bikeStation ->
+                BikeStationMarker(
+                    viewModel = viewModel,
+                    bikeStation = bikeStation,
+                )
+            }
+        }
     }
 
-    if (settingsViewModel.uiState.showMapDebug) {
-        DebugView(uiState.cameraPositionState)
+    Column {
+        ChipMaterial3(
+            modifier = Modifier.padding(10.dp),
+            text = "Show all stations",
+            isSelected = viewModel.uiState.showAllStations,
+            onClick = { viewModel.showAllStations(!viewModel.uiState.showAllStations) }
+        )
+
+        if (settingsViewModel.uiState.showMapDebug) {
+            DebugView(uiState.cameraPositionState)
+        }
     }
 }
 
 @Composable
-fun BikeStationMarker(
-    viewModel: MapBikesViewModel,
-    cameraPositionState: CameraPositionState
-) {
+fun BikeStationMarker(viewModel: MapBikesViewModel, bikeStation: BikeStation) {
     MarkerInfoWindowContent(
         position = Position(
-            latitude = viewModel.uiState.bikeStation.latitude,
-            longitude = viewModel.uiState.bikeStation.longitude
+            latitude = bikeStation.latitude,
+            longitude = bikeStation.longitude
         ).toLatLng(),
         icon = viewModel.uiState.bikeStationIcon,
-        title = viewModel.uiState.bikeStation.name,
+        title = bikeStation.name,
         visible = true,
-        //snippet = viewModel.uiState.bikeStation.address,
         content = { _ ->
             val color = Color.Black
             Column() {
                 Text(
-                    text = viewModel.uiState.bikeStation.name,
+                    text = bikeStation.name,
                     style = MaterialTheme.typography.titleMedium,
                     color = color,
                 )
@@ -218,22 +231,21 @@ fun BikeStationMarker(
                         )
                     }
                     Column(modifier = Modifier.padding(start = 20.dp)) {
-                        var availableBikes by remember { mutableStateOf(viewModel.uiState.bikeStation.availableBikes.toString()) }
-                        availableBikes = if (viewModel.uiState.bikeStation.availableBikes == -1) "?" else viewModel.uiState.bikeStation.availableBikes.toString()
+                        var availableBikes by remember { mutableStateOf(bikeStation.availableBikes.toString()) }
+                        availableBikes = if (bikeStation.availableBikes == -1) "?" else bikeStation.availableBikes.toString()
                         AnimatedText(
                             text = availableBikes,
                             style = MaterialTheme.typography.bodySmall,
                             color = color,
                         )
                         var availableDocks by remember { mutableStateOf(viewModel.uiState.bikeStation.availableDocks.toString()) }
-                        availableDocks = if (viewModel.uiState.bikeStation.availableDocks == -1) "?" else viewModel.uiState.bikeStation.availableDocks.toString()
+                        availableDocks = if (bikeStation.availableDocks == -1) "?" else bikeStation.availableDocks.toString()
 
                         AnimatedText(
                             text = availableDocks,
                             style = MaterialTheme.typography.bodySmall,
                             color = color,
                         )
-
                     }
                 }
             }
@@ -247,7 +259,9 @@ data class GoogleMapBikeUiState(
     val isRefreshing: Boolean = false,
 
     val id: String,
+    val showAllStations: Boolean = false,
     val bikeStation: BikeStation = BikeStation.buildUnknownStation(),
+    val bikeStations: List<BikeStation> = listOf(),
     val bikeStationIcon: BitmapDescriptor? = null,
 
     val zoom: Float = defaultZoom,
@@ -271,17 +285,20 @@ class MapBikesViewModel @Inject constructor(
         uiState = uiState.copy(showError = showError)
     }
 
+    fun showAllStations(showAllStations: Boolean) {
+        uiState = uiState.copy(showAllStations = showAllStations)
+    }
+
     fun searchBikeStationInState() {
-        Single.fromCallable {
-            bikeService.getAllBikeStationsFromState()
-                .find { bikeStation -> bikeStation.id == uiState.id }
-                ?: bikeService.createEmptyBikeStation(uiState.id)
-        }
+        Single.fromCallable { bikeService.getAllBikeStationsFromState() }
             .subscribeOn(Schedulers.computation())
             .subscribe(
-                { bikeStation ->
+                { bikeStations ->
+                    val bikeStation = bikeStations.find { bikeStation -> bikeStation.id == uiState.id }
+                        ?: bikeService.createEmptyBikeStation(uiState.id)
                     uiState = uiState.copy(
                         bikeStation = bikeStation,
+                        bikeStations = bikeStations,
                         moveCamera = LatLng(bikeStation.latitude, bikeStation.longitude),
                         moveCameraZoom = 14f,
                     )

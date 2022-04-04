@@ -260,7 +260,7 @@ fun ChipMaterial3(
             .clickable { onClick() }
             .background(backgroundColor)) {
             Row(
-                modifier = Modifier.padding(start = 5.dp, end = 10.dp),
+                modifier = Modifier.padding(start = 10.dp, end = 15.dp, top = 5.dp, bottom = 5.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
