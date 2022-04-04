@@ -1,29 +1,28 @@
 package fr.cph.chicago.core.ui.screen
 
 import android.graphics.BitmapFactory
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -35,6 +34,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MarkerInfoWindowContent
+import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.BikeStation
@@ -46,8 +46,12 @@ import fr.cph.chicago.core.ui.common.LoadingBar
 import fr.cph.chicago.core.ui.common.LoadingCircle
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
+import fr.cph.chicago.core.ui.common.SwipeRefreshThemed
 import fr.cph.chicago.core.ui.common.runWithDelay
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
+import fr.cph.chicago.redux.BikeStationAction
+import fr.cph.chicago.redux.State
+import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.util.DebugView
@@ -56,9 +60,11 @@ import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.launch
+import org.rekotlin.StoreSubscriber
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,7 +91,7 @@ fun BikeMapScreen(
     if (isMapLoaded) {
         LaunchedEffect(key1 = isMapLoaded, block = {
             scope.launch {
-                viewModel.loadBikeStation()
+                viewModel.searchBikeStationInState()
                 viewModel.loadIcon()
             }
         })
@@ -96,35 +102,45 @@ fun BikeMapScreen(
             title = title,
             viewModel = navigationViewModel,
             onClickRightIcon = {
-                // FIXME: Reload data or simply remove refresh icon
-                //viewModel.reloadData()
+                viewModel.reloadData()
             }
         )
-        Scaffold(
+        SwipeRefreshThemed(
             modifier = modifier,
-            snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
-            content = {
+            swipeRefreshState = rememberSwipeRefreshState(viewModel.uiState.isRefreshing),
+            onRefresh = { },
+        ) {
+            Scaffold(
+                modifier = modifier,
+                snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
+                content = {
 
-                GoogleBikeBusMapView(
-                    viewModel = viewModel,
-                    settingsViewModel = settingsViewModel,
-                    onMapLoaded = { isMapLoaded = true },
-                )
-
-                LoadingBar(show = viewModel.uiState.isLoading)
-
-                LoadingCircle(show = !isMapLoaded)
-
-                if (viewModel.uiState.showError) {
-                    ShowErrorMessageSnackBar(
-                        scope = scope,
-                        snackbarHostState = snackbarHostState,
-                        showError = viewModel.uiState.showError,
-                        onComplete = { viewModel.showError(false) }
+                    GoogleBikeBusMapView(
+                        viewModel = viewModel,
+                        settingsViewModel = settingsViewModel,
+                        onMapLoaded = { isMapLoaded = true },
                     )
+
+                    LoadingBar(show = viewModel.uiState.isMapLoading)
+
+                    LoadingCircle(show = !isMapLoaded)
+
+                    if (viewModel.uiState.showError) {
+                        ShowErrorMessageSnackBar(
+                            scope = scope,
+                            snackbarHostState = snackbarHostState,
+                            showError = viewModel.uiState.showError,
+                            onComplete = { viewModel.showError(false) }
+                        )
+                    }
                 }
-            }
-        )
+            )
+        }
+    }
+
+    DisposableEffect(key1 = viewModel) {
+        viewModel.onStart()
+        onDispose { viewModel.onStop() }
     }
 }
 
@@ -226,8 +242,9 @@ fun BikeStationMarker(
 }
 
 data class GoogleMapBikeUiState(
-    val isLoading: Boolean = false,
+    val isMapLoading: Boolean = false,
     val showError: Boolean = false,
+    val isRefreshing: Boolean = false,
 
     val id: String,
     val bikeStation: BikeStation = BikeStation.buildUnknownStation(),
@@ -242,10 +259,11 @@ data class GoogleMapBikeUiState(
     ),
 )
 
-class MapBikesViewModel constructor(
+@HiltViewModel
+class MapBikesViewModel @Inject constructor(
     id: String,
     private val bikeService: BikeService = BikeService,
-) : ViewModel() {
+) : ViewModel(), StoreSubscriber<State> {
     var uiState by mutableStateOf(GoogleMapBikeUiState(id = id))
         private set
 
@@ -253,9 +271,9 @@ class MapBikesViewModel constructor(
         uiState = uiState.copy(showError = showError)
     }
 
-    fun loadBikeStation() {
+    fun searchBikeStationInState() {
         Single.fromCallable {
-            store.state.bikeStations
+            bikeService.getAllBikeStationsFromState()
                 .find { bikeStation -> bikeStation.id == uiState.id }
                 ?: bikeService.createEmptyBikeStation(uiState.id)
         }
@@ -274,6 +292,15 @@ class MapBikesViewModel constructor(
             )
     }
 
+    fun reloadData() {
+        Single.fromCallable {
+            uiState = uiState.copy(isRefreshing = true)
+            store.dispatch(BikeStationAction())
+        }
+            .subscribeOn(Schedulers.computation())
+            .subscribe()
+    }
+
     fun loadIcon() {
         Single.fromCallable {
             BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(App.instance.resources, R.drawable.blue_marker_no_shade))
@@ -287,5 +314,27 @@ class MapBikesViewModel constructor(
                     Timber.e(it, "Could not load bike station icon")
                 }
             )
+    }
+
+    override fun newState(state: State) {
+        Timber.d("MapBikesViewModel new state ${state.bikeStationsStatus} thread: ${Thread.currentThread().name}")
+        when (state.bikeStationsStatus) {
+            Status.SUCCESS -> {
+                searchBikeStationInState()
+            }
+            Status.FULL_FAILURE, Status.FAILURE -> {
+                showError(true)
+            }
+            else -> Timber.d("Status not handled")
+        }
+        uiState = uiState.copy(isRefreshing = false)
+    }
+
+    fun onStart() {
+        store.subscribe(this)
+    }
+
+    fun onStop() {
+        store.unsubscribe(this)
     }
 }

@@ -36,6 +36,10 @@ object BikeService {
     private val util = Util
     private val preferenceService = PreferenceService
 
+    fun getAllBikeStationsFromState(): List<BikeStation> {
+        return store.state.bikeStations
+    }
+
     fun allBikeStations(): Single<List<BikeStation>> {
         return loadAllBikeStations()
     }
