@@ -10,16 +10,27 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.material.BottomSheetScaffoldState
+import androidx.compose.material.BottomSheetState
+import androidx.compose.material.BottomSheetValue
+import androidx.compose.material.DrawerState
+import androidx.compose.material.DrawerValue
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.SwipeableDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.CircularProgressIndicator
@@ -38,6 +49,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.toolingGraphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -46,12 +58,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import androidx.savedstate.SavedStateRegistryOwner
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
@@ -82,11 +94,10 @@ import fr.cph.chicago.task.RefreshTaskLifecycleEventObserver
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import javax.inject.Inject
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
+import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
@@ -130,8 +141,13 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-data class MainUiState(
+@OptIn(ExperimentalMaterialApi::class)
+data class MainUiState  constructor(
     val isRefreshing: Boolean = false,
+    val bottomSheetContent: @Composable ColumnScope.() -> Unit = { Text("Test") },
+    val modalBottomSheetState: ModalBottomSheetState = ModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden
+    ),
 
     val busRoutes: List<BusRoute> = listOf(),
     val busRoutesShowError: Boolean = false,

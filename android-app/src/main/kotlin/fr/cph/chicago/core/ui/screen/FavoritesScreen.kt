@@ -9,21 +9,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsBus
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -33,6 +37,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -53,6 +58,7 @@ import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.theme.bike_orange
 import fr.cph.chicago.core.theme.defaultButtonShape
 import fr.cph.chicago.core.ui.common.AnimatedText
+import fr.cph.chicago.core.ui.common.BottomSheet
 import fr.cph.chicago.core.ui.common.BusDetailDialog
 import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
@@ -60,10 +66,11 @@ import fr.cph.chicago.core.ui.common.SwipeRefreshThemed
 import fr.cph.chicago.core.ui.common.TrainDetailDialog
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.util.TimeUtil
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.Calendar
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun FavoritesScreen(
     mainViewModel: MainViewModel,
@@ -75,8 +82,12 @@ fun FavoritesScreen(
     val lastUpdate: LastUpdate = favorites.time.value
     val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.favScrollBehavior) }
 
-    Scaffold(
+    // FIXME
+    ModalBottomSheetLayout(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        sheetState = mainViewModel.uiState.modalBottomSheetState,
+        sheetContent = mainViewModel.uiState.bottomSheetContent,
+        scrimColor = Color.Black.copy(alpha = 0.32f),
         content = {
             Column {
                 DisplayTopBar(
@@ -101,7 +112,12 @@ fun FavoritesScreen(
                             ) {
                                 Column {
                                     when (val model = favorites.getObject(index)) {
-                                        is TrainStation -> TrainFavoriteCard(trainStation = model, lastUpdate = lastUpdate, favorites = favorites)
+                                        is TrainStation -> TrainFavoriteCard(
+                                            mainViewModel = mainViewModel,
+                                            trainStation = model,
+                                            lastUpdate = lastUpdate,
+                                            favorites = favorites
+                                        )
                                         is BusRoute -> BusFavoriteCard(busRoute = model, lastUpdate = lastUpdate, favorites = favorites)
                                         is BikeStation -> BikeFavoriteCard(bikeStation = model)
                                     }
@@ -115,15 +131,18 @@ fun FavoritesScreen(
         })
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TrainFavoriteCard(
     modifier: Modifier = Modifier,
+    mainViewModel: MainViewModel,
     trainStation: TrainStation,
     lastUpdate: LastUpdate,
     favorites: Favorites,
 ) {
     val navController = LocalNavController.current
     var showDialog by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     FavoriteCardWrapper(modifier = modifier) {
 
@@ -153,15 +172,71 @@ fun TrainFavoriteCard(
                         mapOf("line" to line.toTextString())
                     )
                 } else {
-                    showDialog = true
+                    //showDialog = true
+                    scope.launch {
+                        /*if (mainViewModel.uiState.bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
+                            mainViewModel.updateBottomSheet {
+                                BottomSheet()
+                            }
+                            mainViewModel.uiState.bottomSheetScaffoldState.bottomSheetState.expand()
+                        } else {
+                            mainViewModel.uiState.bottomSheetScaffoldState.bottomSheetState.collapse()
+                        }*/
+                        if (mainViewModel.uiState.modalBottomSheetState.isVisible) {
+                            mainViewModel.uiState.modalBottomSheetState.hide()
+                        } else {
+                            mainViewModel.updateBottomSheet {
+                                BottomSheet(
+                                    content = {
+                                        Column(
+                                            verticalArrangement = Arrangement.Center,
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            modifier = Modifier.fillMaxWidth(),
+                                        ) {
+                                            trainStation.lines.forEachIndexed() { index, trainLine ->
+                                                val modifier = if (index == trainStation.lines.size - 1) {
+                                                    Modifier.fillMaxWidth()
+                                                } else {
+                                                    Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(bottom = 5.dp)
+                                                }
+                                                OutlinedButton(
+                                                    modifier = modifier,
+                                                    onClick = {
+                                                        navController.navigate(Screen.TrainMap, mapOf("line" to trainLine.toTextString()))
+                                                        //hideDialog()
+                                                    },
+                                                ) {
+                                                    Icon(
+                                                        modifier = Modifier.padding(end = 10.dp),
+                                                        imageVector = Icons.Default.Map,
+                                                        contentDescription = null,
+                                                        tint = trainLine.color,
+                                                    )
+                                                    Text(
+                                                        text = trainLine.toStringWithLine(),
+                                                        style = MaterialTheme.typography.bodyMedium,
+                                                        textAlign = TextAlign.Center,
+                                                    )
+                                                }
+                                            }
+
+                                        }
+                                    }
+                                )
+                            }
+                            mainViewModel.uiState.modalBottomSheetState.show()
+                        }
+                    }
                 }
             }
         )
-        TrainDetailDialog(
+/*        TrainDetailDialog(
             show = showDialog,
             trainLines = trainStation.lines,
             hideDialog = { showDialog = false },
-        )
+        )*/
     }
 }
 

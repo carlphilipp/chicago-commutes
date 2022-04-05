@@ -1,10 +1,13 @@
 package fr.cph.chicago.core.viewmodel
 
 import android.content.Context
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsBus
 import androidx.compose.material.icons.filled.Train
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -46,6 +49,7 @@ import javax.inject.Inject
 val settingsViewModel = SettingsViewModel().initModel()
 val locationViewModel = LocationViewModel()
 
+@OptIn(ExperimentalMaterialApi::class)
 @HiltViewModel
 abstract class MainViewModel @Inject constructor(
     private val trainService: TrainService = TrainService,
@@ -274,6 +278,10 @@ abstract class MainViewModel @Inject constructor(
 
     fun loadBusRoutesAndBike() {
         store.dispatch(BusRoutesAndBikeStationAction())
+    }
+
+    fun updateBottomSheet(component: @Composable ColumnScope.() -> Unit) {
+        uiState = uiState.copy(bottomSheetContent = component)
     }
 
     fun onStart() {
