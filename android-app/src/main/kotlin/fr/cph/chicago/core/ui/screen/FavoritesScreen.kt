@@ -10,18 +10,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsBus
-import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,7 +34,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -58,18 +54,17 @@ import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.theme.bike_orange
 import fr.cph.chicago.core.theme.defaultButtonShape
 import fr.cph.chicago.core.ui.common.AnimatedText
-import fr.cph.chicago.core.ui.common.BottomSheet
 import fr.cph.chicago.core.ui.common.BusDetailDialog
 import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.ui.common.ModalBottomSheetLayoutMaterial3
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
+import fr.cph.chicago.core.ui.common.ShowMapMultipleTrainLinesBottomView
 import fr.cph.chicago.core.ui.common.SwipeRefreshThemed
-import fr.cph.chicago.core.ui.common.TrainDetailDialog
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.util.TimeUtil
+import java.util.Calendar
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -168,8 +163,8 @@ fun TrainFavoriteCard(
                 if (trainStation.lines.size == 1) {
                     val line = trainStation.lines.first()
                     navController.navigate(
-                        Screen.TrainMap,
-                        mapOf("line" to line.toTextString())
+                        screen = Screen.TrainMap,
+                        arguments = mapOf("line" to line.toTextString())
                     )
                 } else {
                     scope.launch {
@@ -177,50 +172,9 @@ fun TrainFavoriteCard(
                             mainViewModel.uiState.modalBottomSheetState.hide()
                         } else {
                             mainViewModel.updateBottomSheet {
-                                BottomSheet(
-                                    title = stringResource(id = R.string.train_choose_line),
-                                    content = {
-                                        Column(
-                                            verticalArrangement = Arrangement.Center,
-                                            horizontalAlignment = Alignment.CenterHorizontally,
-                                            modifier = Modifier.fillMaxWidth(),
-                                        ) {
-                                            trainStation.lines.forEachIndexed() { index, trainLine ->
-                                                val modifier = if (index == trainStation.lines.size - 1) {
-                                                    Modifier.fillMaxWidth()
-                                                } else {
-                                                    Modifier
-                                                        .fillMaxWidth()
-                                                        .padding(bottom = 5.dp)
-                                                }
-                                                OutlinedButton(
-                                                    modifier = modifier,
-                                                    onClick = {
-                                                        scope.launch {
-                                                            mainViewModel.uiState.modalBottomSheetState.hide()
-                                                            while(mainViewModel.uiState.modalBottomSheetState.isAnimationRunning ) {
-                                                                // wait
-                                                            }
-                                                            navController.navigate(Screen.TrainMap, mapOf("line" to trainLine.toTextString()))
-                                                        }
-                                                    },
-                                                ) {
-                                                    Icon(
-                                                        modifier = Modifier.padding(end = 10.dp),
-                                                        imageVector = Icons.Default.Map,
-                                                        contentDescription = null,
-                                                        tint = trainLine.color,
-                                                    )
-                                                    Text(
-                                                        text = trainLine.toStringWithLine(),
-                                                        style = MaterialTheme.typography.bodyMedium,
-                                                        textAlign = TextAlign.Center,
-                                                    )
-                                                }
-                                            }
-
-                                        }
-                                    }
+                                ShowMapMultipleTrainLinesBottomView(
+                                    trainStation = trainStation,
+                                    mainViewModel = mainViewModel,
                                 )
                             }
                             mainViewModel.uiState.modalBottomSheetState.show()
@@ -229,11 +183,6 @@ fun TrainFavoriteCard(
                 }
             }
         )
-/*        TrainDetailDialog(
-            show = showDialog,
-            trainLines = trainStation.lines,
-            hideDialog = { showDialog = false },
-        )*/
     }
 }
 

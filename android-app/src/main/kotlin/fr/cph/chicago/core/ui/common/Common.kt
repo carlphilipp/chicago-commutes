@@ -728,32 +728,3 @@ fun SearchTextField(
         ),
     )
 }
-
-@Composable
-fun BottomSheet(
-    title: String,
-    content: @Composable () -> Unit
-) {
-    Column {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 10.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Box(
-                modifier = Modifier
-                    .width(22.dp)
-                    .height(3.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.4f))
-            )
-        }
-        TitleDetailDialog(
-            modifier = Modifier.padding(bottom = 15.dp),
-            title = title
-        )
-        content()
-        NavigationBarsSpacer()
-    }
-}
