@@ -35,25 +35,6 @@ import fr.cph.chicago.core.theme.FontSize
 import fr.cph.chicago.core.theme.availableFonts
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 
-@Composable
-fun TitleDetailDialog(
-    modifier: Modifier = Modifier,
-    title: String
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-    }
-}
-
 @OptIn(ExperimentalComposeUiApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun FontTypefaceAlertDialog(
@@ -277,12 +258,7 @@ fun LicenseDialog(
                 TitleDetailDialog(title = "Apache License, Version 2.0")
             },
             text = {
-                Column(
-                    modifier = Modifier.verticalScroll(ScrollState(0))
-                    //verticalArrangement = Arrangement.Center,
-                    //horizontalAlignment = Alignment.CenterHorizontally,
-                    //modifier = Modifier.fillMaxWidth(),
-                ) {
+                Column(modifier = Modifier.verticalScroll(ScrollState(0))) {
                     Text(
                         buildAnnotatedString {
                             withStyle(style = ParagraphStyle(textAlign = TextAlign.Center)) {
@@ -478,6 +454,25 @@ fun LicenseDialog(
                     )
                 }
             },
+        )
+    }
+}
+
+@Composable
+private fun TitleDetailDialog(
+    modifier: Modifier = Modifier,
+    title: String
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }

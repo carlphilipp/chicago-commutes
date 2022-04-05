@@ -1,6 +1,7 @@
 package fr.cph.chicago.core.ui.common
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,9 +16,11 @@ import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.toFontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -41,7 +45,9 @@ import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.navigation.LocalNavController
+import fr.cph.chicago.core.theme.availableFonts
 import fr.cph.chicago.core.ui.screen.Screen
+import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.service.BusService
 import kotlinx.coroutines.launch
@@ -124,6 +130,45 @@ private fun TitleBottomSheet(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FontTypefaceBottomView(
+    title: String,
+    viewModel: SettingsViewModel,
+) {
+    BottomSheet(
+        title = title,
+        content = {
+            val fontSelected = remember { mutableStateOf(viewModel.uiState.fontTypeFace) }
+            availableFonts.forEach {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            fontSelected.value = it.key
+                            viewModel.setFontTypeFace(fontSelected.value)
+                        },
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    RadioButton(
+                        selected = it.key == fontSelected.value,
+                        onClick = {
+                            fontSelected.value = it.key
+                            viewModel.setFontTypeFace(fontSelected.value)
+                        })
+                    Text(
+                        text = it.key,
+                        fontFamily = it.value.toFontFamily(),
+                        style = MaterialTheme.typography.titleMedium,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+        }
+    )
+}
+
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
 @Composable
@@ -170,7 +215,6 @@ fun ShowBusDetailsBottomView(
                                 }
                             )
                         }
-                        //hideDialog()
                     },
                 ) {
                     Text(

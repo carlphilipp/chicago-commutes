@@ -1,13 +1,19 @@
+@file:OptIn(ExperimentalMaterialApi::class)
+
 package fr.cph.chicago.core.ui.screen.settings
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Brightness6
 import androidx.compose.material.icons.outlined.DeveloperMode
@@ -247,6 +253,10 @@ data class SettingsState(
     val fontTypeFace: String = "",
     val fontSize: FontSize = FontSize.REGULAR,
     val animationSpeed: AnimationSpeed = AnimationSpeed.Normal,
+    val bottomSheetContent: @Composable ColumnScope.() -> Unit = { Text("Test") },
+    val modalBottomSheetState: ModalBottomSheetState = ModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden
+    ),
 )
 
 class SettingsViewModel(private val preferenceService: PreferenceService = PreferenceService) {
@@ -286,6 +296,10 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
     fun setFontSize(value: FontSize) {
         preferenceService.saveFontSize(value)
         refreshCurrentTheme()
+    }
+
+    fun updateBottomSheet(component: @Composable ColumnScope.() -> Unit) {
+        uiState = uiState.copy(bottomSheetContent = component)
     }
 
     fun refreshCurrentTheme() {

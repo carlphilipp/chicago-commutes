@@ -19,7 +19,6 @@ import androidx.compose.material.icons.outlined.TextFormat
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,10 +39,13 @@ import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.AnimationSpeedDialog
 import fr.cph.chicago.core.ui.common.FontSizeAlertDialog
 import fr.cph.chicago.core.ui.common.FontTypefaceAlertDialog
+import fr.cph.chicago.core.ui.common.FontTypefaceBottomView
+import fr.cph.chicago.core.ui.common.ModalBottomSheetLayoutMaterial3
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.common.SwitchMaterial3
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.launchWithDelay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
@@ -60,12 +62,13 @@ fun DisplaySettingsScreen(
 
     val scope = rememberCoroutineScope()
     var showAnimationSpeedDialog by remember { mutableStateOf(false) }
-    var showFontTypefaceDialog by remember { mutableStateOf(false) }
     var showFontSizeDialog by remember { mutableStateOf(false) }
     val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.settingsDisplayScrollBehavior) }
 
-    Scaffold(
+    ModalBottomSheetLayoutMaterial3(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        sheetState = viewModel.uiState.modalBottomSheetState,
+        sheetContent = viewModel.uiState.bottomSheetContent,
         content = {
             Column {
                 DisplayTopBar(
@@ -149,7 +152,20 @@ fun DisplaySettingsScreen(
                             title = "Font type",
                             description = "Choose a font",
                             onClick = {
-                                showFontTypefaceDialog = true
+                                scope.launch {
+                                    Timber.e("Sheet state: " + viewModel.uiState.modalBottomSheetState.currentValue)
+                                    Timber.e("Sheet offset: " + viewModel.uiState.modalBottomSheetState.offset)
+                                    if (viewModel.uiState.modalBottomSheetState.isVisible) {
+                                        viewModel.uiState.modalBottomSheetState.hide()
+                                    } else {
+                                        viewModel.updateBottomSheet {
+                                            FontTypefaceBottomView(title = "Pick a font", viewModel = viewModel)
+                                        }
+                                        viewModel.uiState.modalBottomSheetState.show()
+                                        Timber.e("After Sheet state: " + viewModel.uiState.modalBottomSheetState.currentValue)
+                                        Timber.e("After Sheet offset: " + viewModel.uiState.modalBottomSheetState.offset)
+                                    }
+                                }
                             },
                             imageVector = Icons.Outlined.TextFormat,
                         )
@@ -181,13 +197,13 @@ fun DisplaySettingsScreen(
                     item { NavigationBarsSpacer() }
                 }
             }
-            FontTypefaceAlertDialog(
+            /*FontTypefaceAlertDialog(
                 viewModel = viewModel,
                 showDialog = showFontTypefaceDialog,
                 hideDialog = {
                     showFontTypefaceDialog = false
                 }
-            )
+            )*/
             FontSizeAlertDialog(
                 viewModel = viewModel,
                 showDialog = showFontSizeDialog,
