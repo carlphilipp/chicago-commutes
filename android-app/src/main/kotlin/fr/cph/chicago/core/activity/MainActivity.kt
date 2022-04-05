@@ -145,7 +145,10 @@ class MainActivity : ComponentActivity() {
 data class MainUiState  constructor(
     val isRefreshing: Boolean = false,
     val bottomSheetContent: @Composable ColumnScope.() -> Unit = { Text("Test") },
-    val modalBottomSheetState: ModalBottomSheetState = ModalBottomSheetState(
+    val favModalBottomSheetState: ModalBottomSheetState = ModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden
+    ),
+    val busModalBottomSheetState: ModalBottomSheetState = ModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
     ),
 

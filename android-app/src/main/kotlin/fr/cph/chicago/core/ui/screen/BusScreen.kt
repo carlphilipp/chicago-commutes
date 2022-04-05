@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -33,15 +34,18 @@ import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.AnimatedErrorView
 import fr.cph.chicago.core.ui.common.BusRouteDialog
+import fr.cph.chicago.core.ui.common.ModalBottomSheetLayoutMaterial3
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.SearchTextField
+import fr.cph.chicago.core.ui.common.ShowBusBoundBottomView
+import fr.cph.chicago.core.ui.common.ShowMapMultipleTrainLinesBottomView
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun BusScreen(
     modifier: Modifier = Modifier,
@@ -50,8 +54,8 @@ fun BusScreen(
     navigationViewModel: NavigationViewModel
 ) {
     Timber.d("Compose BusScreen")
-    var showDialog by remember { mutableStateOf(false) }
-    var selectedBusRoute by remember { mutableStateOf(BusRoute.buildEmpty()) }
+    //var showDialog by remember { mutableStateOf(false) }
+    //var selectedBusRoute by remember { mutableStateOf(BusRoute.buildEmpty()) }
     var searchBusRoutes by remember { mutableStateOf(mainViewModel.uiState.busRoutes) }
     val scope = rememberCoroutineScope()
     val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.busScrollBehavior) }
@@ -72,87 +76,105 @@ fun BusScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
         content = {
-            Column {
-                DisplayTopBar(
-                    screen = Screen.Bus,
-                    title = title,
-                    viewModel = navigationViewModel,
-                    scrollBehavior = scrollBehavior
-                )
-                if (mainViewModel.uiState.busRoutes.isNotEmpty()) {
-                    Column(modifier = Modifier.padding(top = 5.dp, bottom = 5.dp)) {
-                        SearchTextField(
-                            modifier = Modifier,
-                            text = textSearch.text,
-                            onValueChange = { value ->
-                                mainViewModel.updateBusRouteSearch(value)
-                                searchBusRoutes = search(mainViewModel = mainViewModel, searchText = value)
-                            }
+            ModalBottomSheetLayoutMaterial3(
+                sheetState = mainViewModel.uiState.busModalBottomSheetState,
+                sheetContent = mainViewModel.uiState.bottomSheetContent,
+                content = {
+                    Column {
+                        DisplayTopBar(
+                            screen = Screen.Bus,
+                            title = title,
+                            viewModel = navigationViewModel,
+                            scrollBehavior = scrollBehavior
                         )
-                        LazyColumn(
-                            modifier = modifier.fillMaxSize(),
-                            state = mainViewModel.uiState.busLazyListState
-                        ) {
-                            items(
-                                items = searchBusRoutes,
-                                key = { it.id }
-                            ) { busRoute ->
-                                TextButton(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 20.dp),
-                                    onClick = {
-                                        showDialog = true
-                                        selectedBusRoute = busRoute
+                        if (mainViewModel.uiState.busRoutes.isNotEmpty()) {
+                            Column(modifier = Modifier.padding(top = 5.dp, bottom = 5.dp)) {
+                                SearchTextField(
+                                    modifier = Modifier,
+                                    text = textSearch.text,
+                                    onValueChange = { value ->
+                                        mainViewModel.updateBusRouteSearch(value)
+                                        searchBusRoutes = search(mainViewModel = mainViewModel, searchText = value)
                                     }
+                                )
+                                LazyColumn(
+                                    modifier = modifier.fillMaxSize(),
+                                    state = mainViewModel.uiState.busLazyListState
                                 ) {
-                                    Row(
-                                        horizontalArrangement = Arrangement.Start,
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Text(
-                                            modifier = Modifier.requiredWidth(50.dp),
-                                            text = busRoute.id,
-                                            style = MaterialTheme.typography.bodyLarge,
-                                            maxLines = 1,
-                                        )
-                                        Text(
-                                            text = busRoute.name,
-                                            style = MaterialTheme.typography.bodyLarge,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis,
-                                        )
+                                    items(
+                                        items = searchBusRoutes,
+                                        key = { it.id }
+                                    ) { busRoute ->
+                                        TextButton(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(horizontal = 20.dp),
+                                            onClick = {
+                                                //showDialog = true
+                                                //selectedBusRoute = busRoute
+                                                scope.launch {
+                                                    if (mainViewModel.uiState.busModalBottomSheetState.isVisible) {
+                                                        mainViewModel.uiState.busModalBottomSheetState.hide()
+                                                    } else {
+                                                        mainViewModel.updateBottomSheet {
+                                                            Timber.i("Update bottom sheet: ${busRoute.id}")
+                                                            ShowBusBoundBottomView(busRoute = busRoute, mainViewModel = mainViewModel)
+                                                        }
+                                                        mainViewModel.uiState.busModalBottomSheetState.show()
+                                                    }
+                                                }
+                                            }
+                                        ) {
+                                            Row(
+                                                horizontalArrangement = Arrangement.Start,
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                modifier = Modifier.fillMaxWidth()
+                                            ) {
+                                                Text(
+                                                    modifier = Modifier.requiredWidth(50.dp),
+                                                    text = busRoute.id,
+                                                    style = MaterialTheme.typography.bodyLarge,
+                                                    maxLines = 1,
+                                                )
+                                                Text(
+                                                    text = busRoute.name,
+                                                    style = MaterialTheme.typography.bodyLarge,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
+                                                )
+                                            }
+                                        }
                                     }
+                                    item { NavigationBarsSpacer() }
                                 }
                             }
-                            item { NavigationBarsSpacer() }
-                        }
-                    }
-                } else {
-                    AnimatedErrorView(
-                        onClick = {
-                            mainViewModel.loadBusRoutes()
-                        }
-                    )
-                    if (mainViewModel.uiState.busRoutesShowError) {
-                        ShowErrorMessageSnackBar(
-                            scope = scope,
-                            snackbarHostState = mainViewModel.uiState.snackbarHostState,
-                            showError = mainViewModel.uiState.busRoutesShowError,
-                            onComplete = {
-                                mainViewModel.resetBusRoutesShowError()
+                        } else {
+                            AnimatedErrorView(
+                                onClick = {
+                                    mainViewModel.loadBusRoutes()
+                                }
+                            )
+                            if (mainViewModel.uiState.busRoutesShowError) {
+                                ShowErrorMessageSnackBar(
+                                    scope = scope,
+                                    snackbarHostState = mainViewModel.uiState.snackbarHostState,
+                                    showError = mainViewModel.uiState.busRoutesShowError,
+                                    onComplete = {
+                                        mainViewModel.resetBusRoutesShowError()
+                                    }
+                                )
                             }
-                        )
+                        }
                     }
                 }
-            }
+            )
 
-            BusRouteDialog(
+
+/*            BusRouteDialog(
                 showDialog = showDialog,
                 busRoute = selectedBusRoute,
                 hideDialog = { showDialog = false },
-            )
+            )*/
         })
 }
 

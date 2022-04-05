@@ -78,10 +78,9 @@ fun FavoritesScreen(
     val lastUpdate: LastUpdate = favorites.time.value
     val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.favScrollBehavior) }
 
-    // FIXME
     ModalBottomSheetLayoutMaterial3(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        sheetState = mainViewModel.uiState.modalBottomSheetState,
+        sheetState = mainViewModel.uiState.favModalBottomSheetState,
         sheetContent = mainViewModel.uiState.bottomSheetContent,
         content = {
             Column {
@@ -136,7 +135,6 @@ fun TrainFavoriteCard(
     favorites: Favorites,
 ) {
     val navController = LocalNavController.current
-    var showDialog by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     FavoriteCardWrapper(modifier = modifier) {
@@ -168,8 +166,8 @@ fun TrainFavoriteCard(
                     )
                 } else {
                     scope.launch {
-                        if (mainViewModel.uiState.modalBottomSheetState.isVisible) {
-                            mainViewModel.uiState.modalBottomSheetState.hide()
+                        if (mainViewModel.uiState.favModalBottomSheetState.isVisible) {
+                            mainViewModel.uiState.favModalBottomSheetState.hide()
                         } else {
                             mainViewModel.updateBottomSheet {
                                 ShowMapMultipleTrainLinesBottomView(
@@ -177,7 +175,7 @@ fun TrainFavoriteCard(
                                     mainViewModel = mainViewModel,
                                 )
                             }
-                            mainViewModel.uiState.modalBottomSheetState.show()
+                            mainViewModel.uiState.favModalBottomSheetState.show()
                         }
                     }
                 }
