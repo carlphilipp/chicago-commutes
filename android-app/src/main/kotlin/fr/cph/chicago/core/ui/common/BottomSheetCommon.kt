@@ -27,17 +27,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.google.android.gms.maps.CameraUpdateFactory
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.TrainStation
+import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.core.viewmodel.MainViewModel
@@ -53,18 +55,22 @@ private fun LoadingBottomSheet(
     content: @Composable () -> Unit
 ) {
     val sheetContent: @Composable () -> Unit = when {
-        isError -> {{ Text(modifier = Modifier.padding(bottom = 15.dp), text = "Could not load directions!") }}
-        isLoading -> {{
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 15.dp),
-            ) {
-                CircularProgressIndicator()
+        isError -> {
+            { Text(modifier = Modifier.padding(bottom = 15.dp), text = "Could not load directions!") }
+        }
+        isLoading -> {
+            {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 15.dp),
+                ) {
+                    CircularProgressIndicator()
+                }
             }
-        }}
+        }
         else -> content
     }
     BottomSheet(title = title, content = sheetContent)
@@ -116,6 +122,66 @@ private fun TitleBottomSheet(
             overflow = TextOverflow.Ellipsis,
         )
     }
+}
+
+
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
+@Composable
+fun ShowBusDetailsBottomView(
+    mainViewModel: MainViewModel,
+    busDetailsDTOs: List<BusDetailsDTO>,
+) {
+    Timber.d("Compose ShowBusDetailsBottomView")
+    val scope = rememberCoroutineScope()
+    val navController = LocalNavController.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    BottomSheet(
+        title = stringResource(id = R.string.bus_choose_stop),
+        content = {
+            busDetailsDTOs.forEachIndexed { index, busDetailsDTO ->
+                val modifier = if (index == busDetailsDTOs.size - 1) {
+                    Modifier.fillMaxWidth()
+                } else {
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 5.dp)
+                }
+                OutlinedButton(
+                    modifier = modifier,
+                    onClick = {
+                        scope.launch {
+                            mainViewModel.uiState.favModalBottomSheetState.hide()
+                            while (mainViewModel.uiState.favModalBottomSheetState.isAnimationRunning) {
+                                // wait. Is that actually ok to do that?
+                            }
+                            navController.navigate(
+                                screen = Screen.BusDetails,
+                                arguments = mapOf(
+                                    "busStopId" to busDetailsDTO.stopId.toString(),
+                                    "busStopName" to busDetailsDTO.stopName,
+                                    "busRouteId" to busDetailsDTO.busRouteId,
+                                    "busRouteName" to busDetailsDTO.routeName,
+                                    "bound" to busDetailsDTO.bound,
+                                    "boundTitle" to busDetailsDTO.boundTitle,
+                                ),
+                                closeKeyboard = {
+                                    keyboardController?.hide()
+                                }
+                            )
+                        }
+                        //hideDialog()
+                    },
+                ) {
+                    Text(
+                        text = "${busDetailsDTO.stopName} (${busDetailsDTO.bound})",
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
+        }
+    )
 }
 
 @OptIn(ExperimentalMaterialApi::class)

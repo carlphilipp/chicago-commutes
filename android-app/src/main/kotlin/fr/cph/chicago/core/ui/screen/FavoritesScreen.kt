@@ -54,10 +54,10 @@ import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.theme.bike_orange
 import fr.cph.chicago.core.theme.defaultButtonShape
 import fr.cph.chicago.core.ui.common.AnimatedText
-import fr.cph.chicago.core.ui.common.BusDetailDialog
 import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.ui.common.ModalBottomSheetLayoutMaterial3
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
+import fr.cph.chicago.core.ui.common.ShowBusDetailsBottomView
 import fr.cph.chicago.core.ui.common.ShowMapMultipleTrainLinesBottomView
 import fr.cph.chicago.core.ui.common.SwipeRefreshThemed
 import fr.cph.chicago.core.viewmodel.MainViewModel
@@ -112,7 +112,12 @@ fun FavoritesScreen(
                                             lastUpdate = lastUpdate,
                                             favorites = favorites
                                         )
-                                        is BusRoute -> BusFavoriteCard(busRoute = model, lastUpdate = lastUpdate, favorites = favorites)
+                                        is BusRoute -> BusFavoriteCard(
+                                            mainViewModel = mainViewModel,
+                                            busRoute = model,
+                                            lastUpdate = lastUpdate,
+                                            favorites = favorites
+                                        )
                                         is BikeStation -> BikeFavoriteCard(bikeStation = model)
                                     }
                                 }
@@ -184,16 +189,17 @@ fun TrainFavoriteCard(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun BusFavoriteCard(
     modifier: Modifier = Modifier,
+    mainViewModel: MainViewModel,
     busRoute: BusRoute,
     lastUpdate: LastUpdate,
     favorites: Favorites,
 ) {
     val navController = LocalNavController.current
-    var showDialog by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
 
     FavoriteCardWrapper(modifier = modifier) {
@@ -244,7 +250,19 @@ fun BusFavoriteCard(
                         }
                     )
                 } else {
-                    showDialog = true
+                    scope.launch {
+                        if (mainViewModel.uiState.favModalBottomSheetState.isVisible) {
+                            mainViewModel.uiState.favModalBottomSheetState.hide()
+                        } else {
+                            mainViewModel.updateBottomSheet {
+                                ShowBusDetailsBottomView(
+                                    busDetailsDTOs = busDetailsDTOs,
+                                    mainViewModel = mainViewModel,
+                                )
+                            }
+                            mainViewModel.uiState.favModalBottomSheetState.show()
+                        }
+                    }
                 }
             },
             mapOnClick = {
@@ -253,11 +271,6 @@ fun BusFavoriteCard(
                     arguments = mapOf("busRouteId" to busRoute.id)
                 )
             }
-        )
-        BusDetailDialog(
-            show = showDialog,
-            busDetailsDTOs = busDetailsDTOs,
-            hideDialog = { showDialog = false },
         )
     }
 }
