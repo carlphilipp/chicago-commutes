@@ -392,6 +392,7 @@ sealed class Screen(
             SearchViewScreen(
                 title = stringResource(R.string.screen_search),
                 viewModel = viewModel,
+                mainViewModel = mainViewModel,
                 navigationViewModel = navigationViewModel,
             )
         }

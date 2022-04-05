@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsBus
@@ -16,7 +17,6 @@ import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -49,10 +49,12 @@ import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
-import fr.cph.chicago.core.ui.common.BusRouteDialog
 import fr.cph.chicago.core.ui.common.ChipMaterial3
 import fr.cph.chicago.core.ui.common.ColoredBox
+import fr.cph.chicago.core.ui.common.ModalBottomSheetLayoutMaterial3
 import fr.cph.chicago.core.ui.common.SearchTextField
+import fr.cph.chicago.core.ui.common.ShowBusBoundBottomView
+import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
@@ -62,11 +64,12 @@ import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun SearchViewScreen(
     viewModel: SearchViewModel,
     navigationViewModel: NavigationViewModel,
+    mainViewModel: MainViewModel,
     title: String,
 ) {
     Timber.d("Compose SearchViewScreen")
@@ -94,8 +97,10 @@ fun SearchViewScreen(
             viewModel = navigationViewModel,
             scrollBehavior = scrollBehavior
         )
-        Scaffold(
+        ModalBottomSheetLayoutMaterial3(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            sheetState = mainViewModel.uiState.busModalBottomSheetState,
+            sheetContent = mainViewModel.uiState.bottomSheetContent,
             content = {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     SearchTextField(
@@ -164,8 +169,16 @@ fun SearchViewScreen(
                                     imageVector = Icons.Filled.DirectionsBus,
                                     title = busRoute.id + " " + busRoute.name,
                                     onClick = {
-                                        viewModel.setBusRoute(busRoute)
-                                        viewModel.showBusDialog(true)
+                                        scope.launch {
+                                            if (mainViewModel.uiState.busModalBottomSheetState.isVisible) {
+                                                mainViewModel.uiState.busModalBottomSheetState.hide()
+                                            } else {
+                                                mainViewModel.updateBottomSheet {
+                                                    ShowBusBoundBottomView(busRoute = busRoute, mainViewModel = mainViewModel)
+                                                }
+                                                mainViewModel.uiState.busModalBottomSheetState.show()
+                                            }
+                                        }
                                     }
                                 )
                             }
@@ -189,13 +202,6 @@ fun SearchViewScreen(
                         }
                     }
                 }
-            }
-        )
-        BusRouteDialog(
-            showDialog = uiState.showBusDialog,
-            busRoute = uiState.busRoute,
-            hideDialog = {
-                viewModel.showBusDialog(false)
             }
         )
     }
@@ -256,7 +262,8 @@ private fun SearchRow(
     }
 }
 
-data class SearchUiState @OptIn(ExperimentalMaterial3Api::class) constructor(
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+data class SearchUiState constructor(
     val search: String = "",
     val searchLazyListState: LazyListState = LazyListState(),
     val searchScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
@@ -273,6 +280,7 @@ data class SearchUiState @OptIn(ExperimentalMaterial3Api::class) constructor(
     val bikeStations: List<BikeStation> = listOf(),
 )
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 class SearchViewModel @Inject constructor(
     private val trainService: TrainService = TrainService,
     private val busService: BusService = BusService,
@@ -317,14 +325,6 @@ class SearchViewModel @Inject constructor(
     fun bikeSelect(value: Boolean) {
         uiState = uiState.copy(isBikeSelected = value)
         search(uiState.search)
-    }
-
-    fun showBusDialog(value: Boolean) {
-        uiState = uiState.copy(showBusDialog = value)
-    }
-
-    fun setBusRoute(busRoute: BusRoute) {
-        uiState = uiState.copy(busRoute = busRoute)
     }
 
     companion object {

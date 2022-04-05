@@ -33,14 +33,12 @@ import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.AnimatedErrorView
-import fr.cph.chicago.core.ui.common.BusRouteDialog
 import fr.cph.chicago.core.ui.common.ModalBottomSheetLayoutMaterial3
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
-import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
-import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.SearchTextField
 import fr.cph.chicago.core.ui.common.ShowBusBoundBottomView
-import fr.cph.chicago.core.ui.common.ShowMapMultipleTrainLinesBottomView
+import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
+import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -54,8 +52,6 @@ fun BusScreen(
     navigationViewModel: NavigationViewModel
 ) {
     Timber.d("Compose BusScreen")
-    //var showDialog by remember { mutableStateOf(false) }
-    //var selectedBusRoute by remember { mutableStateOf(BusRoute.buildEmpty()) }
     var searchBusRoutes by remember { mutableStateOf(mainViewModel.uiState.busRoutes) }
     val scope = rememberCoroutineScope()
     val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.busScrollBehavior) }
@@ -110,14 +106,11 @@ fun BusScreen(
                                                 .fillMaxWidth()
                                                 .padding(horizontal = 20.dp),
                                             onClick = {
-                                                //showDialog = true
-                                                //selectedBusRoute = busRoute
                                                 scope.launch {
                                                     if (mainViewModel.uiState.busModalBottomSheetState.isVisible) {
                                                         mainViewModel.uiState.busModalBottomSheetState.hide()
                                                     } else {
                                                         mainViewModel.updateBottomSheet {
-                                                            Timber.i("Update bottom sheet: ${busRoute.id}")
                                                             ShowBusBoundBottomView(busRoute = busRoute, mainViewModel = mainViewModel)
                                                         }
                                                         mainViewModel.uiState.busModalBottomSheetState.show()
@@ -168,13 +161,6 @@ fun BusScreen(
                     }
                 }
             )
-
-
-/*            BusRouteDialog(
-                showDialog = showDialog,
-                busRoute = selectedBusRoute,
-                hideDialog = { showDialog = false },
-            )*/
         })
 }
 

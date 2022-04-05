@@ -8,25 +8,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -38,16 +31,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import fr.cph.chicago.R
-import fr.cph.chicago.core.model.BusDirections
-import fr.cph.chicago.core.model.BusRoute
-import fr.cph.chicago.core.model.dto.BusDetailsDTO
-import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.FontSize
 import fr.cph.chicago.core.theme.availableFonts
-import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
-import fr.cph.chicago.service.BusService
-import timber.log.Timber
 
 @Composable
 fun TitleDetailDialog(
@@ -64,126 +50,6 @@ fun TitleDetailDialog(
             style = MaterialTheme.typography.titleMedium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-        )
-    }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun BusRouteDialog(
-    showDialog: Boolean,
-    busService: BusService = BusService,
-    busRoute: BusRoute,
-    hideDialog: () -> Unit
-) {
-    if (showDialog) {
-        var isLoading by remember { mutableStateOf(true) }
-        var foundBusDirections by remember { mutableStateOf(BusDirections("")) }
-        var showDialogError by remember { mutableStateOf(false) }
-        val navController = LocalNavController.current
-
-        busService.loadBusDirectionsSingle(busRoute.id)
-            .subscribe(
-                { busDirections ->
-                    foundBusDirections = busDirections
-                    isLoading = false
-                    showDialogError = false
-                },
-                { error ->
-                    Timber.e(error, "Could not load bus directions")
-                    isLoading = false
-                    showDialogError = true
-                }
-            )
-
-        AlertDialog(
-            modifier = Modifier.padding(horizontal = 50.dp),
-            onDismissRequest = hideDialog,
-            // FIXME workaround because the dialog do not resize after loading. Issue: https://issuetracker.google.com/issues/194911971?pli=1
-            properties = DialogProperties(usePlatformDefaultWidth = false),
-            title = {
-                TitleDetailDialog(title = "${busRoute.id} - ${busRoute.name}")
-            },
-            text = {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    when {
-                        isLoading -> {
-                            Row(
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 15.dp),
-                            ) {
-                                CircularProgressIndicator()
-                            }
-                        }
-                        showDialogError -> {
-                            Text(
-                                modifier = Modifier.padding(bottom = 15.dp),
-                                text = "Could not load directions!"
-                            )
-                        }
-                        else -> {
-                            Column(
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier.fillMaxWidth(),
-                            ) {
-                                foundBusDirections.busDirections.forEachIndexed { index, busDirection ->
-                                    OutlinedButton(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        onClick = {
-                                            val lBusDirections = foundBusDirections.busDirections
-
-                                            navController.navigate(
-                                                screen = Screen.BusBound,
-                                                arguments = mapOf(
-                                                    "busRouteId" to busRoute.id,
-                                                    "busRouteName" to busRoute.name,
-                                                    "bound" to lBusDirections[index].text,
-                                                    "boundTitle" to lBusDirections[index].text
-                                                ),
-                                            )
-                                            hideDialog()
-                                        },
-                                    ) {
-                                        Text(
-                                            text = busDirection.text,
-                                            style = MaterialTheme.typography.bodyMedium,
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    OutlinedButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            navController.navigate(
-                                screen = Screen.BusMap,
-                                arguments = mapOf("busRouteId" to busRoute.id)
-                            )
-                            hideDialog()
-                        },
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Map,
-                            contentDescription = null,
-                            modifier = Modifier.padding(end = 5.dp)
-                        )
-                        Text(
-                            text = stringResource(R.string.bus_see_all),
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
-                }
-            },
-            confirmButton = {},
-            dismissButton = {},
         )
     }
 }
