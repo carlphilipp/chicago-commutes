@@ -54,9 +54,12 @@ import fr.cph.chicago.service.BusService
 import timber.log.Timber
 
 @Composable
-fun TitleDetailDialog(title: String) {
+fun TitleDetailDialog(
+    modifier: Modifier = Modifier,
+    title: String
+) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {

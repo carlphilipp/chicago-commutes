@@ -61,6 +61,7 @@ import fr.cph.chicago.core.ui.common.AnimatedText
 import fr.cph.chicago.core.ui.common.BottomSheet
 import fr.cph.chicago.core.ui.common.BusDetailDialog
 import fr.cph.chicago.core.ui.common.ColoredBox
+import fr.cph.chicago.core.ui.common.ModalBottomSheetLayoutMaterial3
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.common.SwipeRefreshThemed
 import fr.cph.chicago.core.ui.common.TrainDetailDialog
@@ -83,11 +84,10 @@ fun FavoritesScreen(
     val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.favScrollBehavior) }
 
     // FIXME
-    ModalBottomSheetLayout(
+    ModalBottomSheetLayoutMaterial3(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         sheetState = mainViewModel.uiState.modalBottomSheetState,
         sheetContent = mainViewModel.uiState.bottomSheetContent,
-        scrimColor = Color.Black.copy(alpha = 0.32f),
         content = {
             Column {
                 DisplayTopBar(
@@ -172,21 +172,13 @@ fun TrainFavoriteCard(
                         mapOf("line" to line.toTextString())
                     )
                 } else {
-                    //showDialog = true
                     scope.launch {
-                        /*if (mainViewModel.uiState.bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
-                            mainViewModel.updateBottomSheet {
-                                BottomSheet()
-                            }
-                            mainViewModel.uiState.bottomSheetScaffoldState.bottomSheetState.expand()
-                        } else {
-                            mainViewModel.uiState.bottomSheetScaffoldState.bottomSheetState.collapse()
-                        }*/
                         if (mainViewModel.uiState.modalBottomSheetState.isVisible) {
                             mainViewModel.uiState.modalBottomSheetState.hide()
                         } else {
                             mainViewModel.updateBottomSheet {
                                 BottomSheet(
+                                    title = stringResource(id = R.string.train_choose_line),
                                     content = {
                                         Column(
                                             verticalArrangement = Arrangement.Center,
@@ -204,8 +196,13 @@ fun TrainFavoriteCard(
                                                 OutlinedButton(
                                                     modifier = modifier,
                                                     onClick = {
-                                                        navController.navigate(Screen.TrainMap, mapOf("line" to trainLine.toTextString()))
-                                                        //hideDialog()
+                                                        scope.launch {
+                                                            mainViewModel.uiState.modalBottomSheetState.hide()
+                                                            while(mainViewModel.uiState.modalBottomSheetState.isAnimationRunning ) {
+                                                                // wait
+                                                            }
+                                                            navController.navigate(Screen.TrainMap, mapOf("line" to trainLine.toTextString()))
+                                                        }
                                                     },
                                                 ) {
                                                     Icon(

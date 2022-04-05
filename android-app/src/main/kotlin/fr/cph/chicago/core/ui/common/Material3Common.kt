@@ -36,6 +36,10 @@ import androidx.compose.material.FabPosition
 import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.LocalAbsoluteElevation
 import androidx.compose.material.LocalElevationOverlay
+import androidx.compose.material.ModalBottomSheetDefaults
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.SwipeableDefaults
@@ -47,6 +51,7 @@ import androidx.compose.material.contentColorFor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.rememberBottomSheetScaffoldState
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material.swipeable
 import androidx.compose.material3.Icon
@@ -342,6 +347,33 @@ fun BottomSheetScaffoldMaterial3(
         drawerScrimColor = Color.Black,
         backgroundColor = backgroundColor,
         contentColor = contentColor,
+        content = content,
+    )
+}
+
+// FIXME: this does not exist yet in material3
+@ExperimentalMaterialApi
+@Composable
+fun ModalBottomSheetLayoutMaterial3(
+    sheetContent: @Composable ColumnScope.() -> Unit,
+    modifier: Modifier = Modifier,
+    sheetState: ModalBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden),
+    sheetShape: Shape = RoundedCornerShape(10.dp),
+    sheetElevation: Dp = ModalBottomSheetDefaults.Elevation,
+    sheetBackgroundColor: Color = MaterialTheme.colorScheme.surface,
+    sheetContentColor: Color = contentColorFor(sheetBackgroundColor),
+    scrimColor: Color = Color.Black.copy(alpha = 0.6f),
+    content: @Composable () -> Unit
+) {
+    ModalBottomSheetLayout(
+        modifier = modifier,
+        sheetContent = sheetContent,
+        sheetState = sheetState,
+        sheetShape = sheetShape,
+        sheetElevation = sheetElevation,
+        sheetBackgroundColor = sheetBackgroundColor,
+        sheetContentColor = sheetContentColor,
+        scrimColor = scrimColor,
         content = content,
     )
 }
