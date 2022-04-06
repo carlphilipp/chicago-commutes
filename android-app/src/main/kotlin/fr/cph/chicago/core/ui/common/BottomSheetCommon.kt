@@ -89,7 +89,7 @@ fun BottomSheet(
     title: String,
     content: @Composable () -> Unit
 ) {
-    Column {
+    Column(modifier = Modifier.padding(horizontal = 20.dp)) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()

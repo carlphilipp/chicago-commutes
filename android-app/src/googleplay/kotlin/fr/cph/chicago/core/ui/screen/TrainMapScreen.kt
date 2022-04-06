@@ -133,7 +133,7 @@ fun TrainMapScreen(
                                     })
                                 Text(
                                     text = line.toStringWithLine(),
-                                    style = MaterialTheme.typography.titleMedium,
+                                    style = MaterialTheme.typography.bodyMedium,
                                     textAlign = TextAlign.Center
                                 )
                             }
