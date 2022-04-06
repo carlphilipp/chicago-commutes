@@ -328,7 +328,7 @@ fun DisplayTopBar(
     screen: Screen,
     viewModel: NavigationViewModel,
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    onClickRightIcon: (() -> Unit)? = null,
+    onClickRightIcon: List<() -> Unit> = listOf(),
 ) {
     if (screen.topBar != ScreenTopBar.None) {
         val navController = LocalNavController.current
@@ -345,8 +345,8 @@ fun DisplayTopBar(
                 openDrawer()
             }
         }
-        val rightClick = if (onClickRightIcon == null) {
-            { navController.navigate(Screen.Search) }
+        val rightClicks = if (onClickRightIcon.isEmpty()) {
+            listOf { navController.navigate(Screen.Search) }
         } else {
             onClickRightIcon
         }
@@ -378,10 +378,10 @@ fun DisplayTopBar(
                     }
                 },
                 actions = {
-                    topBar.rightIcon?.run {
-                        IconButton(onClick = rightClick) {
+                    topBar.rightIcons.forEachIndexed { index, imageVector ->
+                        IconButton(onClick = rightClicks[index]) {
                             Icon(
-                                imageVector = topBar.rightIcon,
+                                imageVector = imageVector,
                                 contentDescription = null
                             )
                         }

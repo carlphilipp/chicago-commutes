@@ -102,7 +102,7 @@ fun BikeMapScreen(
             screen = Screen.BusMap,
             title = title,
             viewModel = navigationViewModel,
-            onClickRightIcon = {
+            onClickRightIcon = listOf {
                 viewModel.reloadData()
             }
         )

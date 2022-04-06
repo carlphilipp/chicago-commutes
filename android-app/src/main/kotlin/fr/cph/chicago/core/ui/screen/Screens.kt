@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.DirectionsBus
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.NearMe
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
@@ -403,7 +404,7 @@ sealed class Screen(
         icon = Icons.Filled.Search,
         showOnDrawer = false,
         isGestureEnabled = false,
-        topBar = ScreenTopBar.MediumTopBarBackReload,
+        topBar = ScreenTopBar.MediumTopBarBackReloadMenu,
         component = { backStackEntry, navigationViewModel ->
             val line = URLDecoder.decode(backStackEntry.arguments?.getString("line", "") ?: "", "UTF-8")
             val trainLine = TrainLine.fromXmlString(line)
@@ -458,7 +459,7 @@ sealed class Screen(
 sealed class ScreenTopBar(
     val type: TopBarType,
     val leftIcon: ImageVector,
-    val rightIcon: ImageVector? = null,
+    val rightIcons: List<ImageVector> = listOf(),
     val actionLeft: TopBarIconAction,
 ) {
     object MediumTopBarBack : ScreenTopBar(
@@ -470,7 +471,7 @@ sealed class ScreenTopBar(
     object MediumTopBarDrawerSearch : ScreenTopBar(
         type = TopBarType.MEDIUM,
         leftIcon = Icons.Filled.Menu,
-        rightIcon = Icons.Filled.Search,
+        rightIcons = listOf(Icons.Filled.Search),
         actionLeft = TopBarIconAction.OPEN_DRAWER,
     )
 
@@ -483,35 +484,42 @@ sealed class ScreenTopBar(
     object MediumTopBarBackSearch : ScreenTopBar(
         type = TopBarType.MEDIUM,
         leftIcon = Icons.Filled.ArrowBack,
-        rightIcon = Icons.Filled.Search,
+        rightIcons = listOf(Icons.Filled.Search),
         actionLeft = TopBarIconAction.BACK,
     )
 
     object MediumTopBarBackReload : ScreenTopBar(
         type = TopBarType.MEDIUM,
         leftIcon = Icons.Filled.ArrowBack,
-        rightIcon = Icons.Filled.Refresh,
+        rightIcons = listOf(Icons.Filled.Refresh),
+        actionLeft = TopBarIconAction.BACK,
+    )
+
+    object MediumTopBarBackReloadMenu : ScreenTopBar(
+        type = TopBarType.MEDIUM,
+        leftIcon = Icons.Filled.ArrowBack,
+        rightIcons = listOf(Icons.Filled.Refresh, Icons.Filled.MoreVert),
         actionLeft = TopBarIconAction.BACK,
     )
 
     object LargeTopBarDrawerSearch : ScreenTopBar(
         type = TopBarType.LARGE,
         leftIcon = Icons.Filled.Menu,
-        rightIcon = Icons.Filled.Search,
+        rightIcons = listOf(Icons.Filled.Search),
         actionLeft = TopBarIconAction.OPEN_DRAWER,
     )
 
     object LargeTopBarBackSearch : ScreenTopBar(
         type = TopBarType.LARGE,
         leftIcon = Icons.Filled.ArrowBack,
-        rightIcon = Icons.Filled.Search,
+        rightIcons = listOf(Icons.Filled.Search),
         actionLeft = TopBarIconAction.BACK,
     )
 
     object None : ScreenTopBar(
         type = TopBarType.NONE,
         leftIcon = Icons.Filled.ArrowBack,
-        rightIcon = Icons.Filled.Search,
+        rightIcons = listOf(Icons.Filled.Search),
         actionLeft = TopBarIconAction.BACK,
     )
 }

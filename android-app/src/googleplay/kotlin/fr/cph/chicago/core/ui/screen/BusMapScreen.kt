@@ -93,7 +93,7 @@ fun BusMapScreen(
             screen = Screen.BusMap,
             title = title,
             viewModel = navigationViewModel,
-            onClickRightIcon = {
+            onClickRightIcon = listOf {
                 viewModel.reloadData()
             }
         )

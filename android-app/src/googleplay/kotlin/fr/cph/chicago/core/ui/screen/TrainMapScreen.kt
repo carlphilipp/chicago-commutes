@@ -147,12 +147,18 @@ fun TrainMapScreen(
                     screen = Screen.TrainMap,
                     title = topBarTitle,
                     viewModel = navigationViewModel,
-                    onClickRightIcon = {
-                        //viewModel.reloadData()
-                        scope.launch {
-                            viewModel.uiState.modalBottomSheetState.show()
+                    onClickRightIcon = listOf(
+                        {
+                            scope.launch {
+                                viewModel.reloadData()
+                            }
+                        },
+                        {
+                            scope.launch {
+                                viewModel.uiState.modalBottomSheetState.show()
+                            }
                         }
-                    }
+                    )
                 )
                 Scaffold(
                     modifier = modifier,
