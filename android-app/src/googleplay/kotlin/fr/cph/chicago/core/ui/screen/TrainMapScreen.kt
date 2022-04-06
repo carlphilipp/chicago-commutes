@@ -1,10 +1,20 @@
 package fr.cph.chicago.core.ui.screen
 
 import android.graphics.BitmapFactory
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -12,8 +22,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -27,7 +39,6 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.Polyline
-import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Position
@@ -37,8 +48,10 @@ import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.NavigationViewModel
+import fr.cph.chicago.core.ui.common.BottomSheet
 import fr.cph.chicago.core.ui.common.LoadingBar
 import fr.cph.chicago.core.ui.common.LoadingCircle
+import fr.cph.chicago.core.ui.common.ModalBottomSheetLayoutMaterial3
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.runWithDelay
@@ -52,12 +65,12 @@ import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun TrainMapScreen(
     modifier: Modifier = Modifier,
@@ -66,6 +79,7 @@ fun TrainMapScreen(
     title: String,
 ) {
     Timber.d("Compose TrainMapScreen")
+    var topBarTitle by remember { mutableStateOf(title) }
     val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     val scope = rememberCoroutineScope()
     var isMapLoaded by remember { mutableStateOf(false) }
@@ -89,45 +103,89 @@ fun TrainMapScreen(
         })
     }
 
-    Column {
-        DisplayTopBar(
-            screen = Screen.TrainMap,
-            title = title,
-            viewModel = navigationViewModel,
-            onClickRightIcon = {
-                viewModel.reloadData()
-            }
-        )
-        Scaffold(
-            modifier = modifier,
-            snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
-            content = {
-
-                GoogleMapTrainMapView(
-                    viewModel = viewModel,
-                    onMapLoaded = {
-                        isMapLoaded = true
-                    },
-                )
-
-                LoadingBar(
-                    show = viewModel.uiState.isLoading,
-                    color = viewModel.uiState.line.color,
-                )
-
-                LoadingCircle(show = !isMapLoaded)
-
-                if (viewModel.uiState.showError) {
-                    ShowErrorMessageSnackBar(
-                        scope = scope,
-                        snackbarHostState = snackbarHostState,
-                        showError = viewModel.uiState.showError,
-                        onComplete = { viewModel.showError(false) }
-                    )
+    ModalBottomSheetLayoutMaterial3(
+        sheetState = viewModel.uiState.modalBottomSheetState,
+        sheetContent = {
+            BottomSheet(
+                title = "Select a line",
+                content = {
+                    val selected = remember { mutableStateOf(viewModel.uiState.line) }
+                    TrainLine.values()
+                        .filter { trainLine -> trainLine != TrainLine.NA }
+                        .forEach { line ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        selected.value = line
+                                        topBarTitle = line.toStringWithLine()
+                                        viewModel.switchTrainLine(scope, selected.value)
+                                    },
+                                horizontalArrangement = Arrangement.Start,
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                RadioButton(
+                                    selected = line == selected.value,
+                                    onClick = {
+                                        selected.value = line
+                                        topBarTitle = line.toStringWithLine()
+                                        viewModel.switchTrainLine(scope, selected.value)
+                                    })
+                                Text(
+                                    text = line.toStringWithLine(),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
                 }
+            )
+        },
+        content = {
+            Column {
+                DisplayTopBar(
+                    screen = Screen.TrainMap,
+                    title = topBarTitle,
+                    viewModel = navigationViewModel,
+                    onClickRightIcon = {
+                        //viewModel.reloadData()
+                        scope.launch {
+                            viewModel.uiState.modalBottomSheetState.show()
+                        }
+                    }
+                )
+                Scaffold(
+                    modifier = modifier,
+                    snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
+                    content = {
+
+                        GoogleMapTrainMapView(
+                            viewModel = viewModel,
+                            onMapLoaded = {
+                                isMapLoaded = true
+                            },
+                        )
+
+                        LoadingBar(
+                            show = viewModel.uiState.isLoading,
+                            color = viewModel.uiState.line.color,
+                        )
+
+                        LoadingCircle(show = !isMapLoaded)
+
+                        if (viewModel.uiState.showError) {
+                            ShowErrorMessageSnackBar(
+                                scope = scope,
+                                snackbarHostState = snackbarHostState,
+                                showError = viewModel.uiState.showError,
+                                onComplete = { viewModel.showError(false) }
+                            )
+                        }
+                    }
+                )
             }
-        )
-    }
+        }
+    )
 }
 
 @Composable
@@ -249,7 +307,8 @@ fun TrainsOnMapLayer(
     }
 }
 
-data class GoogleMapTrainUiState(
+@OptIn(ExperimentalMaterialApi::class)
+data class GoogleMapTrainUiState constructor(
     val isLoading: Boolean = false,
     val showError: Boolean = false,
     val cameraPositionState: CameraPositionState = CameraPositionState(
@@ -276,10 +335,15 @@ data class GoogleMapTrainUiState(
 
     val stationIcon: BitmapDescriptor? = null,
     val showStationIcon: Boolean = false,
+
+    val modalBottomSheetState: ModalBottomSheetState = ModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        isSkipHalfExpanded = true,
+    ),
 )
 
-@HiltViewModel
-class MapTrainViewModel @Inject constructor(
+@OptIn(ExperimentalMaterialApi::class)
+class MapTrainViewModel constructor(
     line: TrainLine,
     private val trainService: TrainService = TrainService,
 ) : ViewModel() {
@@ -461,6 +525,21 @@ class MapTrainViewModel @Inject constructor(
                     uiState = uiState.copy(isLoading = false)
                 }
             )
+    }
+
+    fun switchTrainLine(scope: CoroutineScope, trainLine: TrainLine) {
+        scope.launch {
+            uiState = uiState.copy(line = trainLine)
+            uiState.modalBottomSheetState.hide()
+            while (uiState.modalBottomSheetState.isVisible) {
+                // wait for the animation to finish
+            }
+            uiState = uiState.copy(isLoading = true)
+            loadPatterns()
+            loadStations()
+            loadTrains()
+            loadIcons()
+        }
     }
 
     private fun colorDrawable(): Int {

@@ -85,7 +85,7 @@ private fun LoadingBottomSheet(
 }
 
 @Composable
-private fun BottomSheet(
+fun BottomSheet(
     title: String,
     content: @Composable () -> Unit
 ) {
