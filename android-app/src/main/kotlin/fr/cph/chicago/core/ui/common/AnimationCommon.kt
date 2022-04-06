@@ -129,8 +129,12 @@ fun enterTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBa
             origin == Screen.Divvy.route && destination == Screen.DivvyDetails.route -> {
                 slideInFromRight
             }
-            // Search
-            destination == Screen.Search.route -> {
+            // Search -> TrainDetails/BusBound/BikeDetails
+            origin == Screen.Search.route && (destination == Screen.TrainDetails.route || destination == Screen.BusBound.route || destination == Screen.DivvyDetails.route) -> {
+                slideInFromRight
+            }
+            // Any -> Search
+            !(origin == Screen.TrainDetails.route || origin == Screen.BusBound.route || origin == Screen.DivvyDetails.route) && destination == Screen.Search.route -> {
                 slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(durationMillis = animationSpeed.slideDuration))
             }
             // Settings -> Display/Developer/About
@@ -188,8 +192,12 @@ fun exitTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBac
             origin == Screen.DivvyDetails.route && destination == Screen.Divvy.route -> {
                 slideOutToRight
             }
-            // Search
-            origin == Screen.Search.route -> {
+            // TrainDetails/BusBound/BikeDetails -> Search
+            (origin == Screen.TrainDetails.route || origin == Screen.BusBound.route || origin == Screen.DivvyDetails.route) && destination == Screen.Search.route -> {
+                slideOutToRight
+            }
+            // Search -> Any
+            origin == Screen.Search.route && !(destination == Screen.TrainDetails.route || destination == Screen.BusBound.route || destination == Screen.DivvyDetails.route) -> {
                 slideOutOfContainer(AnimatedContentScope.SlideDirection.Down, animationSpec = tween(durationMillis = animationSpeed.slideDuration))
             }
             // Display -> Settings
