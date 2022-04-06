@@ -255,7 +255,8 @@ data class SettingsState(
     val animationSpeed: AnimationSpeed = AnimationSpeed.Normal,
     val bottomSheetContent: @Composable ColumnScope.() -> Unit = { Text("Test") },
     val modalBottomSheetState: ModalBottomSheetState = ModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden
+        initialValue = ModalBottomSheetValue.Hidden,
+        isSkipHalfExpanded = true,
     ),
 )
 

@@ -25,7 +25,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -36,9 +35,8 @@ import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
-import fr.cph.chicago.core.ui.common.AnimationSpeedDialog
-import fr.cph.chicago.core.ui.common.FontSizeAlertDialog
-import fr.cph.chicago.core.ui.common.FontTypefaceAlertDialog
+import fr.cph.chicago.core.ui.common.AnimationSpeedBottomView
+import fr.cph.chicago.core.ui.common.FontSizeBottomView
 import fr.cph.chicago.core.ui.common.FontTypefaceBottomView
 import fr.cph.chicago.core.ui.common.ModalBottomSheetLayoutMaterial3
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
@@ -61,8 +59,6 @@ fun DisplaySettingsScreen(
     val navController = LocalNavController.current
 
     val scope = rememberCoroutineScope()
-    var showAnimationSpeedDialog by remember { mutableStateOf(false) }
-    var showFontSizeDialog by remember { mutableStateOf(false) }
     val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.settingsDisplayScrollBehavior) }
 
     ModalBottomSheetLayoutMaterial3(
@@ -153,18 +149,10 @@ fun DisplaySettingsScreen(
                             description = "Choose a font",
                             onClick = {
                                 scope.launch {
-                                    Timber.e("Sheet state: " + viewModel.uiState.modalBottomSheetState.currentValue)
-                                    Timber.e("Sheet offset: " + viewModel.uiState.modalBottomSheetState.offset)
-                                    if (viewModel.uiState.modalBottomSheetState.isVisible) {
-                                        viewModel.uiState.modalBottomSheetState.hide()
-                                    } else {
-                                        viewModel.updateBottomSheet {
-                                            FontTypefaceBottomView(title = "Pick a font", viewModel = viewModel)
-                                        }
-                                        viewModel.uiState.modalBottomSheetState.show()
-                                        Timber.e("After Sheet state: " + viewModel.uiState.modalBottomSheetState.currentValue)
-                                        Timber.e("After Sheet offset: " + viewModel.uiState.modalBottomSheetState.offset)
+                                    viewModel.updateBottomSheet {
+                                        FontTypefaceBottomView(title = "Pick a font", viewModel = viewModel)
                                     }
+                                    viewModel.uiState.modalBottomSheetState.show()
                                 }
                             },
                             imageVector = Icons.Outlined.TextFormat,
@@ -173,7 +161,12 @@ fun DisplaySettingsScreen(
                             title = "Font size",
                             description = "Choose a font size",
                             onClick = {
-                                showFontSizeDialog = true
+                                scope.launch {
+                                    viewModel.updateBottomSheet {
+                                        FontSizeBottomView(title = "Pick a font size", viewModel = viewModel)
+                                    }
+                                    viewModel.uiState.modalBottomSheetState.show()
+                                }
                             },
                             imageVector = Icons.Outlined.FormatSize,
                         )
@@ -189,7 +182,12 @@ fun DisplaySettingsScreen(
                             title = "Animations speed",
                             description = "Choose how fast the animation are rendered",
                             onClick = {
-                                showAnimationSpeedDialog = true
+                                scope.launch {
+                                    viewModel.updateBottomSheet {
+                                        AnimationSpeedBottomView(title = "Pick the animation speed", viewModel = viewModel)
+                                    }
+                                    viewModel.uiState.modalBottomSheetState.show()
+                                }
                             },
                             imageVector = Icons.Outlined.Animation,
                         )
@@ -197,27 +195,6 @@ fun DisplaySettingsScreen(
                     item { NavigationBarsSpacer() }
                 }
             }
-            /*FontTypefaceAlertDialog(
-                viewModel = viewModel,
-                showDialog = showFontTypefaceDialog,
-                hideDialog = {
-                    showFontTypefaceDialog = false
-                }
-            )*/
-            FontSizeAlertDialog(
-                viewModel = viewModel,
-                showDialog = showFontSizeDialog,
-                hideDialog = {
-                    showFontSizeDialog = false
-                }
-            )
-            AnimationSpeedDialog(
-                viewModel = viewModel,
-                showDialog = showAnimationSpeedDialog,
-                hideDialog = {
-                    showAnimationSpeedDialog = false
-                }
-            )
         },
     )
 }

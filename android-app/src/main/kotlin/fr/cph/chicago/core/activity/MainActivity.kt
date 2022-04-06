@@ -146,10 +146,12 @@ data class MainUiState  constructor(
     val isRefreshing: Boolean = false,
     val bottomSheetContent: @Composable ColumnScope.() -> Unit = { Text("Test") },
     val favModalBottomSheetState: ModalBottomSheetState = ModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden
+        initialValue = ModalBottomSheetValue.Hidden,
+        isSkipHalfExpanded = true,
     ),
     val busModalBottomSheetState: ModalBottomSheetState = ModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden
+        initialValue = ModalBottomSheetValue.Hidden,
+        isSkipHalfExpanded = true,
     ),
 
     val busRoutes: List<BusRoute> = listOf(),

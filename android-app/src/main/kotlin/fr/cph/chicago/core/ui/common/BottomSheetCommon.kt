@@ -39,12 +39,14 @@ import androidx.compose.ui.text.font.toFontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.navigation.LocalNavController
+import fr.cph.chicago.core.theme.FontSize
 import fr.cph.chicago.core.theme.availableFonts
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
@@ -169,6 +171,81 @@ fun FontTypefaceBottomView(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FontSizeBottomView(
+    title: String,
+    viewModel: SettingsViewModel,
+) {
+    val fontSelected = remember { mutableStateOf(viewModel.uiState.fontSize) }
+    BottomSheet(
+        title = title,
+        content = {
+            FontSize.values().forEach {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            fontSelected.value = it
+                            viewModel.setFontSize(fontSelected.value)
+                        },
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    RadioButton(
+                        selected = it == fontSelected.value,
+                        onClick = {
+                            fontSelected.value = it
+                            viewModel.setFontSize(fontSelected.value)
+                        })
+                    Text(
+                        text = it.description,
+                        fontSize = (20 + it.offset).sp,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AnimationSpeedBottomView(
+    title: String,
+    viewModel: SettingsViewModel,
+) {
+    val speedSelected = remember { mutableStateOf(viewModel.uiState.animationSpeed) }
+    BottomSheet(
+        title = title,
+        content = {
+            AnimationSpeed.allAnimationsSpeed().forEach {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            speedSelected.value = it
+                            viewModel.setAnimationSpeed(speedSelected.value)
+                        },
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    RadioButton(
+                        selected = it == speedSelected.value,
+                        onClick = {
+                            speedSelected.value = it
+                            viewModel.setAnimationSpeed(speedSelected.value)
+                        })
+                    Text(
+                        text = it.name,
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+        }
+    )
+}
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
 @Composable
