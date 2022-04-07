@@ -412,6 +412,7 @@ sealed class Screen(
             val viewModel = MapTrainViewModel(line = trainLine)
             TrainMapScreen(
                 viewModel = viewModel,
+                settingsViewModel = settingsViewModel,
                 navigationViewModel = navigationViewModel,
                 title = trainLine.toStringWithLine(),
             )

@@ -55,7 +55,9 @@ import fr.cph.chicago.core.ui.common.ModalBottomSheetLayoutMaterial3
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.runWithDelay
+import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.service.TrainService
+import fr.cph.chicago.util.DebugView
 import fr.cph.chicago.util.GoogleMapUtil.createBitMapDescriptor
 import fr.cph.chicago.util.GoogleMapUtil.defaultZoom
 import fr.cph.chicago.util.GoogleMapUtil.isIn
@@ -75,6 +77,7 @@ import java.util.concurrent.TimeUnit
 fun TrainMapScreen(
     modifier: Modifier = Modifier,
     viewModel: MapTrainViewModel,
+    settingsViewModel: SettingsViewModel,
     navigationViewModel: NavigationViewModel,
     title: String,
 ) {
@@ -167,6 +170,7 @@ fun TrainMapScreen(
 
                         GoogleMapTrainMapView(
                             viewModel = viewModel,
+                            settingsViewModel = settingsViewModel,
                             onMapLoaded = {
                                 isMapLoaded = true
                             },
@@ -197,6 +201,7 @@ fun TrainMapScreen(
 @Composable
 fun GoogleMapTrainMapView(
     modifier: Modifier = Modifier,
+    settingsViewModel: SettingsViewModel,
     viewModel: MapTrainViewModel,
     onMapLoaded: () -> Unit,
 ) {
@@ -204,7 +209,7 @@ fun GoogleMapTrainMapView(
     val scope = rememberCoroutineScope()
 
     if (uiState.moveCamera != null && uiState.moveCameraZoom != null) {
-        LaunchedEffect(key1 = Unit, block = {
+        LaunchedEffect(key1 = uiState.moveCamera, key2 = uiState.moveCameraZoom, block = {
             scope.launch {
                 uiState.cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(uiState.moveCamera, uiState.moveCameraZoom))
             }
@@ -233,7 +238,9 @@ fun GoogleMapTrainMapView(
         )
     }
 
-    //DebugView(cameraPositionState = cameraPositionState)
+    if (settingsViewModel.uiState.showMapDebug) {
+        DebugView(cameraPositionState = uiState.cameraPositionState)
+    }
 
     InfoWindowsDetails(
         showView = viewModel.uiState.trainEtas.isNotEmpty(),
@@ -419,6 +426,7 @@ class MapTrainViewModel constructor(
     }
 
     fun centerMapOnTrains() {
+        Timber.e("**************** Center map on Trains")
         val position: Position
         val zoom: Float
         if (uiState.trains.size == 1) {
@@ -535,7 +543,7 @@ class MapTrainViewModel constructor(
 
     fun switchTrainLine(scope: CoroutineScope, trainLine: TrainLine) {
         scope.launch {
-            uiState = uiState.copy(line = trainLine)
+            uiState = uiState.copy(line = trainLine, shouldMoveCamera = true)
             uiState.modalBottomSheetState.hide()
             while (uiState.modalBottomSheetState.isVisible) {
                 // wait for the animation to finish
