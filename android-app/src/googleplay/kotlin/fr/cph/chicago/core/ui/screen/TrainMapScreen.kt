@@ -426,7 +426,6 @@ class MapTrainViewModel constructor(
     }
 
     fun centerMapOnTrains() {
-        Timber.e("**************** Center map on Trains")
         val position: Position
         val zoom: Float
         if (uiState.trains.size == 1) {
@@ -543,7 +542,13 @@ class MapTrainViewModel constructor(
 
     fun switchTrainLine(scope: CoroutineScope, trainLine: TrainLine) {
         scope.launch {
-            uiState = uiState.copy(line = trainLine, shouldMoveCamera = true)
+            uiState = uiState.copy(
+                line = trainLine,
+                shouldMoveCamera = true,
+                polyLine = listOf(),
+                trains = listOf(),
+                stations = listOf(),
+            )
             uiState.modalBottomSheetState.hide()
             while (uiState.modalBottomSheetState.isVisible) {
                 // wait for the animation to finish
