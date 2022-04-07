@@ -28,6 +28,7 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.Polyline
+import com.google.maps.android.compose.rememberMarkerState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Bus
@@ -53,9 +54,9 @@ import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -205,9 +206,10 @@ fun BusStopsMarkers(
             busPattern.busStopsPatterns
                 .filter { busStopPattern -> busStopPattern.type == "S" }
                 .forEach { busStopPattern ->
-
+                    val markerState = rememberMarkerState()
+                    markerState.position = busStopPattern.position.toLatLng()
                     Marker(
-                        position = busStopPattern.position.toLatLng(),
+                        state = markerState,
                         icon = viewModel.uiState.stopIcons[index],
                         title = busStopPattern.stopName,
                         visible = viewModel.uiState.showStopIcon,
@@ -227,9 +229,11 @@ fun BusOnMapLayer(
 
     if (viewModel.uiState.busIcon != null) {
         viewModel.uiState.buses.forEach { bus ->
+            val markerState = rememberMarkerState()
+            markerState.position = bus.position.toLatLng()
             Marker(
                 title = "To ${bus.destination}",
-                position = bus.position.toLatLng(),
+                state = markerState,
                 icon = viewModel.uiState.busIcon,
                 rotation = bus.heading.toFloat(),
                 flat = true,

@@ -39,6 +39,7 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.Polyline
+import com.google.maps.android.compose.rememberMarkerState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Train
@@ -67,10 +68,10 @@ import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -275,8 +276,10 @@ fun TrainStationsMarkers(
 
     if (viewModel.uiState.stationIcon != null) {
         viewModel.uiState.stations.forEach { trainStation ->
+            val markerState = rememberMarkerState()
+            markerState.position = trainStation.stops[0].position.toLatLng()
             Marker(
-                position = trainStation.stops[0].position.toLatLng(),
+                state = markerState,
                 icon = viewModel.uiState.stationIcon,
                 title = trainStation.name,
                 visible = viewModel.uiState.showStationIcon,
@@ -300,9 +303,11 @@ fun TrainsOnMapLayer(
             // original SDK. This won't probably be fixed. Instead, we can
             // just display a floating box like in nearby
             // Reference in case it's getting fixed: https://github.com/googlemaps/android-maps-compose/issues/46
+            val markerState = rememberMarkerState()
+            markerState.position = train.position.toLatLng()
             Marker(
                 title = "To ${train.destName}",
-                position = train.position.toLatLng(),
+                state = markerState,
                 icon = viewModel.uiState.trainIcon,
                 rotation = train.heading.toFloat(),
                 flat = true,

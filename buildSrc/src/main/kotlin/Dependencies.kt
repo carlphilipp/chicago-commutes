@@ -24,7 +24,7 @@ object Version {
     const val compose_material3 =           "1.0.0-alpha09"
     const val google_play_maps =            "18.0.2"
     const val google_play_location =        "19.0.1"
-    const val google_maps_compose =         "1.2.0"// TODO: Migrate to latest (there are some breaking changes) "2.1.0"
+    const val google_maps_compose =         "2.1.0"
     const val hilt =                        "1.0.+"
     const val jackson =                     "2.13.2"
     const val material =                    "1.6.0-beta01"

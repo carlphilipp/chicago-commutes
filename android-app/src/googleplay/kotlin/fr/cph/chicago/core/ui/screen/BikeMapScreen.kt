@@ -34,6 +34,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MarkerInfoWindowContent
+import com.google.maps.android.compose.rememberMarkerState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
@@ -204,11 +205,10 @@ fun BikeStationMarker(
     viewModel: MapBikesViewModel,
     bikeStation: BikeStation
 ) {
+    val markerState = rememberMarkerState()
+    markerState.position = Position(latitude = bikeStation.latitude, longitude = bikeStation.longitude).toLatLng()
     MarkerInfoWindowContent(
-        position = Position(
-            latitude = bikeStation.latitude,
-            longitude = bikeStation.longitude
-        ).toLatLng(),
+        state = markerState,
         icon = viewModel.uiState.bikeStationIcon,
         title = bikeStation.name,
         visible = show,

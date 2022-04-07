@@ -39,6 +39,7 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberMarkerState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.navigation.DisplayTopBar
@@ -161,8 +162,10 @@ fun NearbyGoogleMapView(
         val bitmapDescriptorBike = getBitmapDescriptor(context, R.drawable.bike_station_icon)
 
         uiState.nearbyTrainStations.forEach { trainStation ->
+            val markerState = rememberMarkerState()
+            markerState.position = trainStation.stops[0].position.toLatLng()
             Marker(
-                position = trainStation.stops[0].position.toLatLng(),
+                state = markerState,
                 title = trainStation.name,
                 icon = bitmapDescriptorTrain,
                 onClick = {
@@ -173,8 +176,10 @@ fun NearbyGoogleMapView(
         }
 
         uiState.nearbyBusStops.forEach { busStop ->
+            val markerState = rememberMarkerState()
+            markerState.position = busStop.position.toLatLng()
             Marker(
-                position = busStop.position.toLatLng(),
+                state = markerState,
                 title = busStop.name,
                 icon = bitmapDescriptorBus,
                 onClick = {
@@ -185,8 +190,10 @@ fun NearbyGoogleMapView(
         }
 
         uiState.nearbyBikeStations.forEach { bikeStation ->
+            val markerState = rememberMarkerState()
+            markerState.position = LatLng(bikeStation.latitude, bikeStation.longitude)
             Marker(
-                position = LatLng(bikeStation.latitude, bikeStation.longitude),
+                state = markerState,
                 title = bikeStation.name,
                 icon = bitmapDescriptorBike,
                 onClick = {
