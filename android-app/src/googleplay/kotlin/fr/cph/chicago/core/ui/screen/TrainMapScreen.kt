@@ -56,6 +56,8 @@ import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.runWithDelay
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
+import fr.cph.chicago.getDefaultPosition
+import fr.cph.chicago.getZoom
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.DebugView
 import fr.cph.chicago.util.GoogleMapUtil.createBitMapDescriptor
@@ -425,22 +427,11 @@ class MapTrainViewModel constructor(
         }
     }
 
-    fun centerMapOnTrains() {
-        val position: Position
-        val zoom: Float
-        if (uiState.trains.size == 1) {
-            position = if (uiState.trains[0].position.latitude == 0.0 && uiState.trains[0].position.longitude == 0.0)
-                chicagoPosition
-            else
-                uiState.trains[0].position
-            zoom = 15f
-        } else {
-            position = MapUtil.getBestPosition(uiState.trains.map { it.position })
-            zoom = 11f
-        }
+    private fun centerMapOnLine() {
+        val line = uiState.line
         uiState = uiState.copy(
-            moveCamera = LatLng(position.latitude, position.longitude),
-            moveCameraZoom = zoom,
+            moveCamera = line.getDefaultPosition().toLatLng(),
+            moveCameraZoom = line.getZoom(),
         )
     }
 
@@ -463,7 +454,8 @@ class MapTrainViewModel constructor(
                         isLoading = false,
                     )
                     if (uiState.shouldMoveCamera) {
-                        centerMapOnTrains()
+                        //centerMapOnTrains()
+                        centerMapOnLine()
                         uiState = uiState.copy(shouldMoveCamera = false)
                     }
                 },
