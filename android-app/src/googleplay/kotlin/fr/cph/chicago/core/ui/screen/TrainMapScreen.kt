@@ -41,7 +41,6 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.Polyline
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
@@ -64,7 +63,6 @@ import fr.cph.chicago.util.GoogleMapUtil.createBitMapDescriptor
 import fr.cph.chicago.util.GoogleMapUtil.defaultZoom
 import fr.cph.chicago.util.GoogleMapUtil.isIn
 import fr.cph.chicago.util.InfoWindowsDetails
-import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
@@ -454,7 +452,6 @@ class MapTrainViewModel constructor(
                         isLoading = false,
                     )
                     if (uiState.shouldMoveCamera) {
-                        //centerMapOnTrains()
                         centerMapOnLine()
                         uiState = uiState.copy(shouldMoveCamera = false)
                     }
