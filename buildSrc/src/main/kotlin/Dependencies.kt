@@ -10,7 +10,7 @@ object Version {
     const val kotlin =                      "1.6.10"
     const val android_tools_build =         "7.1.2"
     const val realm =                       "10.10.1"
-    const val gradle_version =              "0.41.0"
+    const val gradle_version =              "0.42.0"
 
     const val androidx_activity_compose =   "1.6.0-alpha01"
     const val androidx_constraint =         "1.0.0"
