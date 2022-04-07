@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.NavigationViewModel
+import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.service.TrainService
 import javax.inject.Inject
 
@@ -13,6 +14,7 @@ import javax.inject.Inject
 fun TrainMapScreen(
     modifier: Modifier = Modifier,
     viewModel: MapTrainViewModel,
+    settingsViewModel: SettingsViewModel,
     navigationViewModel: NavigationViewModel,
     title: String,
 ) {

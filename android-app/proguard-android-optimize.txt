@@ -77,7 +77,6 @@
 
 -dontwarn com.fasterxml.jackson.**
 
--keep class com.github.chrisbanes.photoview.** { *; }
 -keepnames class com.fasterxml.jackson.** { *; }
 -keep,includedescriptorclasses class io.realm.RealmModel { *; }
 -keep,includedescriptorclasses class io.realm.RealmObjectChangeListener { *; }
@@ -88,7 +87,6 @@
 -keep,includedescriptorclasses class io.realm.Sort { *; }
 -keep,includedescriptorclasses class io.realm.internal.fields.FieldDescriptor { *; }
 -keep,includedescriptorclasses class io.realm.internal.fields.FieldDescriptor$SchemaProxy { *; }
--keep,includedescriptorclasses class com.sothree.slidinguppanel.SlidingUpPanelLayout { *; }
 -keep,includedescriptorclasses class io.realm.internal.android.AndroidRealmNotifier { *; }
 -keep,includedescriptorclasses class io.realm.BaseModuleMediator { *; }
 -keep,includedescriptorclasses class kotlin.reflect.** { *; }
@@ -102,8 +100,6 @@
 }
 
 -keep,includedescriptorclasses class fr.cph.chicago.entity.** { *; }
-
--dontwarn com.sothree.slidinguppanel.SlidingUpPanelLayout
 
 ## Mapbox stuff
 ## Android architecture components: Lifecycle
@@ -186,5 +182,4 @@
 -dontnote libcore.icu.ICU
 -dontnote org.apache.http.**
 -dontnote okio.BufferedSink
--dontnote pub.devrel.easypermissions.EasyPermissions
 -dontnote sun.misc.Unsafe
