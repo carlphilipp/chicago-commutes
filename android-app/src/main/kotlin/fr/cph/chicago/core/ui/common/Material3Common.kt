@@ -15,6 +15,7 @@ import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,8 +26,13 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.BottomSheetScaffold
+import androidx.compose.material.BottomSheetScaffoldDefaults
+import androidx.compose.material.BottomSheetScaffoldState
 import androidx.compose.material.ContentAlpha
+import androidx.compose.material.DrawerDefaults
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FabPosition
 import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.LocalAbsoluteElevation
 import androidx.compose.material.LocalElevationOverlay
@@ -34,6 +40,8 @@ import androidx.compose.material.ModalBottomSheetDefaults
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.SwipeableDefaults
 import androidx.compose.material.SwipeableState
 import androidx.compose.material.SwitchColors
@@ -42,6 +50,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.contentColorFor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material.swipeable
@@ -312,6 +321,60 @@ fun ModalBottomSheetLayoutMaterial3(
         sheetBackgroundColor = sheetBackgroundColor,
         sheetContentColor = sheetContentColor,
         scrimColor = scrimColor,
+        content = content,
+    )
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun BottomSheetScaffoldMaterial3(
+    sheetContent: @Composable ColumnScope.() -> Unit,
+    modifier: Modifier = Modifier,
+    scaffoldState: BottomSheetScaffoldState = rememberBottomSheetScaffoldState(),
+    topBar: (@Composable () -> Unit)? = null,
+    snackbarHost: @Composable (SnackbarHostState) -> Unit = { SnackbarHost(it) },
+    floatingActionButton: (@Composable () -> Unit)? = null,
+    floatingActionButtonPosition: FabPosition = FabPosition.End,
+    sheetGesturesEnabled: Boolean = true,
+    sheetShape: Shape = RoundedCornerShape(10.dp),
+    sheetElevation: Dp = BottomSheetScaffoldDefaults.SheetElevation,
+    sheetBackgroundColor: Color = MaterialTheme.colorScheme.surface,
+    sheetContentColor: Color = contentColorFor(sheetBackgroundColor),
+    sheetPeekHeight: Dp = BottomSheetScaffoldDefaults.SheetPeekHeight,
+    drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
+    drawerGesturesEnabled: Boolean = true,
+    drawerShape: Shape = androidx.compose.material.MaterialTheme.shapes.large,
+    drawerElevation: Dp = DrawerDefaults.Elevation,
+    drawerBackgroundColor: Color = MaterialTheme.colorScheme.surface,
+    drawerContentColor: Color = contentColorFor(drawerBackgroundColor),
+    drawerScrimColor: Color = DrawerDefaults.scrimColor,
+    backgroundColor: Color = MaterialTheme.colorScheme.background,
+    contentColor: Color = contentColorFor(backgroundColor),
+    content: @Composable (PaddingValues) -> Unit
+) {
+    BottomSheetScaffold(
+        sheetContent = sheetContent,
+        modifier = modifier,
+        scaffoldState = scaffoldState,
+        topBar = topBar,
+        snackbarHost = snackbarHost,
+        floatingActionButton = floatingActionButton,
+        floatingActionButtonPosition = floatingActionButtonPosition,
+        sheetGesturesEnabled = sheetGesturesEnabled,
+        sheetShape = sheetShape,
+        sheetElevation = sheetElevation,
+        sheetBackgroundColor = sheetBackgroundColor,
+        sheetContentColor = sheetContentColor,
+        sheetPeekHeight = sheetPeekHeight,
+        drawerContent = drawerContent,
+        drawerGesturesEnabled = drawerGesturesEnabled,
+        drawerShape = drawerShape,
+        drawerElevation = drawerElevation,
+        drawerBackgroundColor = drawerBackgroundColor,
+        drawerContentColor = drawerContentColor,
+        drawerScrimColor = drawerScrimColor,
+        backgroundColor = backgroundColor,
+        contentColor = contentColor,
         content = content,
     )
 }

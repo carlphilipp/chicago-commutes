@@ -13,7 +13,11 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.BottomSheetScaffoldState
+import androidx.compose.material.BottomSheetState
+import androidx.compose.material.BottomSheetValue
+import androidx.compose.material.DrawerState
+import androidx.compose.material.DrawerValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.IconButton
 import androidx.compose.material.ModalBottomSheetState
@@ -22,16 +26,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -73,9 +74,9 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.BottomSheet
+import fr.cph.chicago.core.ui.common.BottomSheetScaffoldMaterial3
 import fr.cph.chicago.core.ui.common.LoadingBar
 import fr.cph.chicago.core.ui.common.LoadingCircle
-import fr.cph.chicago.core.ui.common.ModalBottomSheetLayoutMaterial3
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.runWithDelay
@@ -132,8 +133,10 @@ fun TrainMapScreen(
         })
     }
 
-    ModalBottomSheetLayoutMaterial3(
-        sheetState = viewModel.uiState.modalBottomSheetState,
+    BottomSheetScaffoldMaterial3(
+        //sheetState = viewModel.uiState.modalBottomSheetState,
+        scaffoldState = viewModel.uiState.scaffoldState,
+        sheetPeekHeight = 100.dp,
         sheetContent = {
             BottomSheet(
                 title = "Select a line",
@@ -245,7 +248,12 @@ fun TrainMapScreen(
                                     //shape = RoundedCornerShape(8.0.dp),
                                     onClick = {
                                         scope.launch {
-                                            viewModel.uiState.modalBottomSheetState.show()
+                                            //viewModel.uiState.modalBottomSheetState.show()
+                                            if (viewModel.uiState.scaffoldState.bottomSheetState.isCollapsed) {
+                                                viewModel.uiState.scaffoldState.bottomSheetState.expand()
+                                            } else {
+                                                viewModel.uiState.scaffoldState.bottomSheetState.collapse()
+                                            }
                                         }
                                     }) {
                                     Icon(
@@ -452,10 +460,16 @@ data class GoogleMapTrainUiState constructor(
     val stationIcon: BitmapDescriptor? = null,
     val showStationIcon: Boolean = false,
 
+    // FIXME: this should not be in use ?
     val modalBottomSheetState: ModalBottomSheetState = ModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         isSkipHalfExpanded = true,
     ),
+    val scaffoldState: BottomSheetScaffoldState = BottomSheetScaffoldState(
+        drawerState = DrawerState(DrawerValue.Closed),
+        bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed),
+        snackbarHostState = androidx.compose.material.SnackbarHostState(),
+    )
 )
 
 @OptIn(ExperimentalMaterialApi::class)
