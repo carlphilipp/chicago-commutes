@@ -10,14 +10,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
@@ -317,45 +317,50 @@ fun ShowMapMultipleTrainLinesBottomView(
     BottomSheet(
         title = stringResource(id = R.string.train_choose_line),
         content = {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                trainStation.lines.forEachIndexed() { index, trainLine ->
-                    val modifier = if (index == trainStation.lines.size - 1) {
-                        Modifier.fillMaxWidth()
-                    } else {
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 5.dp)
-                    }
-                    OutlinedButton(
-                        modifier = modifier,
-                        onClick = {
-                            scope.launch {
-                                mainViewModel.uiState.favModalBottomSheetState.hide()
-                                while (mainViewModel.uiState.favModalBottomSheetState.isAnimationRunning) {
-                                    // wait. Is that actually ok to do that?
+            val lines = trainStation.lines
+            if (lines.size <= 3) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    trainStation.lines.forEach { trainLine ->
+                        TrainLineButton(
+                            trainLine = trainLine,
+                            onClick = {
+                                scope.launch {
+                                    mainViewModel.uiState.favModalBottomSheetState.hide()
+                                    while (mainViewModel.uiState.favModalBottomSheetState.isAnimationRunning) {
+                                        // wait. Is that actually ok to do that?
+                                    }
+                                    navController.navigate(Screen.TrainMap, mapOf("line" to trainLine.toTextString()))
                                 }
-                                navController.navigate(Screen.TrainMap, mapOf("line" to trainLine.toTextString()))
                             }
-                        },
-                    ) {
-                        Icon(
-                            modifier = Modifier.padding(end = 10.dp),
-                            imageVector = Icons.Default.Map,
-                            contentDescription = null,
-                            tint = trainLine.color,
-                        )
-                        Text(
-                            text = trainLine.toStringWithLine(),
-                            style = MaterialTheme.typography.bodyMedium,
-                            textAlign = TextAlign.Center,
                         )
                     }
                 }
-
+            } else {
+                LazyVerticalGrid(
+                    modifier = Modifier.fillMaxWidth(),
+                    columns = GridCells.Adaptive(minSize = 90.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    items(trainStation.lines.toList()) { trainLine ->
+                        TrainLineButton(
+                            trainLine = trainLine,
+                            onClick = {
+                                scope.launch {
+                                    mainViewModel.uiState.favModalBottomSheetState.hide()
+                                    while (mainViewModel.uiState.favModalBottomSheetState.isAnimationRunning) {
+                                        // wait. Is that actually ok to do that?
+                                    }
+                                    navController.navigate(Screen.TrainMap, mapOf("line" to trainLine.toTextString()))
+                                }
+                            }
+                        )
+                    }
+                }
             }
         }
     )

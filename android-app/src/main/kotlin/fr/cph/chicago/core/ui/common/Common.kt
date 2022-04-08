@@ -23,6 +23,7 @@ import androidx.compose.animation.with
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.calculateRotation
@@ -36,6 +37,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -105,8 +107,10 @@ import com.google.accompanist.swiperefresh.SwipeRefreshState
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.favorite_yellow
+import fr.cph.chicago.core.ui.screen.Screen
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.functions.Consumer
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -727,4 +731,30 @@ fun SearchTextField(
             unfocusedIndicatorColor = Color.Transparent,
         ),
     )
+}
+
+
+@Composable
+fun TrainLineButton(
+    modifier : Modifier = Modifier,
+    trainLine: TrainLine,
+    showLine: Boolean = false,
+    onClick: () -> Unit = {},
+) {
+    Surface(
+        modifier = modifier
+            .defaultMinSize(minWidth = 90.dp)
+            .clickable(onClick = onClick),
+        color = trainLine.color,
+        shadowElevation = 1.dp,
+        shape = RoundedCornerShape(15.0.dp),
+    ) {
+        Text(
+            text = if(showLine) trainLine.toStringWithLine() else trainLine.toString() ,
+            color = Color.White,
+            style = MaterialTheme.typography.titleSmall,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 15.dp, vertical = 5.dp),
+        )
+    }
 }
