@@ -1,16 +1,30 @@
 package fr.cph.chicago.core.ui.screen
 
 import android.graphics.BitmapFactory
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
@@ -28,6 +42,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -50,7 +67,7 @@ import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.core.navigation.DisplayTopBar
+import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.BottomSheet
 import fr.cph.chicago.core.ui.common.LoadingBar
@@ -87,6 +104,7 @@ fun TrainMapScreen(
     title: String,
 ) {
     Timber.d("Compose TrainMapScreen")
+    val navController = LocalNavController.current
     var topBarTitle by remember { mutableStateOf(title) }
     val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     val scope = rememberCoroutineScope()
@@ -151,28 +169,10 @@ fun TrainMapScreen(
         },
         content = {
             Column {
-                DisplayTopBar(
-                    screen = Screen.TrainMap,
-                    title = topBarTitle,
-                    viewModel = navigationViewModel,
-                    onClickRightIcon = listOf(
-                        {
-                            scope.launch {
-                                viewModel.reloadData()
-                            }
-                        },
-                        {
-                            scope.launch {
-                                viewModel.uiState.modalBottomSheetState.show()
-                            }
-                        }
-                    )
-                )
                 Scaffold(
                     modifier = modifier,
                     snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
                     content = {
-
                         GoogleMapTrainMapView(
                             viewModel = viewModel,
                             settingsViewModel = settingsViewModel,
@@ -180,6 +180,76 @@ fun TrainMapScreen(
                                 isMapLoaded = true
                             },
                         )
+
+                        ConstraintLayout(
+                            modifier = modifier
+                                .fillMaxWidth()
+                                .windowInsetsPadding(
+                                    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+                                )
+                                .padding(start = 10.dp, top = 5.dp, bottom = 5.dp),
+                        ) {
+                            val (left, center, right) = createRefs()
+                            FilledTonalButton(
+                                modifier = Modifier.constrainAs(left) {
+                                    start.linkTo(anchor = parent.start)
+                                    width = Dimension.fillToConstraints
+                                },
+                                onClick = { navController.navigateBack() },
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.ArrowBack,
+                                    contentDescription = "Back",
+                                )
+                            }
+
+                            Text(
+                                modifier = Modifier
+                                    .constrainAs(center) {
+                                        top.linkTo(anchor = parent.top)
+                                        centerVerticallyTo(left)
+                                        centerHorizontallyTo(parent)
+                                    },
+                                text = topBarTitle,
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.onBackground,
+                            )
+
+                            Row(
+                                modifier = Modifier
+                                    .padding(end = 10.dp)
+                                    .constrainAs(right) {
+                                        end.linkTo(anchor = parent.end)
+                                        width = Dimension.wrapContent
+                                        centerVerticallyTo(left)
+                                    }
+                            ) {
+                                IconButton(
+                                    modifier = Modifier.background(color = MaterialTheme.colorScheme.secondaryContainer),
+                                    onClick = {
+                                    scope.launch {
+                                        viewModel.reloadData()
+                                    }
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Refresh,
+                                        contentDescription = null,
+                                    )
+                                }
+                                IconButton(
+                                    modifier = Modifier.background(color = MaterialTheme.colorScheme.secondaryContainer),
+                                    onClick = {
+                                    scope.launch {
+                                        viewModel.uiState.modalBottomSheetState.show()
+                                    }
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Filled.MoreVert,
+                                        contentDescription = null,
+                                    )
+                                }
+                            }
+                        }
 
                         LoadingBar(
                             show = viewModel.uiState.isLoading,
