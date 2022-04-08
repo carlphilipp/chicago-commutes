@@ -110,7 +110,6 @@ import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.favorite_yellow
-import fr.cph.chicago.core.ui.screen.Screen
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.functions.Consumer
 import io.reactivex.rxjava3.schedulers.Schedulers

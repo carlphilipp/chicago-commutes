@@ -318,9 +318,10 @@ fun ShowMapMultipleTrainLinesBottomView(
         title = stringResource(id = R.string.train_choose_line),
         content = {
             val lines = trainStation.lines
+            val modifier = Modifier.padding(bottom = 20.dp).fillMaxWidth()
             if (lines.size <= 3) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = modifier,
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -341,7 +342,7 @@ fun ShowMapMultipleTrainLinesBottomView(
                 }
             } else {
                 LazyVerticalGrid(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = modifier,
                     columns = GridCells.Adaptive(minSize = 90.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
