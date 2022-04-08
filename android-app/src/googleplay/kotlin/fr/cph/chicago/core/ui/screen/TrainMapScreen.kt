@@ -2,6 +2,7 @@ package fr.cph.chicago.core.ui.screen
 
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -32,6 +34,7 @@ import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -42,6 +45,7 @@ import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberMarkerState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
+import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
@@ -68,10 +72,10 @@ import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -208,6 +212,15 @@ fun GoogleMapTrainMapView(
 ) {
     val uiState = viewModel.uiState
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    val isDarkTheme = when (settingsViewModel.uiState.theme) {
+        Theme.AUTO -> isSystemInDarkTheme()
+        Theme.LIGHT -> false
+        Theme.DARK -> true
+    }
+
+    val style = if (isDarkTheme) R.raw.style_json_dark else R.raw.style_json_light
 
     if (uiState.moveCamera != null && uiState.moveCameraZoom != null) {
         LaunchedEffect(key1 = uiState.moveCamera, key2 = uiState.moveCameraZoom, block = {
@@ -220,7 +233,11 @@ fun GoogleMapTrainMapView(
     GoogleMap(
         modifier = modifier,
         cameraPositionState = uiState.cameraPositionState,
-        properties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false),
+        properties = MapProperties(
+            mapType = MapType.NORMAL,
+            isMyLocationEnabled = false,
+            mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, style),
+        ),
         uiSettings = MapUiSettings(compassEnabled = false, myLocationButtonEnabled = false, zoomControlsEnabled = false),
         onMapLoaded = onMapLoaded,
     ) {
