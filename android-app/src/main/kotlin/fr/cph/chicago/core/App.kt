@@ -32,6 +32,7 @@ import com.google.android.material.color.DynamicColors
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.ErrorActivity
 import io.reactivex.rxjava3.plugins.RxJavaPlugins
+import kotlinx.coroutines.CoroutineExceptionHandler
 import timber.log.Timber
 import timber.log.Timber.DebugTree
 
@@ -45,6 +46,11 @@ class App : Application() {
 
     companion object {
         lateinit var instance: App
+
+        val exceptionHandler = CoroutineExceptionHandler { _, exception ->
+            Timber.e(exception, "Unexpected exception caught in corouting exception handler")
+            startErrorActivity()
+        }
 
         fun startErrorActivity() {
             val context = instance.applicationContext

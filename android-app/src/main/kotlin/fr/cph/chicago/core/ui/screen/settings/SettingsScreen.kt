@@ -1,169 +1,122 @@
+@file:OptIn(ExperimentalMaterialApi::class)
+
 package fr.cph.chicago.core.ui.screen.settings
 
-import android.content.Context
-import android.content.Intent
-import android.os.Build
-import androidx.activity.ComponentActivity
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Brightness6
 import androidx.compose.material.icons.outlined.DeveloperMode
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
-import androidx.core.content.ContextCompat.startActivity
-import fr.cph.chicago.core.activity.BaseActivity
+import fr.cph.chicago.R
 import fr.cph.chicago.core.model.Theme
+import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
+import fr.cph.chicago.core.navigation.NavigationViewModel
+import fr.cph.chicago.core.theme.FontSize
+import fr.cph.chicago.core.theme.ThemeColor
+import fr.cph.chicago.core.ui.common.AnimationSpeed
+import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.screen.Screen
-import fr.cph.chicago.redux.ResetStateAction
-import fr.cph.chicago.redux.store
-import fr.cph.chicago.repository.RealmConfig
+import fr.cph.chicago.launchWithDelay
 import fr.cph.chicago.service.PreferenceService
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) {
-    val uiState = viewModel.uiState
+fun SettingsScreen(
+    modifier: Modifier = Modifier,
+    viewModel: SettingsViewModel,
+    navigationViewModel: NavigationViewModel,
+    title: String,
+) {
     val navController = LocalNavController.current
+    val scope = rememberCoroutineScope()
+    val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.settingsScrollBehavior) }
 
-    LazyColumn(
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
-        item {
-            SettingsElementView(
-                imageVector = Icons.Outlined.Brightness6,
-                title = "Display",
-                description = "Theme, dark mode and fonts",
-                onClick = {
-                    navController.navigate(screen = Screen.SettingsDisplay)
-                }
-            )
-        }
-        item {
-            SettingsElementView(
-                imageVector = Icons.Outlined.DeveloperMode,
-                title = "Developer options",
-                description = "Beep boop",
-                onClick = {
-                    navController.navigate(screen = Screen.DeveloperOptions)
-                }
-            )
-        }
-        item {
-            SettingsElementView(
-                imageVector = Icons.Outlined.Info,
-                title = "About",
-                description = "Chicago commutes",
-                onClick = {
-
-                }
-            )
-        }
-/*        item {
-        item {
-            // Data cache
-            Column(
-                modifier
-                    .fillMaxWidth()
-                    .clickable { viewModel.showClearCache(true) }) {
-                Row(modifier = cellModifier) {
-                    Column {
-                        Text(
-                            text = stringResource(id = R.string.preferences_data_cache_title),
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        Spacer(modifier = Modifier.height(5.dp))
-                        Text(
-                            text = stringResource(id = R.string.preferences_clear_cache_title),
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                        Text(
-                            text = stringResource(id = R.string.preferences_clear_cache_desc),
-                            style = MaterialTheme.typography.bodySmall,
+    // Wrapping with Scaffold as the animation is overridden if it's not the case
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        content = {
+            Column {
+                DisplayTopBar(
+                    screen = Screen.Settings,
+                    title = title,
+                    viewModel = navigationViewModel,
+                    scrollBehavior = scrollBehavior,
+                )
+                LazyColumn(
+                    modifier = modifier
+                        .fillMaxWidth()
+                ) {
+                    item {
+                        SettingsElementView(
+                            imageVector = Icons.Outlined.Brightness6,
+                            title = "Display",
+                            description = "Theme, dark mode and fonts",
+                            onClick = {
+                                scope.launchWithDelay(viewModel.uiState.animationSpeed.clickDelay) {
+                                    navController.navigate(screen = Screen.SettingsDisplay)
+                                }
+                            }
                         )
                     }
-                }
-                Divider(thickness = 1.dp)
-            }
-        }
-        item {
-            Column(
-                modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        val intent = Intent(context, DeveloperOptionsActivity::class.java)
-                        startActivity(context, intent, null)
-                    }) {
-                // Developer options
-                Row(modifier = cellModifier) {
-                    Column {
-                        Text(
-                            text = stringResource(id = R.string.preferences_developer_options),
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        Spacer(modifier = Modifier.height(5.dp))
-                        Text(
-                            text = stringResource(id = R.string.preferences_developer_options_show),
-                            style = MaterialTheme.typography.bodyMedium,
+                    item {
+                        SettingsElementView(
+                            imageVector = Icons.Outlined.DeveloperMode,
+                            title = "Developer options",
+                            description = "Beep boop",
+                            onClick = {
+                                scope.launchWithDelay(viewModel.uiState.animationSpeed.clickDelay) {
+                                    navController.navigate(screen = Screen.SettingsDeveloperOptions)
+                                }
+                            }
                         )
                     }
-                }
-
-                Divider(thickness = 1.dp)
-            }
-        }
-        item {
-            // About
-            Row(modifier = cellModifier) {
-                Column {
-                    Text(
-                        text = stringResource(id = R.string.preferences_about_title),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    Spacer(modifier = Modifier.height(5.dp))
-                    Text(
-                        text = stringResource(id = R.string.preferences_version) + " ${util.getCurrentVersion()}",
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
+                    item {
+                        SettingsElementView(
+                            imageVector = Icons.Outlined.Info,
+                            title = "About",
+                            description = "Chicago commutes",
+                            onClick = {
+                                scope.launchWithDelay(viewModel.uiState.animationSpeed.clickDelay) {
+                                    navController.navigate(screen = Screen.SettingsAbout)
+                                }
+                            }
+                        )
+                    }
+                    item { NavigationBarsSpacer() }
                 }
             }
-        }*/
-    }
-
-    if (uiState.showThemeChangerDialog) {
-        ThemeChangerDialog(viewModel = viewModel)
-    }
-
-    if (uiState.showClearCacheDialog) {
-        ClearCacheDialog(viewModel = viewModel)
-    }
+        })
 }
 
 @Composable
@@ -174,7 +127,7 @@ fun SettingsElementView(
     description: String,
     onClick: () -> Unit
 ) {
-    Row(
+/*    Row(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
@@ -206,159 +159,108 @@ fun SettingsElementView(
                 )
             }
         }
-    }
-}
-
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
-@Composable
-fun ThemeChangerDialog(viewModel: SettingsViewModel) {
-    var currentThemeState by remember { mutableStateOf(viewModel.uiState.theme) }
-    currentThemeState = viewModel.uiState.theme
-    var currentDynamicColor by remember { mutableStateOf(viewModel.uiState.dynamicColorEnabled) }
-    currentDynamicColor = viewModel.uiState.dynamicColorEnabled
-
-    AlertDialog(
-        modifier = Modifier.padding(horizontal = 50.dp),
-        onDismissRequest = { viewModel.showThemeChangerDialog(false) },
-        // FIXME workaround because the dialog do not resize after loading. Issue: https://issuetracker.google.com/issues/194911971?pli=1
-        properties = DialogProperties(usePlatformDefaultWidth = false),
-        title = { Text(text = "Theme change") },
-        text = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Theme.values().forEach { theme ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { currentThemeState = theme },
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        RadioButton(
-                            // modifier = Modifier.padding(10.dp),
-                            selected = theme == currentThemeState,
-                            onClick = { currentThemeState = theme }
-                        )
-                        Text(
-                            text = theme.description,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
-                }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    Divider(thickness = 2.dp)
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Checkbox(
-                            checked = currentDynamicColor,
-                            onCheckedChange = { currentDynamicColor = !currentDynamicColor }
-                        )
-                        Text(
-                            text = "Enable dynamic colors"
-                        )
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            FilledTonalButton(
-                onClick = {
-                    viewModel.setTheme(currentThemeState)
-                    viewModel.setDynamicColor(currentDynamicColor)
-                    viewModel.showThemeChangerDialog(false)
-                },
-            ) {
-                Text(
-                    text = "Save",
-                )
-            }
-        },
-        dismissButton = {
-            OutlinedButton(
-                onClick = { viewModel.showThemeChangerDialog(false) },
-            ) {
-                Text(
-                    text = "Cancel",
-                )
-            }
-        },
-    )
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun ClearCacheDialog(viewModel: SettingsViewModel) {
-    val context = LocalContext.current
-    val activity = (context as ComponentActivity)
-    AlertDialog(
-        modifier = Modifier.padding(horizontal = 50.dp),
-        onDismissRequest = { viewModel.showClearCache(false) },
-        // FIXME workaround because the dialog do not resize after loading. Issue: https://issuetracker.google.com/issues/194911971?pli=1
-        properties = DialogProperties(usePlatformDefaultWidth = false),
-        title = {
-            Text(
-                text = "Clear cache",
+    }*/
+    SettingsElementView(
+        modifier = modifier,
+        icon = {
+            Icon(
+                modifier = Modifier.padding(end = 20.dp),
+                imageVector = imageVector,
+                contentDescription = null
             )
         },
-        text = {
-            Column {
-                Text(
-                    modifier = Modifier.padding(bottom = 15.dp),
-                    text = "This is going to:",
-                    style = MaterialTheme.typography.bodyLarge,
-                )
-                Text(
-                    text = "- Delete all your favorites",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                Text(
-                    text = "- Clear application cache",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                Text(
-                    text = "- Reload the application",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-
-        },
-        confirmButton = {
-            FilledTonalButton(
-                onClick = {
-                    viewModel.showClearCache(false)
-                    viewModel.clearLocalData(context = context)
-                    viewModel.restartApp(context = context, activity = activity)
-                },
-            ) {
-                Text(
-                    text = "Clear cache",
-                )
-            }
-        },
-        dismissButton = {
-            OutlinedButton(
-                onClick = {
-                    viewModel.showClearCache(false)
-                },
-            ) {
-                Text(
-                    text = "Cancel",
-                )
-            }
-        },
+        title = title,
+        description = description,
+        onClick = onClick,
     )
+}
+
+@Composable
+fun SettingsElementView(
+    modifier: Modifier = Modifier,
+    painter: Painter,
+    title: String,
+    description: String,
+    onClick: () -> Unit
+) {
+    SettingsElementView(
+        modifier = modifier,
+        icon = {
+            Image(
+                modifier = Modifier.padding(end = 20.dp),
+                painter = painter,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+            )
+        },
+        title = title,
+        description = description,
+        onClick = onClick,
+    )
+}
+
+@Composable
+private fun SettingsElementView(
+    modifier: Modifier = Modifier,
+    icon: @Composable () -> Unit = {},
+    title: String,
+    description: String,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+    ) {
+        Row(
+            modifier = modifier
+                .padding(horizontal = 20.dp, vertical = 15.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            /*Icon(
+                modifier = Modifier.padding(end = 20.dp),
+                painter = painter,
+                contentDescription = null
+            )*/
+            icon()
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start,
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 data class SettingsState(
     val theme: Theme = Theme.AUTO,
+    val themeColor: ThemeColor = ThemeColor.Blue,
     val showThemeChangerDialog: Boolean = false,
-    val showClearCacheDialog: Boolean = false,
-    val themeColorAutomatic: Boolean = false,
     val dynamicColorEnabled: Boolean = false,
+    val showMapDebug: Boolean = false,
+    val fontTypeFace: String = "",
+    val fontSize: FontSize = FontSize.REGULAR,
+    val animationSpeed: AnimationSpeed = AnimationSpeed.Normal,
+    val bottomSheetContent: @Composable ColumnScope.() -> Unit = { Text("Test") },
+    val modalBottomSheetState: ModalBottomSheetState = ModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        isSkipHalfExpanded = true,
+    ),
 )
 
-class SettingsViewModel(private val preferenceService: PreferenceService = PreferenceService, private val realmConfig: RealmConfig = RealmConfig) {
+class SettingsViewModel(private val preferenceService: PreferenceService = PreferenceService) {
     var uiState by mutableStateOf(SettingsState())
         private set
 
@@ -367,8 +269,18 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
         return this
     }
 
+    fun setAnimationSpeed(animationSpeed: AnimationSpeed) {
+        preferenceService.saveAnimationSpeed(animationSpeed)
+        refreshCurrentTheme()
+    }
+
     fun setTheme(theme: Theme) {
         preferenceService.saveTheme(theme)
+        refreshCurrentTheme()
+    }
+
+    fun setThemeColor(themeColor: ThemeColor) {
+        preferenceService.saveThemeColor(themeColor)
         refreshCurrentTheme()
     }
 
@@ -377,48 +289,29 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
         refreshCurrentTheme()
     }
 
-    fun setThemeColorAutomatic(value: Boolean) {
-        preferenceService.saveAutomaticThemeColor(value)
+    fun setFontTypeFace(font: String) {
+        preferenceService.saveFont(font)
         refreshCurrentTheme()
     }
 
-    fun showThemeChangerDialog(show: Boolean) {
+    fun setFontSize(value: FontSize) {
+        preferenceService.saveFontSize(value)
+        refreshCurrentTheme()
+    }
+
+    fun updateBottomSheet(component: @Composable ColumnScope.() -> Unit) {
+        uiState = uiState.copy(bottomSheetContent = component)
+    }
+
+    fun refreshCurrentTheme() {
         uiState = uiState.copy(
-            showThemeChangerDialog = show
-        )
-    }
-
-    fun showClearCache(show: Boolean) {
-        uiState = uiState.copy(
-            showClearCacheDialog = show
-        )
-    }
-
-    fun clearLocalData(context: Context) {
-        deleteCache(context)
-        preferenceService.clearPreferences()
-        realmConfig.cleanRealm()
-    }
-
-    private fun deleteCache(context: Context?) {
-        try {
-            context?.cacheDir?.deleteRecursively()
-        } catch (ignored: Exception) {
-        }
-    }
-
-    fun restartApp(context: Context, activity: ComponentActivity) {
-        store.dispatch(ResetStateAction())
-        val intent = Intent(context, BaseActivity::class.java)
-        activity.finish()
-        startActivity(context, intent, null)
-    }
-
-    private fun refreshCurrentTheme() {
-        uiState = uiState.copy(
+            showMapDebug = preferenceService.getShowDebug(),
             theme = preferenceService.getTheme(),
+            themeColor = preferenceService.getThemeColor(),
             dynamicColorEnabled = preferenceService.getDynamicColor(),
-            themeColorAutomatic = preferenceService.isAutomaticThemeColor(),
+            fontTypeFace = preferenceService.getFont(),
+            fontSize = preferenceService.getFontSize(),
+            animationSpeed = preferenceService.getAnimationSpeed(),
         )
     }
 }

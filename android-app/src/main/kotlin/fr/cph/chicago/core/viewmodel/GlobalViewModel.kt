@@ -1,10 +1,13 @@
 package fr.cph.chicago.core.viewmodel
 
 import android.content.Context
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsBus
 import androidx.compose.material.icons.filled.Train
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -21,8 +24,8 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.TimeUtil
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
 import java.util.*
@@ -31,6 +34,7 @@ import javax.inject.Inject
 val settingsViewModel = SettingsViewModel().initModel()
 val locationViewModel = LocationViewModel()
 
+@OptIn(ExperimentalMaterialApi::class)
 @HiltViewModel
 abstract class MainViewModel @Inject constructor(
     private val trainService: TrainService = TrainService,
@@ -41,14 +45,8 @@ abstract class MainViewModel @Inject constructor(
     var uiState by mutableStateOf(MainUiState())
         internal set
 
-    fun initModel(): MainViewModel {
-        Timber.i("init MainViewModel")
-        loadBusRoutesAndBike()
-        return this
-    }
-
     override fun newState(state: State) {
-        Timber.d("new state")
+        Timber.d("MainViewModel new state thread: ${Thread.currentThread().name}")
         Favorites.refreshFavorites()
 
         if (state.busRoutesStatus == Status.SUCCESS) {
@@ -103,6 +101,18 @@ abstract class MainViewModel @Inject constructor(
 
     fun loadBusRoutes() {
         store.dispatch(BusRoutesAction())
+    }
+
+    fun updateBusRouteSearch(search: String) {
+        uiState = uiState.copy(
+            busRouteSearch = search
+        )
+    }
+
+    fun updateBikeSearch(search: String) {
+        uiState = uiState.copy(
+            bikeSearch = search
+        )
     }
 
     fun loadBikeStations() {
@@ -176,7 +186,7 @@ abstract class MainViewModel @Inject constructor(
             .map { trainArrival ->
                 NearbyResult(arrivals = NearbyResult.toArrivals(trainArrival.trainEtas.filter { trainEta -> trainEta.trainStation.id == trainStation.id }))
             }
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(Schedulers.computation())
             .subscribe(
                 {
                     uiState = uiState.copy(
@@ -195,7 +205,7 @@ abstract class MainViewModel @Inject constructor(
     fun loadNearbyBusDetails(busStop: BusStop) {
         busService.loadBusArrivals(busStop)
             .map { busArrivals -> NearbyResult(arrivals = NearbyResult.toArrivals(busArrivals)) }
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(Schedulers.computation())
             .subscribe(
                 {
                     uiState = uiState.copy(
@@ -219,7 +229,7 @@ abstract class MainViewModel @Inject constructor(
                     lastUpdate = LastUpdate(TimeUtil.formatTimeDifference(bikeStation.lastReported, Calendar.getInstance().time))
                 )
             }
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(Schedulers.computation())
             .subscribe(
                 {
                     uiState = uiState.copy(
@@ -257,8 +267,12 @@ abstract class MainViewModel @Inject constructor(
         }.subscribe({}, { error -> Timber.e(error) })
     }
 
-    private fun loadBusRoutesAndBike() {
+    fun loadBusRoutesAndBike() {
         store.dispatch(BusRoutesAndBikeStationAction())
+    }
+
+    fun updateBottomSheet(component: @Composable ColumnScope.() -> Unit) {
+        uiState = uiState.copy(bottomSheetContent = component)
     }
 
     fun onStart() {

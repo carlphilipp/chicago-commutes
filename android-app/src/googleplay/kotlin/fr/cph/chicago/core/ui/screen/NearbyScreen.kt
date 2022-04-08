@@ -41,6 +41,8 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.navigation.DisplayTopBar
+import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.permissions.NearbyLocationPermissionView
 import fr.cph.chicago.core.ui.common.LoadingCircle
 import fr.cph.chicago.core.ui.common.LocationViewModel
@@ -49,11 +51,13 @@ import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.ShowLocationNotFoundSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.runWithDelay
+import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.core.viewmodel.MainViewModel
+import fr.cph.chicago.util.DebugView
 import fr.cph.chicago.util.GoogleMapUtil.getBitmapDescriptor
 import fr.cph.chicago.util.toLatLng
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
+import timber.log.Timber
 
 // FIXME: handle zoom right after permissions has been approved or denied
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,7 +66,11 @@ fun NearbyScreen(
     modifier: Modifier = Modifier,
     mainViewModel: MainViewModel,
     locationViewModel: LocationViewModel,
+    navigationViewModel: NavigationViewModel,
+    settingsViewModel: SettingsViewModel,
+    title: String
 ) {
+    Timber.d("Compose NearbyScreen")
     val scope = rememberCoroutineScope()
     var isMapLoaded by remember { mutableStateOf(false) }
     // Show map after 5 seconds. This is needed because there is no callback from the sdk to know if the map can be loaded or not.
@@ -79,36 +87,44 @@ fun NearbyScreen(
         locationViewModel = locationViewModel,
     )
 
-    Scaffold(
-        modifier = modifier.fillMaxWidth(),
-        snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
-        content = {
-            NearbyGoogleMapView(
-                onMapLoaded = { isMapLoaded = true },
-                mainViewModel = mainViewModel,
-            )
+    Column {
+        DisplayTopBar(
+            screen = Screen.Nearby,
+            title = title,
+            viewModel = navigationViewModel,
+        )
 
-            LoadingCircle(show = !isMapLoaded)
-
-            if (mainViewModel.uiState.nearbyShowLocationError) {
-
-                ShowLocationNotFoundSnackBar(
-                    scope = scope,
-                    snackbarHostState = mainViewModel.uiState.snackbarHostState,
-                    showErrorMessage = mainViewModel.uiState.nearbyShowLocationError,
-                    onComplete = { mainViewModel.setShowLocationError(false) }
+        Scaffold(
+            modifier = modifier.fillMaxWidth(),
+            snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
+            content = {
+                NearbyGoogleMapView(
+                    onMapLoaded = { isMapLoaded = true },
+                    mainViewModel = mainViewModel,
+                    settingsViewModel = settingsViewModel,
                 )
+
+                LoadingCircle(show = !isMapLoaded)
+
+                if (mainViewModel.uiState.nearbyShowLocationError) {
+                    ShowLocationNotFoundSnackBar(
+                        scope = scope,
+                        snackbarHostState = mainViewModel.uiState.snackbarHostState,
+                        showErrorMessage = mainViewModel.uiState.nearbyShowLocationError,
+                        onComplete = { mainViewModel.setShowLocationError(false) }
+                    )
+                }
+                if (mainViewModel.uiState.nearbyDetailsError) {
+                    ShowErrorMessageSnackBar(
+                        scope = scope,
+                        snackbarHostState = mainViewModel.uiState.snackbarHostState,
+                        showError = mainViewModel.uiState.nearbyDetailsError,
+                        onComplete = { mainViewModel.setNearbyDetailsError(false) }
+                    )
+                }
             }
-            if (mainViewModel.uiState.nearbyDetailsError) {
-                ShowErrorMessageSnackBar(
-                    scope = scope,
-                    snackbarHostState = mainViewModel.uiState.snackbarHostState,
-                    showError = mainViewModel.uiState.nearbyDetailsError,
-                    onComplete = { mainViewModel.setNearbyDetailsError(false) }
-                )
-            }
-        }
-    )
+        )
+    }
 }
 
 @Composable
@@ -116,13 +132,13 @@ fun NearbyGoogleMapView(
     modifier: Modifier = Modifier,
     onMapLoaded: () -> Unit,
     mainViewModel: MainViewModel,
+    settingsViewModel: SettingsViewModel,
 ) {
     val uiState = mainViewModel.uiState
     val context = LocalContext.current
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(uiState.nearbyMapCenterLocation.toLatLng(), uiState.nearbyZoomIn)
     }
-    //cameraPositionState.position = CameraPosition.fromLatLngZoom(uiState.nearbyMapCenterLocation.toLatLng(), uiState.nearbyZoomIn)
 
     Timber.d("Set location: ${uiState.nearbyMapCenterLocation.toLatLng()}")
 
@@ -188,7 +204,9 @@ fun NearbyGoogleMapView(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         SearchThisAreaButton(mainViewModel = mainViewModel, cameraPositionState = cameraPositionState)
-        //DebugView(cameraPositionState)
+        if (settingsViewModel.uiState.showMapDebug) {
+            DebugView(cameraPositionState)
+        }
     }
 
     MapStationDetailsView(
@@ -197,7 +215,6 @@ fun NearbyGoogleMapView(
         image = mainViewModel.uiState.nearbyDetailsIcon,
         arrivals = mainViewModel.uiState.nearbyDetailsArrivals,
     )
-
 }
 
 @Composable
@@ -237,7 +254,7 @@ fun MapStationDetailsView(showView: Boolean, title: String, image: ImageVector, 
                         Arrivals(
                             destination = entry.key.destination,
                             arrivals = entry.value,
-                            trainLine = entry.key.trainLine,
+                            color = entry.key.trainLine.color,
                             direction = entry.key.direction
                         )
                     }

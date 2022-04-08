@@ -45,7 +45,6 @@ import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
-import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.core.model.Position
@@ -56,11 +55,14 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.AnimatedText
+import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.common.ShimmerAnimation
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.ShowFavoriteSnackBar
+import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.StationDetailsImageView
 import fr.cph.chicago.core.ui.common.StationDetailsTitleIconView
+import fr.cph.chicago.core.ui.common.SwipeRefreshThemed
 import fr.cph.chicago.core.ui.common.loadGoogleStreet
 import fr.cph.chicago.core.ui.common.openExternalMapApplication
 import fr.cph.chicago.redux.AddTrainFavoriteAction
@@ -72,10 +74,10 @@ import fr.cph.chicago.redux.TrainStationAction
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
+import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -84,22 +86,24 @@ fun TrainStationScreen(
     viewModel: TrainStationViewModel,
     navigationViewModel: NavigationViewModel,
 ) {
+    Timber.d("Compose TrainStationScreen")
     val uiState = viewModel.uiState
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
     Column {
         DisplayTopBar(
-            title = uiState.trainStation.name,
-            viewModel = navigationViewModel,
+            screen = Screen.TrainDetails,
+            viewModel = navigationViewModel
         )
 
-        SwipeRefresh(
+        SwipeRefreshThemed(
             modifier = modifier,
-            state = rememberSwipeRefreshState(isRefreshing = uiState.isRefreshing),
+            swipeRefreshState = rememberSwipeRefreshState(isRefreshing = uiState.isRefreshing),
             onRefresh = { viewModel.refresh() },
         ) {
             Scaffold(
+                snackbarHost = { SnackbarHostInsets(state = uiState.snackbarHostState) },
                 content = {
                     Column(
                         modifier = Modifier
@@ -119,7 +123,7 @@ fun TrainStationScreen(
                             onMapClick = { viewModel.openMap(context = context, scope = scope) }
                         )
                         uiState.trainStation.stopByLines.keys.forEach { line ->
-                            val stops = uiState.trainStation.stopByLines[line]!!
+                            val stops by remember { mutableStateOf(uiState.trainStation.stopByLines[line]!!.sorted()) }
                             Column(
                                 modifier = Modifier
                                     .padding(horizontal = 20.dp)
@@ -144,22 +148,25 @@ fun TrainStationScreen(
                                     }
                                 }
                                 Spacer(modifier = Modifier.padding(bottom = 3.dp))
-                                stops.sorted().forEachIndexed { index, stop ->
-                                    TrainStop(
-                                        viewModel = TrainStopViewModel(
-                                            stationId = uiState.trainStation.id,
-                                            line = line,
-                                            stop = stop,
-                                            trainEtas = uiState.trainEtasState
-                                                .filter { trainEta -> trainEta.trainStation.id == uiState.trainStation.id }
-                                                .filter { trainEta -> trainEta.routeName == line },
-                                            showStationName = uiState.showTrainArrivalData,
-                                            showDivider = index != stops.size - 1
-                                        ).initModel()
+
+                                stops.forEachIndexed { index, stop ->
+                                    val trainStopViewModel by remember { mutableStateOf(TrainStopViewModel()) }
+                                    trainStopViewModel.update(
+                                        stationId = uiState.trainStation.id,
+                                        line = line,
+                                        stop = stop,
+                                        trainEtas = uiState.trainEtasState
+                                            .filter { trainEta -> trainEta.trainStation.id == uiState.trainStation.id }
+                                            .filter { trainEta -> trainEta.routeName == line },
+                                        showStationName = uiState.showTrainArrivalData,
+                                        showDivider = index != stops.size - 1,
                                     )
+
+                                    TrainStop(viewModel = trainStopViewModel)
                                 }
                             }
                         }
+                        NavigationBarsSpacer()
                     }
                 })
         }
@@ -245,7 +252,7 @@ class TrainStationViewModel @Inject constructor(
     }
 
     override fun newState(state: State) {
-        Timber.d("new state ${state.trainStationStatus}")
+        Timber.d("TrainStationViewModel new state ${state.trainStationStatus} thread: ${Thread.currentThread().name}")
         when (state.trainStationStatus) {
             Status.SUCCESS -> {
                 uiState = uiState.copy(
@@ -372,41 +379,36 @@ class TrainStationViewModel @Inject constructor(
 }
 
 data class StopStationUiState(
-    val stationId: String,
-    val line: TrainLine,
-    val stop: Stop,
+    val stationId: String = "",
+    val line: TrainLine = TrainLine.NA,
+    val stop: Stop = Stop.buildEmptyStop(),
     val trainEtas: Map<String, List<String>> = mapOf(),
-    val showStationName: Boolean,
-    val showDivider: Boolean,
+    val showStationName: Boolean = false,
+    val showDivider: Boolean = false,
     val isFiltered: Boolean = false,
 )
 
-class TrainStopViewModel(
-    stationId: String,
-    line: TrainLine,
-    stop: Stop,
-    showStationName: Boolean,
-    showDivider: Boolean,
-    val trainEtas: List<TrainEta>,
-    val preferenceService: PreferenceService = PreferenceService,
-) : ViewModel() {
-    var stopUiState by mutableStateOf(
-        StopStationUiState(
+class TrainStopViewModel(val preferenceService: PreferenceService = PreferenceService) : ViewModel() {
+    var stopUiState by mutableStateOf(StopStationUiState())
+        private set
+
+    fun update(
+        stop: Stop,
+        line: TrainLine,
+        stationId: String,
+        trainEtas: List<TrainEta>,
+        showStationName: Boolean,
+        showDivider: Boolean,
+    ) {
+        stopUiState = stopUiState.copy(
             stationId = stationId,
             line = line,
             stop = stop,
+            trainEtas = computeTrainEtas(trainEtas = trainEtas),
             showStationName = showStationName,
             showDivider = showDivider,
-        )
-    )
-        private set
-
-    fun initModel(): TrainStopViewModel {
-        stopUiState = stopUiState.copy(
             isFiltered = isFiltered(),
-            trainEtas = computeTrainEtas(trainEtas)
         )
-        return this
     }
 
     fun switchFiltering(isChecked: Boolean) {
@@ -508,7 +510,10 @@ fun TrainStop(
                 }
             if (stopUiState.showDivider) {
                 Row(Modifier.padding(top = 8.dp, bottom = 8.dp)) {
-                    Divider(thickness = 1.dp)
+                    Divider(
+                        thickness = 1.dp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
+                    )
                 }
             }
         }

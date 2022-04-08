@@ -29,6 +29,21 @@
     <string name="menu_rate">Rate this app</string>
     <string name="menu_settings">Settings</string>
 
+    <!-- Screens -->
+    <string name="screen_favorites">@string/menu_favorites</string>
+    <string name="screen_train">@string/menu_train</string>
+    <string name="screen_bus">@string/menu_bus</string>
+    <string name="screen_divvy">@string/menu_divvy</string>
+    <string name="screen_nearby">@string/menu_nearby</string>
+    <string name="screen_map">@string/menu_cta_map</string>
+    <string name="screen_search">Search</string>
+    <string name="screen_alerts">@string/menu_cta_alert</string>
+    <string name="screen_settings">@string/menu_settings</string>
+    <string name="screen_settings_display">Display</string>
+    <string name="screen_settings_develop">Developer</string>
+    <string name="screen_settings_theme">Theme color</string>
+    <string name="screen_settings_about">About</string>
+
     <!-- Bundle -->
     <string name="bundle_bike_station">station</string>
     <string name="bundle_bus_stop_id">busStopId</string>

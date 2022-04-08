@@ -1,19 +1,28 @@
 package fr.cph.chicago.core.ui.screen
 
 import android.os.Bundle
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
@@ -21,75 +30,108 @@ import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
+import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.service.TrainService
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TrainLineStopsScreen(viewModel: TrainListStationViewModel) {
+fun TrainLineStopsScreen(
+    viewModel: TrainListStationViewModel,
+    title: String,
+    navigationViewModel: NavigationViewModel
+) {
     Timber.d("Compose TrainLineStopsScreen")
     val uiState = viewModel.uiState
     val navController = LocalNavController.current
+    val scrollBehavior by remember { mutableStateOf(viewModel.uiState.scrollBehavior) }
+    val scope = rememberCoroutineScope()
 
-    LazyColumn(
-        modifier = Modifier
-            .padding(start = 10.dp, end = 10.dp)
-            .fillMaxSize()
-    ) {
-        items(
-            items = uiState.trainStations,
-            key = { it.id }
-        ) { station ->
-            TextButton(onClick = { navController.navigate(Screen.TrainDetails, mapOf("stationId" to station.id)) }) {
-                Text(
-                    text = station.name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.weight(1f),
+    LaunchedEffect(key1 = uiState.trainLine, block = {
+        scope.launch {
+            viewModel.loadData(uiState.trainLine)
+        }
+    })
+
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        content = {
+            Column {
+                DisplayTopBar(
+                    screen = Screen.TrainList,
+                    title = title,
+                    viewModel = navigationViewModel,
+                    scrollBehavior = scrollBehavior,
                 )
-                station.lines.forEach { line ->
-                    ColoredBox(modifier = Modifier.padding(start = 5.dp), color = line.color)
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(start = 10.dp, end = 10.dp)
+                        .fillMaxSize(),
+                    state = viewModel.uiState.listState,
+                ) {
+                    items(
+                        items = uiState.trainStations,
+                        key = { it.id }
+                    ) { station ->
+                        TextButton(onClick = { navController.navigate(Screen.TrainDetails, mapOf("stationId" to station.id)) }) {
+                            Text(
+                                text = station.name,
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.weight(1f),
+                            )
+                            station.lines.forEach { line ->
+                                ColoredBox(modifier = Modifier.padding(start = 5.dp), color = line.color)
+                            }
+                        }
+                    }
+                    item { NavigationBarsSpacer() }
                 }
             }
-        }
-        item { NavigationBarsSpacer() }
-    }
+        })
 }
 
-data class TrainListStationUiState(
+@OptIn(ExperimentalMaterial3Api::class)
+data class TrainListStationUiState constructor(
     val title: String = "",
     val trainLine: TrainLine = TrainLine.NA,
     val trainStations: List<TrainStation> = listOf(),
+    val listState: LazyListState = LazyListState(),
+    val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
 )
 
 class TrainListStationViewModel(
-    val line: String,
     private val trainService: TrainService = TrainService,
 ) : ViewModel() {
 
     var uiState by mutableStateOf(TrainListStationUiState())
         private set
 
-    init {
-        val trainLine = TrainLine.fromString(line)
-        val title = trainLine.toStringWithLine()
+    @OptIn(ExperimentalMaterial3Api::class)
+    fun init(line: String) {
+        if (line != uiState.trainLine.toString()) {
+            val trainLine = TrainLine.fromString(line)
+            val title = trainLine.toStringWithLine()
 
-        uiState = TrainListStationUiState(
-            title = title,
-            trainLine = trainLine,
-        )
-        loadData(trainLine)
+            uiState = uiState.copy(
+                title = title,
+                trainLine = trainLine,
+                trainStations = listOf(),
+                scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+            )
+        }
     }
 
-    private fun loadData(trainLine: TrainLine) {
+    fun loadData(trainLine: TrainLine) {
         Single.fromCallable { trainService.getStationsForLine(trainLine) }
             .subscribeOn(Schedulers.computation())
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(Schedulers.computation())
             .subscribe(
                 { result ->
                     uiState = uiState.copy(
@@ -104,7 +146,6 @@ class TrainListStationViewModel(
 
     companion object {
         fun provideFactory(
-            line: String,
             owner: SavedStateRegistryOwner,
             defaultArgs: Bundle? = null,
         ): AbstractSavedStateViewModelFactory =
@@ -115,7 +156,7 @@ class TrainListStationViewModel(
                     modelClass: Class<T>,
                     handle: SavedStateHandle
                 ): T {
-                    return TrainListStationViewModel(line) as T
+                    return TrainListStationViewModel() as T
                 }
             }
     }

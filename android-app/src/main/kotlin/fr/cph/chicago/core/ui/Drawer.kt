@@ -62,7 +62,7 @@ fun Drawer(modifier: Modifier = Modifier, currentScreen: Screen, onDestinationCl
             items = drawerScreens,
             key = { it.id }
         ) { screen ->
-            Timber.d("Compose drawing drawer button")
+            Timber.v("Compose drawing drawer button")
             val backgroundColor = if (screen.route == currentScreen.route) {
                 MaterialTheme.colorScheme.secondaryContainer
             } else {
@@ -109,7 +109,6 @@ fun DrawerButton(
                     imageVector = screen.icon,
                     contentDescription = "Icon",
                     modifier = Modifier,
-                    //colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer),
                 )
                 Spacer(Modifier.width(16.dp))
                 Text(

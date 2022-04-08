@@ -1,6 +1,5 @@
 package fr.cph.chicago.core.theme
 
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -9,8 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.google.android.material.color.DynamicColors
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 
@@ -26,25 +25,24 @@ fun ChicagoCommutesTheme(
         Theme.DARK -> true
     }
 
-    val dynamicColor = settingsViewModel.uiState.dynamicColorEnabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    val dynamicColor = settingsViewModel.uiState.dynamicColorEnabled && DynamicColors.isDynamicColorAvailable()
     val colorScheme = when {
-        dynamicColor && isDarkTheme -> {
-            dynamicDarkColorScheme(LocalContext.current)
-        }
-        dynamicColor && !isDarkTheme -> {
-            dynamicLightColorScheme(LocalContext.current)
-        }
-        isDarkTheme -> DarkThemeColors
-        else -> LightThemeColors
+        dynamicColor && isDarkTheme -> dynamicDarkColorScheme(LocalContext.current)
+        dynamicColor && !isDarkTheme -> dynamicLightColorScheme(LocalContext.current)
+        isDarkTheme -> settingsViewModel.uiState.themeColor.darkTheme
+        else -> settingsViewModel.uiState.themeColor.lightTheme
     }
 
-    ProvideWindowInsets {
-        MaterialTheme(
-            colorScheme = colorScheme,
-            typography = ChicagoCommutesTypography,
-            content = content
-        )
-    }
+    val typography = getTypographyWithFont(
+        settingsViewModel.uiState.fontTypeFace,
+        settingsViewModel.uiState.fontSize,
+    )
+
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = typography,
+        content = content
+    )
 
     SystemUiSetup(isDarkTheme)
 }

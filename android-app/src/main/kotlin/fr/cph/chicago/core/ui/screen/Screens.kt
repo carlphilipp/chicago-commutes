@@ -8,33 +8,43 @@ import androidx.compose.material.icons.filled.DirectionsBus
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.NearMe
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.StarRate
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
+import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.NavigationViewModel
+import fr.cph.chicago.core.ui.screen.settings.AboutScreen
+import fr.cph.chicago.core.ui.screen.settings.DeveloperOptionsScreen
+import fr.cph.chicago.core.ui.screen.settings.DeveloperOptionsViewModel
 import fr.cph.chicago.core.ui.screen.settings.DisplaySettingsScreen
 import fr.cph.chicago.core.ui.screen.settings.SettingsScreen
 import fr.cph.chicago.core.ui.screen.settings.ThemeChooserSettingsScreen
 import fr.cph.chicago.core.viewmodel.locationViewModel
 import fr.cph.chicago.core.viewmodel.mainViewModel
 import fr.cph.chicago.core.viewmodel.settingsViewModel
+import fr.cph.chicago.getActivity
+import java.net.URLDecoder
 import kotlin.random.Random
 
 sealed class Screen(
     val id: Int = Random.nextInt(),
-    val title: String,
+    val title: String = "",
     val route: String,
     val icon: ImageVector,
     val showOnDrawer: Boolean = true,
+    val isGestureEnabled: Boolean = true,
     val topBar: ScreenTopBar,
     val component: @Composable (NavBackStackEntry, NavigationViewModel) -> Unit
 ) {
@@ -42,10 +52,10 @@ sealed class Screen(
         title = App.instance.getString(R.string.menu_favorites),
         route = "fav",
         icon = Icons.Filled.Favorite,
-        topBar = ScreenTopBar.MediumTopBarDrawer,
+        topBar = ScreenTopBar.MediumTopBarDrawerSearch,
         component = { _, navigationViewModel ->
             FavoritesScreen(
-                title = "Favorites",
+                title = stringResource(R.string.screen_favorites),
                 mainViewModel = mainViewModel,
                 navigationViewModel = navigationViewModel
             )
@@ -56,33 +66,38 @@ sealed class Screen(
         title = App.instance.getString(R.string.menu_train),
         route = "train",
         icon = Icons.Filled.Train,
-        topBar = ScreenTopBar.MediumTopBarDrawer,
+        topBar = ScreenTopBar.MediumTopBarDrawerSearch,
         component = { _, navigationViewModel ->
-            TrainScreen(title = "Train", navigationViewModel = navigationViewModel)
+            TrainScreen(
+                title = stringResource(R.string.screen_train),
+                navigationViewModel = navigationViewModel
+            )
         }
     )
 
     object TrainList : Screen(
-        title = "Train station list",
         route = "train/line/{line}",
         icon = Icons.Filled.Train,
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarBack,
-        component = { backStackEntry, _ ->
-            val line = backStackEntry.arguments?.getString("line", "0") ?: ""
-            val viewModel: TrainListStationViewModel = viewModel(
-                factory = TrainListStationViewModel.provideFactory(
-                    line = line,
-                    owner = backStackEntry,
-                    defaultArgs = backStackEntry.arguments
-                )
+        component = { backStackEntry, navigationViewModel ->
+            val activity = navigationViewModel.uiState.context.getActivity()
+            val line = URLDecoder.decode(backStackEntry.arguments?.getString("line", "0") ?: "", "UTF-8")
+            val factory = TrainListStationViewModel.provideFactory(
+                owner = activity,
+                defaultArgs = backStackEntry.arguments
             )
-            TrainLineStopsScreen(viewModel = viewModel)
+            val viewModel = ViewModelProvider(activity, factory)[TrainListStationViewModel::class.java]
+            viewModel.init(line = line)
+            TrainLineStopsScreen(
+                viewModel = viewModel,
+                navigationViewModel = navigationViewModel,
+                title = "$line Line"
+            )
         }
     )
 
     object TrainDetails : Screen(
-        title = "Train station details",
         route = "train/details/{stationId}",
         icon = Icons.Filled.Train,
         showOnDrawer = false,
@@ -107,25 +122,28 @@ sealed class Screen(
         title = App.instance.getString(R.string.menu_bus),
         route = "bus",
         icon = Icons.Filled.DirectionsBus,
-        topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { _, _ ->
-            BusScreen(mainViewModel = mainViewModel)
+        topBar = ScreenTopBar.MediumTopBarDrawerSearch,
+        component = { _, navigationViewModel ->
+            BusScreen(
+                title = stringResource(R.string.screen_bus),
+                navigationViewModel = navigationViewModel,
+                mainViewModel = mainViewModel,
+            )
         }
     )
 
     object BusDetails : Screen(
-        title = "Bus details",
         route = "bus/details?busStopId={busStopId}&busStopName={busStopName}&busRouteId={busRouteId}&busRouteName={busRouteName}&bound={bound}&boundTitle={boundTitle}",
         icon = Icons.Filled.DirectionsBus,
         showOnDrawer = false,
         topBar = ScreenTopBar.None,
-        component = { backStackEntry, _ ->
-            val busStopId = backStackEntry.arguments?.getString("busStopId", "0") ?: ""
-            val busStopName = backStackEntry.arguments?.getString("busStopName", "0") ?: ""
-            val busRouteId = backStackEntry.arguments?.getString("busRouteId", "0") ?: ""
-            val busRouteName = backStackEntry.arguments?.getString("busRouteName", "0") ?: ""
-            val bound = backStackEntry.arguments?.getString("bound", "0") ?: ""
-            val boundTitle = backStackEntry.arguments?.getString("boundTitle", "0") ?: ""
+        component = { backStackEntry, navigationViewModel ->
+            val busStopId = URLDecoder.decode(backStackEntry.arguments?.getString("busStopId", "0") ?: "", "UTF-8")
+            val busStopName = URLDecoder.decode(backStackEntry.arguments?.getString("busStopName", "0") ?: "", "UTF-8")
+            val busRouteId = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteId", "0") ?: "", "UTF-8")
+            val busRouteName = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteName", "0") ?: "", "UTF-8")
+            val bound = URLDecoder.decode(backStackEntry.arguments?.getString("bound", "0") ?: "", "UTF-8")
+            val boundTitle = URLDecoder.decode(backStackEntry.arguments?.getString("boundTitle", "0") ?: "", "UTF-8")
             val viewModel: BusStationViewModel = viewModel(
                 factory = BusStationViewModel.provideFactory(
                     busStopId = busStopId,
@@ -138,32 +156,49 @@ sealed class Screen(
                     defaultArgs = backStackEntry.arguments
                 )
             )
-            BusStationScreen(viewModel = viewModel)
+            BusStationScreen(
+                navigationViewModel = navigationViewModel,
+                viewModel = viewModel,
+            )
         }
     )
 
     object BusBound : Screen(
-        title = "Bus bound",
-        route = "bus/bound?busRouteId={busRouteId}&busRouteName={busRouteName}&bound={bound}&boundTitle={boundTitle}",
+        route = "bus/bound?busRouteId={busRouteId}&busRouteName={busRouteName}&bound={bound}&boundTitle={boundTitle}&search={search}",
         icon = Icons.Filled.DirectionsBus,
         showOnDrawer = false,
         topBar = ScreenTopBar.MediumTopBarBack,
-        component = { backStackEntry, _ ->
-            val busRouteId = backStackEntry.arguments?.getString("busRouteId", "0") ?: ""
-            val busRouteName = backStackEntry.arguments?.getString("busRouteName", "0") ?: ""
-            val bound = backStackEntry.arguments?.getString("bound", "0") ?: ""
-            val boundTitle = backStackEntry.arguments?.getString("boundTitle", "0") ?: ""
-            val viewModel: BusBoundUiViewModel = viewModel(
-                factory = BusBoundUiViewModel.provideFactory(
-                    busRouteId = busRouteId,
-                    busRouteName = busRouteName,
-                    bound = bound,
-                    boundTitle = boundTitle,
-                    owner = backStackEntry,
-                    defaultArgs = backStackEntry.arguments
-                )
+        component = { backStackEntry, navigationViewModel ->
+            val activity = navigationViewModel.uiState.context.getActivity()
+            val busRouteId = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteId", "0") ?: "", "UTF-8")
+            val busRouteName = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteName", "0") ?: "", "UTF-8")
+            val bound = URLDecoder.decode(backStackEntry.arguments?.getString("bound", "0") ?: "", "UTF-8")
+            val boundTitle = URLDecoder.decode(backStackEntry.arguments?.getString("boundTitle", "0") ?: "", "UTF-8")
+            val search = URLDecoder.decode(backStackEntry.arguments?.getString("search", "") ?: "", "UTF-8")
+
+            val factory = BusBoundUiViewModel.provideFactory(
+                busRouteId = busRouteId,
+                busRouteName = busRouteName,
+                bound = bound,
+                boundTitle = boundTitle,
+                search = search,
+                owner = activity,
+                defaultArgs = backStackEntry.arguments
             )
-            BusBoundScreen(viewModel = viewModel)
+            val viewModel = ViewModelProvider(activity, factory)[BusBoundUiViewModel::class.java]
+            viewModel.initModel(
+                busRouteId = busRouteId,
+                busRouteName = busRouteName,
+                bound = bound,
+                boundTitle = boundTitle,
+                search = search,
+            )
+
+            BusBoundScreen(
+                viewModel = viewModel,
+                navigationViewModel = navigationViewModel,
+                title = "$busRouteId - $boundTitle"
+            )
         }
     )
 
@@ -171,20 +206,23 @@ sealed class Screen(
         title = App.instance.getString(R.string.menu_divvy),
         route = "divvy",
         icon = Icons.Filled.DirectionsBike,
-        topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { _, _ ->
-            DivvyScreen(mainViewModel = mainViewModel)
+        topBar = ScreenTopBar.MediumTopBarDrawerSearch,
+        component = { _, navigationViewModel ->
+            DivvyScreen(
+                mainViewModel = mainViewModel,
+                navigationViewModel = navigationViewModel,
+                title = stringResource(R.string.screen_divvy),
+            )
         }
     )
 
     object DivvyDetails : Screen(
-        title = "Divvy station details",
         route = "divvy/details/{stationId}",
         icon = Icons.Filled.Train,
         showOnDrawer = false,
         topBar = ScreenTopBar.None,
-        component = { backStackEntry, _ ->
-            val stationId = backStackEntry.arguments?.getString("stationId", "0") ?: ""
+        component = { backStackEntry, navigationViewModel ->
+            val stationId = URLDecoder.decode(backStackEntry.arguments?.getString("stationId", "0") ?: "", "UTF-8")
             val viewModel: BikeStationViewModel = viewModel(
                 factory = BikeStationViewModel.provideFactory(
                     stationId = stationId,
@@ -192,24 +230,31 @@ sealed class Screen(
                     defaultArgs = backStackEntry.arguments
                 )
             )
-            BikeStationScreen(viewModel = viewModel)
+            BikeStationScreen(
+                viewModel = viewModel,
+                navigationViewModel = navigationViewModel,
+            )
         }
     )
 
-    object DeveloperOptions : Screen(
-        title = "Developer options",
+    object SettingsDeveloperOptions : Screen(
         route = "developer",
         icon = Icons.Filled.DeveloperMode,
         showOnDrawer = false,
-        topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { backStackEntry, _ ->
-            val viewModel: DeveloperOptionsViewModel = viewModel(
-                factory = DeveloperOptionsViewModel.provideFactory(
-                    owner = backStackEntry,
-                    defaultArgs = backStackEntry.arguments
-                )
+        topBar = ScreenTopBar.LargeTopBarBackSearch,
+        component = { backStackEntry, navigationViewModel ->
+            val activity = navigationViewModel.uiState.context.getActivity()
+            val factory = DeveloperOptionsViewModel.provideFactory(
+                owner = activity,
+                defaultArgs = backStackEntry.arguments
             )
-            DeveloperOptionsScreen(viewModel = viewModel)
+            val viewModel = ViewModelProvider(activity, factory)[DeveloperOptionsViewModel::class.java]
+            DeveloperOptionsScreen(
+                title = stringResource(R.string.screen_settings_develop),
+                viewModel = viewModel,
+                navigationViewModel = navigationViewModel,
+                settingsViewModel = settingsViewModel,
+            )
         }
     )
 
@@ -218,31 +263,52 @@ sealed class Screen(
         route = "nearby",
         icon = Icons.Filled.NearMe,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { _, _ -> NearbyScreen(mainViewModel = mainViewModel, locationViewModel = locationViewModel) })
+        isGestureEnabled = false,
+        component = { _, navigationViewModel ->
+            NearbyScreen(
+                mainViewModel = mainViewModel,
+                locationViewModel = locationViewModel,
+                navigationViewModel = navigationViewModel,
+                settingsViewModel = settingsViewModel,
+                title = stringResource(R.string.screen_nearby),
+            )
+        })
 
     object Map : Screen(
         title = App.instance.getString(R.string.menu_cta_map),
         route = "map",
         icon = Icons.Filled.Map,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { _, _ -> Map() })
+        isGestureEnabled = false,
+        component = { _, navigationViewModel ->
+            Map(
+                navigationViewModel = navigationViewModel,
+                title = stringResource(R.string.screen_map),
+            )
+        })
 
     object Alerts : Screen(
         title = App.instance.getString(R.string.menu_cta_alert),
         route = "alerts",
         icon = Icons.Filled.Warning,
         topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { _, _ -> AlertsScreen(mainViewModel = mainViewModel) })
+        component = { _, navigationViewModel ->
+            AlertsScreen(
+                mainViewModel = mainViewModel,
+                navigationViewModel = navigationViewModel,
+                title = stringResource(R.string.screen_alerts),
+            )
+        })
 
     object AlertDetail : Screen(
         title = "Alert",
         route = "alerts/{stationId}?title={title}",
         icon = Icons.Filled.Train,
         showOnDrawer = false,
-        topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { backStackEntry, _ ->
-            val routeId = backStackEntry.arguments?.getString("routeId", "") ?: ""
-            val title = backStackEntry.arguments?.getString("title", "") ?: ""
+        topBar = ScreenTopBar.MediumTopBarBackSearch,
+        component = { backStackEntry, navigationViewModel ->
+            val routeId = URLDecoder.decode(backStackEntry.arguments?.getString("routeId", "") ?: "", "UTF-8")
+            val title = URLDecoder.decode(backStackEntry.arguments?.getString("title", "") ?: "", "UTF-8")
             val viewModel: AlertDetailsViewModel = viewModel(
                 factory = AlertDetailsViewModel.provideFactory(
                     routeId = routeId,
@@ -251,96 +317,215 @@ sealed class Screen(
                     defaultArgs = backStackEntry.arguments
                 )
             )
-            AlertDetailsScreen(viewModel = viewModel)
+            AlertDetailsScreen(
+                navigationViewModel = navigationViewModel,
+                viewModel = viewModel,
+                title = title,
+            )
         }
     )
-
-    object Rate : Screen(
-        title = App.instance.getString(R.string.menu_rate),
-        route = "rate",
-        icon = Icons.Filled.StarRate,
-        topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { _, _ -> RateScreen(mainViewModel = mainViewModel) })
 
     object Settings : Screen(
         title = App.instance.getString(R.string.menu_settings),
         route = "settings",
         icon = Icons.Filled.Settings,
-        topBar = ScreenTopBar.LargeTopBarDrawer,
-        component = { _, _ -> SettingsScreen(viewModel = settingsViewModel) })
+        topBar = ScreenTopBar.LargeTopBarDrawerSearch,
+        component = { _, navigationViewModel ->
+            SettingsScreen(
+                title = stringResource(R.string.screen_settings),
+                viewModel = settingsViewModel,
+                navigationViewModel = navigationViewModel,
+            )
+        })
 
     object SettingsDisplay : Screen(
-        title = "Display",
         route = "settings/display",
         icon = Icons.Filled.Settings,
-        topBar = ScreenTopBar.LargeTopBarBack,
+        topBar = ScreenTopBar.LargeTopBarBackSearch,
         showOnDrawer = false,
-        component = { _, _ -> DisplaySettingsScreen(viewModel = settingsViewModel) })
+        component = { _, navigationViewModel ->
+            DisplaySettingsScreen(
+                title = stringResource(R.string.screen_settings_display),
+                viewModel = settingsViewModel,
+                navigationViewModel = navigationViewModel,
+            )
+        })
 
     object SettingsThemeColorChooser : Screen(
-        title = "Theme color",
         route = "settings/color",
         icon = Icons.Filled.Settings,
-        topBar = ScreenTopBar.LargeTopBarBack,
+        topBar = ScreenTopBar.LargeTopBarBackSearch,
         showOnDrawer = false,
-        component = { _, _ -> ThemeChooserSettingsScreen(viewModel = settingsViewModel) })
+        component = { _, navigationViewModel ->
+            ThemeChooserSettingsScreen(
+                topBarTitle = stringResource(R.string.screen_settings_theme),
+                viewModel = settingsViewModel,
+                navigationViewModel = navigationViewModel,
+            )
+        })
+
+    object SettingsAbout : Screen(
+        route = "settings/about",
+        icon = Icons.Filled.Settings,
+        topBar = ScreenTopBar.LargeTopBarBackSearch, // FIXME: we need a large top bar back without search
+        showOnDrawer = false,
+        component = { _, navigationViewModel ->
+            AboutScreen(
+                topBarTitle = stringResource(R.string.screen_settings_about),
+                viewModel = settingsViewModel,
+                navigationViewModel = navigationViewModel,
+                mainViewModel = mainViewModel,
+            )
+        })
 
     object Search : Screen(
-        title = "Search",
         route = "search",
         icon = Icons.Filled.Search,
         showOnDrawer = false,
-        topBar = ScreenTopBar.MediumTopBarDrawer,
-        component = { backStackEntry, _ ->
-            val viewModel: SearchViewModel = viewModel(
-                factory = SearchViewModel.provideFactory(
-                    owner = backStackEntry,
-                    defaultArgs = backStackEntry.arguments
-                )
+        topBar = ScreenTopBar.MediumTopBarBack,
+        component = { backStackEntry, navigationViewModel ->
+            val activity = navigationViewModel.uiState.context.getActivity()
+            val factory = SearchViewModel.provideFactory(
+                owner = activity,
+                defaultArgs = backStackEntry.arguments
             )
-            SearchViewScreen(viewModel = viewModel)
+            val viewModel = ViewModelProvider(activity, factory)[SearchViewModel::class.java]
+            SearchViewScreen(
+                title = stringResource(R.string.screen_search),
+                viewModel = viewModel,
+                mainViewModel = mainViewModel,
+                navigationViewModel = navigationViewModel,
+            )
+        }
+    )
+
+    object TrainMap : Screen(
+        route = "map/trains?line={line}",
+        icon = Icons.Filled.Search,
+        showOnDrawer = false,
+        isGestureEnabled = false,
+        topBar = ScreenTopBar.MediumTopBarBackReloadMenu,
+        component = { backStackEntry, navigationViewModel ->
+            val line = URLDecoder.decode(backStackEntry.arguments?.getString("line", "") ?: "", "UTF-8")
+            val trainLine = TrainLine.fromXmlString(line)
+
+            val viewModel = MapTrainViewModel(line = trainLine)
+            TrainMapScreen(
+                viewModel = viewModel,
+                navigationViewModel = navigationViewModel,
+                title = trainLine.toStringWithLine(),
+            )
+        }
+    )
+
+    object BusMap : Screen(
+        route = "map/buses?busRouteId={busRouteId}",
+        icon = Icons.Filled.Search,
+        showOnDrawer = false,
+        isGestureEnabled = false,
+        topBar = ScreenTopBar.MediumTopBarBackReload,
+        component = { backStackEntry, navigationViewModel ->
+            val busRouteId = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteId", "") ?: "", "UTF-8")
+
+            val viewModel = MapBusViewModel(busRouteId = busRouteId)
+            BusMapScreen(
+                viewModel = viewModel,
+                navigationViewModel = navigationViewModel,
+                title = busRouteId,
+            )
+        }
+    )
+
+    object BikeMap : Screen(
+        route = "map/bikes?id={id}",
+        icon = Icons.Filled.Search,
+        showOnDrawer = false,
+        isGestureEnabled = false,
+        topBar = ScreenTopBar.MediumTopBarBackReload,
+        component = { backStackEntry, navigationViewModel ->
+            val id = URLDecoder.decode(backStackEntry.arguments?.getString("id", "") ?: "", "UTF-8")
+
+            val viewModel = MapBikesViewModel(id = id)
+            BikeMapScreen(
+                viewModel = viewModel,
+                navigationViewModel = navigationViewModel,
+                settingsViewModel = settingsViewModel,
+                title = "Bike station",
+            )
         }
     )
 }
 
 sealed class ScreenTopBar(
     val type: TopBarType,
-    val icon: ImageVector,
-    val action: TopBarIconAction,
+    val leftIcon: ImageVector,
+    val rightIcons: List<ImageVector> = listOf(),
+    val actionLeft: TopBarIconAction,
 ) {
-    object MediumTopBarDrawer : ScreenTopBar(
-        type = TopBarType.MEDIUM,
-        icon = Icons.Filled.Menu,
-        action = TopBarIconAction.OPEN_DRAWER,
-    )
-
     object MediumTopBarBack : ScreenTopBar(
         type = TopBarType.MEDIUM,
-        icon = Icons.Filled.ArrowBack,
-        action = TopBarIconAction.BACK,
+        leftIcon = Icons.Filled.ArrowBack,
+        actionLeft = TopBarIconAction.BACK,
     )
 
-    object LargeTopBarDrawer : ScreenTopBar(
-        type = TopBarType.LARGE,
-        icon = Icons.Filled.Menu,
-        action = TopBarIconAction.OPEN_DRAWER,
+    object MediumTopBarDrawerSearch : ScreenTopBar(
+        type = TopBarType.MEDIUM,
+        leftIcon = Icons.Filled.Menu,
+        rightIcons = listOf(Icons.Filled.Search),
+        actionLeft = TopBarIconAction.OPEN_DRAWER,
     )
 
-    object LargeTopBarBack : ScreenTopBar(
+    object MediumTopBarDrawer : ScreenTopBar(
+        type = TopBarType.MEDIUM,
+        leftIcon = Icons.Filled.Menu,
+        actionLeft = TopBarIconAction.OPEN_DRAWER,
+    )
+
+    object MediumTopBarBackSearch : ScreenTopBar(
+        type = TopBarType.MEDIUM,
+        leftIcon = Icons.Filled.ArrowBack,
+        rightIcons = listOf(Icons.Filled.Search),
+        actionLeft = TopBarIconAction.BACK,
+    )
+
+    object MediumTopBarBackReload : ScreenTopBar(
+        type = TopBarType.MEDIUM,
+        leftIcon = Icons.Filled.ArrowBack,
+        rightIcons = listOf(Icons.Filled.Refresh),
+        actionLeft = TopBarIconAction.BACK,
+    )
+
+    object MediumTopBarBackReloadMenu : ScreenTopBar(
+        type = TopBarType.MEDIUM,
+        leftIcon = Icons.Filled.ArrowBack,
+        rightIcons = listOf(Icons.Filled.Refresh, Icons.Filled.MoreVert),
+        actionLeft = TopBarIconAction.BACK,
+    )
+
+    object LargeTopBarDrawerSearch : ScreenTopBar(
         type = TopBarType.LARGE,
-        icon = Icons.Filled.ArrowBack,
-        action = TopBarIconAction.BACK,
+        leftIcon = Icons.Filled.Menu,
+        rightIcons = listOf(Icons.Filled.Search),
+        actionLeft = TopBarIconAction.OPEN_DRAWER,
+    )
+
+    object LargeTopBarBackSearch : ScreenTopBar(
+        type = TopBarType.LARGE,
+        leftIcon = Icons.Filled.ArrowBack,
+        rightIcons = listOf(Icons.Filled.Search),
+        actionLeft = TopBarIconAction.BACK,
     )
 
     object None : ScreenTopBar(
         type = TopBarType.NONE,
-        icon = Icons.Filled.ArrowBack,
-        action = TopBarIconAction.BACK,
+        leftIcon = Icons.Filled.ArrowBack,
+        rightIcons = listOf(Icons.Filled.Search),
+        actionLeft = TopBarIconAction.BACK,
     )
 }
 
 enum class TopBarIconAction {
-    BACK, OPEN_DRAWER,
+    BACK, OPEN_DRAWER, NONE,
 }
 
 enum class TopBarType {
@@ -355,18 +540,21 @@ val screens = listOf(
     Screen.Bus,
     Screen.BusBound,
     Screen.BusDetails,
-    Screen.DeveloperOptions,
+    Screen.SettingsDeveloperOptions,
     Screen.Divvy,
     Screen.DivvyDetails,
     Screen.Nearby,
     Screen.Map,
     Screen.Alerts,
     Screen.AlertDetail,
-    Screen.Rate,
     Screen.Settings,
     Screen.SettingsDisplay,
     Screen.SettingsThemeColorChooser,
     Screen.Search,
+    Screen.TrainMap,
+    Screen.BusMap,
+    Screen.BikeMap,
+    Screen.SettingsAbout,
 )
 
 val drawerScreens by lazy {

@@ -37,11 +37,11 @@ import fr.cph.chicago.rx.RxUtil.handleListError
 import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.Callable
 import kotlin.collections.set
+import timber.log.Timber
 
 object TrainService {
 
@@ -58,25 +58,27 @@ object TrainService {
                 val trainParams: Set<String> = preferencesService.getFavoritesTrainParams()
                 var trainArrivals = mutableMapOf<String, TrainArrival>()
                 val list = trainParams.toList()
-                if (list.size < 5) {
-                    trainArrivals = getTrainArrivals(trainParams).blockingGet()
-                } else {
-                    val size = list.size
-                    var start = 0
-                    var end = 4
-                    while (end < size + 1) {
-                        val subList = list.subList(start, end)
-                        val paramsTemp = mutableSetOf<String>()
-                        for (sub in subList) {
-                            paramsTemp.add(sub)
-                        }
-                        val temp = getTrainArrivals(paramsTemp).blockingGet()
-                        trainArrivals.putAll(temp)
-                        start = end
-                        if (end + 3 >= size - 1 && end != size) {
-                            end = size
-                        } else {
-                            end += 3
+                if (list.isNotEmpty()) {
+                    if (list.size < 5) {
+                        trainArrivals = getTrainArrivals(trainParams).blockingGet()
+                    } else {
+                        val size = list.size
+                        var start = 0
+                        var end = 4
+                        while (end < size + 1) {
+                            val subList = list.subList(start, end)
+                            val paramsTemp = mutableSetOf<String>()
+                            for (sub in subList) {
+                                paramsTemp.add(sub)
+                            }
+                            val temp = getTrainArrivals(paramsTemp).blockingGet()
+                            trainArrivals.putAll(temp)
+                            start = end
+                            if (end + 3 >= size - 1 && end != size) {
+                                end = size
+                            } else {
+                                end += 3
+                            }
                         }
                     }
                 }
@@ -118,7 +120,7 @@ object TrainService {
         return ctaClient.getTrainFollow(runNumber)
             .map { trainArrivalResponse: TrainArrivalResponse ->
                 val arrivals = getTrainArrivalsInternal(trainArrivalResponse)
-                var trainEta = mutableListOf<TrainEta>()
+                val trainEta = mutableListOf<TrainEta>()
                 arrivals.forEach { entry ->
                     val etas = entry.value.trainEtas
                     if (entry.value.trainEtas.size != 0) {
@@ -213,7 +215,7 @@ object TrainService {
     }
 
     private fun getTrainArrivals(stationsIds: Set<String>): Single<MutableMap<String, TrainArrival>> {
-        return ctaClient.getTrainArrivals(stationsIds.map { it.toString() })
+        return ctaClient.getTrainArrivals(stationsIds.map { it })
             .map { trainArrivalResponse -> getTrainArrivalsInternal(trainArrivalResponse) }
     }
 

@@ -20,8 +20,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.navigation.DisplayTopBar
+import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.permissions.NearbyLocationPermissionView
 import fr.cph.chicago.core.ui.common.*
+import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapEventsReceiver
@@ -42,8 +45,11 @@ import java.util.concurrent.TimeUnit
 @Composable
 fun NearbyScreen(
     modifier: Modifier = Modifier,
+    title: String,
     mainViewModel: MainViewModel,
     locationViewModel: LocationViewModel,
+    navigationViewModel: NavigationViewModel,
+    settingsViewModel: SettingsViewModel,
 ) {
     val scope = rememberCoroutineScope()
     var isMapLoaded by remember { mutableStateOf(false) }
@@ -61,36 +67,44 @@ fun NearbyScreen(
         locationViewModel = locationViewModel,
     )
 
-    Scaffold(
-        modifier = modifier.fillMaxWidth(),
-        snackbarHost = { SnackbarHost(hostState = mainViewModel.uiState.snackbarHostState) { data -> Snackbar(snackbarData = data) } },
-        content = {
-            NearbyOsmdroidMapView(
-                onMapLoaded = { isMapLoaded = true },
-                mainViewModel = mainViewModel
-            )
+    Column {
+        DisplayTopBar(
+            screen = Screen.Nearby,
+            title = title,
+            viewModel = navigationViewModel,
+        )
 
-            LoadingCircle(show = !isMapLoaded)
-
-            if (mainViewModel.uiState.nearbyShowLocationError) {
-
-                ShowLocationNotFoundSnackBar(
-                    scope = scope,
-                    snackbarHostState = mainViewModel.uiState.snackbarHostState,
-                    showErrorMessage = mainViewModel.uiState.nearbyShowLocationError,
-                    onComplete = { mainViewModel.setShowLocationError(false) }
+        Scaffold(
+            modifier = modifier.fillMaxWidth(),
+            snackbarHost = { SnackbarHost(hostState = mainViewModel.uiState.snackbarHostState) { data -> Snackbar(snackbarData = data) } },
+            content = {
+                NearbyOsmdroidMapView(
+                    onMapLoaded = { isMapLoaded = true },
+                    mainViewModel = mainViewModel
                 )
+
+                LoadingCircle(show = !isMapLoaded)
+
+                if (mainViewModel.uiState.nearbyShowLocationError) {
+
+                    ShowLocationNotFoundSnackBar(
+                        scope = scope,
+                        snackbarHostState = mainViewModel.uiState.snackbarHostState,
+                        showErrorMessage = mainViewModel.uiState.nearbyShowLocationError,
+                        onComplete = { mainViewModel.setShowLocationError(false) }
+                    )
+                }
+                if (mainViewModel.uiState.nearbyDetailsError) {
+                    ShowErrorMessageSnackBar(
+                        scope = scope,
+                        snackbarHostState = mainViewModel.uiState.snackbarHostState,
+                        showError = mainViewModel.uiState.nearbyDetailsError,
+                        onComplete = { mainViewModel.setNearbyDetailsError(false) }
+                    )
+                }
             }
-            if (mainViewModel.uiState.nearbyDetailsError) {
-                ShowErrorMessageSnackBar(
-                    scope = scope,
-                    snackbarHostState = mainViewModel.uiState.snackbarHostState,
-                    showError = mainViewModel.uiState.nearbyDetailsError,
-                    onComplete = { mainViewModel.setNearbyDetailsError(false) }
-                )
-            }
-        }
-    )
+        )
+    }
 }
 
 @Composable
@@ -271,7 +285,6 @@ fun MapStationDetailsView(showView: Boolean, title: String, image: ImageVector, 
                         Arrivals(
                             destination = entry.key.destination,
                             arrivals = entry.value,
-                            trainLine = entry.key.trainLine,
                             direction = entry.key.direction
                         )
                     }

@@ -30,25 +30,23 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.MixedService
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.rekotlin.Middleware
 import org.rekotlin.StateType
 import timber.log.Timber
 
-private val mixedService = MixedService
-private val trainService = TrainService
-private val busService = BusService
-private val bikeService = BikeService
-private val alertService = AlertService
-private val preferenceService = PreferenceService
+private val mixedService by lazy { MixedService }
+private val trainService by lazy { TrainService }
+private val busService by lazy { BusService }
+private val bikeService by lazy { BikeService }
+private val alertService by lazy { AlertService }
+private val preferenceService by lazy { PreferenceService }
 
 internal val baseMiddleware: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->
             (action as? BaseAction)?.let {
                 mixedService.baseData()
-                    .observeOn(AndroidSchedulers.mainThread())
                     .map { baseDTO ->
                         BaseAction(
                             trainArrivalsDTO = baseDTO.trainArrivalsDTO,
@@ -59,7 +57,7 @@ internal val baseMiddleware: Middleware<StateType> = { _, _ ->
                             bikeFavorites = baseDTO.bikeFavorites,
                         )
                     }
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .observeOn(Schedulers.computation())
                     .subscribe(
                         { newAction -> next(newAction) },
                         { throwable ->
@@ -85,7 +83,7 @@ internal val busRoutesAndBikeStationMiddleware: Middleware<StateType> = { _, _ -
                             bikeStations = bikeStations
                         )
                     }
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .observeOn(Schedulers.computation())
                     .subscribe(
                         { newAction -> next(newAction) },
                         { throwable ->
@@ -103,9 +101,8 @@ internal val busRoutesMiddleware: Middleware<StateType> = { _, _ ->
         { action ->
             (action as? BusRoutesAction)?.let {
                 busService.busRoutes()
-                    .observeOn(Schedulers.computation())
                     .map { busRoutes -> BusRoutesAction(error = false, busRoutes = busRoutes) }
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .observeOn(Schedulers.computation())
                     .subscribe(
                         { newAction -> next(newAction) },
                         { throwable ->
@@ -123,7 +120,6 @@ internal val favoritesMiddleware: Middleware<StateType> = { _, _ ->
         { action ->
             (action as? FavoritesAction)?.let {
                 mixedService.favorites()
-                    .observeOn(Schedulers.computation())
                     .map { favoritesDTO ->
                         val trainArrivals = if (favoritesDTO.trainArrivalDTO.error)
                             TrainArrivalDTO(store.state.trainArrivalsDTO.trainsArrivals, true)
@@ -141,7 +137,7 @@ internal val favoritesMiddleware: Middleware<StateType> = { _, _ ->
                         )
                         FavoritesAction(favoritesDTO = newFavorites)
                     }
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .observeOn(Schedulers.computation())
                     .subscribe({ newAction -> next(newAction) }, { error -> Timber.e(error) })
             } ?: next(action)
         }
@@ -153,7 +149,6 @@ internal val trainStationMiddleware: Middleware<StateType> = { _, _ ->
         { action ->
             (action as? TrainStationAction)?.let {
                 trainService.loadStationTrainArrival(action.trainStationId)
-                    .observeOn(Schedulers.computation())
                     .map { trainArrival ->
                         TrainStationAction(
                             trainStationId = action.trainStationId,
@@ -161,7 +156,7 @@ internal val trainStationMiddleware: Middleware<StateType> = { _, _ ->
                             trainArrival = trainArrival
                         )
                     }
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .observeOn(Schedulers.computation())
                     .subscribe(
                         { newAction -> next(newAction) },
                         { throwable ->
@@ -185,9 +180,8 @@ internal val busStopArrivalsMiddleware: Middleware<StateType> = { _, _ ->
         { action ->
             (action as? BusStopArrivalsAction)?.let {
                 busService.loadBusArrivals(action.busRouteId, action.busStopId, action.bound, action.boundTitle)
-                    .observeOn(Schedulers.computation())
                     .map { busArrivalStopDTO -> BusStopArrivalsAction(busArrivalStopDTO = busArrivalStopDTO) }
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .observeOn(Schedulers.computation())
                     .subscribe(
                         { newAction -> next(newAction) },
                         { throwable ->
@@ -210,9 +204,8 @@ internal val bikeStationMiddleware: Middleware<StateType> = { _, _ ->
         { action ->
             (action as? BikeStationAction)?.let {
                 bikeService.allBikeStations()
-                    .observeOn(Schedulers.computation())
                     .map { bikeStations -> BikeStationAction(bikeStations = bikeStations) }
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .observeOn(Schedulers.computation())
                     .subscribe(
                         { newAction -> next(newAction) },
                         { throwable ->
@@ -230,9 +223,8 @@ internal val alertMiddleware: Middleware<StateType> = { _, _ ->
         { action ->
             (action as? AlertAction)?.let {
                 alertService.alerts()
-                    .observeOn(Schedulers.computation())
                     .map { routesAlertsDTO -> AlertAction(routesAlertsDTO = routesAlertsDTO) }
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .observeOn(Schedulers.computation())
                     .subscribe(
                         { newAction -> next(newAction) },
                         { throwable ->
@@ -255,8 +247,8 @@ internal val addTrainFavorites: Middleware<StateType> = { _, _ ->
         { action ->
             (action as? AddTrainFavoriteAction)?.let {
                 preferenceService.addTrainStationToFavorites(action.id)
+                    .observeOn(Schedulers.computation())
                     .map { favorites -> AddTrainFavoriteAction(id = action.id, trainFavorites = favorites) }
-                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ newAction -> next(newAction) }, { error -> Timber.e(error) })
             } ?: next(action)
         }
@@ -270,7 +262,6 @@ internal val removeTrainFavorites: Middleware<StateType> = { _, _ ->
                 preferenceService.removeTrainFromFavorites(action.id)
                     .observeOn(Schedulers.computation())
                     .map { favorites -> RemoveTrainFavoriteAction(id = action.id, trainFavorites = favorites) }
-                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ newAction -> next(newAction) }, { error -> Timber.e(error) })
             } ?: next(action)
         }
@@ -299,7 +290,6 @@ internal val addBusFavorites: Middleware<StateType> = { _, _ ->
                             busRouteFavorites = favoritesBusRoute
                         )
                     }
-                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ newAction -> next(newAction) }, { error -> Timber.e(error) })
             } ?: next(action)
         }
@@ -326,7 +316,6 @@ internal val removeBusFavorites: Middleware<StateType> = { _, _ ->
                             busRouteFavorites = favoritesBusRoute
                         )
                     }
-                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ newAction -> next(newAction) }, { error -> Timber.e(error) })
             } ?: next(action)
         }
@@ -340,7 +329,6 @@ internal val addBikeFavorites: Middleware<StateType> = { _, _ ->
                 preferenceService.addBikeToFavorites(action.id, action.stationName)
                     .observeOn(Schedulers.computation())
                     .map { favorites -> AddBikeFavoriteAction(id = action.id, bikeFavorites = favorites) }
-                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ newAction -> next(newAction) }, { error -> Timber.e(error) })
             } ?: next(action)
         }
@@ -354,7 +342,6 @@ internal val removeBikeFavorites: Middleware<StateType> = { _, _ ->
                 preferenceService.removeBikeFromFavorites(action.id)
                     .observeOn(Schedulers.computation())
                     .map { favorites -> RemoveBikeFavoriteAction(id = action.id, bikeFavorites = favorites) }
-                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ newAction -> next(newAction) }, { error -> Timber.e(error) })
             } ?: next(action)
         }

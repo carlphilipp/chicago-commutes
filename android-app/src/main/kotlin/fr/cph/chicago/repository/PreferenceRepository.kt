@@ -26,6 +26,10 @@ import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.model.dto.PreferencesDTO
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.core.theme.FontSize
+import fr.cph.chicago.core.theme.ThemeColor
+import fr.cph.chicago.core.theme.defaultFontName
+import fr.cph.chicago.core.ui.common.AnimationSpeed
 import fr.cph.chicago.parseNotNull
 import fr.cph.chicago.repository.PrefType.BIKE
 import fr.cph.chicago.repository.PrefType.BIKE_NAME_MAPPING
@@ -38,12 +42,12 @@ import fr.cph.chicago.repository.PrefType.TRAIN
 import fr.cph.chicago.repository.PrefType.TRAIN_FILTER
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
+import timber.log.Timber
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.regex.Pattern
-import timber.log.Timber
 
 /**
  * Class that store user preferences into the device
@@ -103,6 +107,19 @@ object PreferenceRepository {
         getPrivatePreferencesTrainFilter().edit().clear().apply()
     }
 
+    // Animation speed
+    fun saveAnimationSpeed(name: String) {
+        Timber.i("Save animation speed: $name")
+        val editor = getPrivatePreferences().edit()
+        editor.putString(PrefType.ANIMATION_SPEED.value, name)
+        editor.apply()
+    }
+
+    fun getAnimationSpeed(): String {
+        val sharedPref = getPrivatePreferences()
+        return sharedPref.getString(PrefType.ANIMATION_SPEED.value, AnimationSpeed.Normal.name)!!
+    }
+
     // Themes
     fun getTheme(): String {
         val sharedPref = getPrivatePreferences()
@@ -113,6 +130,17 @@ object PreferenceRepository {
         val editor = getPrivatePreferences().edit()
         editor.putString(THEME.value, theme)
         editor.apply()
+    }
+
+    fun saveThemeColor(name: String) {
+        val editor = getPrivatePreferences().edit()
+        editor.putString(PrefType.THEME_COLOR.value, name)
+        editor.apply()
+    }
+
+    fun getThemeColor(): String {
+        val sharedPref = getPrivatePreferences()
+        return sharedPref.getString(PrefType.THEME_COLOR.value, ThemeColor.Blue.name)!!
     }
 
     fun getDynamicColor(): Boolean {
@@ -126,14 +154,26 @@ object PreferenceRepository {
         editor.apply()
     }
 
-    fun isAutomaticThemeColor(): Boolean {
+    // Font
+    fun getFont(): String {
         val sharedPref = getPrivatePreferences()
-        return sharedPref.getBoolean(PrefType.AUTOMATIC_COLOR.value, true)
+        return sharedPref.getString(PrefType.FONT.value, defaultFontName)!!
     }
 
-    fun saveAutomaticThemeColor(value: Boolean) {
+    fun saveFont(font: String) {
         val editor = getPrivatePreferences().edit()
-        editor.putBoolean(PrefType.AUTOMATIC_COLOR.value, value)
+        editor.putString(PrefType.FONT.value, font)
+        editor.apply()
+    }
+
+    fun getFontSize(): String {
+        val sharedPref = getPrivatePreferences()
+        return sharedPref.getString(PrefType.FONT_SIZE.value, FontSize.REGULAR.description)!!
+    }
+
+    fun saveFontSize(fontSize: String) {
+        val editor = getPrivatePreferences().edit()
+        editor.putString(PrefType.FONT_SIZE.value, fontSize)
         editor.apply()
     }
 
@@ -294,6 +334,18 @@ object PreferenceRepository {
         editor.apply()
     }
 
+    // Debug
+    fun saveShowDebug(value: Boolean) {
+        val editor = getPrivatePreferences().edit()
+        editor.putBoolean(PrefType.DEBUG_MAP.value, value)
+        editor.apply()
+    }
+
+    fun getShowDebug(): Boolean {
+        val sharedPref = getPrivatePreferences()
+        return sharedPref.getBoolean(PrefType.DEBUG_MAP.value, false)
+    }
+
     // Rate last seen
     fun getRateLastSeen(): Date {
         return try {
@@ -336,8 +388,12 @@ object PreferenceRepository {
 enum class PrefType(val value: String) {
     FAVORITES("ChicagoTrackerFavorites"),
     THEME("ChicagoTrackerTheme"),
+    THEME_COLOR("ChicagoTrackerThemeColor"),
+    ANIMATION_SPEED("ChicagoTrackerFavoritesAnimationSpeed"),
     DYNAMIC_COLOR("ChicagoTrackerThemeDynamicColor"),
-    AUTOMATIC_COLOR("ChicagoTrackerThemeAutomaticColor"),
+    FONT("ChicagoTrackerThemeFont"),
+    FONT_SIZE("ChicagoTrackerThemeFontSize"),
+    DEBUG_MAP("ChicagoTrackerDebugMap"),
     TRAIN("ChicagoTrackerFavoritesTrain"),
     TRAIN_FILTER("ChicagoTrackerFavoritesTrainFilter"),
     BUS("ChicagoTrackerFavoritesBus"),

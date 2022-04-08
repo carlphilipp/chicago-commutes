@@ -35,7 +35,7 @@ import fr.cph.chicago.core.viewmodel.settingsViewModel
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class ErrorActivity : CustomComponentActivity() {
+class ErrorActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +44,7 @@ class ErrorActivity : CustomComponentActivity() {
                 val context = LocalContext.current
                 AnimatedErrorView(
                     onClick = {
-                        val intent = Intent(this@ErrorActivity, BaseActivity::class.java)
+                        val intent = Intent(this@ErrorActivity, MainActivity::class.java)
                         finish()
                         startActivity(context, intent, null)
                     }

@@ -19,15 +19,15 @@
 
 package fr.cph.chicago.service
 
-import android.content.res.Configuration
-import android.graphics.Color
 import fr.cph.chicago.Constants.REQUEST_ROUTE
 import fr.cph.chicago.Constants.REQUEST_STOP_ID
-import fr.cph.chicago.R
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.model.dto.PreferencesDTO
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.core.theme.FontSize
+import fr.cph.chicago.core.theme.ThemeColor
+import fr.cph.chicago.core.ui.common.AnimationSpeed
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.PreferenceRepository
 import fr.cph.chicago.util.Util
@@ -36,18 +36,22 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.Date
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
+import timber.log.Timber
 
 object PreferenceService {
 
     private val repo = PreferenceRepository
     private val util = Util
 
-    fun getColorSchemeColors(configuration: Configuration): Int {
-        return when (configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-            Configuration.UI_MODE_NIGHT_NO -> Color.BLACK
-            Configuration.UI_MODE_NIGHT_YES -> Color.WHITE
-            else -> Color.BLACK
-        }
+    fun saveAnimationSpeed(animationSpeed: AnimationSpeed) {
+        repo.saveAnimationSpeed(animationSpeed.name)
+    }
+
+    fun getAnimationSpeed(): AnimationSpeed {
+        val animationSpeed = repo.getAnimationSpeed()
+        val c =  AnimationSpeed.fromString(animationSpeed)
+        Timber.i("Get animation speed $c")
+        return c
     }
 
     fun getTheme(): Theme {
@@ -58,6 +62,15 @@ object PreferenceService {
         repo.saveTheme(theme.key)
     }
 
+    fun saveThemeColor(themeColor: ThemeColor) {
+        repo.saveThemeColor(themeColor.name)
+    }
+
+    fun getThemeColor(): ThemeColor {
+        val str = repo.getThemeColor()
+        return ThemeColor.getThemeColor(str)
+    }
+
     fun getDynamicColor(): Boolean {
         return repo.getDynamicColor()
     }
@@ -66,12 +79,28 @@ object PreferenceService {
         return repo.saveDynamicColor(value)
     }
 
-    fun isAutomaticThemeColor() : Boolean{
-        return repo.isAutomaticThemeColor()
+    fun getFont(): String {
+        return repo.getFont()
     }
 
-    fun saveAutomaticThemeColor(value: Boolean) {
-        return repo.saveAutomaticThemeColor(value)
+    fun saveFont(font: String) {
+        return repo.saveFont(font)
+    }
+
+    fun getFontSize(): FontSize {
+        return FontSize.fromString(repo.getFontSize())
+    }
+
+    fun saveFontSize(value: FontSize) {
+        return repo.saveFontSize(value.description)
+    }
+
+    fun saveShowDebug(value: Boolean) {
+        return repo.saveShowDebug(value)
+    }
+
+    fun getShowDebug(): Boolean {
+        return repo.getShowDebug()
     }
 
     fun isTrainStationFavorite(trainStationId: String): Boolean {

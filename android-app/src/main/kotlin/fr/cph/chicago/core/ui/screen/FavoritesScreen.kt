@@ -9,34 +9,35 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsBus
 import androidx.compose.material.icons.filled.Train
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BikeStation
@@ -47,25 +48,25 @@ import fr.cph.chicago.core.model.LastUpdate
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
-import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.theme.bike_orange
-import fr.cph.chicago.core.ui.MediumTopBar
+import fr.cph.chicago.core.theme.defaultButtonShape
 import fr.cph.chicago.core.ui.common.AnimatedText
-import fr.cph.chicago.core.ui.common.BusDetailDialog
 import fr.cph.chicago.core.ui.common.ColoredBox
+import fr.cph.chicago.core.ui.common.ModalBottomSheetLayoutMaterial3
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
-import fr.cph.chicago.core.ui.common.TrainDetailDialog
+import fr.cph.chicago.core.ui.common.ShowBusDetailsBottomView
+import fr.cph.chicago.core.ui.common.ShowMapMultipleTrainLinesBottomView
+import fr.cph.chicago.core.ui.common.SwipeRefreshThemed
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.util.TimeUtil
-import fr.cph.chicago.util.startBusMapActivity
-import fr.cph.chicago.util.startTrainMapActivity
 import java.util.Calendar
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun FavoritesScreen(
     mainViewModel: MainViewModel,
@@ -75,48 +76,71 @@ fun FavoritesScreen(
 ) {
     Timber.d("Compose FavoritesScreen")
     val lastUpdate: LastUpdate = favorites.time.value
+    val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.favScrollBehavior) }
 
-    Column {
-        DisplayTopBar(
-            title =title,
-            viewModel = navigationViewModel,
-        )
-        SwipeRefresh(
-            state = rememberSwipeRefreshState(mainViewModel.uiState.isRefreshing),
-            onRefresh = {
-                mainViewModel.refresh()
-            },
-        ) {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(favorites.size()) { index ->
-                    ElevatedCard(
-                        modifier = Modifier.padding(horizontal = 15.dp, vertical = 7.dp),
+    ModalBottomSheetLayoutMaterial3(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        sheetState = mainViewModel.uiState.favModalBottomSheetState,
+        sheetContent = mainViewModel.uiState.bottomSheetContent,
+        content = {
+            Column {
+                DisplayTopBar(
+                    screen = Screen.Favorites,
+                    title = title,
+                    viewModel = navigationViewModel,
+                    scrollBehavior = scrollBehavior,
+                )
+                SwipeRefreshThemed(
+                    swipeRefreshState = rememberSwipeRefreshState(mainViewModel.uiState.isRefreshing),
+                    onRefresh = {
+                        mainViewModel.refresh()
+                    },
+                ) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        state = mainViewModel.uiState.favLazyListState,
                     ) {
-                        Column {
-                            when (val model = favorites.getObject(index)) {
-                                is TrainStation -> TrainFavoriteCard(trainStation = model, lastUpdate = lastUpdate, favorites = favorites)
-                                is BusRoute -> BusFavoriteCard(busRoute = model, lastUpdate = lastUpdate, favorites = favorites)
-                                is BikeStation -> BikeFavoriteCard(bikeStation = model)
+                        items(favorites.size()) { index ->
+                            ElevatedCard(
+                                modifier = Modifier.padding(horizontal = 15.dp, vertical = 7.dp),
+                            ) {
+                                Column {
+                                    when (val model = favorites.getObject(index)) {
+                                        is TrainStation -> TrainFavoriteCard(
+                                            mainViewModel = mainViewModel,
+                                            trainStation = model,
+                                            lastUpdate = lastUpdate,
+                                            favorites = favorites
+                                        )
+                                        is BusRoute -> BusFavoriteCard(
+                                            mainViewModel = mainViewModel,
+                                            busRoute = model,
+                                            lastUpdate = lastUpdate,
+                                            favorites = favorites
+                                        )
+                                        is BikeStation -> BikeFavoriteCard(bikeStation = model)
+                                    }
+                                }
                             }
                         }
+                        item { NavigationBarsSpacer() }
                     }
                 }
-                item { NavigationBarsSpacer() }
             }
-        }
-    }
+        })
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TrainFavoriteCard(
     modifier: Modifier = Modifier,
+    mainViewModel: MainViewModel,
     trainStation: TrainStation,
     lastUpdate: LastUpdate,
     favorites: Favorites,
 ) {
-    val context = LocalContext.current
     val navController = LocalNavController.current
-    var showDialog by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     FavoriteCardWrapper(modifier = modifier) {
 
@@ -126,7 +150,7 @@ fun TrainFavoriteCard(
             val arrivals = favorites.getTrainArrivalByStopDirection(trainStation.id, trainLine)
             for (entry in arrivals.entries) {
                 Arrivals(
-                    trainLine = trainLine,
+                    color = trainLine.color,
                     destination = entry.key.destination,
                     direction = entry.key.trainDirection.toString(),
                     arrivals = entry.value,
@@ -141,33 +165,42 @@ fun TrainFavoriteCard(
             mapOnClick = {
                 if (trainStation.lines.size == 1) {
                     val line = trainStation.lines.first()
-                    startTrainMapActivity(
-                        context = context,
-                        trainLine = line
+                    navController.navigate(
+                        screen = Screen.TrainMap,
+                        arguments = mapOf("line" to line.toTextString())
                     )
                 } else {
-                    showDialog = true
+                    scope.launch {
+                        if (mainViewModel.uiState.favModalBottomSheetState.isVisible) {
+                            mainViewModel.uiState.favModalBottomSheetState.hide()
+                        } else {
+                            mainViewModel.updateBottomSheet {
+                                ShowMapMultipleTrainLinesBottomView(
+                                    trainStation = trainStation,
+                                    mainViewModel = mainViewModel,
+                                )
+                            }
+                            mainViewModel.uiState.favModalBottomSheetState.show()
+                        }
+                    }
                 }
             }
-        )
-        TrainDetailDialog(
-            show = showDialog,
-            trainLines = trainStation.lines,
-            hideDialog = { showDialog = false },
         )
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun BusFavoriteCard(
     modifier: Modifier = Modifier,
+    mainViewModel: MainViewModel,
     busRoute: BusRoute,
     lastUpdate: LastUpdate,
     favorites: Favorites,
 ) {
-    val context = LocalContext.current
     val navController = LocalNavController.current
-    var showDialog by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     FavoriteCardWrapper(modifier = modifier) {
         HeaderCard(
@@ -211,23 +244,33 @@ fun BusFavoriteCard(
                             "busRouteName" to busDetailsDTOs[0].routeName,
                             "bound" to busDetailsDTOs[0].bound,
                             "boundTitle" to busDetailsDTOs[0].boundTitle,
-                        )
+                        ),
+                        closeKeyboard = {
+                            keyboardController?.hide()
+                        }
                     )
                 } else {
-                    showDialog = true
+                    scope.launch {
+                        if (mainViewModel.uiState.favModalBottomSheetState.isVisible) {
+                            mainViewModel.uiState.favModalBottomSheetState.hide()
+                        } else {
+                            mainViewModel.updateBottomSheet {
+                                ShowBusDetailsBottomView(
+                                    busDetailsDTOs = busDetailsDTOs,
+                                    mainViewModel = mainViewModel,
+                                )
+                            }
+                            mainViewModel.uiState.favModalBottomSheetState.show()
+                        }
+                    }
                 }
             },
             mapOnClick = {
-                startBusMapActivity(
-                    context = context,
-                    busRouteId = busRoute.id,
+                navController.navigate(
+                    screen = Screen.BusMap,
+                    arguments = mapOf("busRouteId" to busRoute.id)
                 )
             }
-        )
-        BusDetailDialog(
-            show = showDialog,
-            busDetailsDTOs = busDetailsDTOs,
-            hideDialog = { showDialog = false },
         )
     }
 }
@@ -258,6 +301,12 @@ fun BikeFavoriteCard(modifier: Modifier = Modifier, bikeStation: BikeStation) {
                 navController.navigate(
                     screen = Screen.DivvyDetails,
                     arguments = mapOf("stationId" to bikeStation.id)
+                )
+            },
+            mapOnClick = {
+                navController.navigate(
+                    screen = Screen.BikeMap,
+                    arguments = mapOf("id" to bikeStation.id)
                 )
             }
         )
@@ -312,17 +361,18 @@ fun FooterCard(modifier: Modifier = Modifier, detailsOnClick: () -> Unit = {}, m
             .padding(top = 2.dp)
             .fillMaxWidth()
     ) {
-        FilledTonalButton(
+        ElevatedButton(
             onClick = { detailsOnClick() },
-            modifier = Modifier.padding(0.dp),
+            shape = defaultButtonShape,
         ) {
             Text(
                 text = stringResource(id = R.string.fav_details),
             )
         }
-        OutlinedButton(
+        ElevatedButton(
             onClick = { mapOnClick() },
             modifier = Modifier.padding(start = 5.dp),
+            shape = defaultButtonShape,
         ) {
             Text(
                 text = stringResource(id = R.string.fav_show_map),
@@ -332,7 +382,13 @@ fun FooterCard(modifier: Modifier = Modifier, detailsOnClick: () -> Unit = {}, m
 }
 
 @Composable
-fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA, destination: String, direction: String? = null, arrivals: List<String>) {
+fun Arrivals(
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.tertiary,
+    destination: String,
+    direction: String? = null,
+    arrivals: List<String>
+) {
     ConstraintLayout(
         modifier = modifier
             .fillMaxWidth()
@@ -347,7 +403,7 @@ fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA,
                 width = Dimension.fillToConstraints
             }
         ) {
-            ColoredBox(color = trainLine.color)
+            ColoredBox(color = color)
             Column(modifier = Modifier.padding(horizontal = 10.dp)) {
                 Text(
                     text = destination,
@@ -375,10 +431,10 @@ fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA,
         ) {
             arrivals.forEach {
                 var currentTime by remember { mutableStateOf(it) }
-                var color = Color.Unspecified
+                var textColor = Color.Unspecified
                 if (it == DEFAULT_AVAILABLE.toString()) {
                     currentTime = "?"
-                    color = bike_orange
+                    textColor = bike_orange
                 } else {
                     currentTime = it
                 }
@@ -386,7 +442,7 @@ fun Arrivals(modifier: Modifier = Modifier, trainLine: TrainLine = TrainLine.NA,
                     text = currentTime,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(start = 3.dp),
-                    color = color
+                    color = textColor
                 )
             }
         }

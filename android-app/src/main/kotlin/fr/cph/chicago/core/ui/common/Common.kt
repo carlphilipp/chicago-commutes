@@ -52,8 +52,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.FilledTonalButton
@@ -66,36 +69,44 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
+import com.google.accompanist.swiperefresh.SwipeRefreshState
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.favorite_yellow
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.functions.Consumer
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -128,18 +139,20 @@ fun openExternalMapApplication(context: Context, scope: CoroutineScope, snackbar
 
 fun loadGoogleStreet(position: Position, onSuccess: Consumer<Bitmap>, onError: Consumer<Throwable>) {
     googleStreetClient.getImage(position.latitude, position.longitude, 1000, 400)
-        .observeOn(AndroidSchedulers.mainThread())
+        .observeOn(Schedulers.computation())
         .subscribe(onSuccess, onError)
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun BackHandler(content: @Composable () -> Unit) {
     val navController = LocalNavController.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     content()
 
-    // TODO close activity if favorite
     androidx.activity.compose.BackHandler {
+        keyboardController?.hide()
         navController.navigateBack()
     }
 }
@@ -158,7 +171,7 @@ fun NavigationBarsSpacer(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ColoredBox(modifier: Modifier = Modifier, color: Color = Color.Black) {
+fun ColoredBox(modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.tertiary) {
     Box(
         modifier = modifier
             .size(20.dp)
@@ -316,11 +329,13 @@ fun StationDetailsImageView(
     scrollState: ScrollState? = null,
 ) {
     val navController = LocalNavController.current
+    val screenHeight = LocalConfiguration.current.screenHeightDp
+    val height = (1f / 3f * screenHeight).dp
 
     Surface(modifier = modifier.zIndex(1f)) {
         AnimatedVisibility(
             modifier = Modifier
-                .height(200.dp)
+                .height(height)
                 .windowInsetsPadding(
                     WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
                 ),
@@ -330,7 +345,7 @@ fun StationDetailsImageView(
             LargeImagePlaceHolderAnimated()
         }
         AnimatedVisibility(
-            modifier = Modifier.height(200.dp),
+            modifier = Modifier.height(height),
             visible = !isLoading && showGoogleStreetImage,
             enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
         ) {
@@ -352,7 +367,7 @@ fun StationDetailsImageView(
             )
         }
         AnimatedVisibility(
-            modifier = Modifier.height(200.dp),
+            modifier = Modifier.height(height),
             visible = !isLoading && !showGoogleStreetImage,
             enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
             exit = fadeOut(animationSpec = tween(durationMillis = 300)),
@@ -364,6 +379,9 @@ fun StationDetailsImageView(
                         alpha = min(1f, 1 - (scrollState.value / 600f))
                         translationY = -scrollState.value * 0.1f
                     }
+                    .windowInsetsPadding(
+                        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+                    )
             } else {
                 Modifier.fillMaxWidth()
             }
@@ -377,7 +395,7 @@ fun StationDetailsImageView(
 
         FilledTonalButton(
             modifier = Modifier
-                .padding(start = 20.dp)
+                .padding(start = 10.dp, top = 5.dp)
                 .windowInsetsPadding(
                     WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
                 ),
@@ -409,7 +427,7 @@ fun StationDetailsTitleIconView(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 7.dp),
+                    .padding(vertical = 7.dp, horizontal = 20.dp),
             ) {
                 Row(
                     modifier = Modifier
@@ -419,8 +437,9 @@ fun StationDetailsTitleIconView(
                     Text(
                         text = title,
                         style = MaterialTheme.typography.titleLarge,
-                        maxLines = 1,
+                        maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.Center
                     )
                 }
                 if (subTitle != "") {
@@ -602,7 +621,7 @@ fun LoadingCircle(
         modifier = modifier.fillMaxSize(),
         visible = show,
         enter = EnterTransition.None,
-        //exit = fadeOut()
+        exit = fadeOut()
     ) {
         CircularProgressIndicator(
             modifier = Modifier
@@ -617,8 +636,16 @@ fun ThemeColorButton(
     color: Color,
     enabled: Boolean,
     alpha: Float,
+    isSelected: Boolean,
     onClick: () -> Unit
 ) {
+    val colors = if (isSelected) {
+        ButtonDefaults.elevatedButtonColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        )
+    } else {
+        ButtonDefaults.elevatedButtonColors()
+    }
     ElevatedButton(
         modifier = Modifier
             .width(70.dp)
@@ -626,8 +653,9 @@ fun ThemeColorButton(
             .alpha(alpha),
         onClick = onClick,
         enabled = enabled,
+        colors = colors,
         shape = RoundedCornerShape(12.0.dp),
-        contentPadding = PaddingValues(3.dp)
+        contentPadding = PaddingValues(3.dp),
     ) {
         Box(
             modifier = Modifier
@@ -635,6 +663,68 @@ fun ThemeColorButton(
                 .clip(CircleShape)
                 .background(color)
                 .alpha(alpha),
-        )
+        ) {
+            if (isSelected) {
+                Icon(
+                    modifier = Modifier.align(alignment = Alignment.Center),
+                    imageVector = Icons.Filled.Check,
+                    contentDescription = "ticked",
+                    tint = Color.White
+                )
+            }
+        }
     }
+}
+
+@Composable
+fun SwipeRefreshThemed(
+    modifier: Modifier = Modifier,
+    swipeRefreshState: SwipeRefreshState,
+    onRefresh: () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    SwipeRefresh(
+        modifier = modifier,
+        state = swipeRefreshState,
+        onRefresh = onRefresh,
+        indicator = { state, trigger ->
+            SwipeRefreshIndicator(
+                state = state,
+                refreshTriggerDistance = trigger,
+                scale = true,
+                backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSurface,
+            )
+        },
+        content = content
+    )
+}
+
+@Composable
+fun SearchTextField(
+    modifier: Modifier = Modifier,
+    text: String,
+    onValueChange: (String) -> Unit
+) {
+    TextField(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(start = 20.dp, end = 20.dp, top = 5.dp, bottom = 5.dp),
+        value = text,
+        singleLine = true,
+        leadingIcon = {
+            Image(
+                modifier = Modifier.padding(start = 15.dp),
+                imageVector = Icons.Filled.Search,
+                contentDescription = "Icon",
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer),
+            )
+        },
+        onValueChange = onValueChange,
+        shape = RoundedCornerShape(28.0.dp),
+        colors = androidx.compose.material3.TextFieldDefaults.textFieldColors(
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+        ),
+    )
 }
