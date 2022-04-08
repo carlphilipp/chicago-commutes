@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.Insights
@@ -41,6 +42,7 @@ import com.jakewharton.processphoenix.ProcessPhoenix
 import fr.cph.chicago.core.model.dto.PreferenceDTO
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.NavigationViewModel
+import fr.cph.chicago.core.ui.common.ModalBottomSheetLayoutMaterial3
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.repository.RealmConfig
@@ -50,7 +52,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun DeveloperOptionsScreen(
     title: String,
@@ -69,8 +71,10 @@ fun DeveloperOptionsScreen(
         }
     })
 
-    Scaffold(
+    ModalBottomSheetLayoutMaterial3(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        sheetState = settingsViewModel.uiState.modalBottomSheetState,
+        sheetContent = settingsViewModel.uiState.bottomSheetContent,
         content = {
             Column {
                 DisplayTopBar(
