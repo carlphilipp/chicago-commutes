@@ -1,7 +1,6 @@
 package fr.cph.chicago.core.ui.screen
 
 import android.graphics.BitmapFactory
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -14,21 +13,25 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.IconButton
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -89,10 +92,10 @@ import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -189,7 +192,7 @@ fun TrainMapScreen(
                                 )
                                 .padding(start = 10.dp, top = 5.dp, bottom = 5.dp),
                         ) {
-                            val (left, center, right) = createRefs()
+                            val (left, center, right, debug) = createRefs()
                             FilledTonalButton(
                                 modifier = Modifier.constrainAs(left) {
                                     start.linkTo(anchor = parent.start)
@@ -225,29 +228,41 @@ fun TrainMapScreen(
                                     }
                             ) {
                                 IconButton(
-                                    modifier = Modifier.background(color = MaterialTheme.colorScheme.secondaryContainer),
+                                    // modifier = Modifier.background(color = MaterialTheme.colorScheme.secondaryContainer),
+                                    //shape = RoundedCornerShape(16.0.dp),
                                     onClick = {
-                                    scope.launch {
-                                        viewModel.reloadData()
-                                    }
-                                }) {
+                                        scope.launch {
+                                            viewModel.reloadData()
+                                        }
+                                    }) {
                                     Icon(
                                         imageVector = Icons.Filled.Refresh,
                                         contentDescription = null,
                                     )
                                 }
                                 IconButton(
-                                    modifier = Modifier.background(color = MaterialTheme.colorScheme.secondaryContainer),
+                                    //modifier = Modifier.background(color = MaterialTheme.colorScheme.secondaryContainer),
+                                    //shape = RoundedCornerShape(8.0.dp),
                                     onClick = {
-                                    scope.launch {
-                                        viewModel.uiState.modalBottomSheetState.show()
-                                    }
-                                }) {
+                                        scope.launch {
+                                            viewModel.uiState.modalBottomSheetState.show()
+                                        }
+                                    }) {
                                     Icon(
                                         imageVector = Icons.Filled.MoreVert,
                                         contentDescription = null,
                                     )
                                 }
+                            }
+
+                            if (settingsViewModel.uiState.showMapDebug) {
+                                DebugView(
+                                    modifier = Modifier.constrainAs(debug) {
+                                        top.linkTo(anchor = left.bottom)
+                                        end.linkTo(anchor = right.end)
+                                    },
+                                    cameraPositionState = viewModel.uiState.cameraPositionState
+                                )
                             }
                         }
 
@@ -324,10 +339,6 @@ fun GoogleMapTrainMapView(
             viewModel = viewModel,
             cameraPositionState = uiState.cameraPositionState,
         )
-    }
-
-    if (settingsViewModel.uiState.showMapDebug) {
-        DebugView(cameraPositionState = uiState.cameraPositionState)
     }
 
     InfoWindowsDetails(

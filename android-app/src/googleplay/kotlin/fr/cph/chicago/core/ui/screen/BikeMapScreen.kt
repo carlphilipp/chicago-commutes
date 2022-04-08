@@ -194,7 +194,7 @@ private fun GoogleBikeBusMapView(
         )
 
         if (settingsViewModel.uiState.showMapDebug) {
-            DebugView(uiState.cameraPositionState)
+            DebugView(cameraPositionState = uiState.cameraPositionState)
         }
     }
 }

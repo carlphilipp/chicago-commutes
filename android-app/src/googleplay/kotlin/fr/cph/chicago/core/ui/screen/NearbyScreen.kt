@@ -212,7 +212,7 @@ fun NearbyGoogleMapView(
     ) {
         SearchThisAreaButton(mainViewModel = mainViewModel, cameraPositionState = cameraPositionState)
         if (settingsViewModel.uiState.showMapDebug) {
-            DebugView(cameraPositionState)
+            DebugView(cameraPositionState = cameraPositionState)
         }
     }
 
