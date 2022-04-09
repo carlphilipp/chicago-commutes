@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Animation
@@ -19,6 +18,7 @@ import androidx.compose.material.icons.outlined.FormatSize
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.TextFormat
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.navigation.DisplayTopBar
@@ -59,22 +60,19 @@ fun DisplaySettingsScreen(
     navigationViewModel: NavigationViewModel,
 ) {
     Timber.d("Compose DisplaySettingsScreen")
+
     val uiState = settingsViewModel.uiState
     val navController = LocalNavController.current
 
     val scope = rememberCoroutineScope()
     val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.settingsDisplayScrollBehavior) }
     var bottomSheetState by remember { mutableStateOf(BottomSheetState.FONT_TYPE) }
-    val animationSpeed by remember { mutableStateOf(uiState.animationSpeed) }
-    val modalBottomSheetState by remember {
-        mutableStateOf(
-            ModalBottomSheetState(
-                initialValue = ModalBottomSheetValue.Hidden,
-                animationSpec = tween(durationMillis = animationSpeed.slideDuration),
-                isSkipHalfExpanded = true,
-            )
-        )
-    }
+
+    val modalBottomSheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        animationSpec = tween(durationMillis = uiState.animationSpeed.slideDuration),
+        skipHalfExpanded = true,
+    )
 
     ModalBottomSheetLayoutMaterial3(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -300,6 +298,8 @@ fun DisplayElementSwitchView(
                     modifier = Modifier.alpha(alpha),
                     text = description,
                     style = MaterialTheme.typography.bodySmall,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
                 )
             }
             Row(
