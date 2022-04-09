@@ -185,11 +185,6 @@ private fun SettingsElementView(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            /*Icon(
-                modifier = Modifier.padding(end = 20.dp),
-                painter = painter,
-                contentDescription = null
-            )*/
             icon()
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -219,9 +214,9 @@ data class SettingsState(
     val fontTypeFace: String = "",
     val fontSize: FontSize = FontSize.REGULAR,
     val animationSpeed: AnimationSpeed = AnimationSpeed.Normal,
+
+    // FIXME: To delete
     val bottomSheetContent: @Composable ColumnScope.() -> Unit = { Text("") },
-    val bottomSheetState: BottomSheetState = BottomSheetState.FONT_TYPE,
-    val showBottomSheet: Boolean = false,
     val modalBottomSheetState: ModalBottomSheetState = ModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         animationSpec = tween(durationMillis = animationSpeed.slideDuration),
@@ -266,17 +261,6 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
     fun setFontSize(value: FontSize) {
         preferenceService.saveFontSize(value)
         refreshCurrentTheme()
-    }
-
-    fun showBottomSheet(value: Boolean) {
-        uiState = uiState.copy(showBottomSheet = value)
-    }
-
-    fun updateBottomSheet(bottomSheetState: BottomSheetState) {
-        uiState = uiState.copy(
-            showBottomSheet = true,
-            bottomSheetState = bottomSheetState
-        )
     }
 
     fun refreshCurrentTheme() {

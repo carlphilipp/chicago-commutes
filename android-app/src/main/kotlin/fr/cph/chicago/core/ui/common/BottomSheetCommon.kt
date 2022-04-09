@@ -208,7 +208,7 @@ fun FontSizeBottomView(
                         })
                     Text(
                         text = it.description,
-                        fontSize = (20 + it.offset).sp,
+                        fontSize = (15 + it.offset).sp,
                         textAlign = TextAlign.Center
                     )
                 }

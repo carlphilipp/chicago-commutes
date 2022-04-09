@@ -346,7 +346,7 @@ sealed class Screen(
         component = { _, navigationViewModel ->
             DisplaySettingsScreen(
                 title = stringResource(R.string.screen_settings_display),
-                viewModel = settingsViewModel,
+                settingsViewModel = settingsViewModel,
                 navigationViewModel = navigationViewModel,
             )
         })

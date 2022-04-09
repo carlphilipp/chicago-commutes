@@ -1,5 +1,6 @@
 package fr.cph.chicago.core.ui.screen.settings
 
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Animation
 import androidx.compose.material.icons.outlined.Brightness6
@@ -21,11 +24,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -52,36 +55,41 @@ import timber.log.Timber
 fun DisplaySettingsScreen(
     modifier: Modifier = Modifier,
     title: String,
-    viewModel: SettingsViewModel,
+    settingsViewModel: SettingsViewModel,
     navigationViewModel: NavigationViewModel,
 ) {
     Timber.d("Compose DisplaySettingsScreen")
-    val uiState = viewModel.uiState
+    val uiState = settingsViewModel.uiState
     val navController = LocalNavController.current
 
     val scope = rememberCoroutineScope()
     val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.settingsDisplayScrollBehavior) }
-
-    LaunchedEffect(key1 = viewModel.uiState.showBottomSheet, block = {
-        scope.launch {
-            if (viewModel.uiState.showBottomSheet) {
-                viewModel.uiState.modalBottomSheetState.show()
-            }
-        }
-    })
-
-    LaunchedEffect(key1 = viewModel.uiState.modalBottomSheetState.isVisible, block = {
-        scope.launch {
-            if (viewModel.uiState.modalBottomSheetState.isVisible) {
-                viewModel.showBottomSheet(false)
-            }
-        }
-    })
+    var bottomSheetState by remember { mutableStateOf(BottomSheetState.FONT_TYPE) }
+    val animationSpeed by remember { mutableStateOf(uiState.animationSpeed) }
+    val modalBottomSheetState by remember {
+        mutableStateOf(
+            ModalBottomSheetState(
+                initialValue = ModalBottomSheetValue.Hidden,
+                animationSpec = tween(durationMillis = animationSpeed.slideDuration),
+                isSkipHalfExpanded = true,
+            )
+        )
+    }
 
     ModalBottomSheetLayoutMaterial3(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        sheetState = viewModel.uiState.modalBottomSheetState,
-        sheetContent = { BottomSheetContent(viewModel = viewModel) },
+        sheetState = modalBottomSheetState,
+        sheetContent = {
+            BottomSheetContent(
+                viewModel = settingsViewModel,
+                bottomSheetState = bottomSheetState,
+                onBackClick = {
+                    scope.launch {
+                        modalBottomSheetState.hide()
+                    }
+                }
+            )
+        },
         content = {
             Column {
                 DisplayTopBar(
@@ -106,7 +114,7 @@ fun DisplaySettingsScreen(
                             title = "Theme color",
                             description = "Choose a color",
                             onClick = {
-                                scope.launchWithDelay(viewModel.uiState.animationSpeed.clickDelay) {
+                                scope.launchWithDelay(settingsViewModel.uiState.animationSpeed.clickDelay) {
                                     navController.navigate(screen = Screen.SettingsThemeColorChooser)
                                 }
                             },
@@ -124,8 +132,8 @@ fun DisplaySettingsScreen(
                             title = "Follow System",
                             description = "Select dark/light mode based on system",
                             onClick = {
-                                if (viewModel.uiState.theme != Theme.AUTO) {
-                                    viewModel.setTheme(Theme.AUTO)
+                                if (settingsViewModel.uiState.theme != Theme.AUTO) {
+                                    settingsViewModel.setTheme(Theme.AUTO)
                                 }
                             },
                             imageVector = Icons.Outlined.Brightness6,
@@ -135,8 +143,8 @@ fun DisplaySettingsScreen(
                             title = "Light Mode",
                             description = "Enable",
                             onClick = {
-                                if (viewModel.uiState.theme != Theme.LIGHT) {
-                                    viewModel.setTheme(Theme.LIGHT)
+                                if (settingsViewModel.uiState.theme != Theme.LIGHT) {
+                                    settingsViewModel.setTheme(Theme.LIGHT)
                                 }
                             },
                             imageVector = Icons.Outlined.LightMode,
@@ -146,8 +154,8 @@ fun DisplaySettingsScreen(
                             title = "Dark Mode",
                             description = "Enable",
                             onClick = {
-                                if (viewModel.uiState.theme != Theme.DARK) {
-                                    viewModel.setTheme(Theme.DARK)
+                                if (settingsViewModel.uiState.theme != Theme.DARK) {
+                                    settingsViewModel.setTheme(Theme.DARK)
                                 }
                             },
                             imageVector = Icons.Outlined.DarkMode,
@@ -165,8 +173,9 @@ fun DisplaySettingsScreen(
                             title = "Font type",
                             description = "Choose a font",
                             onClick = {
+                                bottomSheetState = BottomSheetState.FONT_TYPE
                                 scope.launch {
-                                    viewModel.updateBottomSheet(BottomSheetState.FONT_TYPE)
+                                    modalBottomSheetState.show()
                                 }
                             },
                             imageVector = Icons.Outlined.TextFormat,
@@ -175,8 +184,9 @@ fun DisplaySettingsScreen(
                             title = "Font size",
                             description = "Choose a font size",
                             onClick = {
+                                bottomSheetState = BottomSheetState.FONT_SIZE
                                 scope.launch {
-                                    viewModel.updateBottomSheet(BottomSheetState.FONT_SIZE)
+                                    modalBottomSheetState.show()
                                 }
                             },
                             imageVector = Icons.Outlined.FormatSize,
@@ -193,8 +203,9 @@ fun DisplaySettingsScreen(
                             title = "Animations speed",
                             description = "Choose how fast the animation are rendered",
                             onClick = {
+                                bottomSheetState = BottomSheetState.ANIMATION_SPEED
                                 scope.launch {
-                                    viewModel.updateBottomSheet(BottomSheetState.ANIMATION_SPEED)
+                                    modalBottomSheetState.show()
                                 }
                             },
                             imageVector = Icons.Outlined.Animation,
@@ -312,40 +323,31 @@ fun DisplayElementSwitchView(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun BottomSheetContent(viewModel: SettingsViewModel) {
-    val scope = rememberCoroutineScope()
-    when (viewModel.uiState.bottomSheetState) {
+fun BottomSheetContent(
+    viewModel: SettingsViewModel,
+    bottomSheetState: BottomSheetState,
+    onBackClick: () -> Unit,
+) {
+    when (bottomSheetState) {
         BottomSheetState.FONT_TYPE -> {
             FontTypefaceBottomView(
                 title = "Pick a font",
                 viewModel = viewModel,
-                onBackClick = {
-                    scope.launch {
-                        viewModel.uiState.modalBottomSheetState.hide()
-                    }
-                }
+                onBackClick = onBackClick
             )
         }
         BottomSheetState.FONT_SIZE -> {
             FontSizeBottomView(
                 title = "Pick a font size",
                 viewModel = viewModel,
-                onBackClick = {
-                    scope.launch {
-                        viewModel.uiState.modalBottomSheetState.hide()
-                    }
-                }
+                onBackClick = onBackClick
             )
         }
         BottomSheetState.ANIMATION_SPEED -> {
             AnimationSpeedBottomView(
                 title = "Pick the animation speed",
                 viewModel = viewModel,
-                onBackClick = {
-                    scope.launch {
-                        viewModel.uiState.modalBottomSheetState.hide()
-                    }
-                }
+                onBackClick = onBackClick
             )
         }
     }
