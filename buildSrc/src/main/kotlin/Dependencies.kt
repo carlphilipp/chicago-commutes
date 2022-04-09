@@ -26,7 +26,7 @@ object Version {
     const val google_play_location =        "19.0.1"
     const val google_maps_compose =         "2.1.0"
     const val hilt =                        "1.0.+"
-    const val jackson =                     "2.13.2"
+    const val jackson =                     "2.13.1" // 2.13.2 is not working on android 7 (24)
     const val material =                    "1.6.0-beta01"
     const val okhttp3 =                     "4.10.0-RC1"
     const val process_phoenix =             "2.1.+"
