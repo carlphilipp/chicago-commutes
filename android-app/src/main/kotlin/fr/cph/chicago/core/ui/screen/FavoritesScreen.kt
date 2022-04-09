@@ -178,6 +178,11 @@ fun TrainFavoriteCard(
                                 ShowMapMultipleTrainLinesBottomView(
                                     trainStation = trainStation,
                                     mainViewModel = mainViewModel,
+                                    onBackClick = {
+                                        scope.launch {
+                                            mainViewModel.uiState.favModalBottomSheetState.hide()
+                                        }
+                                    }
                                 )
                             }
                             mainViewModel.uiState.favModalBottomSheetState.show()
@@ -258,6 +263,11 @@ fun BusFavoriteCard(
                                 ShowBusDetailsBottomView(
                                     busDetailsDTOs = busDetailsDTOs,
                                     mainViewModel = mainViewModel,
+                                    onBackClick = {
+                                        scope.launch {
+                                            mainViewModel.uiState.favModalBottomSheetState.hide()
+                                        }
+                                    }
                                 )
                             }
                             mainViewModel.uiState.favModalBottomSheetState.show()

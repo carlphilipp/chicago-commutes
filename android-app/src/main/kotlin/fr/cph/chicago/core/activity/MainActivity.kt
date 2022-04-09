@@ -144,7 +144,7 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterialApi::class)
 data class MainUiState  constructor(
     val isRefreshing: Boolean = false,
-    val bottomSheetContent: @Composable ColumnScope.() -> Unit = { Text("Test") },
+    val bottomSheetContent: @Composable ColumnScope.() -> Unit = { Text("") },
     val favModalBottomSheetState: ModalBottomSheetState = ModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         isSkipHalfExpanded = true,

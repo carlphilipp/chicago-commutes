@@ -170,6 +170,11 @@ fun TrainMapScreen(
                                 )
                             }
                         }
+                },
+                onBackClick = {
+                    scope.launch {
+                        viewModel.uiState.scaffoldState.bottomSheetState.collapse()
+                    }
                 }
             )
         },

@@ -35,9 +35,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import fr.cph.chicago.R
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
@@ -253,7 +251,7 @@ data class SettingsState(
     val fontTypeFace: String = "",
     val fontSize: FontSize = FontSize.REGULAR,
     val animationSpeed: AnimationSpeed = AnimationSpeed.Normal,
-    val bottomSheetContent: @Composable ColumnScope.() -> Unit = { Text("Test") },
+    val bottomSheetContent: @Composable ColumnScope.() -> Unit = { Text("") },
     val modalBottomSheetState: ModalBottomSheetState = ModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         isSkipHalfExpanded = true,

@@ -111,7 +111,15 @@ fun BusScreen(
                                                         mainViewModel.uiState.busModalBottomSheetState.hide()
                                                     } else {
                                                         mainViewModel.updateBottomSheet {
-                                                            ShowBusBoundBottomView(busRoute = busRoute, mainViewModel = mainViewModel)
+                                                            ShowBusBoundBottomView(
+                                                                busRoute = busRoute,
+                                                                mainViewModel = mainViewModel,
+                                                                onBackClick = {
+                                                                    scope.launch {
+                                                                        mainViewModel.uiState.busModalBottomSheetState.hide()
+                                                                    }
+                                                                }
+                                                            )
                                                         }
                                                         mainViewModel.uiState.busModalBottomSheetState.show()
                                                     }

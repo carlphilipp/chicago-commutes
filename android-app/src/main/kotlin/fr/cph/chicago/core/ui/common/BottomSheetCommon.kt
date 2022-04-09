@@ -60,6 +60,7 @@ private fun LoadingBottomSheet(
     isError: Boolean,
     isLoading: Boolean,
     title: String,
+    onBackClick: () -> Unit,
     content: @Composable () -> Unit
 ) {
     val sheetContent: @Composable () -> Unit = when {
@@ -81,13 +82,14 @@ private fun LoadingBottomSheet(
         }
         else -> content
     }
-    BottomSheet(title = title, content = sheetContent)
+    BottomSheet(title = title, content = sheetContent, onBackClick = onBackClick)
 }
 
 @Composable
 fun BottomSheet(
     title: String,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
+    onBackClick: () -> Unit,
 ) {
     Column(modifier = Modifier.padding(horizontal = 20.dp)) {
         Row(
@@ -110,6 +112,10 @@ fun BottomSheet(
         )
         content()
         NavigationBarsSpacer()
+    }
+    androidx.activity.compose.BackHandler {
+        Timber.e("*********************** BACK")
+        onBackClick()
     }
 }
 
@@ -137,6 +143,7 @@ private fun TitleBottomSheet(
 fun FontTypefaceBottomView(
     title: String,
     viewModel: SettingsViewModel,
+    onBackClick: () -> Unit,
 ) {
     BottomSheet(
         title = title,
@@ -167,7 +174,8 @@ fun FontTypefaceBottomView(
                     )
                 }
             }
-        }
+        },
+        onBackClick = onBackClick
     )
 }
 
@@ -176,6 +184,7 @@ fun FontTypefaceBottomView(
 fun FontSizeBottomView(
     title: String,
     viewModel: SettingsViewModel,
+    onBackClick: () -> Unit,
 ) {
     val fontSelected = remember { mutableStateOf(viewModel.uiState.fontSize) }
     BottomSheet(
@@ -205,7 +214,8 @@ fun FontSizeBottomView(
                     )
                 }
             }
-        }
+        },
+        onBackClick = onBackClick
     )
 }
 
@@ -214,6 +224,7 @@ fun FontSizeBottomView(
 fun AnimationSpeedBottomView(
     title: String,
     viewModel: SettingsViewModel,
+    onBackClick: () -> Unit,
 ) {
     val speedSelected = remember { mutableStateOf(viewModel.uiState.animationSpeed) }
     BottomSheet(
@@ -243,7 +254,8 @@ fun AnimationSpeedBottomView(
                     )
                 }
             }
-        }
+        },
+        onBackClick = onBackClick
     )
 }
 
@@ -252,6 +264,7 @@ fun AnimationSpeedBottomView(
 fun ShowBusDetailsBottomView(
     mainViewModel: MainViewModel,
     busDetailsDTOs: List<BusDetailsDTO>,
+    onBackClick: () -> Unit,
 ) {
     Timber.d("Compose ShowBusDetailsBottomView")
     val scope = rememberCoroutineScope()
@@ -301,7 +314,8 @@ fun ShowBusDetailsBottomView(
                     )
                 }
             }
-        }
+        },
+        onBackClick = onBackClick
     )
 }
 
@@ -310,6 +324,7 @@ fun ShowBusDetailsBottomView(
 fun ShowMapMultipleTrainLinesBottomView(
     trainStation: TrainStation,
     mainViewModel: MainViewModel,
+    onBackClick: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val navController = LocalNavController.current
@@ -318,7 +333,9 @@ fun ShowMapMultipleTrainLinesBottomView(
         title = stringResource(id = R.string.train_choose_line),
         content = {
             val lines = trainStation.lines
-            val modifier = Modifier.padding(bottom = 20.dp).fillMaxWidth()
+            val modifier = Modifier
+                .padding(bottom = 20.dp)
+                .fillMaxWidth()
             if (lines.size <= 3) {
                 Row(
                     modifier = modifier,
@@ -363,7 +380,8 @@ fun ShowMapMultipleTrainLinesBottomView(
                     }
                 }
             }
-        }
+        },
+        onBackClick = onBackClick
     )
 }
 
@@ -373,6 +391,7 @@ fun ShowBusBoundBottomView(
     busRoute: BusRoute,
     mainViewModel: MainViewModel,
     busService: BusService = BusService,
+    onBackClick: () -> Unit,
 ) {
     Timber.d("Compose ShowBusBoundBottomView")
     val scope = rememberCoroutineScope()
@@ -440,6 +459,7 @@ fun ShowBusBoundBottomView(
                     )
                 }
             }
-        }
+        },
+        onBackClick = onBackClick
     )
 }

@@ -150,7 +150,15 @@ fun DisplaySettingsScreen(
                             onClick = {
                                 scope.launch {
                                     viewModel.updateBottomSheet {
-                                        FontTypefaceBottomView(title = "Pick a font", viewModel = viewModel)
+                                        FontTypefaceBottomView(
+                                            title = "Pick a font",
+                                            viewModel = viewModel,
+                                            onBackClick = {
+                                                scope.launch {
+                                                    viewModel.uiState.modalBottomSheetState.hide()
+                                                }
+                                            }
+                                        )
                                     }
                                     viewModel.uiState.modalBottomSheetState.show()
                                 }
@@ -163,7 +171,15 @@ fun DisplaySettingsScreen(
                             onClick = {
                                 scope.launch {
                                     viewModel.updateBottomSheet {
-                                        FontSizeBottomView(title = "Pick a font size", viewModel = viewModel)
+                                        FontSizeBottomView(
+                                            title = "Pick a font size",
+                                            viewModel = viewModel,
+                                            onBackClick = {
+                                                scope.launch {
+                                                    viewModel.uiState.modalBottomSheetState.hide()
+                                                }
+                                            }
+                                        )
                                     }
                                     viewModel.uiState.modalBottomSheetState.show()
                                 }
@@ -184,7 +200,15 @@ fun DisplaySettingsScreen(
                             onClick = {
                                 scope.launch {
                                     viewModel.updateBottomSheet {
-                                        AnimationSpeedBottomView(title = "Pick the animation speed", viewModel = viewModel)
+                                        AnimationSpeedBottomView(
+                                            title = "Pick the animation speed",
+                                            viewModel = viewModel,
+                                            onBackClick = {
+                                                scope.launch {
+                                                    viewModel.uiState.modalBottomSheetState.hide()
+                                                }
+                                            }
+                                        )
                                     }
                                     viewModel.uiState.modalBottomSheetState.show()
                                 }
