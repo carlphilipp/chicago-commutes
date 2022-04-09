@@ -16,21 +16,14 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.material.BottomSheetScaffoldState
-import androidx.compose.material.BottomSheetState
-import androidx.compose.material.BottomSheetValue
-import androidx.compose.material.DrawerState
-import androidx.compose.material.DrawerValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.SwipeableDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.CircularProgressIndicator
@@ -49,7 +42,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.toolingGraphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -58,7 +50,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
@@ -142,7 +133,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @OptIn(ExperimentalMaterialApi::class)
-data class MainUiState  constructor(
+data class MainUiState constructor(
     val isRefreshing: Boolean = false,
     val bottomSheetContent: @Composable ColumnScope.() -> Unit = { Text("") },
     val favModalBottomSheetState: ModalBottomSheetState = ModalBottomSheetState(

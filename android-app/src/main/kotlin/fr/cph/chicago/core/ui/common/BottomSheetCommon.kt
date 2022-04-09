@@ -114,7 +114,6 @@ fun BottomSheet(
         NavigationBarsSpacer()
     }
     androidx.activity.compose.BackHandler {
-        Timber.e("*********************** BACK")
         onBackClick()
     }
 }

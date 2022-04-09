@@ -21,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,10 +62,26 @@ fun DisplaySettingsScreen(
     val scope = rememberCoroutineScope()
     val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.settingsDisplayScrollBehavior) }
 
+    LaunchedEffect(key1 = viewModel.uiState.showBottomSheet, block = {
+        scope.launch {
+            if (viewModel.uiState.showBottomSheet) {
+                viewModel.uiState.modalBottomSheetState.show()
+            }
+        }
+    })
+
+    LaunchedEffect(key1 = viewModel.uiState.modalBottomSheetState.isVisible, block = {
+        scope.launch {
+            if (viewModel.uiState.modalBottomSheetState.isVisible) {
+                viewModel.showBottomSheet(false)
+            }
+        }
+    })
+
     ModalBottomSheetLayoutMaterial3(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         sheetState = viewModel.uiState.modalBottomSheetState,
-        sheetContent = viewModel.uiState.bottomSheetContent,
+        sheetContent = { BottomSheetContent(viewModel = viewModel) },
         content = {
             Column {
                 DisplayTopBar(
@@ -149,18 +166,7 @@ fun DisplaySettingsScreen(
                             description = "Choose a font",
                             onClick = {
                                 scope.launch {
-                                    viewModel.updateBottomSheet {
-                                        FontTypefaceBottomView(
-                                            title = "Pick a font",
-                                            viewModel = viewModel,
-                                            onBackClick = {
-                                                scope.launch {
-                                                    viewModel.uiState.modalBottomSheetState.hide()
-                                                }
-                                            }
-                                        )
-                                    }
-                                    viewModel.uiState.modalBottomSheetState.show()
+                                    viewModel.updateBottomSheet(BottomSheetState.FONT_TYPE)
                                 }
                             },
                             imageVector = Icons.Outlined.TextFormat,
@@ -170,18 +176,7 @@ fun DisplaySettingsScreen(
                             description = "Choose a font size",
                             onClick = {
                                 scope.launch {
-                                    viewModel.updateBottomSheet {
-                                        FontSizeBottomView(
-                                            title = "Pick a font size",
-                                            viewModel = viewModel,
-                                            onBackClick = {
-                                                scope.launch {
-                                                    viewModel.uiState.modalBottomSheetState.hide()
-                                                }
-                                            }
-                                        )
-                                    }
-                                    viewModel.uiState.modalBottomSheetState.show()
+                                    viewModel.updateBottomSheet(BottomSheetState.FONT_SIZE)
                                 }
                             },
                             imageVector = Icons.Outlined.FormatSize,
@@ -199,18 +194,7 @@ fun DisplaySettingsScreen(
                             description = "Choose how fast the animation are rendered",
                             onClick = {
                                 scope.launch {
-                                    viewModel.updateBottomSheet {
-                                        AnimationSpeedBottomView(
-                                            title = "Pick the animation speed",
-                                            viewModel = viewModel,
-                                            onBackClick = {
-                                                scope.launch {
-                                                    viewModel.uiState.modalBottomSheetState.hide()
-                                                }
-                                            }
-                                        )
-                                    }
-                                    viewModel.uiState.modalBottomSheetState.show()
+                                    viewModel.updateBottomSheet(BottomSheetState.ANIMATION_SPEED)
                                 }
                             },
                             imageVector = Icons.Outlined.Animation,
@@ -322,6 +306,47 @@ fun DisplayElementSwitchView(
                     checked = isChecked,
                 )
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun BottomSheetContent(viewModel: SettingsViewModel) {
+    val scope = rememberCoroutineScope()
+    when (viewModel.uiState.bottomSheetState) {
+        BottomSheetState.FONT_TYPE -> {
+            FontTypefaceBottomView(
+                title = "Pick a font",
+                viewModel = viewModel,
+                onBackClick = {
+                    scope.launch {
+                        viewModel.uiState.modalBottomSheetState.hide()
+                    }
+                }
+            )
+        }
+        BottomSheetState.FONT_SIZE -> {
+            FontSizeBottomView(
+                title = "Pick a font size",
+                viewModel = viewModel,
+                onBackClick = {
+                    scope.launch {
+                        viewModel.uiState.modalBottomSheetState.hide()
+                    }
+                }
+            )
+        }
+        BottomSheetState.ANIMATION_SPEED -> {
+            AnimationSpeedBottomView(
+                title = "Pick the animation speed",
+                viewModel = viewModel,
+                onBackClick = {
+                    scope.launch {
+                        viewModel.uiState.modalBottomSheetState.hide()
+                    }
+                }
+            )
         }
     }
 }

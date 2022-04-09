@@ -2,6 +2,7 @@
 
 package fr.cph.chicago.core.ui.screen.settings
 
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -125,39 +126,6 @@ fun SettingsElementView(
     description: String,
     onClick: () -> Unit
 ) {
-/*    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-    ) {
-        Row(
-            modifier = modifier
-                .padding(horizontal = 20.dp, vertical = 15.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                modifier = Modifier.padding(end = 20.dp),
-                imageVector = imageVector,
-                contentDescription = null
-            )
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.Start,
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                Text(
-                    text = description,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
-        }
-    }*/
     SettingsElementView(
         modifier = modifier,
         icon = {
@@ -252,8 +220,11 @@ data class SettingsState(
     val fontSize: FontSize = FontSize.REGULAR,
     val animationSpeed: AnimationSpeed = AnimationSpeed.Normal,
     val bottomSheetContent: @Composable ColumnScope.() -> Unit = { Text("") },
+    val bottomSheetState: BottomSheetState = BottomSheetState.FONT_TYPE,
+    val showBottomSheet: Boolean = false,
     val modalBottomSheetState: ModalBottomSheetState = ModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
+        animationSpec = tween(durationMillis = animationSpeed.slideDuration),
         isSkipHalfExpanded = true,
     ),
 )
@@ -297,8 +268,15 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
         refreshCurrentTheme()
     }
 
-    fun updateBottomSheet(component: @Composable ColumnScope.() -> Unit) {
-        uiState = uiState.copy(bottomSheetContent = component)
+    fun showBottomSheet(value: Boolean) {
+        uiState = uiState.copy(showBottomSheet = value)
+    }
+
+    fun updateBottomSheet(bottomSheetState: BottomSheetState) {
+        uiState = uiState.copy(
+            showBottomSheet = true,
+            bottomSheetState = bottomSheetState
+        )
     }
 
     fun refreshCurrentTheme() {
@@ -312,4 +290,8 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
             animationSpeed = preferenceService.getAnimationSpeed(),
         )
     }
+}
+
+enum class BottomSheetState {
+    FONT_TYPE, FONT_SIZE, ANIMATION_SPEED
 }
