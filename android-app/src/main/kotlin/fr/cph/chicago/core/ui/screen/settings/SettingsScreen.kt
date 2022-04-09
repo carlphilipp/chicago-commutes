@@ -214,14 +214,6 @@ data class SettingsState(
     val fontTypeFace: String = "",
     val fontSize: FontSize = FontSize.REGULAR,
     val animationSpeed: AnimationSpeed = AnimationSpeed.Normal,
-
-    // FIXME: To delete
-    val bottomSheetContent: @Composable ColumnScope.() -> Unit = { Text("") },
-    val modalBottomSheetState: ModalBottomSheetState = ModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden,
-        animationSpec = tween(durationMillis = animationSpeed.slideDuration),
-        isSkipHalfExpanded = true,
-    ),
 )
 
 class SettingsViewModel(private val preferenceService: PreferenceService = PreferenceService) {
@@ -274,8 +266,4 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
             animationSpeed = preferenceService.getAnimationSpeed(),
         )
     }
-}
-
-enum class BottomSheetState {
-    FONT_TYPE, FONT_SIZE, ANIMATION_SPEED
 }

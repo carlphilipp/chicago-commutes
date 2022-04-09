@@ -2,6 +2,7 @@ package fr.cph.chicago.core.ui.screen.settings
 
 import android.content.Context
 import android.os.Bundle
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,16 +11,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.Insights
 import androidx.compose.material.icons.outlined.Map
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -63,6 +65,11 @@ fun DeveloperOptionsScreen(
     Timber.d("Compose DeveloperOptionsScreen")
     val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.settingsDeveloperScrollBehavior) }
     val scope = rememberCoroutineScope()
+    val modalBottomSheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        animationSpec = tween(durationMillis = settingsViewModel.uiState.animationSpeed.slideDuration),
+        skipHalfExpanded = true,
+    )
 
     LaunchedEffect(key1 = Unit, block = {
         scope.launch {
@@ -73,8 +80,8 @@ fun DeveloperOptionsScreen(
 
     ModalBottomSheetLayoutMaterial3(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        sheetState = settingsViewModel.uiState.modalBottomSheetState,
-        sheetContent = settingsViewModel.uiState.bottomSheetContent,
+        sheetState = modalBottomSheetState,
+        sheetContent = { Text("") },
         content = {
             Column {
                 DisplayTopBar(

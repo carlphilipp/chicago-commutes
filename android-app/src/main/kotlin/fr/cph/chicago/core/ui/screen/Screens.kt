@@ -375,6 +375,7 @@ sealed class Screen(
                 viewModel = settingsViewModel,
                 navigationViewModel = navigationViewModel,
                 mainViewModel = mainViewModel,
+                settingsViewModel = settingsViewModel,
             )
         })
 

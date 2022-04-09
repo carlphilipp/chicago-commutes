@@ -323,7 +323,7 @@ fun DisplayElementSwitchView(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun BottomSheetContent(
+internal fun BottomSheetContent(
     viewModel: SettingsViewModel,
     bottomSheetState: BottomSheetState,
     onBackClick: () -> Unit,
@@ -351,4 +351,8 @@ fun BottomSheetContent(
             )
         }
     }
+}
+
+internal enum class BottomSheetState {
+    FONT_TYPE, FONT_SIZE, ANIMATION_SPEED
 }
