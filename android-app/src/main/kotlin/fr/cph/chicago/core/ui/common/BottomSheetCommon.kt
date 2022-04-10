@@ -16,8 +16,12 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
@@ -33,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.toFontFamily
@@ -40,6 +45,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusRoute
@@ -48,6 +55,7 @@ import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.FontSize
 import fr.cph.chicago.core.theme.availableFonts
+import fr.cph.chicago.core.ui.screen.MapTrainViewModel
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.core.viewmodel.MainViewModel
@@ -87,7 +95,7 @@ private fun LoadingBottomSheet(
 
 @Composable
 fun BottomSheet(
-    title: String,
+    title: String? = null,
     content: @Composable () -> Unit,
     onBackClick: () -> Unit,
 ) {
@@ -106,10 +114,12 @@ fun BottomSheet(
                     .background(MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.4f))
             )
         }
-        TitleBottomSheet(
-            modifier = Modifier.padding(bottom = 15.dp),
-            title = title
-        )
+        if (title != null) {
+            TitleBottomSheet(
+                modifier = Modifier.padding(bottom = 15.dp),
+                title = title
+            )
+        }
         content()
         NavigationBarsSpacer()
     }
@@ -460,5 +470,52 @@ fun ShowBusBoundBottomView(
             }
         },
         onBackClick = onBackClick
+    )
+}
+
+@Composable
+fun TrainMapBottomSheet(
+    modifier: Modifier = Modifier,
+    title: String,
+    viewModel: MapTrainViewModel,
+    onBackClick: () -> Unit,
+) {
+    val scope = rememberCoroutineScope()
+    BottomSheet(
+        content = {
+            ConstraintLayout(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .background(Color.Blue)
+            ) {
+                val (left, right) = createRefs()
+                TrainLineButton(
+                    modifier = Modifier.constrainAs(left) {
+                        start.linkTo(anchor = parent.start)
+                        width = Dimension.fillToConstraints
+                    },
+                    trainLine = viewModel.uiState.line,
+                )
+
+                IconButton(
+                    modifier = Modifier.constrainAs(right) {
+                        end.linkTo(anchor = parent.end)
+                        width = Dimension.wrapContent
+                        centerVerticallyTo(left)
+                    },
+                    onClick = {
+                        scope.launch {
+                            viewModel.reloadData()
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Refresh,
+                        contentDescription = null,
+                    )
+                }
+            }
+        },
+        onBackClick = onBackClick,
     )
 }
