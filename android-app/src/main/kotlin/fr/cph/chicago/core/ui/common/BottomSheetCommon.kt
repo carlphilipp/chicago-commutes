@@ -61,6 +61,8 @@ import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.service.BusService
+import fr.cph.chicago.util.DisplayAllResultsRowView
+import fr.cph.chicago.util.EtaView
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -536,9 +538,10 @@ fun TrainMapBottomSheet(
                         style = MaterialTheme.typography.titleMedium,
                     )
                 }
-
                 LazyVerticalGrid(
-                    modifier = Modifier,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 10.dp),
                     columns = GridCells.Adaptive(minSize = 90.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -560,5 +563,51 @@ fun TrainMapBottomSheet(
             }
         },
         onBackClick = onBackClick,
+    )
+}
+
+@Composable
+fun TrainMapBottomSheetModal(
+    showAll: Boolean,
+    destination: String,
+    arrivals: List<Pair<String, String>>,
+) {
+    BottomSheet(
+        onBackClick = {  },
+        content = {
+            Column(
+                modifier = Modifier
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = "To: $destination",
+                        style = MaterialTheme.typography.titleMedium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.Center
+                    )
+                }
+                if (arrivals.isNotEmpty()) {
+                    val max = if (showAll) {
+                        arrivals.size
+                    } else {
+                        if (arrivals.size >= 6) 6 else arrivals.size
+                    }
+                    for (i in 0 until max - 1) {
+                        val pair = arrivals[i]
+                        EtaView(stopName = pair.first, eta = pair.second)
+                    }
+                    if (!showAll && max >= 6) {
+                        DisplayAllResultsRowView()
+                    }
+                }
+            }
+        }
     )
 }

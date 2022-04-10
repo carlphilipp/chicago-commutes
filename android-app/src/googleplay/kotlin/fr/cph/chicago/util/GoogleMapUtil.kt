@@ -170,7 +170,7 @@ fun InfoWindowsDetails(
 }
 
 @Composable
-private fun EtaView(stopName: String, eta: String) {
+fun EtaView(stopName: String, eta: String) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -194,7 +194,7 @@ private fun EtaView(stopName: String, eta: String) {
 }
 
 @Composable
-private fun DisplayAllResultsRowView() {
+fun DisplayAllResultsRowView() {
     Row(
         modifier = Modifier
             .fillMaxWidth()

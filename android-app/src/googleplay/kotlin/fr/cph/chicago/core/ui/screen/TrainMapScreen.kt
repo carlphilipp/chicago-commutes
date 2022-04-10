@@ -35,6 +35,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -69,6 +70,7 @@ import fr.cph.chicago.core.ui.common.ModalBottomSheetLayoutMaterial3
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.TrainMapBottomSheet
+import fr.cph.chicago.core.ui.common.TrainMapBottomSheetModal
 import fr.cph.chicago.core.ui.common.runWithDelay
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.getDefaultPosition
@@ -100,7 +102,7 @@ fun TrainMapScreen(
     val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     val scope = rememberCoroutineScope()
     var isMapLoaded by remember { mutableStateOf(false) }
-    val modalBottomSheetState: ModalBottomSheetState = ModalBottomSheetState(
+    val modalBottomSheetState = ModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         isSkipHalfExpanded = true,
     )
@@ -116,6 +118,7 @@ fun TrainMapScreen(
     if (isMapLoaded) {
         LaunchedEffect(key1 = isMapLoaded, block = {
             scope.launch {
+                // FIXME: I think this needs be chained properly
                 viewModel.loadPatterns()
                 viewModel.loadStations()
                 viewModel.loadIcons()
@@ -127,10 +130,15 @@ fun TrainMapScreen(
     ModalBottomSheetLayoutMaterial3(
         sheetState = modalBottomSheetState,
         sheetContent = {
-            Text(
-                text = "TEXT"
+            TrainMapBottomSheetModal(
+                destination = viewModel.uiState.train.destName,
+                showAll = viewModel.uiState.trainLoadAll,
+                arrivals = viewModel.uiState.trainEtas.map { trainEta ->
+                    Pair(first = trainEta.trainStation.name, second = trainEta.timeLeftDueDelay)
+                }
             )
         },
+        scrimColor = Color.Transparent,
     ) {
         BottomSheetScaffoldMaterial3(
             scaffoldState = viewModel.uiState.scaffoldState,
@@ -140,7 +148,13 @@ fun TrainMapScreen(
                     viewModel = viewModel,
                     onBackClick = {
                         scope.launch {
-                            viewModel.uiState.scaffoldState.bottomSheetState.collapse()
+                            // Handling both bottom sheet state and modal bottom sheet
+                            if (viewModel.uiState.scaffoldState.bottomSheetState.isExpanded) {
+                                viewModel.uiState.scaffoldState.bottomSheetState.collapse()
+                            }
+                            if (modalBottomSheetState.isVisible) {
+                                modalBottomSheetState.hide()
+                            }
                         }
                     }
                 )
@@ -271,8 +285,9 @@ fun GoogleMapTrainMapView(
         )
     }
 
+    // TODO to delete
     InfoWindowsDetails(
-        showView = viewModel.uiState.trainEtas.isNotEmpty(),
+        showView = false,
         destination = viewModel.uiState.train.destName,
         showAll = viewModel.uiState.trainLoadAll,
         results = viewModel.uiState.trainEtas.map { trainEta ->
@@ -347,6 +362,13 @@ fun TrainsOnMapLayer(
                 onClick = {
                     //viewModel.loadTrainEtas(train, false)
                     scope.launch {
+                        viewModel.loadTrainEtas(train, false)
+                        if (viewModel.uiState.scaffoldState.bottomSheetState.isExpanded) {
+                            viewModel.uiState.scaffoldState.bottomSheetState.collapse()
+                        }
+                        while (viewModel.uiState.scaffoldState.bottomSheetState.isExpanded) {
+                            // wait for animation to finish
+                        }
                         modalBottomSheetState.show()
                     }
                     false
@@ -357,6 +379,13 @@ fun TrainsOnMapLayer(
             )
         }
     }
+}
+
+@Composable
+fun TrainModalBottomSheet() {
+    Text(
+        text = "TEXT"
+    )
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -521,7 +550,6 @@ class MapTrainViewModel constructor(
                         trainLoadAll = loadAll,
                         isLoading = false,
                     )
-
                 },
                 { throwable ->
                     Timber.e(throwable, "Could not load train etas")
