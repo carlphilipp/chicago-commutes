@@ -80,15 +80,14 @@ import fr.cph.chicago.util.DebugView
 import fr.cph.chicago.util.GoogleMapUtil.createBitMapDescriptor
 import fr.cph.chicago.util.GoogleMapUtil.defaultZoom
 import fr.cph.chicago.util.GoogleMapUtil.isIn
-import fr.cph.chicago.util.InfoWindowsDetails
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -149,12 +148,11 @@ fun TrainMapScreen(
                     viewModel = viewModel,
                     onBackClick = {
                         scope.launch {
-                            // Handling both bottom sheet state and modal bottom sheet
-                            if (viewModel.uiState.scaffoldState.bottomSheetState.isExpanded) {
+                            if (viewModel.uiState.scaffoldState.bottomSheetState.isExpanded || modalBottomSheetState.isVisible) {
                                 viewModel.uiState.scaffoldState.bottomSheetState.collapse()
-                            }
-                            if (modalBottomSheetState.isVisible) {
                                 modalBottomSheetState.hide()
+                            } else {
+                                navController.navigateBack()
                             }
                         }
                     }
