@@ -47,7 +47,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -100,7 +99,9 @@ fun DebugView(
     cameraPositionState: CameraPositionState
 ) {
     Column(
-        modifier = modifier.fillMaxWidth().background(color = MaterialTheme.colorScheme.surface),
+        modifier = modifier
+            .fillMaxWidth()
+            .background(color = MaterialTheme.colorScheme.surface),
         verticalArrangement = Arrangement.Center
     ) {
         val moving = if (cameraPositionState.isMoving) "moving" else "not moving"
@@ -122,11 +123,7 @@ fun InfoWindowsDetails(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(start = 50.dp, end = 50.dp, bottom = 50.dp)
-                .clip(RoundedCornerShape(20.dp))
-                .clickable(
-                    enabled = true,
-                    onClick = onClick
-                ),
+                .clip(RoundedCornerShape(20.dp)),
         ) {
             AnimatedVisibility(
                 visible = showView,
@@ -162,7 +159,7 @@ fun InfoWindowsDetails(
                             EtaView(stopName = pair.first, eta = pair.second)
                         }
                         if (!showAll && max >= 6) {
-                            //4DisplayAllResultsRowView()
+                            DisplayAllResultsRowView(onClick = onClick)
                         }
                     }
                 }
@@ -196,7 +193,7 @@ fun EtaView(stopName: String, eta: String) {
 }
 
 @Composable
-fun DisplayAllResultsRowView(viewModel: MapTrainViewModel,) {
+fun DisplayAllResultsRowView(onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -205,7 +202,7 @@ fun DisplayAllResultsRowView(viewModel: MapTrainViewModel,) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         FilledTonalButton(
-            onClick = { viewModel.loadTrainEtas(viewModel.uiState.train, true) },
+            onClick = onClick,
         ) {
             Text(text = "More")
         }

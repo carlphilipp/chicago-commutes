@@ -608,7 +608,7 @@ fun TrainMapBottomSheetModal(
                         EtaView(stopName = pair.first, eta = pair.second)
                     }
                     if (!showAll && max >= 6) {
-                        DisplayAllResultsRowView(viewModel = viewModel)
+                        DisplayAllResultsRowView(onClick = { viewModel.loadTrainEtas(viewModel.uiState.train, true) })
                     }
                 }
             }

@@ -285,19 +285,6 @@ fun GoogleMapTrainMapView(
             modalBottomSheetState = modalBottomSheetState,
         )
     }
-
-    // TODO to delete
-    InfoWindowsDetails(
-        showView = false,
-        destination = viewModel.uiState.train.destName,
-        showAll = viewModel.uiState.trainLoadAll,
-        results = viewModel.uiState.trainEtas.map { trainEta ->
-            Pair(first = trainEta.trainStation.name, second = trainEta.timeLeftDueDelay)
-        },
-        onClick = {
-            viewModel.loadTrainEtas(viewModel.uiState.train, true)
-        }
-    )
 }
 
 @Composable
