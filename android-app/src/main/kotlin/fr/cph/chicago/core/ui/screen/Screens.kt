@@ -406,7 +406,7 @@ sealed class Screen(
         showOnDrawer = false,
         isGestureEnabled = false,
         topBar = ScreenTopBar.MediumTopBarBackReloadMenu,
-        component = { backStackEntry, navigationViewModel ->
+        component = { backStackEntry, _ ->
             val line = URLDecoder.decode(backStackEntry.arguments?.getString("line", "") ?: "", "UTF-8")
             val trainLine = TrainLine.fromXmlString(line)
 
@@ -414,8 +414,6 @@ sealed class Screen(
             TrainMapScreen(
                 viewModel = viewModel,
                 settingsViewModel = settingsViewModel,
-                navigationViewModel = navigationViewModel,
-                title = trainLine.toStringWithLine(),
             )
         }
     )

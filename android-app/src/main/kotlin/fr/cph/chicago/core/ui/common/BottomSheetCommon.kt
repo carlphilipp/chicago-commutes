@@ -19,9 +19,10 @@ import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
@@ -37,7 +38,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.toFontFamily
@@ -52,6 +52,7 @@ import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
+import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.FontSize
 import fr.cph.chicago.core.theme.availableFonts
@@ -473,46 +474,88 @@ fun ShowBusBoundBottomView(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrainMapBottomSheet(
     modifier: Modifier = Modifier,
-    title: String,
     viewModel: MapTrainViewModel,
     onBackClick: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     BottomSheet(
         content = {
-            ConstraintLayout(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .background(Color.Blue)
-            ) {
-                val (left, right) = createRefs()
-                TrainLineButton(
-                    modifier = Modifier.constrainAs(left) {
-                        start.linkTo(anchor = parent.start)
-                        width = Dimension.fillToConstraints
-                    },
-                    trainLine = viewModel.uiState.line,
+            Column(modifier = modifier.fillMaxWidth()) {
+                ConstraintLayout(
+                    modifier = modifier
+                        .fillMaxWidth()
+                    //.background(Color.Blue)
+                ) {
+                    val (left, right) = createRefs()
+                    TrainLineButton(
+                        modifier = Modifier.constrainAs(left) {
+                            start.linkTo(anchor = parent.start)
+                            width = Dimension.fillToConstraints
+                        },
+                        trainLine = viewModel.uiState.line,
+                        showLine = true,
+                    )
+                    FilledTonalButton(
+                        modifier = Modifier.constrainAs(right) {
+                            end.linkTo(anchor = parent.end)
+                            width = Dimension.wrapContent
+                            centerVerticallyTo(left)
+                        },
+                        onClick = {
+                            scope.launch {
+                                viewModel.reloadData()
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Refresh,
+                            contentDescription = "Back",
+                        )
+                    }
+                }
+
+                Divider(
+                    modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
                 )
 
-                IconButton(
-                    modifier = Modifier.constrainAs(right) {
-                        end.linkTo(anchor = parent.end)
-                        width = Dimension.wrapContent
-                        centerVerticallyTo(left)
-                    },
-                    onClick = {
-                        scope.launch {
-                            viewModel.reloadData()
-                        }
-                    }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 10.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Icon(
-                        imageVector = Icons.Filled.Refresh,
-                        contentDescription = null,
+                    Text(
+                        text = "Change Line",
+                        style = MaterialTheme.typography.titleMedium,
                     )
+                }
+
+                LazyVerticalGrid(
+                    modifier = Modifier,
+                    columns = GridCells.Adaptive(minSize = 90.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    items(TrainLine.values()
+                        .filter { it != TrainLine.NA && it != viewModel.uiState.line }
+                        .toList()
+                    ) { trainLine ->
+                        TrainLineButton(
+                            trainLine = trainLine,
+                            onClick = {
+                                scope.launch {
+                                    viewModel.switchTrainLine(scope, trainLine)
+                                }
+                            }
+                        )
+                    }
                 }
             }
         },

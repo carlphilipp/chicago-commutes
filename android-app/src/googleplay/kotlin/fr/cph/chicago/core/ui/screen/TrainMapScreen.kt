@@ -1,11 +1,8 @@
 package fr.cph.chicago.core.ui.screen
 
 import android.graphics.BitmapFactory
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,21 +16,15 @@ import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.DrawerState
 import androidx.compose.material.DrawerValue
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.IconButton
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -41,11 +32,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -72,13 +61,12 @@ import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
-import fr.cph.chicago.core.navigation.NavigationViewModel
-import fr.cph.chicago.core.ui.common.BottomSheet
 import fr.cph.chicago.core.ui.common.BottomSheetScaffoldMaterial3
 import fr.cph.chicago.core.ui.common.LoadingBar
 import fr.cph.chicago.core.ui.common.LoadingCircle
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
+import fr.cph.chicago.core.ui.common.TrainMapBottomSheet
 import fr.cph.chicago.core.ui.common.runWithDelay
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.getDefaultPosition
@@ -104,12 +92,9 @@ fun TrainMapScreen(
     modifier: Modifier = Modifier,
     viewModel: MapTrainViewModel,
     settingsViewModel: SettingsViewModel,
-    navigationViewModel: NavigationViewModel,
-    title: String,
 ) {
     Timber.d("Compose TrainMapScreen")
     val navController = LocalNavController.current
-    var topBarTitle by remember { mutableStateOf(title) }
     val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     val scope = rememberCoroutineScope()
     var isMapLoaded by remember { mutableStateOf(false) }
@@ -134,43 +119,11 @@ fun TrainMapScreen(
     }
 
     BottomSheetScaffoldMaterial3(
-        //sheetState = viewModel.uiState.modalBottomSheetState,
         scaffoldState = viewModel.uiState.scaffoldState,
-        sheetPeekHeight = 100.dp,
+        sheetPeekHeight = 110.dp,
         sheetContent = {
-            BottomSheet(
-                title = "Select a line",
-                content = {
-                    val selected = remember { mutableStateOf(viewModel.uiState.line) }
-                    TrainLine.values()
-                        .filter { trainLine -> trainLine != TrainLine.NA }
-                        .forEach { line ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        selected.value = line
-                                        topBarTitle = line.toStringWithLine()
-                                        viewModel.switchTrainLine(scope, selected.value)
-                                    },
-                                horizontalArrangement = Arrangement.Start,
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                RadioButton(
-                                    selected = line == selected.value,
-                                    onClick = {
-                                        selected.value = line
-                                        topBarTitle = line.toStringWithLine()
-                                        viewModel.switchTrainLine(scope, selected.value)
-                                    })
-                                Text(
-                                    text = line.toStringWithLine(),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
-                        }
-                },
+            TrainMapBottomSheet(
+                viewModel = viewModel,
                 onBackClick = {
                     scope.launch {
                         viewModel.uiState.scaffoldState.bottomSheetState.collapse()
@@ -200,7 +153,7 @@ fun TrainMapScreen(
                                 )
                                 .padding(start = 10.dp, top = 5.dp, bottom = 5.dp),
                         ) {
-                            val (left, center, right, debug) = createRefs()
+                            val (left, debug) = createRefs()
                             FilledTonalButton(
                                 modifier = Modifier.constrainAs(left) {
                                     start.linkTo(anchor = parent.start)
@@ -214,65 +167,10 @@ fun TrainMapScreen(
                                 )
                             }
 
-                            Text(
-                                modifier = Modifier
-                                    .constrainAs(center) {
-                                        top.linkTo(anchor = parent.top)
-                                        centerVerticallyTo(left)
-                                        centerHorizontallyTo(parent)
-                                    },
-                                text = topBarTitle,
-                                style = MaterialTheme.typography.titleLarge,
-                                color = MaterialTheme.colorScheme.onBackground,
-                            )
-
-                            Row(
-                                modifier = Modifier
-                                    .padding(end = 10.dp)
-                                    .constrainAs(right) {
-                                        end.linkTo(anchor = parent.end)
-                                        width = Dimension.wrapContent
-                                        centerVerticallyTo(left)
-                                    }
-                            ) {
-                                IconButton(
-                                    // modifier = Modifier.background(color = MaterialTheme.colorScheme.secondaryContainer),
-                                    //shape = RoundedCornerShape(16.0.dp),
-                                    onClick = {
-                                        scope.launch {
-                                            viewModel.reloadData()
-                                        }
-                                    }) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Refresh,
-                                        contentDescription = null,
-                                    )
-                                }
-                                IconButton(
-                                    //modifier = Modifier.background(color = MaterialTheme.colorScheme.secondaryContainer),
-                                    //shape = RoundedCornerShape(8.0.dp),
-                                    onClick = {
-                                        scope.launch {
-                                            //viewModel.uiState.modalBottomSheetState.show()
-                                            if (viewModel.uiState.scaffoldState.bottomSheetState.isCollapsed) {
-                                                viewModel.uiState.scaffoldState.bottomSheetState.expand()
-                                            } else {
-                                                viewModel.uiState.scaffoldState.bottomSheetState.collapse()
-                                            }
-                                        }
-                                    }) {
-                                    Icon(
-                                        imageVector = Icons.Filled.MoreVert,
-                                        contentDescription = null,
-                                    )
-                                }
-                            }
-
                             if (settingsViewModel.uiState.showMapDebug) {
                                 DebugView(
                                     modifier = Modifier.constrainAs(debug) {
                                         top.linkTo(anchor = left.bottom)
-                                        end.linkTo(anchor = right.end)
                                     },
                                     cameraPositionState = viewModel.uiState.cameraPositionState
                                 )
@@ -660,8 +558,8 @@ class MapTrainViewModel constructor(
                 trains = listOf(),
                 stations = listOf(),
             )
-            uiState.modalBottomSheetState.hide()
-            while (uiState.modalBottomSheetState.isVisible) {
+            uiState.scaffoldState.bottomSheetState.collapse()
+            while (uiState.scaffoldState.bottomSheetState.isExpanded) {
                 // wait for the animation to finish
             }
             uiState = uiState.copy(isLoading = true)

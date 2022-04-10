@@ -735,21 +735,23 @@ fun SearchTextField(
 
 @Composable
 fun TrainLineButton(
-    modifier : Modifier = Modifier,
+    modifier: Modifier = Modifier,
     trainLine: TrainLine,
     showLine: Boolean = false,
     onClick: () -> Unit = {},
 ) {
+    val text = if (showLine) trainLine.toStringWithLine() else trainLine.toString()
+    val minWidth = if (showLine) 110.dp else 90.dp
     Surface(
         modifier = modifier
-            .defaultMinSize(minWidth = 90.dp)
+            .defaultMinSize(minWidth = minWidth)
             .clickable(onClick = onClick),
         color = trainLine.color,
         shadowElevation = 1.dp,
         shape = RoundedCornerShape(15.0.dp),
     ) {
         Text(
-            text = if(showLine) trainLine.toStringWithLine() else trainLine.toString() ,
+            text = text,
             color = Color.White,
             style = MaterialTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
