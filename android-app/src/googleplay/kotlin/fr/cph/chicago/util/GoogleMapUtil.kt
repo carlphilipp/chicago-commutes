@@ -39,6 +39,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -57,6 +58,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.ui.screen.MapTrainViewModel
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 
 object GoogleMapUtil {
@@ -160,7 +162,7 @@ fun InfoWindowsDetails(
                             EtaView(stopName = pair.first, eta = pair.second)
                         }
                         if (!showAll && max >= 6) {
-                            DisplayAllResultsRowView()
+                            //4DisplayAllResultsRowView()
                         }
                     }
                 }
@@ -194,20 +196,19 @@ fun EtaView(stopName: String, eta: String) {
 }
 
 @Composable
-fun DisplayAllResultsRowView() {
+fun DisplayAllResultsRowView(viewModel: MapTrainViewModel,) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 10.dp),
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            text = "Display all results",
-            style = MaterialTheme.typography.titleSmall,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
+        FilledTonalButton(
+            onClick = { viewModel.loadTrainEtas(viewModel.uiState.train, true) },
+        ) {
+            Text(text = "More")
+        }
     }
 }
 

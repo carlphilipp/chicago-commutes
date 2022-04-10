@@ -98,11 +98,12 @@ private fun LoadingBottomSheet(
 
 @Composable
 fun BottomSheet(
+    modifier: Modifier = Modifier,
     title: String? = null,
     content: @Composable () -> Unit,
     onBackClick: () -> Unit,
 ) {
-    Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+    Column(modifier = modifier.padding(horizontal = 20.dp)) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -568,12 +569,15 @@ fun TrainMapBottomSheet(
 
 @Composable
 fun TrainMapBottomSheetModal(
+    modifier: Modifier = Modifier,
+    viewModel: MapTrainViewModel,
     showAll: Boolean,
     destination: String,
     arrivals: List<Pair<String, String>>,
 ) {
     BottomSheet(
-        onBackClick = {  },
+        modifier = modifier,
+        onBackClick = { },
         content = {
             Column(
                 modifier = Modifier
@@ -604,7 +608,7 @@ fun TrainMapBottomSheetModal(
                         EtaView(stopName = pair.first, eta = pair.second)
                     }
                     if (!showAll && max >= 6) {
-                        DisplayAllResultsRowView()
+                        DisplayAllResultsRowView(viewModel = viewModel)
                     }
                 }
             }

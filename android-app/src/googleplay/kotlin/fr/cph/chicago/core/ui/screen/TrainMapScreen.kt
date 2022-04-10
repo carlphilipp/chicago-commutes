@@ -131,6 +131,7 @@ fun TrainMapScreen(
         sheetState = modalBottomSheetState,
         sheetContent = {
             TrainMapBottomSheetModal(
+                viewModel = viewModel,
                 destination = viewModel.uiState.train.destName,
                 showAll = viewModel.uiState.trainLoadAll,
                 arrivals = viewModel.uiState.trainEtas.map { trainEta ->
