@@ -25,6 +25,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -64,6 +65,7 @@ import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.ui.common.BottomSheetScaffoldMaterial3
 import fr.cph.chicago.core.ui.common.LoadingBar
 import fr.cph.chicago.core.ui.common.LoadingCircle
+import fr.cph.chicago.core.ui.common.ModalBottomSheetLayoutMaterial3
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.TrainMapBottomSheet
@@ -98,6 +100,10 @@ fun TrainMapScreen(
     val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     val scope = rememberCoroutineScope()
     var isMapLoaded by remember { mutableStateOf(false) }
+    val modalBottomSheetState: ModalBottomSheetState = ModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        isSkipHalfExpanded = true,
+    )
     // Show map after 5 seconds. This is needed because there is no callback from the sdk to know if the map can be loaded or not.
     // Meaning that we can have a situation where the onMapLoaded method is never triggered, while the map view has been populated
     // with some error messages from the google sdk like: "Play store needs to be updated"
@@ -118,92 +124,104 @@ fun TrainMapScreen(
         })
     }
 
-    BottomSheetScaffoldMaterial3(
-        scaffoldState = viewModel.uiState.scaffoldState,
-        sheetPeekHeight = 110.dp,
+    ModalBottomSheetLayoutMaterial3(
+        sheetState = modalBottomSheetState,
         sheetContent = {
-            TrainMapBottomSheet(
-                viewModel = viewModel,
-                onBackClick = {
-                    scope.launch {
-                        viewModel.uiState.scaffoldState.bottomSheetState.collapse()
-                    }
-                }
+            Text(
+                text = "TEXT"
             )
         },
-        content = {
-            Column {
-                Scaffold(
-                    modifier = modifier,
-                    snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
-                    content = {
-                        GoogleMapTrainMapView(
-                            viewModel = viewModel,
-                            settingsViewModel = settingsViewModel,
-                            onMapLoaded = {
-                                isMapLoaded = true
-                            },
-                        )
-
-                        ConstraintLayout(
-                            modifier = modifier
-                                .fillMaxWidth()
-                                .windowInsetsPadding(
-                                    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-                                )
-                                .padding(start = 10.dp, top = 5.dp, bottom = 5.dp),
-                        ) {
-                            val (left, debug) = createRefs()
-                            FilledTonalButton(
-                                modifier = Modifier.constrainAs(left) {
-                                    start.linkTo(anchor = parent.start)
-                                    width = Dimension.fillToConstraints
-                                },
-                                onClick = { navController.navigateBack() },
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.ArrowBack,
-                                    contentDescription = "Back",
-                                )
-                            }
-
-                            if (settingsViewModel.uiState.showMapDebug) {
-                                DebugView(
-                                    modifier = Modifier.constrainAs(debug) {
-                                        top.linkTo(anchor = left.bottom)
-                                    },
-                                    cameraPositionState = viewModel.uiState.cameraPositionState
-                                )
-                            }
-                        }
-
-                        LoadingBar(
-                            show = viewModel.uiState.isLoading,
-                            color = viewModel.uiState.line.color,
-                        )
-
-                        LoadingCircle(show = !isMapLoaded)
-
-                        if (viewModel.uiState.showError) {
-                            ShowErrorMessageSnackBar(
-                                scope = scope,
-                                snackbarHostState = snackbarHostState,
-                                showError = viewModel.uiState.showError,
-                                onComplete = { viewModel.showError(false) }
-                            )
+    ) {
+        BottomSheetScaffoldMaterial3(
+            scaffoldState = viewModel.uiState.scaffoldState,
+            sheetPeekHeight = 110.dp,
+            sheetContent = {
+                TrainMapBottomSheet(
+                    viewModel = viewModel,
+                    onBackClick = {
+                        scope.launch {
+                            viewModel.uiState.scaffoldState.bottomSheetState.collapse()
                         }
                     }
                 )
+            },
+            content = {
+                Column {
+                    Scaffold(
+                        modifier = modifier,
+                        snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
+                        content = {
+                            GoogleMapTrainMapView(
+                                viewModel = viewModel,
+                                settingsViewModel = settingsViewModel,
+                                modalBottomSheetState = modalBottomSheetState,
+                                onMapLoaded = {
+                                    isMapLoaded = true
+                                },
+                            )
+
+                            ConstraintLayout(
+                                modifier = modifier
+                                    .fillMaxWidth()
+                                    .windowInsetsPadding(
+                                        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+                                    )
+                                    .padding(start = 10.dp, top = 5.dp, bottom = 5.dp),
+                            ) {
+                                val (left, debug) = createRefs()
+                                FilledTonalButton(
+                                    modifier = Modifier.constrainAs(left) {
+                                        start.linkTo(anchor = parent.start)
+                                        width = Dimension.fillToConstraints
+                                    },
+                                    onClick = { navController.navigateBack() },
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.ArrowBack,
+                                        contentDescription = "Back",
+                                    )
+                                }
+
+                                if (settingsViewModel.uiState.showMapDebug) {
+                                    DebugView(
+                                        modifier = Modifier.constrainAs(debug) {
+                                            top.linkTo(anchor = left.bottom)
+                                        },
+                                        cameraPositionState = viewModel.uiState.cameraPositionState
+                                    )
+                                }
+                            }
+
+                            LoadingBar(
+                                show = viewModel.uiState.isLoading,
+                                color = viewModel.uiState.line.color,
+                            )
+
+                            LoadingCircle(show = !isMapLoaded)
+
+                            if (viewModel.uiState.showError) {
+                                ShowErrorMessageSnackBar(
+                                    scope = scope,
+                                    snackbarHostState = snackbarHostState,
+                                    showError = viewModel.uiState.showError,
+                                    onComplete = { viewModel.showError(false) }
+                                )
+                            }
+                        }
+                    )
+                }
             }
-        }
-    )
+        )
+    }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun GoogleMapTrainMapView(
     modifier: Modifier = Modifier,
     settingsViewModel: SettingsViewModel,
     viewModel: MapTrainViewModel,
+    modalBottomSheetState: ModalBottomSheetState,
     onMapLoaded: () -> Unit,
 ) {
     val uiState = viewModel.uiState
@@ -249,6 +267,7 @@ fun GoogleMapTrainMapView(
         TrainsOnMapLayer(
             viewModel = viewModel,
             cameraPositionState = uiState.cameraPositionState,
+            modalBottomSheetState = modalBottomSheetState,
         )
     }
 
@@ -297,11 +316,14 @@ fun TrainStationsMarkers(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TrainsOnMapLayer(
     viewModel: MapTrainViewModel,
     cameraPositionState: CameraPositionState,
+    modalBottomSheetState: ModalBottomSheetState,
 ) {
+    val scope = rememberCoroutineScope()
     viewModel.updateIconOnZoomChange(cameraPositionState.position.zoom)
 
     if (viewModel.uiState.trainIcon != null) {
@@ -323,7 +345,10 @@ fun TrainsOnMapLayer(
                 anchor = Offset(0.5f, 0.5f),
                 zIndex = 1f,
                 onClick = {
-                    viewModel.loadTrainEtas(train, false)
+                    //viewModel.loadTrainEtas(train, false)
+                    scope.launch {
+                        modalBottomSheetState.show()
+                    }
                     false
                 },
                 onInfoWindowClose = {
