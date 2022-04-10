@@ -741,13 +741,60 @@ fun TrainLineButton(
     onClick: () -> Unit = {},
 ) {
     val text = if (showLine) trainLine.toStringWithLine() else trainLine.toString()
-    val minWidth = if (showLine) 110.dp else 90.dp
-    Surface(
+    val minWidth: Dp = if (showLine) 110.dp else 90.dp
+    /*Surface(
         modifier = modifier
             .defaultMinSize(minWidth = minWidth)
             .clip(RoundedCornerShape(15.0.dp))
             .clickable(onClick = onClick),
         color = trainLine.color,
+        shadowElevation = 1.dp,
+        shape = RoundedCornerShape(15.0.dp),
+    ) {
+        Text(
+            text = text,
+            color = Color.White,
+            style = MaterialTheme.typography.titleSmall,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 15.dp, vertical = 7.dp),
+        )
+    }*/
+    TrainLineStyle(
+        modifier = modifier,
+        text = text,
+        color = trainLine.color,
+        minWidth = minWidth,
+        onClick = onClick,
+    )
+}
+
+@Composable
+fun TrainLineStyleText(
+    modifier: Modifier = Modifier,
+    text: String,
+    color: Color,
+) {
+    TrainLineStyle(
+        modifier = modifier,
+        text = text,
+        color = color,
+    )
+}
+
+@Composable
+private fun TrainLineStyle(
+    modifier: Modifier = Modifier,
+    text: String,
+    color: Color,
+    minWidth: Dp = 90.dp,
+    onClick: () -> Unit = {},
+) {
+    Surface(
+        modifier = modifier
+            .defaultMinSize(minWidth = minWidth)
+            .clip(RoundedCornerShape(15.0.dp))
+            .clickable(onClick = onClick),
+        color = color,
         shadowElevation = 1.dp,
         shape = RoundedCornerShape(15.0.dp),
     ) {

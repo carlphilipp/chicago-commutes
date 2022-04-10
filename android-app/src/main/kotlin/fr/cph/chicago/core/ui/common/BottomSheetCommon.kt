@@ -611,12 +611,9 @@ fun TrainMapBottomSheetModal(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(
+                    TrainLineStyleText(
                         text = "To: $destination",
-                        style = MaterialTheme.typography.titleMedium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        textAlign = TextAlign.Center
+                        color = viewModel.uiState.line.color,
                     )
                 }
                 if (arrivals.isNotEmpty()) {
