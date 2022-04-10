@@ -155,7 +155,7 @@ fun InfoWindowsDetails(
                         } else {
                             6
                         }
-                        for (i in 0..max) {
+                        for (i in 0 until max) {
                             val pair = results[i]
                             EtaView(stopName = pair.first, eta = pair.second)
                         }
