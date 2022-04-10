@@ -142,7 +142,7 @@ fun TrainMapScreen(
     ) {
         BottomSheetScaffoldMaterial3(
             scaffoldState = viewModel.uiState.scaffoldState,
-            sheetPeekHeight = 110.dp,
+            sheetPeekHeight = 120.dp,
             sheetContent = {
                 TrainMapBottomSheet(
                     viewModel = viewModel,

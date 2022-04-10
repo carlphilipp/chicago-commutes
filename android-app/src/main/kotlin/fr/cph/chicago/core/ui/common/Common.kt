@@ -745,6 +745,7 @@ fun TrainLineButton(
     Surface(
         modifier = modifier
             .defaultMinSize(minWidth = minWidth)
+            .clip(RoundedCornerShape(15.0.dp))
             .clickable(onClick = onClick),
         color = trainLine.color,
         shadowElevation = 1.dp,
@@ -755,7 +756,7 @@ fun TrainLineButton(
             color = Color.White,
             style = MaterialTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 15.dp, vertical = 5.dp),
+            modifier = Modifier.padding(horizontal = 15.dp, vertical = 7.dp),
         )
     }
 }

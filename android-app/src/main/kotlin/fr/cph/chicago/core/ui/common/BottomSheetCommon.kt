@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.toFontFamily
@@ -488,26 +489,16 @@ fun TrainMapBottomSheet(
     BottomSheet(
         content = {
             Column(modifier = modifier.fillMaxWidth()) {
-                ConstraintLayout(
-                    modifier = modifier
-                        .fillMaxWidth()
-                    //.background(Color.Blue)
+                Row(
+                    modifier = modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    val (left, right) = createRefs()
                     TrainLineButton(
-                        modifier = Modifier.constrainAs(left) {
-                            start.linkTo(anchor = parent.start)
-                            width = Dimension.fillToConstraints
-                        },
                         trainLine = viewModel.uiState.line,
                         showLine = true,
                     )
                     FilledTonalButton(
-                        modifier = Modifier.constrainAs(right) {
-                            end.linkTo(anchor = parent.end)
-                            width = Dimension.wrapContent
-                            centerVerticallyTo(left)
-                        },
                         onClick = {
                             scope.launch {
                                 viewModel.reloadData()
@@ -520,6 +511,40 @@ fun TrainMapBottomSheet(
                         )
                     }
                 }
+/*                ConstraintLayout(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .background(Color.Blue)
+                ) {
+                    val (left, right) = createRefs()
+                    TrainLineButton(
+                        modifier = Modifier.constrainAs(left) {
+                            start.linkTo(anchor = parent.start)
+                            width = Dimension.fillToConstraints
+                            baseline.linkTo(anchor = right.baseline)
+                        },
+                        trainLine = viewModel.uiState.line,
+                        showLine = true,
+                    )
+                    FilledTonalButton(
+                        modifier = Modifier.constrainAs(right) {
+                            end.linkTo(anchor = parent.end)
+                            width = Dimension.wrapContent
+                            centerVerticallyTo(left)
+                            baseline.linkTo(anchor = left.baseline)
+                        },
+                        onClick = {
+                            scope.launch {
+                                viewModel.reloadData()
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Refresh,
+                            contentDescription = "Back",
+                        )
+                    }
+                }*/
 
                 Divider(
                     modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
