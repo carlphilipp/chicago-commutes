@@ -616,6 +616,7 @@ private fun ShowTrainDetailsTrainMapBottomSheet(
         TrainLineStyleText(
             text = "To: ${viewModel.uiState.train.destName}",
             color = viewModel.uiState.line.color,
+            textColor = viewModel.uiState.line.textColor,
         )
     }
     if (arrivals.isNotEmpty()) {
@@ -659,6 +660,7 @@ fun TrainMapBottomSheetModal(
                     TrainLineStyleText(
                         text = "To: $destination",
                         color = viewModel.uiState.line.color,
+                        textColor = viewModel.uiState.line.textColor,
                     )
                 }
                 if (arrivals.isNotEmpty()) {
