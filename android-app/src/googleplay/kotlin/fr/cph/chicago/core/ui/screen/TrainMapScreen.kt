@@ -34,7 +34,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -65,11 +64,9 @@ import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.ui.common.BottomSheetScaffoldMaterial3
 import fr.cph.chicago.core.ui.common.LoadingBar
 import fr.cph.chicago.core.ui.common.LoadingCircle
-import fr.cph.chicago.core.ui.common.ModalBottomSheetLayoutMaterial3
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.TrainMapBottomSheet
-import fr.cph.chicago.core.ui.common.TrainMapBottomSheetModal
 import fr.cph.chicago.core.ui.common.runWithDelay
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.getDefaultPosition
@@ -83,10 +80,10 @@ import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -139,91 +136,91 @@ fun TrainMapScreen(
         },
         scrimColor = Color.Transparent,
     ) {*/
-        BottomSheetScaffoldMaterial3(
-            scaffoldState = viewModel.uiState.scaffoldState,
-            sheetPeekHeight = 120.dp,
-            sheetContent = {
-                TrainMapBottomSheet(
-                    viewModel = viewModel,
-                    onBackClick = {
-                        scope.launch {
-                            if (viewModel.uiState.scaffoldState.bottomSheetState.isExpanded /*|| modalBottomSheetState.isVisible*/) {
-                                viewModel.uiState.scaffoldState.bottomSheetState.collapse()
-                                //modalBottomSheetState.hide()
-                            } else {
-                                navController.navigateBack()
-                            }
+    BottomSheetScaffoldMaterial3(
+        scaffoldState = viewModel.uiState.scaffoldState,
+        sheetPeekHeight = 120.dp,
+        sheetContent = {
+            TrainMapBottomSheet(
+                viewModel = viewModel,
+                onBackClick = {
+                    scope.launch {
+                        if (viewModel.uiState.scaffoldState.bottomSheetState.isExpanded /*|| modalBottomSheetState.isVisible*/) {
+                            viewModel.uiState.scaffoldState.bottomSheetState.collapse()
+                            //modalBottomSheetState.hide()
+                        } else {
+                            navController.navigateBack()
                         }
                     }
-                )
-            },
-            content = {
-                Column {
-                    Scaffold(
-                        modifier = modifier,
-                        snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
-                        content = {
-                            GoogleMapTrainMapView(
-                                viewModel = viewModel,
-                                settingsViewModel = settingsViewModel,
-                                //modalBottomSheetState = modalBottomSheetState,
-                                onMapLoaded = {
-                                    isMapLoaded = true
+                }
+            )
+        },
+        content = {
+            Column {
+                Scaffold(
+                    modifier = modifier,
+                    snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
+                    content = {
+                        GoogleMapTrainMapView(
+                            viewModel = viewModel,
+                            settingsViewModel = settingsViewModel,
+                            //modalBottomSheetState = modalBottomSheetState,
+                            onMapLoaded = {
+                                isMapLoaded = true
+                            },
+                        )
+
+                        ConstraintLayout(
+                            modifier = modifier
+                                .fillMaxWidth()
+                                .windowInsetsPadding(
+                                    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+                                )
+                                .padding(start = 10.dp, top = 5.dp, bottom = 5.dp),
+                        ) {
+                            val (left, debug) = createRefs()
+                            FilledTonalButton(
+                                modifier = Modifier.constrainAs(left) {
+                                    start.linkTo(anchor = parent.start)
+                                    width = Dimension.fillToConstraints
                                 },
-                            )
-
-                            ConstraintLayout(
-                                modifier = modifier
-                                    .fillMaxWidth()
-                                    .windowInsetsPadding(
-                                        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-                                    )
-                                    .padding(start = 10.dp, top = 5.dp, bottom = 5.dp),
+                                onClick = { navController.navigateBack() },
                             ) {
-                                val (left, debug) = createRefs()
-                                FilledTonalButton(
-                                    modifier = Modifier.constrainAs(left) {
-                                        start.linkTo(anchor = parent.start)
-                                        width = Dimension.fillToConstraints
-                                    },
-                                    onClick = { navController.navigateBack() },
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.ArrowBack,
-                                        contentDescription = "Back",
-                                    )
-                                }
-
-                                if (settingsViewModel.uiState.showMapDebug) {
-                                    DebugView(
-                                        modifier = Modifier.constrainAs(debug) {
-                                            top.linkTo(anchor = left.bottom)
-                                        },
-                                        cameraPositionState = viewModel.uiState.cameraPositionState
-                                    )
-                                }
+                                Icon(
+                                    imageVector = Icons.Filled.ArrowBack,
+                                    contentDescription = "Back",
+                                )
                             }
 
-                            LoadingBar(
-                                show = viewModel.uiState.isLoading,
-                                color = viewModel.uiState.line.color,
-                            )
-
-                            LoadingCircle(show = !isMapLoaded)
-
-                            if (viewModel.uiState.showError) {
-                                ShowErrorMessageSnackBar(
-                                    scope = scope,
-                                    snackbarHostState = snackbarHostState,
-                                    showError = viewModel.uiState.showError,
-                                    onComplete = { viewModel.showError(false) }
+                            if (settingsViewModel.uiState.showMapDebug) {
+                                DebugView(
+                                    modifier = Modifier.constrainAs(debug) {
+                                        top.linkTo(anchor = left.bottom)
+                                    },
+                                    cameraPositionState = viewModel.uiState.cameraPositionState
                                 )
                             }
                         }
-                    )
-                }
+
+                        LoadingBar(
+                            show = viewModel.uiState.isLoading,
+                            color = viewModel.uiState.line.color,
+                        )
+
+                        LoadingCircle(show = !isMapLoaded)
+
+                        if (viewModel.uiState.showError) {
+                            ShowErrorMessageSnackBar(
+                                scope = scope,
+                                snackbarHostState = snackbarHostState,
+                                showError = viewModel.uiState.showError,
+                                onComplete = { viewModel.showError(false) }
+                            )
+                        }
+                    }
+                )
             }
-        )
+        }
+    )
     //}
 }
 
@@ -348,7 +345,7 @@ fun TrainsOnMapLayer(
                     //viewModel.loadTrainEtas(train, false)
                     scope.launch {
                         viewModel.loadTrainEtas(train, false)
-                        if(viewModel.uiState.scaffoldState.bottomSheetState.isCollapsed) {
+                        if (viewModel.uiState.scaffoldState.bottomSheetState.isCollapsed) {
                             viewModel.uiState.scaffoldState.bottomSheetState.expand()
                         }
 /*                        if (viewModel.uiState.scaffoldState.bottomSheetState.isExpanded) {

@@ -188,6 +188,7 @@ dependencies {
     implementation(Lib.accompanist_swiperefresh)
     implementation(Lib.accompanist_systemui)
     implementation(Lib.accompanist_animation)
+    implementation(Lib.accompanist_pager)
 
     // Jackson
     implementation(Lib.jackson_core)

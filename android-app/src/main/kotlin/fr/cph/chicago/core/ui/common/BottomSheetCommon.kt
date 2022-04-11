@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -46,6 +47,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusRoute
@@ -60,8 +63,6 @@ import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.service.BusService
-import fr.cph.chicago.util.DisplayAllResultsRowView
-import fr.cph.chicago.util.EtaView
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -568,23 +569,35 @@ private fun ChangeLineTrainMapBottomSheet(
     }
 }
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 private fun ShowTrainDetailsTrainMapBottomSheet(
     modifier: Modifier = Modifier,
     viewModel: MapTrainViewModel,
 ) {
-    val arrivals = viewModel.uiState.trainEtas.map { trainEta ->
-        Pair(first = trainEta.trainStation.name, second = trainEta.timeLeftDueDelay)
-    }
+    val arrivals = viewModel.uiState.trainEtas
+        .map { trainEta ->
+            val timeLeftDueDelay = trainEta.timeLeftDueDelay
+            val value = if (timeLeftDueDelay.contains("min")) {
+                trainEta.timeLeftDueDelay.split(" min")[0]
+            } else {
+                trainEta.timeLeftDueDelay
+            }
+            Pair(
+                first = trainEta.trainStation.name,
+                second = value
+            )
+        }
     val scope = rememberCoroutineScope()
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        TrainLineButton(
-            trainLine = viewModel.uiState.line,
-            showLine = true,
+        TrainLineStyleText(
+            text = "${viewModel.uiState.line.toStringWithLine()} - To: ${viewModel.uiState.train.destName}",
+            color = viewModel.uiState.line.color,
+            textColor = viewModel.uiState.line.textColor,
         )
         FilledTonalButton(
             onClick = {
@@ -606,78 +619,72 @@ private fun ShowTrainDetailsTrainMapBottomSheet(
         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
     )
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 10.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        TrainLineStyleText(
-            text = "To: ${viewModel.uiState.train.destName}",
-            color = viewModel.uiState.line.color,
-            textColor = viewModel.uiState.line.textColor,
-        )
-    }
-    if (arrivals.isNotEmpty()) {
-        val max = if (viewModel.uiState.trainLoadAll) {
-            arrivals.size
-        } else {
-            if (arrivals.size >= 6) 6 else arrivals.size
-        }
-        for (i in 0 until max - 1) {
-            val pair = arrivals[i]
-            EtaView(stopName = pair.first, eta = pair.second)
-        }
-        if (!viewModel.uiState.trainLoadAll && max >= 6) {
-            DisplayAllResultsRowView(onClick = { viewModel.loadTrainEtas(viewModel.uiState.train, true) })
-        }
-    }
-}
+    HorizontalPager(
+        modifier = Modifier.padding(bottom = 10.dp),
+        count = arrivals.size,
+        itemSpacing = 10.dp,
+        contentPadding = PaddingValues(start = 0.dp, end = 250.dp),
+    ) { page ->
+        Column(
+            modifier = Modifier
+                .clip(
+                    RoundedCornerShape(
+                        topStartPercent = 20,
+                        topEndPercent = 20,
+                        bottomEndPercent = 20,
+                        bottomStartPercent = 20
+                    )
+                )
+                .background(MaterialTheme.colorScheme.surfaceVariant),
 
-@Composable
-fun TrainMapBottomSheetModal(
-    modifier: Modifier = Modifier,
-    viewModel: MapTrainViewModel,
-    showAll: Boolean,
-    destination: String,
-    arrivals: List<Pair<String, String>>,
-) {
-    BottomSheet(
-        modifier = modifier,
-        onBackClick = { },
-        content = {
-            Column(
-                modifier = Modifier
-            ) {
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Column {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 10.dp),
+                        .padding(horizontal = 10.dp, vertical = 5.dp)
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    TrainLineStyleText(
-                        text = "To: $destination",
-                        color = viewModel.uiState.line.color,
-                        textColor = viewModel.uiState.line.textColor,
+                    Text(
+                        text = arrivals[page].first,
+                        color = viewModel.uiState.line.textColor,
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.titleSmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
-                if (arrivals.isNotEmpty()) {
-                    val max = if (showAll) {
-                        arrivals.size
-                    } else {
-                        if (arrivals.size >= 6) 6 else arrivals.size
-                    }
-                    for (i in 0 until max - 1) {
-                        val pair = arrivals[i]
-                        EtaView(stopName = pair.first, eta = pair.second)
-                    }
-                    if (!showAll && max >= 6) {
-                        DisplayAllResultsRowView(onClick = { viewModel.loadTrainEtas(viewModel.uiState.train, true) })
-                    }
+                Column(
+                    modifier = Modifier
+                        .padding(start = 4.dp, end = 4.dp, bottom = 4.dp)
+                        .clip(
+                            RoundedCornerShape(
+                                topStartPercent = 20,
+                                topEndPercent = 20,
+                                bottomEndPercent = 20,
+                                bottomStartPercent = 20
+                            )
+                        )
+                        .background(MaterialTheme.colorScheme.background)
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        text = arrivals[page].second,
+                        style = MaterialTheme.typography.headlineLarge,
+                        textAlign = TextAlign.Center,
+                    )
+                    Text(
+                        text = "min",
+                        style = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.Center,
+                    )
                 }
             }
         }
-    )
+    }
 }
