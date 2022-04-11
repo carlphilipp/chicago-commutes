@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
@@ -482,111 +483,155 @@ fun TrainMapBottomSheet(
     viewModel: MapTrainViewModel,
     onBackClick: () -> Unit,
 ) {
-    val scope = rememberCoroutineScope()
+
     BottomSheet(
         content = {
             Column(modifier = modifier.fillMaxWidth()) {
-                Row(
-                    modifier = modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    TrainLineButton(
-                        trainLine = viewModel.uiState.line,
-                        showLine = true,
-                    )
-                    FilledTonalButton(
-                        onClick = {
-                            scope.launch {
-                                viewModel.reloadData()
-                            }
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Refresh,
-                            contentDescription = "Back",
-                        )
-                    }
-                }
-/*                ConstraintLayout(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .background(Color.Blue)
-                ) {
-                    val (left, right) = createRefs()
-                    TrainLineButton(
-                        modifier = Modifier.constrainAs(left) {
-                            start.linkTo(anchor = parent.start)
-                            width = Dimension.fillToConstraints
-                            baseline.linkTo(anchor = right.baseline)
-                        },
-                        trainLine = viewModel.uiState.line,
-                        showLine = true,
-                    )
-                    FilledTonalButton(
-                        modifier = Modifier.constrainAs(right) {
-                            end.linkTo(anchor = parent.end)
-                            width = Dimension.wrapContent
-                            centerVerticallyTo(left)
-                            baseline.linkTo(anchor = left.baseline)
-                        },
-                        onClick = {
-                            scope.launch {
-                                viewModel.reloadData()
-                            }
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Refresh,
-                            contentDescription = "Back",
-                        )
-                    }
-                }*/
-
-                Divider(
-                    modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
-                    thickness = 1.dp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
-                )
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 10.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = "Change Line",
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                }
-                LazyVerticalGrid(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 10.dp),
-                    columns = GridCells.Adaptive(minSize = 90.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                ) {
-                    items(TrainLine.values()
-                        .filter { it != TrainLine.NA && it != viewModel.uiState.line }
-                        .toList()
-                    ) { trainLine ->
-                        TrainLineButton(
-                            trainLine = trainLine,
-                            onClick = {
-                                scope.launch {
-                                    viewModel.switchTrainLine(scope, trainLine)
-                                }
-                            }
-                        )
-                    }
+                when (viewModel.uiState.train.runNumber) {
+                    0 -> ChangeLineTrainMapBottomSheet(viewModel = viewModel)
+                    else -> ShowTrainDetailsTrainMapBottomSheet(viewModel = viewModel)
                 }
             }
         },
         onBackClick = onBackClick,
     )
+}
+
+@Composable
+private fun ChangeLineTrainMapBottomSheet(
+    modifier: Modifier = Modifier,
+    viewModel: MapTrainViewModel,
+) {
+    val scope = rememberCoroutineScope()
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        TrainLineButton(
+            trainLine = viewModel.uiState.line,
+            showLine = true,
+        )
+        FilledTonalButton(
+            onClick = {
+                scope.launch {
+                    viewModel.reloadData()
+                }
+            }
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Refresh,
+                contentDescription = "Back",
+            )
+        }
+    }
+
+    Divider(
+        modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
+        thickness = 1.dp,
+        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
+    )
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 10.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = "Change Line",
+            style = MaterialTheme.typography.titleMedium,
+        )
+    }
+    LazyVerticalGrid(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 10.dp),
+        columns = GridCells.Adaptive(minSize = 90.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        items(TrainLine.values()
+            .filter { it != TrainLine.NA && it != viewModel.uiState.line }
+            .toList()
+        ) { trainLine ->
+            TrainLineButton(
+                trainLine = trainLine,
+                onClick = {
+                    scope.launch {
+                        viewModel.switchTrainLine(scope, trainLine)
+                    }
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun ShowTrainDetailsTrainMapBottomSheet(
+    modifier: Modifier = Modifier,
+    viewModel: MapTrainViewModel,
+) {
+    val arrivals = viewModel.uiState.trainEtas.map { trainEta ->
+        Pair(first = trainEta.trainStation.name, second = trainEta.timeLeftDueDelay)
+    }
+    val scope = rememberCoroutineScope()
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        TrainLineButton(
+            trainLine = viewModel.uiState.line,
+            showLine = true,
+        )
+        FilledTonalButton(
+            onClick = {
+                scope.launch {
+                    viewModel.resetDetails()
+                }
+            }
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Close,
+                contentDescription = null,
+            )
+        }
+    }
+
+    Divider(
+        modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
+        thickness = 1.dp,
+        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
+    )
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 10.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        TrainLineStyleText(
+            text = "To: ${viewModel.uiState.train.destName}",
+            color = viewModel.uiState.line.color,
+        )
+    }
+    if (arrivals.isNotEmpty()) {
+        val max = if (viewModel.uiState.trainLoadAll) {
+            arrivals.size
+        } else {
+            if (arrivals.size >= 6) 6 else arrivals.size
+        }
+        for (i in 0 until max - 1) {
+            val pair = arrivals[i]
+            EtaView(stopName = pair.first, eta = pair.second)
+        }
+        if (!viewModel.uiState.trainLoadAll && max >= 6) {
+            DisplayAllResultsRowView(onClick = { viewModel.loadTrainEtas(viewModel.uiState.train, true) })
+        }
+    }
 }
 
 @Composable

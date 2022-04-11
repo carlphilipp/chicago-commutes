@@ -100,10 +100,10 @@ fun TrainMapScreen(
     val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     val scope = rememberCoroutineScope()
     var isMapLoaded by remember { mutableStateOf(false) }
-    val modalBottomSheetState = ModalBottomSheetState(
+    /*val modalBottomSheetState = ModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         isSkipHalfExpanded = true,
-    )
+    )*/
     // Show map after 5 seconds. This is needed because there is no callback from the sdk to know if the map can be loaded or not.
     // Meaning that we can have a situation where the onMapLoaded method is never triggered, while the map view has been populated
     // with some error messages from the google sdk like: "Play store needs to be updated"
@@ -125,7 +125,7 @@ fun TrainMapScreen(
         })
     }
 
-    ModalBottomSheetLayoutMaterial3(
+/*    ModalBottomSheetLayoutMaterial3(
         sheetState = modalBottomSheetState,
         sheetContent = {
             TrainMapBottomSheetModal(
@@ -138,7 +138,7 @@ fun TrainMapScreen(
             )
         },
         scrimColor = Color.Transparent,
-    ) {
+    ) {*/
         BottomSheetScaffoldMaterial3(
             scaffoldState = viewModel.uiState.scaffoldState,
             sheetPeekHeight = 120.dp,
@@ -147,9 +147,9 @@ fun TrainMapScreen(
                     viewModel = viewModel,
                     onBackClick = {
                         scope.launch {
-                            if (viewModel.uiState.scaffoldState.bottomSheetState.isExpanded || modalBottomSheetState.isVisible) {
+                            if (viewModel.uiState.scaffoldState.bottomSheetState.isExpanded /*|| modalBottomSheetState.isVisible*/) {
                                 viewModel.uiState.scaffoldState.bottomSheetState.collapse()
-                                modalBottomSheetState.hide()
+                                //modalBottomSheetState.hide()
                             } else {
                                 navController.navigateBack()
                             }
@@ -166,7 +166,7 @@ fun TrainMapScreen(
                             GoogleMapTrainMapView(
                                 viewModel = viewModel,
                                 settingsViewModel = settingsViewModel,
-                                modalBottomSheetState = modalBottomSheetState,
+                                //modalBottomSheetState = modalBottomSheetState,
                                 onMapLoaded = {
                                     isMapLoaded = true
                                 },
@@ -224,7 +224,7 @@ fun TrainMapScreen(
                 }
             }
         )
-    }
+    //}
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -233,7 +233,7 @@ fun GoogleMapTrainMapView(
     modifier: Modifier = Modifier,
     settingsViewModel: SettingsViewModel,
     viewModel: MapTrainViewModel,
-    modalBottomSheetState: ModalBottomSheetState,
+    //modalBottomSheetState: ModalBottomSheetState,
     onMapLoaded: () -> Unit,
 ) {
     val uiState = viewModel.uiState
@@ -279,7 +279,7 @@ fun GoogleMapTrainMapView(
         TrainsOnMapLayer(
             viewModel = viewModel,
             cameraPositionState = uiState.cameraPositionState,
-            modalBottomSheetState = modalBottomSheetState,
+            //modalBottomSheetState = modalBottomSheetState,
         )
     }
 }
@@ -321,7 +321,7 @@ fun TrainStationsMarkers(
 fun TrainsOnMapLayer(
     viewModel: MapTrainViewModel,
     cameraPositionState: CameraPositionState,
-    modalBottomSheetState: ModalBottomSheetState,
+    //modalBottomSheetState: ModalBottomSheetState,
 ) {
     val scope = rememberCoroutineScope()
     viewModel.updateIconOnZoomChange(cameraPositionState.position.zoom)
@@ -348,13 +348,16 @@ fun TrainsOnMapLayer(
                     //viewModel.loadTrainEtas(train, false)
                     scope.launch {
                         viewModel.loadTrainEtas(train, false)
-                        if (viewModel.uiState.scaffoldState.bottomSheetState.isExpanded) {
+                        if(viewModel.uiState.scaffoldState.bottomSheetState.isCollapsed) {
+                            viewModel.uiState.scaffoldState.bottomSheetState.expand()
+                        }
+/*                        if (viewModel.uiState.scaffoldState.bottomSheetState.isExpanded) {
                             viewModel.uiState.scaffoldState.bottomSheetState.collapse()
                         }
                         while (viewModel.uiState.scaffoldState.bottomSheetState.isExpanded) {
                             // wait for animation to finish
-                        }
-                        modalBottomSheetState.show()
+                        }*/
+                        //modalBottomSheetState.show()
                     }
                     false
                 },
