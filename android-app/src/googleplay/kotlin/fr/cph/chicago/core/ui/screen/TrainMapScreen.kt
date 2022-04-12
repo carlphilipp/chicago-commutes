@@ -16,8 +16,6 @@ import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.DrawerState
 import androidx.compose.material.DrawerValue
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetState
-import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -85,6 +83,16 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
+/**
+ *      1. Show loading screen
+ *      2. Load google map
+ *      > 3.1. Play store is not available: show google map which handles the error message
+ *      > 3.2 Show google map
+ *      > 4. Load icons (can't be done before google map is loaded)
+ *      > 5. Load patterns (can't be done before google map/icons are loaded)
+ *      > 6. Load stations (can't be done before google map/icons are loaded)
+ *      > 7. Load trains (can't be done before google map/icons are loaded)
+ */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun TrainMapScreen(
@@ -108,13 +116,18 @@ fun TrainMapScreen(
     }
 
     if (isMapLoaded) {
+        Timber.e("Map loaded")
         LaunchedEffect(key1 = isMapLoaded, block = {
             scope.launch {
                 // FIXME: I think this needs be chained properly
-                viewModel.loadPatterns()
+/*                viewModel.loadPatterns()
                 viewModel.loadStations()
                 viewModel.loadIcons()
-                viewModel.loadTrains()
+                viewModel.loadTrains()*/
+                viewModel.switchTrainLine(
+                    scope = scope,
+                    trainLine = viewModel.uiState.line
+                )
             }
         })
     }
@@ -145,9 +158,7 @@ fun TrainMapScreen(
                         GoogleMapTrainMapView(
                             viewModel = viewModel,
                             settingsViewModel = settingsViewModel,
-                            onMapLoaded = {
-                                isMapLoaded = true
-                            },
+                            onMapLoaded = { isMapLoaded = true },
                         )
 
                         ConstraintLayout(
@@ -202,7 +213,6 @@ fun TrainMapScreen(
             }
         }
     )
-    //}
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -320,7 +330,6 @@ fun TrainsOnMapLayer(
                 anchor = Offset(0.5f, 0.5f),
                 zIndex = 1f,
                 onClick = {
-                    //viewModel.loadTrainEtas(train, false)
                     scope.launch {
                         viewModel.loadTrainEtas(train, false)
                         if (viewModel.uiState.scaffoldState.bottomSheetState.isCollapsed) {
@@ -366,11 +375,6 @@ data class GoogleMapTrainUiState constructor(
     val stationIcon: BitmapDescriptor? = null,
     val showStationIcon: Boolean = false,
 
-    // FIXME: this should not be in use ?
-    val modalBottomSheetState: ModalBottomSheetState = ModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden,
-        isSkipHalfExpanded = true,
-    ),
     val scaffoldState: BottomSheetScaffoldState = BottomSheetScaffoldState(
         drawerState = DrawerState(DrawerValue.Closed),
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed),
@@ -553,23 +557,77 @@ class MapTrainViewModel constructor(
 
     fun switchTrainLine(scope: CoroutineScope, trainLine: TrainLine) {
         scope.launch {
+            uiState.scaffoldState.bottomSheetState.collapse()
+            while (uiState.scaffoldState.bottomSheetState.isExpanded) {
+                // wait for the animation to finish
+            }
             uiState = uiState.copy(
                 line = trainLine,
                 shouldMoveCamera = true,
                 polyLine = listOf(),
                 trains = listOf(),
                 stations = listOf(),
+                isLoading = true
             )
-            uiState.scaffoldState.bottomSheetState.collapse()
-            while (uiState.scaffoldState.bottomSheetState.isExpanded) {
-                // wait for the animation to finish
-            }
-            uiState = uiState.copy(isLoading = true)
-            loadPatterns()
+            /*loadPatterns()
             loadStations()
             loadTrains()
-            loadIcons()
+            loadIcons()*/
+            loadData()
         }
+    }
+
+    private fun loadData() {
+        Timber.e("Load data")
+        val googleMapIcons = Single.fromCallable {
+            val trainBitmap = BitmapFactory.decodeResource(App.instance.resources, R.drawable.train)
+            val bitmapDescSmall = createBitMapDescriptor(trainBitmap, 9)
+            val bitmapDescMedium = createBitMapDescriptor(trainBitmap, 5)
+            val bitmapDescLarge = createBitMapDescriptor(trainBitmap, 3)
+            val stationIcon = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(App.instance.resources, colorDrawable()))
+            listOf(bitmapDescSmall, bitmapDescMedium, bitmapDescLarge, stationIcon)
+        }
+            .doOnSuccess { result ->
+                Timber.e("google map icons")
+                uiState = uiState.copy(
+                    trainIcon = result[0],
+                    trainIconSmall = result[0],
+                    trainIconMedium = result[1],
+                    trainIconLarge = result[2],
+                    stationIcon = result[3],
+                )
+            }
+        val patterns = trainService.readPatterns(uiState.line)
+            .map { trainStationPattern -> trainStationPattern.map { it.position.toLatLng() } }
+            .observeOn(Schedulers.computation())
+            .subscribeOn(Schedulers.io())
+
+        val stations = Single.fromCallable { trainService.getStationsForLine(uiState.line) }
+            .observeOn(Schedulers.computation())
+
+        val trains = trainService.trainLocations(uiState.line.toTextString())
+
+        googleMapIcons
+            .flatMap {
+                Single.zip(patterns, stations, trains) { patternsResult, stationsResult, trainsResult ->
+                    uiState = uiState.copy(
+                        isLoading = false,
+                        stations = stationsResult,
+                        polyLine = patternsResult,
+                        trains = trainsResult,
+                    )
+                }
+            }
+            .subscribe(
+                {
+                    if (uiState.shouldMoveCamera) {
+                        centerMapOnLine()
+                        uiState = uiState.copy(shouldMoveCamera = false)
+                    }
+                }, {
+                // TODO handle error
+                }
+            )
     }
 
     private fun colorDrawable(): Int {
