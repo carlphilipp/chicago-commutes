@@ -575,6 +575,7 @@ private fun ShowTrainDetailsTrainMapBottomSheet(
     modifier: Modifier = Modifier,
     viewModel: MapTrainViewModel,
 ) {
+    // FIXME: this logic should be in model
     val arrivals = viewModel.uiState.trainEtas
         .map { trainEta ->
             val timeLeftDueDelay = trainEta.timeLeftDueDelay
@@ -625,65 +626,82 @@ private fun ShowTrainDetailsTrainMapBottomSheet(
         itemSpacing = 10.dp,
         contentPadding = PaddingValues(start = 0.dp, end = 250.dp),
     ) { page ->
-        Column(
-            modifier = Modifier
-                .clip(
-                    RoundedCornerShape(
-                        topStartPercent = 20,
-                        topEndPercent = 20,
-                        bottomEndPercent = 20,
-                        bottomStartPercent = 20
-                    )
-                )
-                .background(MaterialTheme.colorScheme.surfaceVariant),
+        TrainStopArrivalTimeView(
+            title = arrivals[page].first,
+            minutes = arrivals[page].second,
+        )
+    }
+    if (arrivals.isEmpty()) {
+        TrainStopArrivalTimeView(
+            modifier = Modifier.padding(bottom = 10.dp),
+            title = "No result",
+            minutes = "##",
+        )
+    }
+}
 
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Column {
-                Row(
-                    modifier = Modifier
-                        .padding(horizontal = 10.dp, vertical = 5.dp)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = arrivals[page].first,
-                        color = viewModel.uiState.line.textColor,
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.titleSmall,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-                Column(
-                    modifier = Modifier
-                        .padding(start = 4.dp, end = 4.dp, bottom = 4.dp)
-                        .clip(
-                            RoundedCornerShape(
-                                topStartPercent = 20,
-                                topEndPercent = 20,
-                                bottomEndPercent = 20,
-                                bottomStartPercent = 20
-                            )
+@Composable
+private fun TrainStopArrivalTimeView(
+    modifier: Modifier = Modifier,
+    title: String,
+    minutes: String,
+) {
+    Column(
+        modifier = modifier
+            .clip(
+                RoundedCornerShape(
+                    topStartPercent = 20,
+                    topEndPercent = 20,
+                    bottomEndPercent = 20,
+                    bottomStartPercent = 20
+                )
+            )
+            .background(MaterialTheme.colorScheme.surfaceVariant),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Column {
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 10.dp, vertical = 5.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = title,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleSmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+            Column(
+                modifier = Modifier
+                    .padding(start = 4.dp, end = 4.dp, bottom = 4.dp)
+                    .clip(
+                        RoundedCornerShape(
+                            topStartPercent = 20,
+                            topEndPercent = 20,
+                            bottomEndPercent = 20,
+                            bottomStartPercent = 20
                         )
-                        .background(MaterialTheme.colorScheme.background)
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text(
-                        text = arrivals[page].second,
-                        style = MaterialTheme.typography.headlineLarge,
-                        textAlign = TextAlign.Center,
                     )
-                    Text(
-                        text = "min",
-                        style = MaterialTheme.typography.bodySmall,
-                        textAlign = TextAlign.Center,
-                    )
-                }
+                    .background(MaterialTheme.colorScheme.background)
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    text = minutes,
+                    style = MaterialTheme.typography.headlineLarge,
+                    textAlign = TextAlign.Center,
+                )
+                Text(
+                    text = "min",
+                    style = MaterialTheme.typography.bodySmall,
+                    textAlign = TextAlign.Center,
+                )
             }
         }
     }
