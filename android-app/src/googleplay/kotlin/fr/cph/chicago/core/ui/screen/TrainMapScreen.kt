@@ -1,7 +1,9 @@
 package fr.cph.chicago.core.ui.screen
 
 import android.graphics.BitmapFactory
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -21,8 +23,10 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -60,6 +64,7 @@ import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.ui.common.BottomSheetScaffoldMaterial3
+import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.ui.common.LoadingBar
 import fr.cph.chicago.core.ui.common.LoadingCircle
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
@@ -70,7 +75,7 @@ import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.getDefaultPosition
 import fr.cph.chicago.getZoom
 import fr.cph.chicago.service.TrainService
-import fr.cph.chicago.util.DebugView
+import fr.cph.chicago.util.CameraDebugView
 import fr.cph.chicago.util.GoogleMapUtil.createBitMapDescriptor
 import fr.cph.chicago.util.GoogleMapUtil.defaultZoom
 import fr.cph.chicago.util.GoogleMapUtil.isIn
@@ -89,9 +94,9 @@ import java.util.concurrent.TimeUnit
  *      > 3.1. Play store is not available: show google map which handles the error message
  *      > 3.2 Show google map
  *      > 4. Load icons (can't be done before google map is loaded)
- *      > 5. Load patterns (can't be done before google map/icons are loaded)
- *      > 6. Load stations (can't be done before google map/icons are loaded)
- *      > 7. Load trains (can't be done before google map/icons are loaded)
+ *      > 5. Load patterns (can't be done before icons are loaded)
+ *      > 6. Load stations (can't be done before icons are loaded)
+ *      > 7. Load trains (can't be done before icons are loaded)
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -100,7 +105,7 @@ fun TrainMapScreen(
     viewModel: MapTrainViewModel,
     settingsViewModel: SettingsViewModel,
 ) {
-    Timber.d("Compose TrainMapScreen")
+    Timber.d("Compose TrainMapScreen ${Thread.currentThread().name}")
     val navController = LocalNavController.current
     val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     val scope = rememberCoroutineScope()
@@ -118,17 +123,18 @@ fun TrainMapScreen(
     if (isMapLoaded) {
         Timber.e("Map loaded")
         LaunchedEffect(key1 = isMapLoaded, block = {
-            scope.launch {
+            viewModel.switchTrainLine(
+                scope = scope,
+                trainLine = viewModel.uiState.line
+            )
+            //scope.launch {
                 // FIXME: I think this needs be chained properly
 /*                viewModel.loadPatterns()
                 viewModel.loadStations()
                 viewModel.loadIcons()
                 viewModel.loadTrains()*/
-                viewModel.switchTrainLine(
-                    scope = scope,
-                    trainLine = viewModel.uiState.line
-                )
-            }
+
+           // }
         })
     }
 
@@ -169,7 +175,7 @@ fun TrainMapScreen(
                                 )
                                 .padding(start = 10.dp, top = 5.dp, bottom = 5.dp),
                         ) {
-                            val (left, debug) = createRefs()
+                            val (left, cameraDebug, stateDebug) = createRefs()
                             FilledTonalButton(
                                 modifier = Modifier.constrainAs(left) {
                                     start.linkTo(anchor = parent.start)
@@ -184,11 +190,17 @@ fun TrainMapScreen(
                             }
 
                             if (settingsViewModel.uiState.showMapDebug) {
-                                DebugView(
-                                    modifier = Modifier.constrainAs(debug) {
+                                CameraDebugView(
+                                    modifier = Modifier.constrainAs(cameraDebug) {
                                         top.linkTo(anchor = left.bottom)
                                     },
                                     cameraPositionState = viewModel.uiState.cameraPositionState
+                                )
+                                StateDebugView(
+                                    modifier = Modifier.constrainAs(stateDebug) {
+                                        top.linkTo(anchor = cameraDebug.bottom)
+                                    },
+                                    viewModel = viewModel
                                 )
                             }
                         }
@@ -331,10 +343,7 @@ fun TrainsOnMapLayer(
                 zIndex = 1f,
                 onClick = {
                     scope.launch {
-                        viewModel.loadTrainEtas(train, false)
-                        if (viewModel.uiState.scaffoldState.bottomSheetState.isCollapsed) {
-                            viewModel.uiState.scaffoldState.bottomSheetState.expand()
-                        }
+                        viewModel.loadTrainEtas(scope, train)
                     }
                     false
                 },
@@ -343,6 +352,26 @@ fun TrainsOnMapLayer(
                 }
             )
         }
+    }
+}
+
+@Composable
+fun StateDebugView(
+    modifier: Modifier = Modifier,
+    viewModel: MapTrainViewModel,
+) {
+    Column(
+        modifier = modifier
+            .padding(top = 10.dp)
+            .background(color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)),
+        verticalArrangement = Arrangement.Center
+    ) {
+        ColoredBox(color = viewModel.uiState.line.color)
+        Text(text = "Current train line: ${viewModel.uiState.line}")
+        Text(text = "Polyline size: ${viewModel.uiState.polyLine.size}")
+        Text(text = "Trains size: ${viewModel.uiState.trains.size}")
+        Text(text = "Stations size: ${viewModel.uiState.stations.size}")
+        Text(text = "Trains Eta size: ${viewModel.uiState.trainEtas.size}")
     }
 }
 
@@ -370,7 +399,7 @@ data class GoogleMapTrainUiState constructor(
     val trainIconLarge: BitmapDescriptor? = null,
     val train: Train = Train(),
     val trainEtas: List<TrainEta> = listOf(),
-    val trainLoadAll: Boolean = false,
+    val bottomSheetContentType: BottomSheetContentType = BottomSheetContentType.CHANGE_LINE,
 
     val stationIcon: BitmapDescriptor? = null,
     val showStationIcon: Boolean = false,
@@ -380,7 +409,11 @@ data class GoogleMapTrainUiState constructor(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed),
         snackbarHostState = androidx.compose.material.SnackbarHostState(),
     )
-)
+) {
+    init {
+        Timber.e("CREATE NEW GoogleMapTrainUiState")
+    }
+}
 
 @OptIn(ExperimentalMaterialApi::class)
 class MapTrainViewModel constructor(
@@ -491,7 +524,7 @@ class MapTrainViewModel constructor(
             )
     }
 
-    fun loadTrainEtas(train: Train, loadAll: Boolean) {
+    fun loadTrainEtas(scope: CoroutineScope, train: Train) {
         uiState = uiState.copy(isLoading = true)
         trainService.trainEtas(train.runNumber.toString())
             .observeOn(Schedulers.computation())
@@ -500,9 +533,14 @@ class MapTrainViewModel constructor(
                     uiState = uiState.copy(
                         train = train,
                         trainEtas = trainEtas,
-                        trainLoadAll = loadAll,
                         isLoading = false,
+                        bottomSheetContentType = BottomSheetContentType.TRAIN_DETAILS,
                     )
+                    scope.launch {
+                        if (uiState.scaffoldState.bottomSheetState.isCollapsed) {
+                            uiState.scaffoldState.bottomSheetState.expand()
+                        }
+                    }
                 },
                 { throwable ->
                     Timber.e(throwable, "Could not load train etas")
@@ -516,7 +554,7 @@ class MapTrainViewModel constructor(
         uiState = uiState.copy(
             train = Train(),
             trainEtas = listOf(),
-            trainLoadAll = false,
+            bottomSheetContentType = BottomSheetContentType.CHANGE_LINE,
         )
     }
 
@@ -556,25 +594,33 @@ class MapTrainViewModel constructor(
     }
 
     fun switchTrainLine(scope: CoroutineScope, trainLine: TrainLine) {
+
+        uiState = uiState.copy(
+            line = trainLine,
+            shouldMoveCamera = true,
+            polyLine = listOf(),
+            trains = listOf(),
+            stations = listOf(),
+            isLoading = true
+        )
         scope.launch {
             uiState.scaffoldState.bottomSheetState.collapse()
             while (uiState.scaffoldState.bottomSheetState.isExpanded) {
                 // wait for the animation to finish
             }
-            uiState = uiState.copy(
-                line = trainLine,
-                shouldMoveCamera = true,
-                polyLine = listOf(),
-                trains = listOf(),
-                stations = listOf(),
-                isLoading = true
-            )
-            /*loadPatterns()
-            loadStations()
-            loadTrains()
-            loadIcons()*/
+
+            /*uiState.scaffoldState.bottomSheetState.collapse()
+            while (uiState.scaffoldState.bottomSheetState.isExpanded) {
+                // wait for the animation to finish
+            }*/
             loadData()
         }
+
+        /*loadPatterns()
+        loadStations()
+        loadTrains()
+        loadIcons()*/
+
     }
 
     private fun loadData() {
@@ -587,7 +633,7 @@ class MapTrainViewModel constructor(
             val stationIcon = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(App.instance.resources, colorDrawable()))
             listOf(bitmapDescSmall, bitmapDescMedium, bitmapDescLarge, stationIcon)
         }
-            .doOnSuccess { result ->
+/*            .doOnSuccess { result ->
                 Timber.e("google map icons")
                 uiState = uiState.copy(
                     trainIcon = result[0],
@@ -596,7 +642,7 @@ class MapTrainViewModel constructor(
                     trainIconLarge = result[2],
                     stationIcon = result[3],
                 )
-            }
+            }*/
         val patterns = trainService.readPatterns(uiState.line)
             .map { trainStationPattern -> trainStationPattern.map { it.position.toLatLng() } }
             .observeOn(Schedulers.computation())
@@ -608,18 +654,27 @@ class MapTrainViewModel constructor(
         val trains = trainService.trainLocations(uiState.line.toTextString())
 
         googleMapIcons
-            .flatMap {
+            .flatMap { bitMapDescriptors ->
                 Single.zip(patterns, stations, trains) { patternsResult, stationsResult, trainsResult ->
+                    Timber.e("Load data done, updating ui state ${Thread.currentThread().name}")
+                    Timber.e("Data sizes: ${stationsResult.size} ${patternsResult.size} ${trainsResult.size} ${bitMapDescriptors.size}")
                     uiState = uiState.copy(
                         isLoading = false,
                         stations = stationsResult,
                         polyLine = patternsResult,
                         trains = trainsResult,
+                        trainIcon = bitMapDescriptors[0],
+                        trainIconSmall = bitMapDescriptors[0],
+                        trainIconMedium = bitMapDescriptors[1],
+                        trainIconLarge = bitMapDescriptors[2],
+                        stationIcon = bitMapDescriptors[3],
                     )
+                    Timber.e("Data sizes in state after update: ${uiState.stations.size} ${uiState.polyLine.size} ${uiState.polyLine.size}")
                 }
             }
             .subscribe(
                 {
+                    Timber.e("Done with loading data")
                     if (uiState.shouldMoveCamera) {
                         centerMapOnLine()
                         uiState = uiState.copy(shouldMoveCamera = false)
@@ -643,4 +698,8 @@ class MapTrainViewModel constructor(
             TrainLine.NA -> R.drawable.red_marker_no_shade
         }
     }
+}
+
+enum class BottomSheetContentType {
+    CHANGE_LINE, TRAIN_DETAILS,
 }

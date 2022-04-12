@@ -58,6 +58,7 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.FontSize
 import fr.cph.chicago.core.theme.availableFonts
+import fr.cph.chicago.core.ui.screen.BottomSheetContentType
 import fr.cph.chicago.core.ui.screen.MapTrainViewModel
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
@@ -484,12 +485,11 @@ fun TrainMapBottomSheet(
     viewModel: MapTrainViewModel,
     onBackClick: () -> Unit,
 ) {
-
     BottomSheet(
         content = {
             Column(modifier = modifier.fillMaxWidth()) {
-                when (viewModel.uiState.train.runNumber) {
-                    0 -> ChangeLineTrainMapBottomSheet(viewModel = viewModel)
+                when (viewModel.uiState.bottomSheetContentType) {
+                    BottomSheetContentType.CHANGE_LINE -> ChangeLineTrainMapBottomSheet(viewModel = viewModel)
                     else -> ShowTrainDetailsTrainMapBottomSheet(viewModel = viewModel)
                 }
             }
@@ -560,9 +560,7 @@ private fun ChangeLineTrainMapBottomSheet(
             TrainLineButton(
                 trainLine = trainLine,
                 onClick = {
-                    scope.launch {
-                        viewModel.switchTrainLine(scope, trainLine)
-                    }
+                    viewModel.switchTrainLine(scope, trainLine)
                 }
             )
         }

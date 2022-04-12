@@ -54,7 +54,7 @@ import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.runWithDelay
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.core.viewmodel.MainViewModel
-import fr.cph.chicago.util.DebugView
+import fr.cph.chicago.util.CameraDebugView
 import fr.cph.chicago.util.GoogleMapUtil.getBitmapDescriptor
 import fr.cph.chicago.util.toLatLng
 import java.util.concurrent.TimeUnit
@@ -212,7 +212,7 @@ fun NearbyGoogleMapView(
     ) {
         SearchThisAreaButton(mainViewModel = mainViewModel, cameraPositionState = cameraPositionState)
         if (settingsViewModel.uiState.showMapDebug) {
-            DebugView(cameraPositionState = cameraPositionState)
+            CameraDebugView(cameraPositionState = cameraPositionState)
         }
     }
 

@@ -94,14 +94,14 @@ object GoogleMapUtil {
 }
 
 @Composable
-fun DebugView(
+fun CameraDebugView(
     modifier: Modifier = Modifier,
     cameraPositionState: CameraPositionState
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(color = MaterialTheme.colorScheme.surface),
+            .background(color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)),
         verticalArrangement = Arrangement.Center
     ) {
         val moving = if (cameraPositionState.isMoving) "moving" else "not moving"

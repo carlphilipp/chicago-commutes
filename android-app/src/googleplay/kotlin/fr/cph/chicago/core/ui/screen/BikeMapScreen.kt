@@ -56,7 +56,7 @@ import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.BikeService
-import fr.cph.chicago.util.DebugView
+import fr.cph.chicago.util.CameraDebugView
 import fr.cph.chicago.util.GoogleMapUtil.defaultZoom
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.toLatLng
@@ -194,7 +194,7 @@ private fun GoogleBikeBusMapView(
         )
 
         if (settingsViewModel.uiState.showMapDebug) {
-            DebugView(cameraPositionState = uiState.cameraPositionState)
+            CameraDebugView(cameraPositionState = uiState.cameraPositionState)
         }
     }
 }
