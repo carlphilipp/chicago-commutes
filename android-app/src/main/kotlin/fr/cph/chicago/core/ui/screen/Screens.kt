@@ -37,6 +37,7 @@ import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.getActivity
 import java.net.URLDecoder
 import kotlin.random.Random
+import timber.log.Timber
 
 sealed class Screen(
     val id: Int = Random.nextInt(),
@@ -111,6 +112,7 @@ sealed class Screen(
                     defaultArgs = backStackEntry.arguments
                 )
             )
+            Timber.e("Train station id: $stationId")
             TrainStationScreen(
                 viewModel = viewModel,
                 navigationViewModel = navigationViewModel
@@ -406,11 +408,19 @@ sealed class Screen(
         showOnDrawer = false,
         isGestureEnabled = false,
         topBar = ScreenTopBar.MediumTopBarBackReloadMenu,
-        component = { backStackEntry, _ ->
+        component = { backStackEntry, navigationViewModel ->
+            val activity = navigationViewModel.uiState.context.getActivity()
             val line = URLDecoder.decode(backStackEntry.arguments?.getString("line", "") ?: "", "UTF-8")
             val trainLine = TrainLine.fromXmlString(line)
 
-            val viewModel = MapTrainViewModel(line = trainLine)
+            val factory = MapTrainViewModel.provideFactory(
+                owner = activity,
+                defaultArgs = backStackEntry.arguments
+            )
+            val viewModel = ViewModelProvider(activity, factory)[MapTrainViewModel::class.java]
+            if (viewModel.uiState.line == TrainLine.NA) {
+                viewModel.setTrainLine(trainLine = trainLine)
+            }
             TrainMapScreen(
                 viewModel = viewModel,
                 settingsViewModel = settingsViewModel,

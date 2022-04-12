@@ -1,6 +1,7 @@
 package fr.cph.chicago.core.ui.screen
 
 import android.graphics.BitmapFactory
+import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,7 +42,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.lifecycle.AbstractSavedStateViewModelFactory
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.savedstate.SavedStateRegistryOwner
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -83,10 +88,10 @@ import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 /**
  *      1. Show loading screen
@@ -110,6 +115,13 @@ fun TrainMapScreen(
     val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     val scope = rememberCoroutineScope()
     var isMapLoaded by remember { mutableStateOf(false) }
+    val cameraPositionState: CameraPositionState by remember {
+        mutableStateOf(
+            CameraPositionState(
+                position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)
+            )
+        )
+    }
 
     // Show map after 5 seconds. This is needed because there is no callback from the sdk to know if the map can be loaded or not.
     // Meaning that we can have a situation where the onMapLoaded method is never triggered, while the map view has been populated
@@ -127,14 +139,6 @@ fun TrainMapScreen(
                 scope = scope,
                 trainLine = viewModel.uiState.line
             )
-            //scope.launch {
-                // FIXME: I think this needs be chained properly
-/*                viewModel.loadPatterns()
-                viewModel.loadStations()
-                viewModel.loadIcons()
-                viewModel.loadTrains()*/
-
-           // }
         })
     }
 
@@ -164,6 +168,7 @@ fun TrainMapScreen(
                         GoogleMapTrainMapView(
                             viewModel = viewModel,
                             settingsViewModel = settingsViewModel,
+                            cameraPositionState = cameraPositionState,
                             onMapLoaded = { isMapLoaded = true },
                         )
 
@@ -194,7 +199,7 @@ fun TrainMapScreen(
                                     modifier = Modifier.constrainAs(cameraDebug) {
                                         top.linkTo(anchor = left.bottom)
                                     },
-                                    cameraPositionState = viewModel.uiState.cameraPositionState
+                                    cameraPositionState = cameraPositionState
                                 )
                                 StateDebugView(
                                     modifier = Modifier.constrainAs(stateDebug) {
@@ -225,6 +230,11 @@ fun TrainMapScreen(
             }
         }
     )
+
+    DisposableEffect(key1 = viewModel) {
+        viewModel.onStart()
+        onDispose { viewModel.onStop() }
+    }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -233,6 +243,7 @@ fun GoogleMapTrainMapView(
     modifier: Modifier = Modifier,
     settingsViewModel: SettingsViewModel,
     viewModel: MapTrainViewModel,
+    cameraPositionState: CameraPositionState,
     onMapLoaded: () -> Unit,
 ) {
     val uiState = viewModel.uiState
@@ -250,14 +261,14 @@ fun GoogleMapTrainMapView(
     if (uiState.moveCamera != null && uiState.moveCameraZoom != null) {
         LaunchedEffect(key1 = uiState.moveCamera, key2 = uiState.moveCameraZoom, block = {
             scope.launch {
-                uiState.cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(uiState.moveCamera, uiState.moveCameraZoom))
+                cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(uiState.moveCamera, uiState.moveCameraZoom))
             }
         })
     }
 
     GoogleMap(
         modifier = modifier,
-        cameraPositionState = uiState.cameraPositionState,
+        cameraPositionState = cameraPositionState,
         properties = MapProperties(
             mapType = MapType.NORMAL,
             isMyLocationEnabled = false,
@@ -272,12 +283,12 @@ fun GoogleMapTrainMapView(
 
         TrainStationsMarkers(
             viewModel = viewModel,
-            cameraPositionState = uiState.cameraPositionState,
+            cameraPositionState = cameraPositionState,
         )
 
         TrainsOnMapLayer(
             viewModel = viewModel,
-            cameraPositionState = uiState.cameraPositionState,
+            cameraPositionState = cameraPositionState,
         )
     }
 }
@@ -379,9 +390,6 @@ fun StateDebugView(
 data class GoogleMapTrainUiState constructor(
     val isLoading: Boolean = false,
     val showError: Boolean = false,
-    val cameraPositionState: CameraPositionState = CameraPositionState(
-        position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)
-    ),
 
     val line: TrainLine = TrainLine.NA,
     val polyLine: List<LatLng> = listOf(),
@@ -411,17 +419,25 @@ data class GoogleMapTrainUiState constructor(
     )
 ) {
     init {
-        Timber.e("CREATE NEW GoogleMapTrainUiState")
+        Timber.e("CREATE NEW GoogleMapTrainUiState ${line.toStringWithLine()}")
     }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 class MapTrainViewModel constructor(
-    line: TrainLine,
     private val trainService: TrainService = TrainService,
 ) : ViewModel() {
-    var uiState by mutableStateOf(GoogleMapTrainUiState(line = line))
+
+    var uiState by mutableStateOf(GoogleMapTrainUiState())
         private set
+
+    init {
+        Timber.e("CREATE NEW MapTrainViewModel")
+    }
+
+    fun setTrainLine(trainLine: TrainLine) {
+        uiState = uiState.copy(line = trainLine)
+    }
 
     fun showError(showError: Boolean) {
         uiState = uiState.copy(showError = showError)
@@ -594,7 +610,7 @@ class MapTrainViewModel constructor(
     }
 
     fun switchTrainLine(scope: CoroutineScope, trainLine: TrainLine) {
-
+        Timber.e("Switch train line ${trainLine.toStringWithLine()}")
         uiState = uiState.copy(
             line = trainLine,
             shouldMoveCamera = true,
@@ -680,7 +696,7 @@ class MapTrainViewModel constructor(
                         uiState = uiState.copy(shouldMoveCamera = false)
                     }
                 }, {
-                // TODO handle error
+                    // TODO handle error
                 }
             )
     }
@@ -697,6 +713,32 @@ class MapTrainViewModel constructor(
             TrainLine.YELLOW -> R.drawable.yellow_marker_no_shade
             TrainLine.NA -> R.drawable.red_marker_no_shade
         }
+    }
+
+    fun onStart() {
+        Timber.e("On Start")
+    }
+
+    fun onStop() {
+        Timber.e("On Stop")
+        uiState = GoogleMapTrainUiState()
+    }
+
+    companion object {
+        fun provideFactory(
+            owner: SavedStateRegistryOwner,
+            defaultArgs: Bundle? = null,
+        ): AbstractSavedStateViewModelFactory =
+            object : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(
+                    key: String,
+                    modelClass: Class<T>,
+                    handle: SavedStateHandle
+                ): T {
+                    return MapTrainViewModel() as T
+                }
+            }
     }
 }
 
