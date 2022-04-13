@@ -573,20 +573,6 @@ private fun ShowTrainDetailsTrainMapBottomSheet(
     modifier: Modifier = Modifier,
     viewModel: MapTrainViewModel,
 ) {
-    // FIXME: this logic should be in model
-    val arrivals = viewModel.uiState.trainEtas
-        .map { trainEta ->
-            val timeLeftDueDelay = trainEta.timeLeftDueDelay
-            val value = if (timeLeftDueDelay.contains("min")) {
-                trainEta.timeLeftDueDelay.split(" min")[0]
-            } else {
-                trainEta.timeLeftDueDelay
-            }
-            Pair(
-                first = trainEta.trainStation.name,
-                second = value
-            )
-        }
     val scope = rememberCoroutineScope()
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -618,6 +604,11 @@ private fun ShowTrainDetailsTrainMapBottomSheet(
         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
     )
 
+    // This needs to be done because it looks like HorizontalPager does not refresh data properly
+    // and it get confused when the state is accessed directly (and updated later)
+    val arrivals = viewModel.uiState.trainEtas.ifEmpty {
+        listOf(Pair(first = "No result", second = "##"))
+    }
     HorizontalPager(
         modifier = Modifier.padding(bottom = 10.dp),
         count = arrivals.size,
@@ -627,13 +618,6 @@ private fun ShowTrainDetailsTrainMapBottomSheet(
         TrainStopArrivalTimeView(
             title = arrivals[page].first,
             minutes = arrivals[page].second,
-        )
-    }
-    if (arrivals.isEmpty()) {
-        TrainStopArrivalTimeView(
-            modifier = Modifier.padding(bottom = 10.dp),
-            title = "No result",
-            minutes = "##",
         )
     }
 }

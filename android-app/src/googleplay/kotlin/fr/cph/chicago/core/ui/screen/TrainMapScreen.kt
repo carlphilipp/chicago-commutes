@@ -64,7 +64,6 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.model.Train
-import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
@@ -88,10 +87,12 @@ import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
+
+//private val defaultArrivals = listOf(Pair(first = "No result", second = "##"))
 
 /**
  *      1. Show loading screen
@@ -232,7 +233,6 @@ fun TrainMapScreen(
     )
 
     DisposableEffect(key1 = viewModel) {
-        viewModel.onStart()
         onDispose { viewModel.onStop() }
     }
 }
@@ -406,7 +406,7 @@ data class GoogleMapTrainUiState constructor(
     val trainIconMedium: BitmapDescriptor? = null,
     val trainIconLarge: BitmapDescriptor? = null,
     val train: Train = Train(),
-    val trainEtas: List<TrainEta> = listOf(),
+    val trainEtas: List<Pair<String, String>> = listOf(),
     val bottomSheetContentType: BottomSheetContentType = BottomSheetContentType.CHANGE_LINE,
 
     val stationIcon: BitmapDescriptor? = null,
@@ -417,11 +417,7 @@ data class GoogleMapTrainUiState constructor(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed),
         snackbarHostState = androidx.compose.material.SnackbarHostState(),
     )
-) {
-    init {
-        Timber.e("CREATE NEW GoogleMapTrainUiState ${line.toStringWithLine()}")
-    }
-}
+)
 
 @OptIn(ExperimentalMaterialApi::class)
 class MapTrainViewModel constructor(
@@ -430,10 +426,6 @@ class MapTrainViewModel constructor(
 
     var uiState by mutableStateOf(GoogleMapTrainUiState())
         private set
-
-    init {
-        Timber.e("CREATE NEW MapTrainViewModel")
-    }
 
     fun setTrainLine(trainLine: TrainLine) {
         uiState = uiState.copy(line = trainLine)
@@ -543,15 +535,32 @@ class MapTrainViewModel constructor(
     fun loadTrainEtas(scope: CoroutineScope, train: Train) {
         uiState = uiState.copy(isLoading = true)
         trainService.trainEtas(train.runNumber.toString())
+            .map { trainEtas ->
+                Timber.e("Train eta result1 ${trainEtas.size}")
+                trainEtas.map { trainEta ->
+                    val timeLeftDueDelay = trainEta.timeLeftDueDelay
+                    val value = if (timeLeftDueDelay.contains("min")) {
+                        trainEta.timeLeftDueDelay.split(" min")[0]
+                    } else {
+                        trainEta.timeLeftDueDelay
+                    }
+                    Pair(
+                        first = trainEta.trainStation.name,
+                        second = value
+                    )
+                }
+            }
             .observeOn(Schedulers.computation())
             .subscribe(
                 { trainEtas ->
+                    Timber.e("Train eta result2 ${trainEtas.size}")
                     uiState = uiState.copy(
                         train = train,
                         trainEtas = trainEtas,
                         isLoading = false,
                         bottomSheetContentType = BottomSheetContentType.TRAIN_DETAILS,
                     )
+                    Timber.e("State: ${uiState.trainEtas.size}")
                     scope.launch {
                         if (uiState.scaffoldState.bottomSheetState.isCollapsed) {
                             uiState.scaffoldState.bottomSheetState.expand()
@@ -610,7 +619,6 @@ class MapTrainViewModel constructor(
     }
 
     fun switchTrainLine(scope: CoroutineScope, trainLine: TrainLine) {
-        Timber.e("Switch train line ${trainLine.toStringWithLine()}")
         uiState = uiState.copy(
             line = trainLine,
             shouldMoveCamera = true,
@@ -624,19 +632,8 @@ class MapTrainViewModel constructor(
             while (uiState.scaffoldState.bottomSheetState.isExpanded) {
                 // wait for the animation to finish
             }
-
-            /*uiState.scaffoldState.bottomSheetState.collapse()
-            while (uiState.scaffoldState.bottomSheetState.isExpanded) {
-                // wait for the animation to finish
-            }*/
             loadData()
         }
-
-        /*loadPatterns()
-        loadStations()
-        loadTrains()
-        loadIcons()*/
-
     }
 
     private fun loadData() {
@@ -649,16 +646,7 @@ class MapTrainViewModel constructor(
             val stationIcon = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(App.instance.resources, colorDrawable()))
             listOf(bitmapDescSmall, bitmapDescMedium, bitmapDescLarge, stationIcon)
         }
-/*            .doOnSuccess { result ->
-                Timber.e("google map icons")
-                uiState = uiState.copy(
-                    trainIcon = result[0],
-                    trainIconSmall = result[0],
-                    trainIconMedium = result[1],
-                    trainIconLarge = result[2],
-                    stationIcon = result[3],
-                )
-            }*/
+
         val patterns = trainService.readPatterns(uiState.line)
             .map { trainStationPattern -> trainStationPattern.map { it.position.toLatLng() } }
             .observeOn(Schedulers.computation())
@@ -715,12 +703,7 @@ class MapTrainViewModel constructor(
         }
     }
 
-    fun onStart() {
-        Timber.e("On Start")
-    }
-
     fun onStop() {
-        Timber.e("On Stop")
         uiState = GoogleMapTrainUiState()
     }
 
