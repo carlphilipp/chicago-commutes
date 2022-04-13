@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowRight
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
@@ -609,16 +610,37 @@ private fun ShowTrainDetailsTrainMapBottomSheet(
     val arrivals = viewModel.uiState.trainEtas.ifEmpty {
         listOf(Pair(first = "No result", second = "##"))
     }
-    HorizontalPager(
-        modifier = Modifier.padding(bottom = 10.dp),
-        count = arrivals.size,
-        itemSpacing = 10.dp,
-        contentPadding = PaddingValues(start = 0.dp, end = 250.dp),
-    ) { page ->
-        TrainStopArrivalTimeView(
-            title = arrivals[page].first,
-            minutes = arrivals[page].second,
-        )
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 10.dp)
+    ) {
+        HorizontalPager(
+            modifier = Modifier,
+            count = arrivals.size,
+            itemSpacing = 10.dp,
+            contentPadding = PaddingValues(start = 0.dp, end = 250.dp),
+        ) { page ->
+            TrainStopArrivalTimeView(
+                title = arrivals[page].first,
+                minutes = arrivals[page].second,
+            )
+        }
+        Box(
+            modifier = Modifier
+                .height(87.dp)
+                .width(14.dp)
+                .align(Alignment.CenterEnd)
+                .clip(RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
+                .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.9f))
+        ) {
+            Icon(
+                modifier = Modifier.align(Alignment.Center),
+                imageVector = Icons.Filled.ArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        }
     }
 }
 
