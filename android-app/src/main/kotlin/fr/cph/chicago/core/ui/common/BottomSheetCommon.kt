@@ -65,7 +65,7 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.FontSize
 import fr.cph.chicago.core.theme.availableFonts
-import fr.cph.chicago.core.ui.screen.BottomSheetContentType
+import fr.cph.chicago.core.ui.screen.BottomSheetContentAndState
 import fr.cph.chicago.core.ui.screen.MapTrainViewModel
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
@@ -495,8 +495,9 @@ fun TrainMapBottomSheet(
     BottomSheet(
         content = {
             Column(modifier = modifier.fillMaxWidth()) {
-                when (viewModel.uiState.bottomSheetContentType) {
-                    BottomSheetContentType.CHANGE_LINE -> ChangeLineTrainMapBottomSheet(viewModel = viewModel)
+                when (viewModel.uiState.bottomSheetContentAndState) {
+
+                    BottomSheetContentAndState.CHANGE_LINE_EXPANDED, BottomSheetContentAndState.CHANGE_LINE_COLLAPSED -> ChangeLineTrainMapBottomSheet(viewModel = viewModel)
                     else -> ShowTrainDetailsTrainMapBottomSheet(viewModel = viewModel)
                 }
             }
@@ -593,7 +594,7 @@ private fun ShowTrainDetailsTrainMapBottomSheet(
         )
         FilledTonalButton(
             onClick = {
-                viewModel.resetDetails(scope = scope)
+                viewModel.resetDetails()
             }
         ) {
             Icon(
@@ -638,8 +639,8 @@ private fun ShowTrainDetailsTrainMapBottomSheet(
                 .height(87.dp)
                 .width(14.dp)
                 .align(Alignment.CenterStart)
-                .clip(RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
-                .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.9f)),
+                .clip(RoundedCornerShape(topEnd = 5.dp, bottomEnd = 5.dp))
+                .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f)),
             enter = fadeIn(animationSpec = tween(durationMillis = 500)),
             exit = fadeOut(animationSpec = tween(durationMillis = 500)),
         ) {
@@ -657,7 +658,7 @@ private fun ShowTrainDetailsTrainMapBottomSheet(
                 .width(14.dp)
                 .align(Alignment.CenterEnd)
                 .clip(RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
-                .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.9f)),
+                .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f)),
             enter = fadeIn(animationSpec = tween(durationMillis = 500)),
             exit = fadeOut(animationSpec = tween(durationMillis = 500)),
         ) {

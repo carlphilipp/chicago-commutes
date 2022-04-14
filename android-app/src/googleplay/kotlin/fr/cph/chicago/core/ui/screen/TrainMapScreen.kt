@@ -87,12 +87,11 @@ import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
-
-//private val defaultArrivals = listOf(Pair(first = "No result", second = "##"))
 
 /**
  *      1. Show loading screen
@@ -143,6 +142,23 @@ fun TrainMapScreen(
         })
     }
 
+    LaunchedEffect(key1 = viewModel.uiState.bottomSheetContentAndState, block = {
+        scope.launch {
+            when (viewModel.uiState.bottomSheetContentAndState) {
+                BottomSheetContentAndState.CHANGE_LINE_EXPANDED, BottomSheetContentAndState.TRAIN_DETAILS_EXPANDED -> {
+                    if (viewModel.uiState.scaffoldState.bottomSheetState.isCollapsed) {
+                        viewModel.uiState.scaffoldState.bottomSheetState.expand()
+                    }
+                }
+                BottomSheetContentAndState.CHANGE_LINE_COLLAPSED, BottomSheetContentAndState.TRAIN_DETAILS_COLLAPSED -> {
+                    if (viewModel.uiState.scaffoldState.bottomSheetState.isExpanded) {
+                        viewModel.uiState.scaffoldState.bottomSheetState.collapse()
+                    }
+                }
+            }
+        }
+    })
+
     BottomSheetScaffoldMaterial3(
         scaffoldState = viewModel.uiState.scaffoldState,
         sheetPeekHeight = 120.dp,
@@ -176,9 +192,7 @@ fun TrainMapScreen(
                         ConstraintLayout(
                             modifier = modifier
                                 .fillMaxWidth()
-                                .windowInsetsPadding(
-                                    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-                                )
+                                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
                                 .padding(start = 10.dp, top = 5.dp, bottom = 5.dp),
                         ) {
                             val (left, cameraDebug, stateDebug) = createRefs()
@@ -332,6 +346,7 @@ fun TrainsOnMapLayer(
     cameraPositionState: CameraPositionState,
 ) {
     val scope = rememberCoroutineScope()
+    var job: Job? by remember { mutableStateOf(null) }
     viewModel.updateIconOnZoomChange(cameraPositionState.position.zoom)
 
     if (viewModel.uiState.trainIcon != null) {
@@ -353,13 +368,16 @@ fun TrainsOnMapLayer(
                 anchor = Offset(0.5f, 0.5f),
                 zIndex = 1f,
                 onClick = {
+                    job?.cancel()
                     scope.launch {
                         viewModel.loadTrainEtas(scope, train)
                     }
                     false
                 },
                 onInfoWindowClose = {
-                    viewModel.resetDetails(scope = scope)
+                    job = scope.launch {
+                        viewModel.resetDetails()
+                    }
                 }
             )
         }
@@ -407,14 +425,14 @@ data class GoogleMapTrainUiState constructor(
     val trainIconLarge: BitmapDescriptor? = null,
     val train: Train = Train(),
     val trainEtas: List<Pair<String, String>> = listOf(),
-    val bottomSheetContentType: BottomSheetContentType = BottomSheetContentType.CHANGE_LINE,
+    val bottomSheetContentAndState: BottomSheetContentAndState = BottomSheetContentAndState.CHANGE_LINE_COLLAPSED,
 
     val stationIcon: BitmapDescriptor? = null,
     val showStationIcon: Boolean = false,
 
     val scaffoldState: BottomSheetScaffoldState = BottomSheetScaffoldState(
         drawerState = DrawerState(DrawerValue.Closed),
-        bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed),
+        bottomSheetState = BottomSheetState(initialValue = BottomSheetValue.Collapsed),
         snackbarHostState = androidx.compose.material.SnackbarHostState(),
     )
 )
@@ -535,18 +553,18 @@ class MapTrainViewModel constructor(
                         train = train,
                         trainEtas = trainEtas,
                         isLoading = false,
-                        bottomSheetContentType = BottomSheetContentType.TRAIN_DETAILS,
+                        bottomSheetContentAndState = BottomSheetContentAndState.TRAIN_DETAILS_EXPANDED,
                     )
                     Timber.e("Before launch ${Thread.currentThread().name}")
                     scope.launch {
-                        Timber.e("Check if collapsed to expand it ${Thread.currentThread().name}")
-                        while(uiState.scaffoldState.bottomSheetState.isAnimationRunning) {
-                            Timber.e("Animation running")
-                        }
-                        if (uiState.scaffoldState.bottomSheetState.isCollapsed) {
-                            Timber.e("Load eta EXPAND")
-                            uiState.scaffoldState.bottomSheetState.expand()
-                        }
+                        //Timber.e("Check if collapsed to expand it ${Thread.currentThread().name}")
+                        //while(uiState.scaffoldState.bottomSheetState.isAnimationRunning) {
+                        //    Timber.e("Animation running")
+                        //}
+                        //if (uiState.scaffoldState.bottomSheetState.isCollapsed) {
+                        Timber.e("Load eta EXPAND")
+                        //uiState.scaffoldState.bottomSheetState.expand()
+                        //}
                     }
                 },
                 { throwable ->
@@ -557,21 +575,21 @@ class MapTrainViewModel constructor(
             )
     }
 
-    fun resetDetails(scope: CoroutineScope) {
-        scope.launch {
-            if (uiState.scaffoldState.bottomSheetState.isExpanded) {
-                Timber.e("Reset details COLLAPSE")
-                uiState.scaffoldState.bottomSheetState.collapse()
-                while (uiState.scaffoldState.bottomSheetState.isExpanded) {
-                    // wait for animation to finish
-                }
-            }
+    fun resetDetails(/*scope: CoroutineScope*/) {
+       // scope.launch {
+            //if (uiState.scaffoldState.bottomSheetState.isExpanded) {
+            Timber.e("Reset details COLLAPSE")
+            //uiState.scaffoldState.bottomSheetState.collapse()
+            //while (uiState.scaffoldState.bottomSheetState.isExpanded) {
+            // wait for animation to finish
+            //}
+            //}
             uiState = uiState.copy(
                 train = Train(),
                 trainEtas = listOf(),
-                bottomSheetContentType = BottomSheetContentType.CHANGE_LINE,
+                bottomSheetContentAndState = BottomSheetContentAndState.CHANGE_LINE_COLLAPSED,
             )
-        }
+        //}
     }
 
     private fun loadPatterns() {
@@ -699,6 +717,6 @@ class MapTrainViewModel constructor(
     }
 }
 
-enum class BottomSheetContentType {
-    CHANGE_LINE, TRAIN_DETAILS,
+enum class BottomSheetContentAndState {
+    CHANGE_LINE_EXPANDED, CHANGE_LINE_COLLAPSED, TRAIN_DETAILS_EXPANDED, TRAIN_DETAILS_COLLAPSED
 }
