@@ -1,5 +1,9 @@
 package fr.cph.chicago.core.ui.common
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowLeft
 import androidx.compose.material.icons.filled.ArrowRight
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
@@ -50,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusRoute
@@ -610,6 +616,7 @@ private fun ShowTrainDetailsTrainMapBottomSheet(
     val arrivals = viewModel.uiState.trainEtas.ifEmpty {
         listOf(Pair(first = "No result", second = "##"))
     }
+    val pagerState = rememberPagerState()
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -617,6 +624,7 @@ private fun ShowTrainDetailsTrainMapBottomSheet(
     ) {
         HorizontalPager(
             modifier = Modifier,
+            state = pagerState,
             count = arrivals.size,
             itemSpacing = 10.dp,
             contentPadding = PaddingValues(start = 0.dp, end = 250.dp),
@@ -626,21 +634,75 @@ private fun ShowTrainDetailsTrainMapBottomSheet(
                 minutes = arrivals[page].second,
             )
         }
-        Box(
+        AnimatedVisibility(
+            visible = arrivals.size > 1 && (pagerState.currentPageOffset > 0 || pagerState.currentPage > 0),
+            modifier = Modifier
+                .height(87.dp)
+                .width(14.dp)
+                .align(Alignment.CenterStart)
+                .clip(RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
+                .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.9f)),
+            enter = fadeIn(animationSpec = tween(durationMillis = 500)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 500)),
+        ) {
+            Icon(
+                modifier = Modifier.align(Alignment.Center),
+                imageVector = Icons.Filled.ArrowLeft,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        }
+
+/*        AnimatedVisibility(
+            visible = arrivals.size > 1 && (pagerState.currentPageOffset > 0 || pagerState.currentPage > 1),
+            enter = fadeIn(animationSpec = tween(durationMillis = 500)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 500)),
+        ) {
+            Box(
+                modifier = Modifier
+                    .height(87.dp)
+                    .width(14.dp)
+                    .align(Alignment.CenterStart)
+                    .clip(RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
+                    .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.9f))
+            ) {
+                Icon(
+                    modifier = Modifier.align(Alignment.Center),
+                    imageVector = Icons.Filled.ArrowLeft,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+            }
+        }*/
+
+
+/*        Box(
             modifier = Modifier
                 .height(87.dp)
                 .width(14.dp)
                 .align(Alignment.CenterEnd)
                 .clip(RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
                 .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.9f))
-        ) {
-            Icon(
-                modifier = Modifier.align(Alignment.Center),
-                imageVector = Icons.Filled.ArrowRight,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-            )
-        }
+        ) {*/
+            AnimatedVisibility(
+                visible = arrivals.size > 3 && (arrivals.size - pagerState.currentPage) > 3,
+                modifier = Modifier
+                    .height(87.dp)
+                    .width(14.dp)
+                    .align(Alignment.CenterEnd)
+                    .clip(RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
+                    .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.9f)),
+                enter = fadeIn(animationSpec = tween(durationMillis = 500)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 500)),
+            ) {
+                Icon(
+                    modifier = Modifier.align(Alignment.Center),
+                    imageVector = Icons.Filled.ArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+            }
+        //}
     }
 }
 
