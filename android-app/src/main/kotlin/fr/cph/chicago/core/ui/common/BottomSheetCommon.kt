@@ -593,9 +593,7 @@ private fun ShowTrainDetailsTrainMapBottomSheet(
         )
         FilledTonalButton(
             onClick = {
-                scope.launch {
-                    viewModel.resetDetails()
-                }
+                viewModel.resetDetails(scope = scope)
             }
         ) {
             Icon(

@@ -359,7 +359,7 @@ fun TrainsOnMapLayer(
                     false
                 },
                 onInfoWindowClose = {
-                    viewModel.resetDetails()
+                    viewModel.resetDetails(scope = scope)
                 }
             )
         }
@@ -433,28 +433,6 @@ class MapTrainViewModel constructor(
 
     fun showError(showError: Boolean) {
         uiState = uiState.copy(showError = showError)
-    }
-
-    fun loadIcons() {
-        Single.fromCallable {
-            val trainBitmap = BitmapFactory.decodeResource(App.instance.resources, R.drawable.train)
-            val bitmapDescSmall = createBitMapDescriptor(trainBitmap, 9)
-            val bitmapDescMedium = createBitMapDescriptor(trainBitmap, 5)
-            val bitmapDescLarge = createBitMapDescriptor(trainBitmap, 3)
-            val stationIcon = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(App.instance.resources, colorDrawable()))
-            listOf(bitmapDescSmall, bitmapDescMedium, bitmapDescLarge, stationIcon)
-        }
-            .observeOn(Schedulers.computation())
-            .subscribeOn(Schedulers.computation())
-            .subscribe { result ->
-                uiState = uiState.copy(
-                    trainIcon = result[0],
-                    trainIconSmall = result[0],
-                    trainIconMedium = result[1],
-                    trainIconLarge = result[2],
-                    stationIcon = result[3],
-                )
-            }
     }
 
     // FIXME: It looks like a BS algo, that should be more simple than that
@@ -575,15 +553,23 @@ class MapTrainViewModel constructor(
             )
     }
 
-    fun resetDetails() {
-        uiState = uiState.copy(
-            train = Train(),
-            trainEtas = listOf(),
-            bottomSheetContentType = BottomSheetContentType.CHANGE_LINE,
-        )
+    fun resetDetails(scope: CoroutineScope) {
+        scope.launch {
+            if (uiState.scaffoldState.bottomSheetState.isExpanded) {
+                uiState.scaffoldState.bottomSheetState.collapse()
+                while (uiState.scaffoldState.bottomSheetState.isExpanded) {
+                    // wait for animation to finish
+                }
+            }
+            uiState = uiState.copy(
+                train = Train(),
+                trainEtas = listOf(),
+                bottomSheetContentType = BottomSheetContentType.CHANGE_LINE,
+            )
+        }
     }
 
-    fun loadPatterns() {
+    private fun loadPatterns() {
         trainService.readPatterns(uiState.line)
             .observeOn(Schedulers.computation())
             .subscribeOn(Schedulers.io())
@@ -595,23 +581,6 @@ class MapTrainViewModel constructor(
                 },
                 { throwable ->
                     Timber.e(throwable, "Could not load train patterns")
-                    showError(true)
-                    uiState = uiState.copy(isLoading = false)
-                }
-            )
-    }
-
-    fun loadStations() {
-        Single.fromCallable { trainService.getStationsForLine(uiState.line) }
-            .observeOn(Schedulers.computation())
-            .subscribe(
-                { trainStations ->
-                    uiState = uiState.copy(
-                        stations = trainStations,
-                    )
-                },
-                { throwable ->
-                    Timber.e(throwable, "Could not load stations")
                     showError(true)
                     uiState = uiState.copy(isLoading = false)
                 }
