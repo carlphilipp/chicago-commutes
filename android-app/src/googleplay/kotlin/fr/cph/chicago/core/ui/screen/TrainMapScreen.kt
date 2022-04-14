@@ -511,10 +511,10 @@ class MapTrainViewModel constructor(
     }
 
     fun loadTrainEtas(scope: CoroutineScope, train: Train) {
+        Timber.e("Load train ETAs for train ${train.runNumber}")
         uiState = uiState.copy(isLoading = true)
         trainService.trainEtas(train.runNumber.toString())
             .map { trainEtas ->
-                Timber.e("Train eta result1 ${trainEtas.size}")
                 trainEtas.map { trainEta ->
                     val timeLeftDueDelay = trainEta.timeLeftDueDelay
                     val value = if (timeLeftDueDelay.contains("min")) {
@@ -531,16 +531,20 @@ class MapTrainViewModel constructor(
             .observeOn(Schedulers.computation())
             .subscribe(
                 { trainEtas ->
-                    Timber.e("Train eta result2 ${trainEtas.size}")
                     uiState = uiState.copy(
                         train = train,
                         trainEtas = trainEtas,
                         isLoading = false,
                         bottomSheetContentType = BottomSheetContentType.TRAIN_DETAILS,
                     )
-                    Timber.e("State: ${uiState.trainEtas.size}")
+                    Timber.e("Before launch ${Thread.currentThread().name}")
                     scope.launch {
+                        Timber.e("Check if collapsed to expand it ${Thread.currentThread().name}")
+                        while(uiState.scaffoldState.bottomSheetState.isAnimationRunning) {
+                            Timber.e("Animation running")
+                        }
                         if (uiState.scaffoldState.bottomSheetState.isCollapsed) {
+                            Timber.e("Load eta EXPAND")
                             uiState.scaffoldState.bottomSheetState.expand()
                         }
                     }
@@ -556,6 +560,7 @@ class MapTrainViewModel constructor(
     fun resetDetails(scope: CoroutineScope) {
         scope.launch {
             if (uiState.scaffoldState.bottomSheetState.isExpanded) {
+                Timber.e("Reset details COLLAPSE")
                 uiState.scaffoldState.bottomSheetState.collapse()
                 while (uiState.scaffoldState.bottomSheetState.isExpanded) {
                     // wait for animation to finish
