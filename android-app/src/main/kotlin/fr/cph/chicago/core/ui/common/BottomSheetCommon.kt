@@ -652,57 +652,24 @@ private fun ShowTrainDetailsTrainMapBottomSheet(
                 tint = MaterialTheme.colorScheme.primary,
             )
         }
-
-/*        AnimatedVisibility(
-            visible = arrivals.size > 1 && (pagerState.currentPageOffset > 0 || pagerState.currentPage > 1),
-            enter = fadeIn(animationSpec = tween(durationMillis = 500)),
-            exit = fadeOut(animationSpec = tween(durationMillis = 500)),
-        ) {
-            Box(
-                modifier = Modifier
-                    .height(87.dp)
-                    .width(14.dp)
-                    .align(Alignment.CenterStart)
-                    .clip(RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
-                    .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.9f))
-            ) {
-                Icon(
-                    modifier = Modifier.align(Alignment.Center),
-                    imageVector = Icons.Filled.ArrowLeft,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-            }
-        }*/
-
-
-/*        Box(
+        AnimatedVisibility(
+            visible = arrivals.size > 3 && (arrivals.size - pagerState.currentPage) > 3,
             modifier = Modifier
                 .height(87.dp)
                 .width(14.dp)
                 .align(Alignment.CenterEnd)
                 .clip(RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
-                .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.9f))
-        ) {*/
-            AnimatedVisibility(
-                visible = arrivals.size > 3 && (arrivals.size - pagerState.currentPage) > 3,
-                modifier = Modifier
-                    .height(87.dp)
-                    .width(14.dp)
-                    .align(Alignment.CenterEnd)
-                    .clip(RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
-                    .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.9f)),
-                enter = fadeIn(animationSpec = tween(durationMillis = 500)),
-                exit = fadeOut(animationSpec = tween(durationMillis = 500)),
-            ) {
-                Icon(
-                    modifier = Modifier.align(Alignment.Center),
-                    imageVector = Icons.Filled.ArrowRight,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-            }
-        //}
+                .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.9f)),
+            enter = fadeIn(animationSpec = tween(durationMillis = 500)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 500)),
+        ) {
+            Icon(
+                modifier = Modifier.align(Alignment.Center),
+                imageVector = Icons.Filled.ArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        }
     }
 }
 
