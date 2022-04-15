@@ -65,7 +65,7 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.FontSize
 import fr.cph.chicago.core.theme.availableFonts
-import fr.cph.chicago.core.ui.screen.BottomSheetContentAndState
+import fr.cph.chicago.core.ui.screen.BottomSheetContent
 import fr.cph.chicago.core.ui.screen.MapTrainViewModel
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
@@ -496,8 +496,7 @@ fun TrainMapBottomSheet(
         content = {
             Column(modifier = modifier.fillMaxWidth()) {
                 when (viewModel.uiState.bottomSheetContentAndState) {
-
-                    BottomSheetContentAndState.CHANGE_LINE_EXPANDED, BottomSheetContentAndState.CHANGE_LINE_COLLAPSED -> ChangeLineTrainMapBottomSheet(viewModel = viewModel)
+                    BottomSheetContent.COLLAPSE -> ChangeLineTrainMapBottomSheet(viewModel = viewModel)
                     else -> ShowTrainDetailsTrainMapBottomSheet(viewModel = viewModel)
                 }
             }
@@ -594,7 +593,10 @@ private fun ShowTrainDetailsTrainMapBottomSheet(
         )
         FilledTonalButton(
             onClick = {
-                viewModel.resetDetails()
+                viewModel.collapseBottomSheet(
+                    scope = scope,
+                    runAfter = { viewModel.resetDetails() }
+                )
             }
         ) {
             Icon(

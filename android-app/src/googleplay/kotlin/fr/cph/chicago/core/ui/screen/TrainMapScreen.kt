@@ -45,6 +45,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.savedstate.SavedStateRegistryOwner
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -87,11 +88,11 @@ import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 /**
  *      1. Show loading screen
@@ -133,7 +134,6 @@ fun TrainMapScreen(
     }
 
     if (isMapLoaded) {
-        Timber.e("Map loaded")
         LaunchedEffect(key1 = isMapLoaded, block = {
             viewModel.switchTrainLine(
                 scope = scope,
@@ -141,23 +141,6 @@ fun TrainMapScreen(
             )
         })
     }
-
-    LaunchedEffect(key1 = viewModel.uiState.bottomSheetContentAndState, block = {
-        scope.launch {
-            when (viewModel.uiState.bottomSheetContentAndState) {
-                BottomSheetContentAndState.CHANGE_LINE_EXPANDED, BottomSheetContentAndState.TRAIN_DETAILS_EXPANDED -> {
-                    if (viewModel.uiState.scaffoldState.bottomSheetState.isCollapsed) {
-                        viewModel.uiState.scaffoldState.bottomSheetState.expand()
-                    }
-                }
-                BottomSheetContentAndState.CHANGE_LINE_COLLAPSED, BottomSheetContentAndState.TRAIN_DETAILS_COLLAPSED -> {
-                    if (viewModel.uiState.scaffoldState.bottomSheetState.isExpanded) {
-                        viewModel.uiState.scaffoldState.bottomSheetState.collapse()
-                    }
-                }
-            }
-        }
-    })
 
     BottomSheetScaffoldMaterial3(
         scaffoldState = viewModel.uiState.scaffoldState,
@@ -370,13 +353,16 @@ fun TrainsOnMapLayer(
                 onClick = {
                     job?.cancel()
                     scope.launch {
-                        viewModel.loadTrainEtas(scope, train)
+                        viewModel.loadTrainEtas(scope = scope, train = train)
                     }
                     false
                 },
                 onInfoWindowClose = {
                     job = scope.launch {
-                        viewModel.resetDetails()
+                        viewModel.collapseBottomSheet(
+                            scope = scope,
+                            runAfter = { viewModel.resetDetails() }
+                        )
                     }
                 }
             )
@@ -425,7 +411,7 @@ data class GoogleMapTrainUiState constructor(
     val trainIconLarge: BitmapDescriptor? = null,
     val train: Train = Train(),
     val trainEtas: List<Pair<String, String>> = listOf(),
-    val bottomSheetContentAndState: BottomSheetContentAndState = BottomSheetContentAndState.CHANGE_LINE_COLLAPSED,
+    val bottomSheetContentAndState: BottomSheetContent = BottomSheetContent.COLLAPSE,
 
     val stationIcon: BitmapDescriptor? = null,
     val showStationIcon: Boolean = false,
@@ -529,7 +515,6 @@ class MapTrainViewModel constructor(
     }
 
     fun loadTrainEtas(scope: CoroutineScope, train: Train) {
-        Timber.e("Load train ETAs for train ${train.runNumber}")
         uiState = uiState.copy(isLoading = true)
         trainService.trainEtas(train.runNumber.toString())
             .map { trainEtas ->
@@ -549,23 +534,17 @@ class MapTrainViewModel constructor(
             .observeOn(Schedulers.computation())
             .subscribe(
                 { trainEtas ->
-                    uiState = uiState.copy(
-                        train = train,
-                        trainEtas = trainEtas,
-                        isLoading = false,
-                        bottomSheetContentAndState = BottomSheetContentAndState.TRAIN_DETAILS_EXPANDED,
+                    expandBottomSheet(
+                        scope = scope,
+                        runBefore = {
+                            uiState = uiState.copy(
+                                train = train,
+                                trainEtas = trainEtas,
+                                isLoading = false,
+                                bottomSheetContentAndState = BottomSheetContent.EXPAND,
+                            )
+                        }
                     )
-                    Timber.e("Before launch ${Thread.currentThread().name}")
-                    scope.launch {
-                        //Timber.e("Check if collapsed to expand it ${Thread.currentThread().name}")
-                        //while(uiState.scaffoldState.bottomSheetState.isAnimationRunning) {
-                        //    Timber.e("Animation running")
-                        //}
-                        //if (uiState.scaffoldState.bottomSheetState.isCollapsed) {
-                        Timber.e("Load eta EXPAND")
-                        //uiState.scaffoldState.bottomSheetState.expand()
-                        //}
-                    }
                 },
                 { throwable ->
                     Timber.e(throwable, "Could not load train etas")
@@ -575,21 +554,12 @@ class MapTrainViewModel constructor(
             )
     }
 
-    fun resetDetails(/*scope: CoroutineScope*/) {
-       // scope.launch {
-            //if (uiState.scaffoldState.bottomSheetState.isExpanded) {
-            Timber.e("Reset details COLLAPSE")
-            //uiState.scaffoldState.bottomSheetState.collapse()
-            //while (uiState.scaffoldState.bottomSheetState.isExpanded) {
-            // wait for animation to finish
-            //}
-            //}
-            uiState = uiState.copy(
-                train = Train(),
-                trainEtas = listOf(),
-                bottomSheetContentAndState = BottomSheetContentAndState.CHANGE_LINE_COLLAPSED,
-            )
-        //}
+    fun resetDetails() {
+        uiState = uiState.copy(
+            train = Train(),
+            trainEtas = listOf(),
+            bottomSheetContentAndState = BottomSheetContent.COLLAPSE,
+        )
     }
 
     private fun loadPatterns() {
@@ -611,25 +581,25 @@ class MapTrainViewModel constructor(
     }
 
     fun switchTrainLine(scope: CoroutineScope, trainLine: TrainLine) {
-        uiState = uiState.copy(
-            line = trainLine,
-            shouldMoveCamera = true,
-            polyLine = listOf(),
-            trains = listOf(),
-            stations = listOf(),
-            isLoading = true
-        )
-        scope.launch {
-            uiState.scaffoldState.bottomSheetState.collapse()
-            while (uiState.scaffoldState.bottomSheetState.isExpanded) {
-                // wait for the animation to finish
+        collapseBottomSheet(
+            scope = scope,
+            runBefore = {
+                uiState = uiState.copy(
+                    line = trainLine,
+                    shouldMoveCamera = true,
+                    polyLine = listOf(),
+                    trains = listOf(),
+                    stations = listOf(),
+                    isLoading = true
+                )
+            },
+            runAfter = {
+                loadData()
             }
-            loadData()
-        }
+        )
     }
 
     private fun loadData() {
-        Timber.e("Load data")
         val googleMapIcons = Single.fromCallable {
             val trainBitmap = BitmapFactory.decodeResource(App.instance.resources, R.drawable.train)
             val bitmapDescSmall = createBitMapDescriptor(trainBitmap, 9)
@@ -652,8 +622,6 @@ class MapTrainViewModel constructor(
         googleMapIcons
             .flatMap { bitMapDescriptors ->
                 Single.zip(patterns, stations, trains) { patternsResult, stationsResult, trainsResult ->
-                    Timber.e("Load data done, updating ui state ${Thread.currentThread().name}")
-                    Timber.e("Data sizes: ${stationsResult.size} ${patternsResult.size} ${trainsResult.size} ${bitMapDescriptors.size}")
                     uiState = uiState.copy(
                         isLoading = false,
                         stations = stationsResult,
@@ -665,7 +633,6 @@ class MapTrainViewModel constructor(
                         trainIconLarge = bitMapDescriptors[2],
                         stationIcon = bitMapDescriptors[3],
                     )
-                    Timber.e("Data sizes in state after update: ${uiState.stations.size} ${uiState.polyLine.size} ${uiState.polyLine.size}")
                 }
             }
             .subscribe(
@@ -695,6 +662,40 @@ class MapTrainViewModel constructor(
         }
     }
 
+    fun expandBottomSheet(
+        scope: CoroutineScope,
+        runBefore: () -> Unit = {},
+        runAfter: () -> Unit = {},
+    ) {
+        viewModelScope.launch {
+            runBefore()
+            val job = scope.launch {
+                if (uiState.scaffoldState.bottomSheetState.isCollapsed) {
+                    uiState.scaffoldState.bottomSheetState.expand()
+                }
+            }
+            job.join()
+            runAfter()
+        }
+    }
+
+    fun collapseBottomSheet(
+        scope: CoroutineScope,
+        runBefore: () -> Unit = {},
+        runAfter: () -> Unit = {},
+    ) {
+        viewModelScope.launch {
+            runBefore()
+            val job = scope.launch {
+                if (uiState.scaffoldState.bottomSheetState.isExpanded) {
+                    uiState.scaffoldState.bottomSheetState.collapse()
+                }
+            }
+            job.join()
+            runAfter()
+        }
+    }
+
     fun onStop() {
         uiState = GoogleMapTrainUiState()
     }
@@ -717,6 +718,6 @@ class MapTrainViewModel constructor(
     }
 }
 
-enum class BottomSheetContentAndState {
-    CHANGE_LINE_EXPANDED, CHANGE_LINE_COLLAPSED, TRAIN_DETAILS_EXPANDED, TRAIN_DETAILS_COLLAPSED
+enum class BottomSheetContent {
+    COLLAPSE, EXPAND,
 }
