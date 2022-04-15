@@ -48,7 +48,7 @@ class App : Application() {
         lateinit var instance: App
 
         val exceptionHandler = CoroutineExceptionHandler { _, exception ->
-            Timber.e(exception, "Unexpected exception caught in corouting exception handler")
+            Timber.e(exception, "Unexpected exception caught in coroutine exception handler")
             startErrorActivity()
         }
 

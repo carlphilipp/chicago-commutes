@@ -112,7 +112,6 @@ sealed class Screen(
                     defaultArgs = backStackEntry.arguments
                 )
             )
-            Timber.e("Train station id: $stationId")
             TrainStationScreen(
                 viewModel = viewModel,
                 navigationViewModel = navigationViewModel

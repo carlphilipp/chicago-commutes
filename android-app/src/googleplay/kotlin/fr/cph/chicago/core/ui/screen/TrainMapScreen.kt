@@ -308,7 +308,7 @@ fun TrainStationsMarkers(
 ) {
     viewModel.showHideStations(cameraPositionState.position.zoom)
 
-    if (viewModel.uiState.stationIcon != null) {
+    viewModel.uiState.stationIcon?.run {
         viewModel.uiState.stations.forEach { trainStation ->
             val markerState = rememberMarkerState()
             markerState.position = trainStation.stops[0].position.toLatLng()

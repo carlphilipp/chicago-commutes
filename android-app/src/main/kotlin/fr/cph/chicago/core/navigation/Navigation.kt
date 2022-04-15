@@ -26,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -49,11 +50,11 @@ import fr.cph.chicago.core.ui.screen.TopBarType
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.core.viewmodel.settingsViewModel
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.net.URLEncoder
 import java.util.Stack
 import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.launch
-import timber.log.Timber
 
 val LocalNavController = compositionLocalOf<NavHostControllerWrapper> {
     error("No NavHostControllerWrapper provided")
@@ -228,7 +229,7 @@ class NavigationViewModel : ViewModel() {
 /**
  * Handle manually navigation as the default behavior did not seem to work the way I was expecting it to work
  */
-class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
+class NavHostControllerWrapper(private val viewModel: NavigationViewModel) : ViewModel() {
 
     private val previous: Stack<Pair<Screen, Map<String, String>>> = Stack()
 
@@ -241,55 +242,59 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
     }
 
     fun navigate(screen: Screen, arguments: Map<String, String> = mapOf(), closeKeyboard: () -> Unit = {}) {
-        Timber.d("Navigate to ${screen.title} with args $arguments")
-        closeKeyboard()
-        when {
-            previous.isEmpty() -> navigateTo(screen = screen, arguments = arguments)
-            previous.isNotEmpty() -> {
-                val previousScreen = previous.peek().first
-                when {
-                    previousScreen == Screen.Favorites && screen == Screen.Favorites -> viewModel.shouldBackSpaceAgainToExit()
-                    previousScreen != screen -> navigateTo(screen = screen, arguments = arguments)
-                    else -> Timber.e("Current screen is the same, do not do anything")
+        viewModelScope.launch {
+            Timber.d("Navigate to ${screen.title} with args $arguments")
+            closeKeyboard()
+            when {
+                previous.isEmpty() -> navigateTo(screen = screen, arguments = arguments)
+                previous.isNotEmpty() -> {
+                    val previousScreen = previous.peek().first
+                    when {
+                        previousScreen == Screen.Favorites && screen == Screen.Favorites -> viewModel.shouldBackSpaceAgainToExit()
+                        previousScreen != screen -> navigateTo(screen = screen, arguments = arguments)
+                        else -> Timber.e("Current screen is the same, do not do anything")
+                    }
                 }
             }
+            printStackState()
         }
-        printStackState()
     }
 
     fun navigateBack() {
-        Timber.d("Navigate back")
-        when {
-            previous.isEmpty() -> Timber.d("Empty, no where to go, this should not happen")
-            previous.isNotEmpty() -> {
-                val currentScreenData = previous.pop()
-                when (currentScreenData.first) {
-                    Screen.Favorites -> {
-                        previous.push(currentScreenData)
-                        if (viewModel.uiState.shouldExit) {
-                            viewModel.exit()
-                        } else {
-                            viewModel.shouldBackSpaceAgainToExit()
+        viewModelScope.launch {
+            Timber.d("Navigate back")
+            when {
+                previous.isEmpty() -> Timber.d("Empty, no where to go, this should not happen")
+                previous.isNotEmpty() -> {
+                    val currentScreenData = previous.pop()
+                    when (currentScreenData.first) {
+                        Screen.Favorites -> {
+                            previous.push(currentScreenData)
+                            if (viewModel.uiState.shouldExit) {
+                                viewModel.exit()
+                            } else {
+                                viewModel.shouldBackSpaceAgainToExit()
+                            }
                         }
-                    }
-                    else -> {
-                        when {
-                            previous.isEmpty() -> Timber.d("Empty, no where to go, this should not happen")
-                            previous.isNotEmpty() -> {
-                                val previousData = previous.pop()
-                                val newArgs = mutableMapOf<String, String>()
-                                newArgs.putAll(previousData.second)
-                                if (currentScreenData.second.containsKey("search")) {
-                                    newArgs["search"] = currentScreenData.second["search"]!!
+                        else -> {
+                            when {
+                                previous.isEmpty() -> Timber.d("Empty, no where to go, this should not happen")
+                                previous.isNotEmpty() -> {
+                                    val previousData = previous.pop()
+                                    val newArgs = mutableMapOf<String, String>()
+                                    newArgs.putAll(previousData.second)
+                                    if (currentScreenData.second.containsKey("search")) {
+                                        newArgs["search"] = currentScreenData.second["search"]!!
+                                    }
+                                    navigate(screen = previousData.first, arguments = newArgs)
                                 }
-                                navigate(screen = previousData.first, arguments = newArgs)
                             }
                         }
                     }
                 }
             }
+            printStackState()
         }
-        printStackState()
     }
 
     private fun navigateTo(screen: Screen, arguments: Map<String, String>) {
