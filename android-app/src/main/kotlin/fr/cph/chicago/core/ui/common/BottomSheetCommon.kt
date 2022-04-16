@@ -567,7 +567,7 @@ private fun ChangeLineTrainMapBottomSheet(
             TrainLineButton(
                 trainLine = trainLine,
                 onClick = {
-                    viewModel.switchTrainLine(scope, trainLine)
+                    viewModel.loadTrainLine(scope, trainLine)
                 }
             )
         }

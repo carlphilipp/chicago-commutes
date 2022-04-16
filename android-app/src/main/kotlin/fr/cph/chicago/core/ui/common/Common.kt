@@ -732,7 +732,6 @@ fun SearchTextField(
     )
 }
 
-
 @Composable
 fun TrainLineButton(
     modifier: Modifier = Modifier,
@@ -793,4 +792,9 @@ private fun TrainLineStyle(
             modifier = Modifier.padding(horizontal = 15.dp, vertical = 7.dp),
         )
     }
+}
+
+@Composable
+fun rememberIsDarkTheme() {
+
 }

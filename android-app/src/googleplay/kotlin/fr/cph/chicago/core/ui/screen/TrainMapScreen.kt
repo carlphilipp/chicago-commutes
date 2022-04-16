@@ -135,7 +135,7 @@ fun TrainMapScreen(
 
     if (isMapLoaded) {
         LaunchedEffect(key1 = isMapLoaded, block = {
-            viewModel.switchTrainLine(
+            viewModel.loadTrainLine(
                 scope = scope,
                 trainLine = viewModel.uiState.line
             )
@@ -159,11 +159,11 @@ fun TrainMapScreen(
                 }
             )
         },
+        snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
         content = {
             Column {
                 Scaffold(
                     modifier = modifier,
-                    snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
                     content = {
                         GoogleMapTrainMapView(
                             viewModel = viewModel,
@@ -439,6 +439,10 @@ class MapTrainViewModel constructor(
         uiState = uiState.copy(showError = showError)
     }
 
+    fun onStop() {
+        uiState = GoogleMapTrainUiState()
+    }
+
     // FIXME: It looks like a BS algo, that should be more simple than that
     fun updateIconOnZoomChange(newZoom: Float) {
         if (newZoom != uiState.zoom) {
@@ -484,34 +488,50 @@ class MapTrainViewModel constructor(
     }
 
     fun reloadData() {
-        uiState = uiState.copy(isLoading = true)
-        loadTrains()
-        if (uiState.polyLine.isEmpty()) {
-            loadPatterns()
-        }
-    }
+        viewModelScope.launch {
+            uiState = uiState.copy(isLoading = true)
 
-    fun loadTrains() {
-        trainService.trainLocations(uiState.line.toTextString())
-            .observeOn(Schedulers.computation())
-            .subscribeOn(Schedulers.computation())
-            .subscribe(
-                { trains: List<Train> ->
-                    uiState = uiState.copy(
-                        trains = trains,
-                        isLoading = false,
-                    )
-                    if (uiState.shouldMoveCamera) {
-                        centerMapOnLine()
-                        uiState = uiState.copy(shouldMoveCamera = false)
+            if (uiState.trainIcon == null) {
+                googleMapIcons().subscribe(
+                    { bitMapDescriptors ->
+                        uiState = uiState.copy(
+                            trainIcon = bitMapDescriptors[0],
+                            trainIconSmall = bitMapDescriptors[0],
+                            trainIconMedium = bitMapDescriptors[1],
+                            trainIconLarge = bitMapDescriptors[2],
+                            stationIcon = bitMapDescriptors[3],
+                        )
+                    },
+                    { throwable -> Timber.e(throwable, "Could not load bitMapDescriptors") }
+                )
+            }
+            if (uiState.stations.isEmpty()) {
+                stations().subscribe(
+                    { stations -> uiState = uiState.copy(stations = stations) },
+                    { throwable -> Timber.e(throwable, "Could not load stations") }
+                )
+            }
+            if (uiState.polyLine.isEmpty()) {
+                patterns().subscribe(
+                    { patterns -> uiState = uiState.copy(polyLine = patterns) },
+                    { throwable -> Timber.e(throwable, "Could not load patterns") }
+                )
+            }
+            trainService.trainLocations(uiState.line.toTextString())
+                .subscribe(
+                    { trains ->
+                        uiState = uiState.copy(
+                            isLoading = false,
+                            trains = trains,
+                        )
+                    },
+                    { throwable ->
+                        Timber.e(throwable, "Error while loading train locations")
+                        showError(true)
+                        uiState = uiState.copy(isLoading = false)
                     }
-                },
-                {
-                    Timber.e(it, "Could not load trains")
-                    showError(true)
-                    uiState = uiState.copy(isLoading = false)
-                }
-            )
+                )
+        }
     }
 
     fun loadTrainEtas(scope: CoroutineScope, train: Train) {
@@ -555,32 +575,16 @@ class MapTrainViewModel constructor(
     }
 
     fun resetDetails() {
-        uiState = uiState.copy(
-            train = Train(),
-            trainEtas = listOf(),
-            bottomSheetContentAndState = BottomSheetContent.COLLAPSE,
-        )
-    }
-
-    private fun loadPatterns() {
-        trainService.readPatterns(uiState.line)
-            .observeOn(Schedulers.computation())
-            .subscribeOn(Schedulers.io())
-            .subscribe(
-                { trainStationPattern ->
-                    uiState = uiState.copy(
-                        polyLine = trainStationPattern.map { it.position.toLatLng() }
-                    )
-                },
-                { throwable ->
-                    Timber.e(throwable, "Could not load train patterns")
-                    showError(true)
-                    uiState = uiState.copy(isLoading = false)
-                }
+        viewModelScope.launch {
+            uiState = uiState.copy(
+                train = Train(),
+                trainEtas = listOf(),
+                bottomSheetContentAndState = BottomSheetContent.COLLAPSE,
             )
+        }
     }
 
-    fun switchTrainLine(scope: CoroutineScope, trainLine: TrainLine) {
+    fun loadTrainLine(scope: CoroutineScope, trainLine: TrainLine) {
         collapseBottomSheet(
             scope = scope,
             runBefore = {
@@ -600,7 +604,57 @@ class MapTrainViewModel constructor(
     }
 
     private fun loadData() {
-        val googleMapIcons = Single.fromCallable {
+        viewModelScope.launch {
+            val googleMapIcons = googleMapIcons()
+            val patterns = patterns()
+            val stations = stations()
+
+            googleMapIcons
+                .flatMap { bitMapDescriptors ->
+                    Single.zip(patterns, stations) { patternsResult, stationsResult ->
+                        uiState = uiState.copy(
+                            isLoading = false,
+                            stations = stationsResult,
+                            polyLine = patternsResult,
+                            trainIcon = bitMapDescriptors[0],
+                            trainIconSmall = bitMapDescriptors[0],
+                            trainIconMedium = bitMapDescriptors[1],
+                            trainIconLarge = bitMapDescriptors[2],
+                            stationIcon = bitMapDescriptors[3],
+                        )
+                    }
+                }
+                .subscribe(
+                    {
+                        if (uiState.shouldMoveCamera) {
+                            centerMapOnLine()
+                            uiState = uiState.copy(shouldMoveCamera = false)
+                        }
+                    }, { throwable ->
+                        // Most likely should not happen, no network call
+                        Timber.e(throwable, "Something went wrong")
+                    }
+                )
+
+            trainService.trainLocations(uiState.line.toTextString())
+                .subscribe(
+                    { trains ->
+                        uiState = uiState.copy(
+                            isLoading = false,
+                            trains = trains,
+                        )
+                    },
+                    { throwable ->
+                        Timber.e(throwable, "Error while loading train locations")
+                        showError(true)
+                        uiState = uiState.copy(isLoading = false)
+                    }
+                )
+        }
+    }
+
+    private fun googleMapIcons(): Single<List<BitmapDescriptor>> {
+        return Single.fromCallable {
             val trainBitmap = BitmapFactory.decodeResource(App.instance.resources, R.drawable.train)
             val bitmapDescSmall = createBitMapDescriptor(trainBitmap, 9)
             val bitmapDescMedium = createBitMapDescriptor(trainBitmap, 5)
@@ -608,44 +662,18 @@ class MapTrainViewModel constructor(
             val stationIcon = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(App.instance.resources, colorDrawable()))
             listOf(bitmapDescSmall, bitmapDescMedium, bitmapDescLarge, stationIcon)
         }
+    }
 
-        val patterns = trainService.readPatterns(uiState.line)
+    private fun patterns(): Single<List<LatLng>> {
+        return trainService.readPatterns(uiState.line)
             .map { trainStationPattern -> trainStationPattern.map { it.position.toLatLng() } }
             .observeOn(Schedulers.computation())
             .subscribeOn(Schedulers.io())
+    }
 
-        val stations = Single.fromCallable { trainService.getStationsForLine(uiState.line) }
+    private fun stations(): Single<List<TrainStation>> {
+        return Single.fromCallable { trainService.getStationsForLine(uiState.line) }
             .observeOn(Schedulers.computation())
-
-        val trains = trainService.trainLocations(uiState.line.toTextString())
-
-        googleMapIcons
-            .flatMap { bitMapDescriptors ->
-                Single.zip(patterns, stations, trains) { patternsResult, stationsResult, trainsResult ->
-                    uiState = uiState.copy(
-                        isLoading = false,
-                        stations = stationsResult,
-                        polyLine = patternsResult,
-                        trains = trainsResult,
-                        trainIcon = bitMapDescriptors[0],
-                        trainIconSmall = bitMapDescriptors[0],
-                        trainIconMedium = bitMapDescriptors[1],
-                        trainIconLarge = bitMapDescriptors[2],
-                        stationIcon = bitMapDescriptors[3],
-                    )
-                }
-            }
-            .subscribe(
-                {
-                    Timber.e("Done with loading data")
-                    if (uiState.shouldMoveCamera) {
-                        centerMapOnLine()
-                        uiState = uiState.copy(shouldMoveCamera = false)
-                    }
-                }, {
-                    // TODO handle error
-                }
-            )
     }
 
     private fun colorDrawable(): Int {
@@ -694,10 +722,6 @@ class MapTrainViewModel constructor(
             job.join()
             runAfter()
         }
-    }
-
-    fun onStop() {
-        uiState = GoogleMapTrainUiState()
     }
 
     companion object {
