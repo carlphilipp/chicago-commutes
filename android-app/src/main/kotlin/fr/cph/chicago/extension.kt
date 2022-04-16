@@ -41,7 +41,7 @@ fun TrainLine.getZoom(): Float {
         TrainLine.GREEN -> 11.3f
         TrainLine.ORANGE -> 11.98f
         TrainLine.PINK -> 11.87f
-        TrainLine.PURPLE -> 11.7f
+        TrainLine.PURPLE -> 11.3f
         TrainLine.RED -> 10.76f
         TrainLine.YELLOW -> 12.52f
         else -> 11f
@@ -55,7 +55,7 @@ fun TrainLine.getDefaultPosition(): Position {
         TrainLine.GREEN -> Position(41.82709704, -87.709279)
         TrainLine.ORANGE -> Position(41.82979, -87.679172)
         TrainLine.PINK -> Position(41.849431, -87.69153501)
-        TrainLine.PURPLE -> Position(41.97, -87.65)
+        TrainLine.PURPLE -> Position(41.951541, -87.646874)
         TrainLine.RED -> Position(41.838029, -87.65660025)
         TrainLine.YELLOW -> Position(42.0190246, -87.715918309)
         else -> Position(41.866, -87.651)
