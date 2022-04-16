@@ -2,6 +2,7 @@ package fr.cph.chicago.core.ui.screen
 
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -357,6 +358,7 @@ fun StateDebugView(
     modifier: Modifier = Modifier,
     viewModel: MapTrainViewModel,
 ) {
+    Timber.e("StateDebugView compose")
     Column(
         modifier = modifier
             .padding(top = 10.dp)
@@ -369,6 +371,16 @@ fun StateDebugView(
         Text(text = "Trains size: ${viewModel.uiState.trains.size}")
         Text(text = "Stations size: ${viewModel.uiState.stations.size}")
         Text(text = "Trains Eta size: ${viewModel.uiState.trainEtas.size}")
+
+        viewModel.uiState.trainIcon?.run {
+            var icon by remember { mutableStateOf("small") }
+            icon = when(viewModel.uiState.trainIcon) {
+                viewModel.uiState.trainIconSmall -> "small"
+                viewModel.uiState.trainIconMedium -> "medium"
+                else -> "large"
+            }
+            Text(text = "Icon size: $icon")
+        }
     }
 }
 
