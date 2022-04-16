@@ -266,8 +266,10 @@ sealed class Screen(
         topBar = ScreenTopBar.MediumTopBarDrawer,
         isGestureEnabled = false,
         component = { _, navigationViewModel ->
+            val viewModel = NearbyViewModel()
             NearbyScreen(
                 mainViewModel = mainViewModel,
+                viewModel = viewModel,
                 locationViewModel = locationViewModel,
                 navigationViewModel = navigationViewModel,
                 settingsViewModel = settingsViewModel,

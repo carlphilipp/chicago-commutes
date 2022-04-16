@@ -11,9 +11,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DirectionsBike
+import androidx.compose.material.icons.filled.DirectionsBus
+import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +34,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -41,7 +47,11 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import fr.cph.chicago.R
+import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.model.BusStop
+import fr.cph.chicago.core.model.LastUpdate
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.permissions.NearbyLocationPermissionView
@@ -54,17 +64,28 @@ import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.runWithDelay
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.core.viewmodel.MainViewModel
+import fr.cph.chicago.redux.store
+import fr.cph.chicago.service.BikeService
+import fr.cph.chicago.service.BusService
+import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.CameraDebugView
 import fr.cph.chicago.util.GoogleMapUtil.getBitmapDescriptor
+import fr.cph.chicago.util.MapUtil
+import fr.cph.chicago.util.MapUtil.chicagoPosition
+import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.toLatLng
-import java.util.concurrent.TimeUnit
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
+import java.util.Calendar
+import java.util.concurrent.TimeUnit
 
 // FIXME: handle zoom right after permissions has been approved or denied
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NearbyScreen(
     modifier: Modifier = Modifier,
+    viewModel: NearbyViewModel,
     mainViewModel: MainViewModel,
     locationViewModel: LocationViewModel,
     navigationViewModel: NavigationViewModel,
@@ -86,6 +107,12 @@ fun NearbyScreen(
     NearbyLocationPermissionView(
         mainViewModel = mainViewModel,
         locationViewModel = locationViewModel,
+        callBackLoadLocation = { position ->
+            viewModel.setNearbyIsMyLocationEnabled(true)
+            viewModel.setCurrentUserLocation(position)
+            viewModel.loadNearbyStations(position)
+        },
+        callBackDefaultLocation = { viewModel.setDefaultUserLocation() }
     )
 
     Column {
@@ -97,30 +124,30 @@ fun NearbyScreen(
 
         Scaffold(
             modifier = modifier.fillMaxWidth(),
-            snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
+            snackbarHost = { SnackbarHostInsets(state = viewModel.uiState.snackbarHostState) },
             content = {
                 NearbyGoogleMapView(
                     onMapLoaded = { isMapLoaded = true },
-                    mainViewModel = mainViewModel,
+                    viewModel = viewModel,
                     settingsViewModel = settingsViewModel,
                 )
 
                 LoadingCircle(show = !isMapLoaded)
 
-                if (mainViewModel.uiState.nearbyShowLocationError) {
+                if (viewModel.uiState.nearbyShowLocationError) {
                     ShowLocationNotFoundSnackBar(
                         scope = scope,
-                        snackbarHostState = mainViewModel.uiState.snackbarHostState,
-                        showErrorMessage = mainViewModel.uiState.nearbyShowLocationError,
-                        onComplete = { mainViewModel.setShowLocationError(false) }
+                        snackbarHostState = viewModel.uiState.snackbarHostState,
+                        showErrorMessage = viewModel.uiState.nearbyShowLocationError,
+                        onComplete = { viewModel.setShowLocationError(false) }
                     )
                 }
-                if (mainViewModel.uiState.nearbyDetailsError) {
+                if (viewModel.uiState.nearbyDetailsError) {
                     ShowErrorMessageSnackBar(
                         scope = scope,
-                        snackbarHostState = mainViewModel.uiState.snackbarHostState,
-                        showError = mainViewModel.uiState.nearbyDetailsError,
-                        onComplete = { mainViewModel.setNearbyDetailsError(false) }
+                        snackbarHostState = viewModel.uiState.snackbarHostState,
+                        showError = viewModel.uiState.nearbyDetailsError,
+                        onComplete = { viewModel.setNearbyDetailsError(false) }
                     )
                 }
             }
@@ -132,10 +159,10 @@ fun NearbyScreen(
 fun NearbyGoogleMapView(
     modifier: Modifier = Modifier,
     onMapLoaded: () -> Unit,
-    mainViewModel: MainViewModel,
+    viewModel: NearbyViewModel,
     settingsViewModel: SettingsViewModel,
 ) {
-    val uiState = mainViewModel.uiState
+    val uiState = viewModel.uiState
     val context = LocalContext.current
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(uiState.nearbyMapCenterLocation.toLatLng(), uiState.nearbyZoomIn)
@@ -154,7 +181,7 @@ fun NearbyGoogleMapView(
             cameraPositionState.move(cameraUpdate)
         },
         onMapClick = {
-            mainViewModel.setShowNearbyDetails(false)
+            viewModel.setShowNearbyDetails(false)
         }
     ) {
         val bitmapDescriptorTrain = getBitmapDescriptor(context, R.drawable.train_station_icon)
@@ -169,7 +196,7 @@ fun NearbyGoogleMapView(
                 title = trainStation.name,
                 icon = bitmapDescriptorTrain,
                 onClick = {
-                    mainViewModel.loadNearbyTrainDetails(trainStation = trainStation)
+                    viewModel.loadNearbyTrainDetails(trainStation = trainStation)
                     false
                 }
             )
@@ -183,7 +210,7 @@ fun NearbyGoogleMapView(
                 title = busStop.name,
                 icon = bitmapDescriptorBus,
                 onClick = {
-                    mainViewModel.loadNearbyBusDetails(busStop = busStop)
+                    viewModel.loadNearbyBusDetails(busStop = busStop)
                     false
                 }
             )
@@ -197,7 +224,7 @@ fun NearbyGoogleMapView(
                 title = bikeStation.name,
                 icon = bitmapDescriptorBike,
                 onClick = {
-                    mainViewModel.loadNearbyBikeDetails(currentBikeStation = bikeStation)
+                    viewModel.loadNearbyBikeDetails(currentBikeStation = bikeStation)
                     false
                 }
             )
@@ -210,28 +237,28 @@ fun NearbyGoogleMapView(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        SearchThisAreaButton(mainViewModel = mainViewModel, cameraPositionState = cameraPositionState)
+        SearchThisAreaButton(viewModel = viewModel, cameraPositionState = cameraPositionState)
         if (settingsViewModel.uiState.showMapDebug) {
             CameraDebugView(cameraPositionState = cameraPositionState)
         }
     }
 
     MapStationDetailsView(
-        showView = mainViewModel.uiState.nearbyDetailsShow,
-        title = mainViewModel.uiState.nearbyDetailsTitle,
-        image = mainViewModel.uiState.nearbyDetailsIcon,
-        arrivals = mainViewModel.uiState.nearbyDetailsArrivals,
+        showView = viewModel.uiState.nearbyDetailsShow,
+        title = viewModel.uiState.nearbyDetailsTitle,
+        image = viewModel.uiState.nearbyDetailsIcon,
+        arrivals = viewModel.uiState.nearbyDetailsArrivals,
     )
 }
 
 @Composable
-private fun SearchThisAreaButton(mainViewModel: MainViewModel, cameraPositionState: CameraPositionState) {
+private fun SearchThisAreaButton(viewModel: NearbyViewModel, cameraPositionState: CameraPositionState) {
     AnimatedVisibility(
         visible = true,
         enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
     ) {
         ElevatedButton(onClick = {
-            mainViewModel.setMapCenterLocationAndLoadNearby(
+            viewModel.setMapCenterLocationAndLoadNearby(
                 position = Position(latitude = cameraPositionState.position.target.latitude, longitude = cameraPositionState.position.target.longitude),
                 zoom = cameraPositionState.position.zoom
             )
@@ -268,5 +295,145 @@ fun MapStationDetailsView(showView: Boolean, title: String, image: ImageVector, 
                 }
             }
         }
+    }
+}
+
+data class NearbyScreenUiState constructor(
+    val nearbyMapCenterLocation: Position = chicagoPosition,
+    val nearbyTrainStations: List<TrainStation> = listOf(),
+    val nearbyBusStops: List<BusStop> = listOf(),
+    val nearbyBikeStations: List<BikeStation> = listOf(),
+    val nearbyZoomIn: Float = 8f,
+    val nearbyIsMyLocationEnabled: Boolean = false,
+    val nearbyShowLocationError: Boolean = false,
+    val nearbyDetailsShow: Boolean = false,
+    val nearbyDetailsTitle: String = "",
+    val nearbyDetailsIcon: ImageVector = Icons.Filled.Train,
+    val nearbyDetailsArrivals: NearbyResult = NearbyResult(),
+    val nearbyDetailsError: Boolean = false,
+
+    val snackbarHostState: SnackbarHostState = SnackbarHostState(),
+)
+
+class NearbyViewModel(
+    private val trainService: TrainService = TrainService,
+    private val busService: BusService = BusService,
+    private val bikeService: BikeService = BikeService,
+    private val mapUtil: MapUtil = MapUtil,
+) : ViewModel() {
+    var uiState by mutableStateOf(NearbyScreenUiState())
+        private set
+
+    fun setShowLocationError(value: Boolean) {
+        uiState = uiState.copy(nearbyShowLocationError = value)
+    }
+
+    fun setNearbyDetailsError(value: Boolean) {
+        uiState = uiState.copy(nearbyDetailsError = value)
+    }
+
+    fun setShowNearbyDetails(value: Boolean) {
+        uiState = uiState.copy(nearbyDetailsShow = value)
+    }
+
+    fun setNearbyIsMyLocationEnabled(value: Boolean) {
+        uiState = uiState.copy(nearbyIsMyLocationEnabled = value)
+    }
+
+    fun setDefaultUserLocation() {
+        setCurrentUserLocation(chicagoPosition)
+        loadNearbyStations(chicagoPosition)
+        setShowLocationError(true)
+    }
+
+    fun setMapCenterLocationAndLoadNearby(position: Position, zoom: Float) {
+        setCurrentUserLocation(position, zoom)
+        loadNearbyStations(position)
+        setShowLocationError(false)
+    }
+
+    fun setCurrentUserLocation(position: Position, zoom: Float = 16f) {
+        uiState = uiState.copy(
+            nearbyMapCenterLocation = position,
+            nearbyZoomIn = zoom,
+        )
+    }
+
+    fun loadNearbyStations(position: Position) {
+        val trainStationAround = trainService.readNearbyStation(position = position)
+        val busStopsAround = busService.busStopsAround(position = position)
+        val bikeStationsAround = mapUtil.readNearbyStation(position = position, store.state.bikeStations)
+        Single.zip(trainStationAround, busStopsAround, bikeStationsAround) { trains, buses, bikeStations ->
+            uiState = uiState.copy(
+                nearbyTrainStations = trains,
+                nearbyBusStops = buses,
+                nearbyBikeStations = bikeStations,
+            )
+            Any()
+        }.subscribe({}, { error -> Timber.e(error) })
+    }
+
+    fun loadNearbyTrainDetails(trainStation: TrainStation) {
+        trainService.loadStationTrainArrival(trainStation.id)
+            .map { trainArrival ->
+                NearbyResult(arrivals = NearbyResult.toArrivals(trainArrival.trainEtas.filter { trainEta -> trainEta.trainStation.id == trainStation.id }))
+            }
+            .observeOn(Schedulers.computation())
+            .subscribe(
+                {
+                    uiState = uiState.copy(
+                        nearbyDetailsTitle = trainStation.name,
+                        nearbyDetailsArrivals = it,
+                        nearbyDetailsShow = true,
+                        nearbyDetailsIcon = Icons.Filled.Train,
+                    )
+                },
+                { onError ->
+                    Timber.e(onError, "Error while loading train arrivals")
+                    setNearbyDetailsError(true)
+                })
+    }
+
+    fun loadNearbyBusDetails(busStop: BusStop) {
+        busService.loadBusArrivals(busStop)
+            .map { busArrivals -> NearbyResult(arrivals = NearbyResult.toArrivals(busArrivals)) }
+            .observeOn(Schedulers.computation())
+            .subscribe(
+                {
+                    uiState = uiState.copy(
+                        nearbyDetailsTitle = busStop.name,
+                        nearbyDetailsArrivals = it,
+                        nearbyDetailsShow = true,
+                        nearbyDetailsIcon = Icons.Filled.DirectionsBus,
+                    )
+                },
+                { onError ->
+                    Timber.e(onError, "Error while loading bus arrivals")
+                    setNearbyDetailsError(true)
+                })
+    }
+
+    fun loadNearbyBikeDetails(currentBikeStation: BikeStation) {
+        bikeService.findBikeStation(currentBikeStation.id)
+            .map { bikeStation ->
+                NearbyResult(
+                    arrivals = NearbyResult.toArrivals(bikeStation),
+                    lastUpdate = LastUpdate(TimeUtil.formatTimeDifference(bikeStation.lastReported, Calendar.getInstance().time))
+                )
+            }
+            .observeOn(Schedulers.computation())
+            .subscribe(
+                {
+                    uiState = uiState.copy(
+                        nearbyDetailsTitle = currentBikeStation.name,
+                        nearbyDetailsArrivals = it,
+                        nearbyDetailsShow = true,
+                        nearbyDetailsIcon = Icons.Filled.DirectionsBike,
+                    )
+                },
+                { onError ->
+                    Timber.e(onError, "Error while loading bus arrivals")
+                    setNearbyDetailsError(true)
+                })
     }
 }

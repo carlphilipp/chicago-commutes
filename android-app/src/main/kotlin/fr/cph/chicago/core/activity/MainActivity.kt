@@ -24,8 +24,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -61,16 +59,12 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.App.Companion.exceptionHandler
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
-import fr.cph.chicago.core.model.BusStop
-import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.core.navigation.Navigation
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.navigation.rememberNavigationState
 import fr.cph.chicago.core.theme.ChicagoCommutesTheme
 import fr.cph.chicago.core.ui.common.AnimatedErrorView
-import fr.cph.chicago.core.ui.common.NearbyResult
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.viewmodel.mainViewModel
@@ -82,7 +76,6 @@ import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.repository.RealmConfig
 import fr.cph.chicago.task.RefreshTaskLifecycleEventObserver
-import fr.cph.chicago.util.MapUtil.chicagoPosition
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.launch
@@ -160,19 +153,6 @@ data class MainUiState constructor(
     val routesAlerts: List<RoutesAlertsDTO> = listOf(),
     val routeAlertErrorState: Boolean = false,
     val routeAlertShowError: Boolean = false,
-
-    val nearbyMapCenterLocation: Position = chicagoPosition,
-    val nearbyTrainStations: List<TrainStation> = listOf(),
-    val nearbyBusStops: List<BusStop> = listOf(),
-    val nearbyBikeStations: List<BikeStation> = listOf(),
-    val nearbyZoomIn: Float = 8f,
-    val nearbyIsMyLocationEnabled: Boolean = false,
-    val nearbyShowLocationError: Boolean = false,
-    val nearbyDetailsShow: Boolean = false,
-    val nearbyDetailsTitle: String = "",
-    val nearbyDetailsIcon: ImageVector = Icons.Filled.Train,
-    val nearbyDetailsArrivals: NearbyResult = NearbyResult(),
-    val nearbyDetailsError: Boolean = false,
 
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
     val favLazyListState: LazyListState = LazyListState(),

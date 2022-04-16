@@ -24,7 +24,9 @@ import timber.log.Timber
 @Composable
 fun NearbyLocationPermissionView(
     mainViewModel: MainViewModel,
-    locationViewModel: LocationViewModel
+    locationViewModel: LocationViewModel,
+    callBackLoadLocation:(position: Position) -> Unit,
+    callBackDefaultLocation: () -> Unit,
 ) {
     val context = LocalContext.current
     if (locationViewModel.requestPermission) {
@@ -51,38 +53,51 @@ fun NearbyLocationPermissionView(
                     gpsSettingTask.addOnSuccessListener { locationSettingsResponse ->
                         val settingsStates = locationSettingsResponse.locationSettingsStates
                         if (settingsStates!!.isLocationPresent && settingsStates.isLocationUsable) {
-                            refreshUserLocation(context = context, mainViewModel = mainViewModel)
+                            refreshUserLocation(
+                                context = context,
+                                mainViewModel = mainViewModel,
+                                callBackLoadLocation = callBackLoadLocation,
+                                callBackDefaultLocation = callBackDefaultLocation,
+                            )
                         } else {
-                            mainViewModel.setDefaultUserLocation()
+                            callBackDefaultLocation()
                         }
                     }
                     gpsSettingTask.addOnFailureListener {
-                        mainViewModel.setDefaultUserLocation()
+                        callBackDefaultLocation()
                     }
                 }
                 is PermissionAction.OnPermissionDenied -> {
                     Timber.d("Permission grant denied")
                     locationViewModel.requestPermission = false
-                    mainViewModel.setDefaultUserLocation()
+                    callBackDefaultLocation()
                 }
             }
         }
     } else {
-        refreshUserLocation(context = context, mainViewModel = mainViewModel)
+        refreshUserLocation(
+            context = context,
+            mainViewModel = mainViewModel,
+            callBackLoadLocation = callBackLoadLocation,
+            callBackDefaultLocation = callBackDefaultLocation,
+        )
     }
 }
 
 @SuppressLint("MissingPermission")
-private fun refreshUserLocation(context: Context, mainViewModel: MainViewModel) {
+private fun refreshUserLocation(
+    context: Context,
+    mainViewModel: MainViewModel,
+    callBackLoadLocation:(position: Position) -> Unit,
+    callBackDefaultLocation: () -> Unit,
+) {
     val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
     fusedLocationClient.lastLocation.addOnSuccessListener { location ->
         if (location != null) {
             val position = Position(location.latitude, location.longitude)
-            mainViewModel.setNearbyIsMyLocationEnabled(true)
-            mainViewModel.setCurrentUserLocation(position)
-            mainViewModel.loadNearbyStations(position)
+            callBackLoadLocation(position)
         } else {
-            mainViewModel.setDefaultUserLocation()
+            callBackDefaultLocation()
         }
     }
 }
