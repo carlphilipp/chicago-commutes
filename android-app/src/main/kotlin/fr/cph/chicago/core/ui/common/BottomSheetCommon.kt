@@ -642,7 +642,7 @@ private fun ShowTrainDetailsTrainMapBottomSheet(
                 .width(14.dp)
                 .align(Alignment.CenterStart)
                 .clip(RoundedCornerShape(topEnd = 5.dp, bottomEnd = 5.dp))
-                .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f)),
+                .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)),
             enter = fadeIn(animationSpec = tween(durationMillis = 500)),
             exit = fadeOut(animationSpec = tween(durationMillis = 500)),
         ) {
@@ -660,7 +660,7 @@ private fun ShowTrainDetailsTrainMapBottomSheet(
                 .width(14.dp)
                 .align(Alignment.CenterEnd)
                 .clip(RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
-                .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f)),
+                .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)),
             enter = fadeIn(animationSpec = tween(durationMillis = 500)),
             exit = fadeOut(animationSpec = tween(durationMillis = 500)),
         ) {
