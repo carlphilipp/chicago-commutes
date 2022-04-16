@@ -37,12 +37,12 @@ fun Context.getActivity(): ComponentActivity = when (this) {
 fun TrainLine.getZoom(): Float {
     return when(this){
         TrainLine.BLUE -> 10.8f
-        TrainLine.BROWN -> 12.427667f
+        TrainLine.BROWN -> 12.0728f
         TrainLine.GREEN -> 11.3f
         TrainLine.ORANGE -> 11.98f
         TrainLine.PINK -> 11.87f
         TrainLine.PURPLE -> 11.7f
-        TrainLine.RED -> 11.1f
+        TrainLine.RED -> 10.76f
         TrainLine.YELLOW -> 12.52f
         else -> 11f
     }
@@ -51,12 +51,12 @@ fun TrainLine.getZoom(): Float {
 fun TrainLine.getDefaultPosition(): Position {
     return when(this){
         TrainLine.BLUE -> Position(41.90, -87.76)
-        TrainLine.BROWN -> Position(41.92302923, -87.66929078)
+        TrainLine.BROWN -> Position(41.91279956, -87.6583735)
         TrainLine.GREEN -> Position(41.82709704, -87.709279)
         TrainLine.ORANGE -> Position(41.82979, -87.679172)
         TrainLine.PINK -> Position(41.849431, -87.69153501)
         TrainLine.PURPLE -> Position(41.97, -87.65)
-        TrainLine.RED -> Position(41.866, -87.651)
+        TrainLine.RED -> Position(41.838029, -87.65660025)
         TrainLine.YELLOW -> Position(42.0190246, -87.715918309)
         else -> Position(41.866, -87.651)
     }
