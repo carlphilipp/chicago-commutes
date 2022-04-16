@@ -2,7 +2,6 @@ package fr.cph.chicago.core.ui.screen
 
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -203,8 +202,10 @@ fun TrainMapScreen(
                                     modifier = Modifier.constrainAs(stateDebug) {
                                         top.linkTo(anchor = cameraDebug.bottom)
                                     },
-                                    viewModel = viewModel
-                                )
+                                    viewModel = viewModel,
+
+
+                                    )
                             }
                         }
 
@@ -358,7 +359,6 @@ fun StateDebugView(
     modifier: Modifier = Modifier,
     viewModel: MapTrainViewModel,
 ) {
-    Timber.e("StateDebugView compose")
     Column(
         modifier = modifier
             .padding(top = 10.dp)
@@ -371,16 +371,6 @@ fun StateDebugView(
         Text(text = "Trains size: ${viewModel.uiState.trains.size}")
         Text(text = "Stations size: ${viewModel.uiState.stations.size}")
         Text(text = "Trains Eta size: ${viewModel.uiState.trainEtas.size}")
-
-        viewModel.uiState.trainIcon?.run {
-            var icon by remember { mutableStateOf("small") }
-            icon = when(viewModel.uiState.trainIcon) {
-                viewModel.uiState.trainIconSmall -> "small"
-                viewModel.uiState.trainIconMedium -> "medium"
-                else -> "large"
-            }
-            Text(text = "Icon size: $icon")
-        }
     }
 }
 
@@ -398,8 +388,8 @@ private fun mapStyle(settingsViewModel: SettingsViewModel): Int {
 private fun trainIcon(viewModel: MapTrainViewModel, cameraPositionState: CameraPositionState): BitmapDescriptor? {
     val zoom = cameraPositionState.position.zoom
     return when {
-        zoom <= 11f -> viewModel.uiState.trainIconSmall
-        zoom < 13.5f && zoom > 11f -> viewModel.uiState.trainIconMedium
+        zoom <= 12.3f -> viewModel.uiState.trainIconSmall
+        zoom < 14.5f && zoom > 12.3f -> viewModel.uiState.trainIconMedium
         else -> viewModel.uiState.trainIconLarge
     }
 }
@@ -562,7 +552,8 @@ class MapTrainViewModel constructor(
                     polyLine = listOf(),
                     trains = listOf(),
                     stations = listOf(),
-                    isLoading = true
+                    isLoading = true,
+                    trainIcon = uiState.trainIconSmall,
                 )
             },
             runAfter = {
