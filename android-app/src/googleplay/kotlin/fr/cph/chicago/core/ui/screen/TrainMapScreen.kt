@@ -83,16 +83,15 @@ import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.CameraDebugView
 import fr.cph.chicago.util.GoogleMapUtil.createBitMapDescriptor
 import fr.cph.chicago.util.GoogleMapUtil.defaultZoom
-import fr.cph.chicago.util.GoogleMapUtil.isIn
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 /**
  *      1. Show loading screen
@@ -247,14 +246,6 @@ fun GoogleMapTrainMapView(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    val isDarkTheme = when (settingsViewModel.uiState.theme) {
-        Theme.AUTO -> isSystemInDarkTheme()
-        Theme.LIGHT -> false
-        Theme.DARK -> true
-    }
-
-    val style = if (isDarkTheme) R.raw.style_json_dark else R.raw.style_json_light
-
     if (uiState.moveCamera != null && uiState.moveCameraZoom != null) {
         LaunchedEffect(key1 = uiState.moveCamera, key2 = uiState.moveCameraZoom, block = {
             scope.launch {
@@ -269,7 +260,7 @@ fun GoogleMapTrainMapView(
         properties = MapProperties(
             mapType = MapType.NORMAL,
             isMyLocationEnabled = false,
-            mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, style),
+            mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, mapStyle(settingsViewModel)),
         ),
         uiSettings = MapUiSettings(compassEnabled = false, myLocationButtonEnabled = false, zoomControlsEnabled = false),
         onMapLoaded = onMapLoaded,
@@ -306,8 +297,6 @@ fun TrainStationsMarkers(
     viewModel: MapTrainViewModel,
     cameraPositionState: CameraPositionState,
 ) {
-    viewModel.showHideStations(cameraPositionState.position.zoom)
-
     viewModel.uiState.stationIcon?.run {
         viewModel.uiState.stations.forEach { trainStation ->
             val markerState = rememberMarkerState()
@@ -316,7 +305,7 @@ fun TrainStationsMarkers(
                 state = markerState,
                 icon = viewModel.uiState.stationIcon,
                 title = trainStation.name,
-                visible = viewModel.uiState.showStationIcon,
+                visible = cameraPositionState.position.zoom >= 14f,
             )
         }
     }
@@ -330,22 +319,15 @@ fun TrainsOnMapLayer(
 ) {
     val scope = rememberCoroutineScope()
     var job: Job? by remember { mutableStateOf(null) }
-    viewModel.updateIconOnZoomChange(cameraPositionState.position.zoom)
 
     if (viewModel.uiState.trainIcon != null) {
         viewModel.uiState.trains.forEach { train ->
-
-            // It seems that it does not get refreshed when the state change.
-            // I think it's normal as it's an image that is displayed in the
-            // original SDK. This won't probably be fixed. Instead, we can
-            // just display a floating box like in nearby
-            // Reference in case it's getting fixed: https://github.com/googlemaps/android-maps-compose/issues/46
             val markerState = rememberMarkerState()
             markerState.position = train.position.toLatLng()
             Marker(
                 title = "To ${train.destName}",
                 state = markerState,
-                icon = viewModel.uiState.trainIcon,
+                icon = trainIcon(viewModel, cameraPositionState),
                 rotation = train.heading.toFloat(),
                 flat = true,
                 anchor = Offset(0.5f, 0.5f),
@@ -390,6 +372,26 @@ fun StateDebugView(
     }
 }
 
+@Composable
+private fun mapStyle(settingsViewModel: SettingsViewModel): Int {
+    val isDarkTheme = when (settingsViewModel.uiState.theme) {
+        Theme.AUTO -> isSystemInDarkTheme()
+        Theme.LIGHT -> false
+        Theme.DARK -> true
+    }
+    return if (isDarkTheme) R.raw.style_json_dark else R.raw.style_json_light
+}
+
+@Composable
+private fun trainIcon(viewModel: MapTrainViewModel, cameraPositionState: CameraPositionState): BitmapDescriptor? {
+    val zoom = cameraPositionState.position.zoom
+    return when {
+        zoom <= 11f -> viewModel.uiState.trainIconSmall
+        zoom < 13.5f && zoom > 11f -> viewModel.uiState.trainIconMedium
+        else -> viewModel.uiState.trainIconLarge
+    }
+}
+
 @OptIn(ExperimentalMaterialApi::class)
 data class GoogleMapTrainUiState constructor(
     val isLoading: Boolean = false,
@@ -400,7 +402,6 @@ data class GoogleMapTrainUiState constructor(
     val trains: List<Train> = listOf(),
     val stations: List<TrainStation> = listOf(),
 
-    val zoom: Float = defaultZoom,
     val shouldMoveCamera: Boolean = true,
     val moveCamera: LatLng? = null,
     val moveCameraZoom: Float? = null,
@@ -414,7 +415,6 @@ data class GoogleMapTrainUiState constructor(
     val bottomSheetContentAndState: BottomSheetContent = BottomSheetContent.COLLAPSE,
 
     val stationIcon: BitmapDescriptor? = null,
-    val showStationIcon: Boolean = false,
 
     val scaffoldState: BottomSheetScaffoldState = BottomSheetScaffoldState(
         drawerState = DrawerState(DrawerValue.Closed),
@@ -441,50 +441,6 @@ class MapTrainViewModel constructor(
 
     fun onStop() {
         uiState = GoogleMapTrainUiState()
-    }
-
-    // FIXME: It looks like a BS algo, that should be more simple than that
-    fun updateIconOnZoomChange(newZoom: Float) {
-        if (newZoom != uiState.zoom) {
-            val oldZoom = uiState.zoom
-            if (isIn(newZoom, 12.9f, 11f) && !isIn(oldZoom, 12.9f, 11f)) {
-                uiState = uiState.copy(
-                    trainIcon = uiState.trainIconSmall,
-                    zoom = newZoom,
-                )
-            } else if (isIn(newZoom, 14.9f, 13f) && !isIn(oldZoom, 14.9f, 13f)) {
-                uiState = uiState.copy(
-                    trainIcon = uiState.trainIconMedium,
-                    zoom = newZoom,
-                )
-            } else if (isIn(newZoom, 21f, 15f) && !isIn(oldZoom, 21f, 15f)) {
-                uiState = uiState.copy(
-                    trainIcon = uiState.trainIconLarge,
-                    zoom = newZoom,
-                )
-            }
-        }
-    }
-
-    fun showHideStations(newZoom: Float) {
-        if (newZoom >= 14f && !uiState.showStationIcon) {
-            uiState = uiState.copy(
-                showStationIcon = true
-            )
-        }
-        if (newZoom < 14f && uiState.showStationIcon) {
-            uiState = uiState.copy(
-                showStationIcon = false
-            )
-        }
-    }
-
-    private fun centerMapOnLine() {
-        val line = uiState.line
-        uiState = uiState.copy(
-            moveCamera = line.getDefaultPosition().toLatLng(),
-            moveCameraZoom = line.getZoom(),
-        )
     }
 
     fun reloadData() {
@@ -603,6 +559,40 @@ class MapTrainViewModel constructor(
         )
     }
 
+    fun expandBottomSheet(
+        scope: CoroutineScope,
+        runBefore: () -> Unit = {},
+        runAfter: () -> Unit = {},
+    ) {
+        viewModelScope.launch {
+            runBefore()
+            val job = scope.launch {
+                if (uiState.scaffoldState.bottomSheetState.isCollapsed) {
+                    uiState.scaffoldState.bottomSheetState.expand()
+                }
+            }
+            job.join()
+            runAfter()
+        }
+    }
+
+    fun collapseBottomSheet(
+        scope: CoroutineScope,
+        runBefore: () -> Unit = {},
+        runAfter: () -> Unit = {},
+    ) {
+        viewModelScope.launch {
+            runBefore()
+            val job = scope.launch {
+                if (uiState.scaffoldState.bottomSheetState.isExpanded) {
+                    uiState.scaffoldState.bottomSheetState.collapse()
+                }
+            }
+            job.join()
+            runAfter()
+        }
+    }
+
     private fun loadData() {
         viewModelScope.launch {
             val googleMapIcons = googleMapIcons()
@@ -653,6 +643,14 @@ class MapTrainViewModel constructor(
         }
     }
 
+    private fun centerMapOnLine() {
+        val line = uiState.line
+        uiState = uiState.copy(
+            moveCamera = line.getDefaultPosition().toLatLng(),
+            moveCameraZoom = line.getZoom(),
+        )
+    }
+
     private fun googleMapIcons(): Single<List<BitmapDescriptor>> {
         return Single.fromCallable {
             val trainBitmap = BitmapFactory.decodeResource(App.instance.resources, R.drawable.train)
@@ -687,40 +685,6 @@ class MapTrainViewModel constructor(
             TrainLine.RED -> R.drawable.red_marker_no_shade
             TrainLine.YELLOW -> R.drawable.yellow_marker_no_shade
             TrainLine.NA -> R.drawable.red_marker_no_shade
-        }
-    }
-
-    fun expandBottomSheet(
-        scope: CoroutineScope,
-        runBefore: () -> Unit = {},
-        runAfter: () -> Unit = {},
-    ) {
-        viewModelScope.launch {
-            runBefore()
-            val job = scope.launch {
-                if (uiState.scaffoldState.bottomSheetState.isCollapsed) {
-                    uiState.scaffoldState.bottomSheetState.expand()
-                }
-            }
-            job.join()
-            runAfter()
-        }
-    }
-
-    fun collapseBottomSheet(
-        scope: CoroutineScope,
-        runBefore: () -> Unit = {},
-        runAfter: () -> Unit = {},
-    ) {
-        viewModelScope.launch {
-            runBefore()
-            val job = scope.launch {
-                if (uiState.scaffoldState.bottomSheetState.isExpanded) {
-                    uiState.scaffoldState.bottomSheetState.collapse()
-                }
-            }
-            job.join()
-            runAfter()
         }
     }
 
