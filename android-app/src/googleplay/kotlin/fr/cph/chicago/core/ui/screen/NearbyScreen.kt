@@ -29,7 +29,6 @@ import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsBus
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Train
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -39,6 +38,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,7 +49,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -127,6 +126,15 @@ fun NearbyScreen(
             )
         )
     }
+
+    LaunchedEffect(key1 = viewModel.uiState.nearbyDetailsShow, block = {
+        scope.launch {
+            if (viewModel.uiState.nearbyDetailsShow) {
+                viewModel.uiState.scaffoldState.bottomSheetState.expand()
+            }
+        }
+    })
+
     // Show map after 5 seconds. This is needed because there is no callback from the sdk to know if the map can be loaded or not.
     // Meaning that we can have a situation where the onMapLoaded method is never triggered, while the map view has been populated
     // with some error messages from the google sdk like: "Play store needs to be updated"
@@ -320,18 +328,6 @@ fun NearbyGoogleMapView(
             )
         }
     }
-/*    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(5.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        SearchThisAreaButton(viewModel = viewModel, cameraPositionState = cameraPositionState)
-        if (settingsViewModel.uiState.showMapDebug) {
-            CameraDebugView(cameraPositionState = cameraPositionState)
-        }
-    }*/
 
     MapStationDetailsView(
         showView = viewModel.uiState.nearbyDetailsShow,
@@ -339,23 +335,6 @@ fun NearbyGoogleMapView(
         image = viewModel.uiState.nearbyDetailsIcon,
         arrivals = viewModel.uiState.nearbyDetailsArrivals,
     )
-}
-
-@Composable
-private fun SearchThisAreaButton(viewModel: NearbyViewModel, cameraPositionState: CameraPositionState) {
-    AnimatedVisibility(
-        visible = true,
-        enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
-    ) {
-        ElevatedButton(onClick = {
-            viewModel.setMapCenterLocationAndLoadNearby(
-                position = Position(latitude = cameraPositionState.position.target.latitude, longitude = cameraPositionState.position.target.longitude),
-                zoom = cameraPositionState.position.zoom
-            )
-        }) {
-            Text(text = stringResource(id = R.string.search_area))
-        }
-    }
 }
 
 @Composable
@@ -399,7 +378,8 @@ fun StateDebugView(
             .background(color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)),
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "Position in state ${viewModel.uiState.nearbyMapCenterLocation}")
+        Text(text = "Latitude in state ${viewModel.uiState.nearbyMapCenterLocation.latitude}")
+        Text(text = "Longitude in state ${viewModel.uiState.nearbyMapCenterLocation.longitude}")
         Text(text = "Train stations: ${viewModel.uiState.nearbyTrainStations.size}")
         Text(text = "Bus stops: ${viewModel.uiState.nearbyBusStops.size}")
         Text(text = "Bike stations: ${viewModel.uiState.nearbyBikeStations.size}")

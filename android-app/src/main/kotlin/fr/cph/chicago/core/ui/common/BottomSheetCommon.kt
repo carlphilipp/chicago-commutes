@@ -524,6 +524,20 @@ fun NearbyBottomSheet(
                     )
                 }
             }
+
+            if (viewModel.uiState.nearbyDetailsShow) {
+                Divider(
+                    modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
+                )
+
+                TrainLineStyleText(
+                    text = viewModel.uiState.nearbyDetailsTitle,
+                    color = MaterialTheme.colorScheme.tertiaryContainer,
+                    textColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                )
+            }
         },
         onBackClick = onBackClick,
     )
