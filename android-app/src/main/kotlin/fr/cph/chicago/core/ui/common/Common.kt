@@ -793,8 +793,3 @@ private fun TrainLineStyle(
         )
     }
 }
-
-@Composable
-fun rememberIsDarkTheme() {
-
-}

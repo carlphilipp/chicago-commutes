@@ -56,9 +56,11 @@ import androidx.compose.ui.unit.sp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.google.maps.android.compose.CameraPositionState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusRoute
+import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
@@ -490,12 +492,37 @@ fun ShowBusBoundBottomView(
 fun NearbyBottomSheet(
     modifier: Modifier = Modifier,
     viewModel: NearbyViewModel,
+    cameraPositionState: CameraPositionState,
     onBackClick: () -> Unit,
 ) {
     BottomSheet(
         content = {
-            Column(modifier = modifier.fillMaxWidth()) {
-                Text("1234")
+            val scope = rememberCoroutineScope()
+            Row(
+                modifier = modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                TrainLineStyleText(
+                    text = "Nearby",
+                    color = MaterialTheme.colorScheme.tertiaryContainer,
+                    textColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                )
+                FilledTonalButton(
+                    onClick = {
+                        scope.launch {
+                            viewModel.setMapCenterLocationAndLoadNearby(
+                                position = Position(latitude = cameraPositionState.position.target.latitude, longitude = cameraPositionState.position.target.longitude),
+                                zoom = cameraPositionState.position.zoom
+                            )
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Refresh,
+                        contentDescription = null,
+                    )
+                }
             }
         },
         onBackClick = onBackClick,

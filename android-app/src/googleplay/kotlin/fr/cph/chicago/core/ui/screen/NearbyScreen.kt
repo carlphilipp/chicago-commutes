@@ -161,17 +161,12 @@ fun NearbyScreen(
                             navController.navigateBack()
                         }
                     }
-                }
+                },
+                cameraPositionState = cameraPositionState,
             )
-
         },
         content = {
             Column(modifier = Modifier.fillMaxSize()) {
-/*                DisplayTopBar(
-                    screen = Screen.Nearby,
-                    title = title,
-                    viewModel = navigationViewModel,
-                )*/
                 Scaffold(
                     modifier = modifier.fillMaxWidth(),
                     snackbarHost = { SnackbarHostInsets(state = viewModel.uiState.snackbarHostState) },
@@ -325,7 +320,7 @@ fun NearbyGoogleMapView(
             )
         }
     }
-    Column(
+/*    Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(5.dp),
@@ -336,7 +331,7 @@ fun NearbyGoogleMapView(
         if (settingsViewModel.uiState.showMapDebug) {
             CameraDebugView(cameraPositionState = cameraPositionState)
         }
-    }
+    }*/
 
     MapStationDetailsView(
         showView = viewModel.uiState.nearbyDetailsShow,
