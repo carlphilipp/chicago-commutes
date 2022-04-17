@@ -336,7 +336,7 @@ fun BottomSheetScaffoldMaterial3(
     floatingActionButton: (@Composable () -> Unit)? = null,
     floatingActionButtonPosition: FabPosition = FabPosition.End,
     sheetGesturesEnabled: Boolean = true,
-    sheetShape: Shape = RoundedCornerShape(10.dp),
+    sheetShape: Shape = RoundedCornerShape(topStart =  10.dp, topEnd = 10.dp),
     sheetElevation: Dp = BottomSheetScaffoldDefaults.SheetElevation,
     sheetBackgroundColor: Color = MaterialTheme.colorScheme.surface,
     sheetContentColor: Color = contentColorFor(sheetBackgroundColor),

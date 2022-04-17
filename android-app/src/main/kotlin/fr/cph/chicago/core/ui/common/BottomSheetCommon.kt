@@ -485,6 +485,21 @@ fun ShowBusBoundBottomView(
     )
 }
 
+@Composable
+fun NearbyBottomSheet(
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit,
+) {
+    BottomSheet(
+        content = {
+            Column(modifier = modifier.fillMaxWidth()) {
+                Text("1234")
+            }
+        },
+        onBackClick = onBackClick,
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrainMapBottomSheet(
