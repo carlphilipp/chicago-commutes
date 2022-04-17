@@ -67,6 +67,7 @@ import fr.cph.chicago.core.theme.FontSize
 import fr.cph.chicago.core.theme.availableFonts
 import fr.cph.chicago.core.ui.screen.BottomSheetContent
 import fr.cph.chicago.core.ui.screen.MapTrainViewModel
+import fr.cph.chicago.core.ui.screen.NearbyViewModel
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.core.viewmodel.MainViewModel
@@ -488,6 +489,7 @@ fun ShowBusBoundBottomView(
 @Composable
 fun NearbyBottomSheet(
     modifier: Modifier = Modifier,
+    viewModel: NearbyViewModel,
     onBackClick: () -> Unit,
 ) {
     BottomSheet(

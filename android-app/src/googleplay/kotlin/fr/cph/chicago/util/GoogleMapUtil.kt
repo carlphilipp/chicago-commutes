@@ -30,7 +30,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,7 +57,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.core.ui.screen.MapTrainViewModel
+import fr.cph.chicago.core.model.Theme
+import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 
 object GoogleMapUtil {
@@ -212,4 +213,14 @@ fun DisplayAllResultsRowView(onClick: () -> Unit) {
 @NonNull
 fun Position.toLatLng(): LatLng {
     return LatLng(this.latitude, this.longitude)
+}
+
+@Composable
+fun mapStyle(settingsViewModel: SettingsViewModel): Int {
+    val isDarkTheme = when (settingsViewModel.uiState.theme) {
+        Theme.AUTO -> isSystemInDarkTheme()
+        Theme.LIGHT -> false
+        Theme.DARK -> true
+    }
+    return if (isDarkTheme) R.raw.style_json_dark else R.raw.style_json_light
 }

@@ -1,6 +1,7 @@
 package fr.cph.chicago.core.ui.screen
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -8,9 +9,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffoldState
 import androidx.compose.material.BottomSheetState
@@ -21,9 +27,13 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsBus
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -37,22 +47,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BikeStation
@@ -60,7 +71,6 @@ import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.LastUpdate
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainStation
-import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.permissions.NearbyLocationPermissionView
@@ -80,10 +90,12 @@ import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.CameraDebugView
+import fr.cph.chicago.util.GoogleMapUtil
 import fr.cph.chicago.util.GoogleMapUtil.getBitmapDescriptor
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.TimeUtil
+import fr.cph.chicago.util.mapStyle
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -108,6 +120,13 @@ fun NearbyScreen(
     val scope = rememberCoroutineScope()
     val navController = LocalNavController.current
     var isMapLoaded by remember { mutableStateOf(false) }
+    val cameraPositionState: CameraPositionState by remember {
+        mutableStateOf(
+            CameraPositionState(
+                position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), GoogleMapUtil.defaultZoom)
+            )
+        )
+    }
     // Show map after 5 seconds. This is needed because there is no callback from the sdk to know if the map can be loaded or not.
     // Meaning that we can have a situation where the onMapLoaded method is never triggered, while the map view has been populated
     // with some error messages from the google sdk like: "Play store needs to be updated"
@@ -133,6 +152,7 @@ fun NearbyScreen(
         sheetPeekHeight = 120.dp,
         sheetContent = {
             NearbyBottomSheet(
+                viewModel = viewModel,
                 onBackClick = {
                     scope.launch {
                         if (viewModel.uiState.scaffoldState.bottomSheetState.isExpanded) {
@@ -147,11 +167,11 @@ fun NearbyScreen(
         },
         content = {
             Column(modifier = Modifier.fillMaxSize()) {
-                DisplayTopBar(
+/*                DisplayTopBar(
                     screen = Screen.Nearby,
                     title = title,
                     viewModel = navigationViewModel,
-                )
+                )*/
                 Scaffold(
                     modifier = modifier.fillMaxWidth(),
                     snackbarHost = { SnackbarHostInsets(state = viewModel.uiState.snackbarHostState) },
@@ -160,7 +180,48 @@ fun NearbyScreen(
                             onMapLoaded = { isMapLoaded = true },
                             viewModel = viewModel,
                             settingsViewModel = settingsViewModel,
+                            cameraPositionState = cameraPositionState,
                         )
+
+                        ConstraintLayout(
+                            modifier = modifier
+                                .fillMaxWidth()
+                                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
+                                .padding(start = 10.dp, top = 5.dp, bottom = 5.dp),
+                        ) {
+                            val (left, cameraDebug, stateDebug) = createRefs()
+                            FilledTonalButton(
+                                modifier = Modifier.constrainAs(left) {
+                                    start.linkTo(anchor = parent.start)
+                                    width = Dimension.fillToConstraints
+                                },
+                                onClick = {
+                                    scope.launch {
+                                        navigationViewModel.uiState.drawerState.animateTo(androidx.compose.material3.DrawerValue.Open, TweenSpec(durationMillis = settingsViewModel.uiState.animationSpeed.openDrawerSlideDuration))
+                                    }
+                                },
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Menu,
+                                    contentDescription = null,
+                                )
+                            }
+
+                            if (settingsViewModel.uiState.showMapDebug) {
+                                CameraDebugView(
+                                    modifier = Modifier.constrainAs(cameraDebug) {
+                                        top.linkTo(anchor = left.bottom)
+                                    },
+                                    cameraPositionState = cameraPositionState
+                                )
+                                StateDebugView(
+                                    modifier = Modifier.constrainAs(stateDebug) {
+                                        top.linkTo(anchor = cameraDebug.bottom)
+                                    },
+                                    viewModel = viewModel
+                                )
+                            }
+                        }
 
                         LoadingCircle(show = !isMapLoaded)
 
@@ -193,19 +254,21 @@ fun NearbyGoogleMapView(
     onMapLoaded: () -> Unit,
     viewModel: NearbyViewModel,
     settingsViewModel: SettingsViewModel,
+    cameraPositionState: CameraPositionState,
 ) {
     val uiState = viewModel.uiState
     val context = LocalContext.current
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(uiState.nearbyMapCenterLocation.toLatLng(), uiState.nearbyZoomIn)
-    }
 
     Timber.d("Set location: ${uiState.nearbyMapCenterLocation.toLatLng()}")
 
     GoogleMap(
         modifier = modifier,
         cameraPositionState = cameraPositionState,
-        properties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = uiState.nearbyIsMyLocationEnabled),
+        properties = MapProperties(
+            mapType = MapType.NORMAL,
+            isMyLocationEnabled = uiState.nearbyIsMyLocationEnabled,
+            mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, mapStyle(settingsViewModel)),
+        ),
         uiSettings = MapUiSettings(compassEnabled = false, myLocationButtonEnabled = uiState.nearbyIsMyLocationEnabled),
         onMapLoaded = {
             onMapLoaded()
@@ -327,6 +390,24 @@ fun MapStationDetailsView(showView: Boolean, title: String, image: ImageVector, 
                 }
             }
         }
+    }
+}
+
+@Composable
+fun StateDebugView(
+    modifier: Modifier = Modifier,
+    viewModel: NearbyViewModel,
+) {
+    Column(
+        modifier = modifier
+            .padding(top = 10.dp)
+            .background(color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(text = "Position in state ${viewModel.uiState.nearbyMapCenterLocation}")
+        Text(text = "Train stations: ${viewModel.uiState.nearbyTrainStations.size}")
+        Text(text = "Bus stops: ${viewModel.uiState.nearbyBusStops.size}")
+        Text(text = "Bike stations: ${viewModel.uiState.nearbyBikeStations.size}")
     }
 }
 

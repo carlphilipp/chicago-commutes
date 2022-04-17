@@ -3,7 +3,6 @@ package fr.cph.chicago.core.ui.screen
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -63,7 +62,6 @@ import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberMarkerState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
@@ -84,14 +82,15 @@ import fr.cph.chicago.util.CameraDebugView
 import fr.cph.chicago.util.GoogleMapUtil.createBitMapDescriptor
 import fr.cph.chicago.util.GoogleMapUtil.defaultZoom
 import fr.cph.chicago.util.MapUtil.chicagoPosition
+import fr.cph.chicago.util.mapStyle
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 /**
  *      1. Show loading screen
@@ -202,10 +201,8 @@ fun TrainMapScreen(
                                     modifier = Modifier.constrainAs(stateDebug) {
                                         top.linkTo(anchor = cameraDebug.bottom)
                                     },
-                                    viewModel = viewModel,
-
-
-                                    )
+                                    viewModel = viewModel
+                                )
                             }
                         }
 
@@ -372,16 +369,6 @@ fun StateDebugView(
         Text(text = "Stations size: ${viewModel.uiState.stations.size}")
         Text(text = "Trains Eta size: ${viewModel.uiState.trainEtas.size}")
     }
-}
-
-@Composable
-private fun mapStyle(settingsViewModel: SettingsViewModel): Int {
-    val isDarkTheme = when (settingsViewModel.uiState.theme) {
-        Theme.AUTO -> isSystemInDarkTheme()
-        Theme.LIGHT -> false
-        Theme.DARK -> true
-    }
-    return if (isDarkTheme) R.raw.style_json_dark else R.raw.style_json_light
 }
 
 @Composable
