@@ -500,13 +500,14 @@ fun NearbyBottomSheet(
     BottomSheet(
         content = {
             val scope = rememberCoroutineScope()
+            val title = if (viewModel.uiState.nearbyDetailsShow) viewModel.uiState.nearbyDetailsTitle else "Nearby"
             Row(
                 modifier = modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 TrainLineStyleText(
-                    text = "Nearby",
+                    text = title,
                     color = MaterialTheme.colorScheme.tertiaryContainer,
                     textColor = MaterialTheme.colorScheme.onTertiaryContainer,
                 )
@@ -548,12 +549,6 @@ fun NearbyBottomSheet(
                     modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
                     thickness = 1.dp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
-                )
-
-                TrainLineStyleText(
-                    text = viewModel.uiState.nearbyDetailsTitle,
-                    color = MaterialTheme.colorScheme.tertiaryContainer,
-                    textColor = MaterialTheme.colorScheme.onTertiaryContainer,
                 )
 
                 NearbyArrivalTrainPager(arrivals = viewModel.uiState.nearbyDetailsArrivals.arrivalsNew)
