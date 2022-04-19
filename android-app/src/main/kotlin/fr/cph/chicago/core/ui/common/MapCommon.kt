@@ -17,9 +17,16 @@ class LocationViewModel : ViewModel() {
     var requestPermission: Boolean = true
 }
 
+class Arrival(
+    val unit: String = "min",
+    val destination: String,
+    val value: String,
+)
+
 class NearbyResult(
     val lastUpdate: LastUpdate = LastUpdate(App.instance.getString(R.string.time_now)),
-    val arrivals: TreeMap<NearbyDetailsArrivals, MutableList<String>> = TreeMap<NearbyDetailsArrivals, MutableList<String>>()
+    val arrivals: TreeMap<NearbyDetailsArrivals, MutableList<String>> = TreeMap<NearbyDetailsArrivals, MutableList<String>>(),
+    val arrivalsNew : List<Arrival> = listOf(),
 ) {
     companion object {
         @JvmName("toArrivalsTrain")
@@ -33,6 +40,18 @@ class NearbyResult(
                 }
                 acc
             }
+        }
+
+        @JvmName("toArrivalsTrainNewNearby")
+        fun toArrivalsNewNearby(trainEtas: List<TrainEta>): List<Arrival> {
+            return trainEtas
+                .map { trainEta ->
+                    Arrival(
+                        unit = "min",
+                        destination = trainEta.destName,
+                        value = trainEta.timeLeftDueDelay
+                    )
+                }
         }
 
         @JvmName("toArrivalsBus")

@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -69,6 +70,7 @@ import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.LastUpdate
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
@@ -98,6 +100,7 @@ import fr.cph.chicago.util.mapStyle
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.Calendar
@@ -447,6 +450,33 @@ class NearbyViewModel(
         setShowLocationError(false)
     }
 
+    fun resetDetails() {
+        viewModelScope.launch {
+            uiState = uiState.copy(
+                nearbyDetailsShow = false,
+                nearbyDetailsTitle = "",
+                nearbyDetailsArrivals = NearbyResult(),
+            )
+        }
+    }
+
+    fun collapseBottomSheet(
+        scope: CoroutineScope,
+        runBefore: () -> Unit = {},
+        runAfter: () -> Unit = {},
+    ) {
+        viewModelScope.launch {
+            runBefore()
+            val job = scope.launch {
+                if (uiState.scaffoldState.bottomSheetState.isExpanded) {
+                    uiState.scaffoldState.bottomSheetState.collapse()
+                }
+            }
+            job.join()
+            runAfter()
+        }
+    }
+
     fun setCurrentUserLocation(position: Position, zoom: Float = 16f) {
         uiState = uiState.copy(
             nearbyMapCenterLocation = position,
@@ -471,7 +501,11 @@ class NearbyViewModel(
     fun loadNearbyTrainDetails(trainStation: TrainStation) {
         trainService.loadStationTrainArrival(trainStation.id)
             .map { trainArrival ->
-                NearbyResult(arrivals = NearbyResult.toArrivals(trainArrival.trainEtas.filter { trainEta -> trainEta.trainStation.id == trainStation.id }))
+                NearbyResult(
+                    arrivals = NearbyResult.toArrivals(trainArrival.trainEtas.filter { trainEta -> trainEta.trainStation.id == trainStation.id }),
+                    arrivalsNew = NearbyResult.toArrivalsNewNearby(trainArrival.trainEtas.filter { trainEta -> trainEta.trainStation.id == trainStation.id })
+                )
+
             }
             .observeOn(Schedulers.computation())
             .subscribe(

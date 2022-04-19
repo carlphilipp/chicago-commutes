@@ -68,6 +68,7 @@ import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.FontSize
 import fr.cph.chicago.core.theme.availableFonts
 import fr.cph.chicago.core.ui.screen.BottomSheetContent
+import fr.cph.chicago.core.ui.screen.HeaderCard
 import fr.cph.chicago.core.ui.screen.MapTrainViewModel
 import fr.cph.chicago.core.ui.screen.NearbyViewModel
 import fr.cph.chicago.core.ui.screen.Screen
@@ -488,6 +489,7 @@ fun ShowBusBoundBottomView(
     )
 }
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun NearbyBottomSheet(
     modifier: Modifier = Modifier,
@@ -508,20 +510,36 @@ fun NearbyBottomSheet(
                     color = MaterialTheme.colorScheme.tertiaryContainer,
                     textColor = MaterialTheme.colorScheme.onTertiaryContainer,
                 )
-                FilledTonalButton(
-                    onClick = {
-                        scope.launch {
-                            viewModel.setMapCenterLocationAndLoadNearby(
-                                position = Position(latitude = cameraPositionState.position.target.latitude, longitude = cameraPositionState.position.target.longitude),
-                                zoom = cameraPositionState.position.zoom
+                if (viewModel.uiState.nearbyDetailsShow) {
+                    FilledTonalButton(
+                        onClick = {
+                            viewModel.collapseBottomSheet(
+                                scope = scope,
+                                runAfter = { viewModel.resetDetails() }
                             )
                         }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = null,
+                        )
                     }
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Refresh,
-                        contentDescription = null,
-                    )
+                } else {
+                    FilledTonalButton(
+                        onClick = {
+                            scope.launch {
+                                viewModel.setMapCenterLocationAndLoadNearby(
+                                    position = Position(latitude = cameraPositionState.position.target.latitude, longitude = cameraPositionState.position.target.longitude),
+                                    zoom = cameraPositionState.position.zoom
+                                )
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Refresh,
+                            contentDescription = null,
+                        )
+                    }
                 }
             }
 
@@ -537,6 +555,83 @@ fun NearbyBottomSheet(
                     color = MaterialTheme.colorScheme.tertiaryContainer,
                     textColor = MaterialTheme.colorScheme.onTertiaryContainer,
                 )
+
+                HeaderCard(
+                    name = viewModel.uiState.nearbyDetailsTitle,
+                    image = viewModel.uiState.nearbyDetailsIcon,
+                    lastUpdate = viewModel.uiState.nearbyDetailsArrivals.lastUpdate
+                )
+
+
+
+                // This needs to be done because it looks like HorizontalPager does not refresh data properly
+                // and it get confused when the state is accessed directly (and updated later)
+                val arrivals = viewModel.uiState.nearbyDetailsArrivals.arrivalsNew
+
+                    /*.ifEmpty {
+                    listOf(Pair(first = "No result", second = "##"))
+                }*/
+                val pagerState = rememberPagerState()
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 10.dp)
+                ) {
+                    HorizontalPager(
+                        modifier = Modifier,
+                        state = pagerState,
+                        count = arrivals.size,
+                        itemSpacing = 10.dp,
+                        contentPadding = PaddingValues(start = 0.dp, end = 250.dp),
+                    ) { page ->
+                        TrainStopArrivalTimeView(
+                            //title = arrivals[page].first,
+                            //minutes = arrivals[page].second,
+                            title = arrivals[page].destination,
+                            minutes = arrivals[page].value,
+                        )
+                    }
+                    AnimatedVisibility(
+                        visible = arrivals.size > 1 && (pagerState.currentPageOffset > 0 || pagerState.currentPage > 0),
+                        modifier = Modifier
+                            .height(87.dp)
+                            .width(14.dp)
+                            .align(Alignment.CenterStart)
+                            .clip(RoundedCornerShape(topEnd = 5.dp, bottomEnd = 5.dp))
+                            .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)),
+                        enter = fadeIn(animationSpec = tween(durationMillis = 500)),
+                        exit = fadeOut(animationSpec = tween(durationMillis = 500)),
+                    ) {
+                        Icon(
+                            modifier = Modifier.align(Alignment.Center),
+                            imageVector = Icons.Filled.ArrowLeft,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                    AnimatedVisibility(
+                        visible = arrivals.size > 3 && (arrivals.size - pagerState.currentPage) > 3,
+                        modifier = Modifier
+                            .height(87.dp)
+                            .width(14.dp)
+                            .align(Alignment.CenterEnd)
+                            .clip(RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
+                            .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)),
+                        enter = fadeIn(animationSpec = tween(durationMillis = 500)),
+                        exit = fadeOut(animationSpec = tween(durationMillis = 500)),
+                    ) {
+                        Icon(
+                            modifier = Modifier.align(Alignment.Center),
+                            imageVector = Icons.Filled.ArrowRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                }
+
+
+
+
             }
         },
         onBackClick = onBackClick,
