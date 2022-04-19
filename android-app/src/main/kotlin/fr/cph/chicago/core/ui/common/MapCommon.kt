@@ -21,6 +21,7 @@ class Arrival(
     val unit: String = "min",
     val destination: String,
     val value: String,
+    val trainLine: TrainLine,
 )
 
 class NearbyResult(
@@ -46,10 +47,12 @@ class NearbyResult(
         fun toArrivalsNewNearby(trainEtas: List<TrainEta>): List<Arrival> {
             return trainEtas
                 .map { trainEta ->
+                    val eta = if (trainEta.timeLeftDueDelay.contains(" min")) trainEta.timeLeftDueDelay.split(" min")[0] else trainEta.timeLeftDueDelay
                     Arrival(
                         unit = "min",
                         destination = trainEta.destName,
-                        value = trainEta.timeLeftDueDelay
+                        value = eta,
+                        trainLine = trainEta.routeName,
                     )
                 }
         }

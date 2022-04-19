@@ -70,7 +70,6 @@ import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.LastUpdate
 import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
@@ -342,7 +341,7 @@ fun NearbyGoogleMapView(
 
 @Composable
 fun MapStationDetailsView(showView: Boolean, title: String, image: ImageVector, arrivals: NearbyResult) {
-    Box(Modifier.fillMaxSize()) {
+    Box(Modifier.fillMaxSize().padding(bottom = 200.dp)) {
         Surface(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
