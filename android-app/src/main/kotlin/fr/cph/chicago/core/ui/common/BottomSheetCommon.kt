@@ -508,8 +508,8 @@ fun NearbyBottomSheet(
             ) {
                 TrainLineStyleText(
                     text = title,
-                    color = MaterialTheme.colorScheme.tertiaryContainer,
-                    textColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                    color = MaterialTheme.colorScheme.secondaryContainer,
+                    textColor = MaterialTheme.colorScheme.onSecondaryContainer,
                 )
                 if (viewModel.uiState.nearbyDetailsShow) {
                     FilledTonalButton(
