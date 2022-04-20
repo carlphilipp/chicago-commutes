@@ -582,6 +582,7 @@ private fun NearbyArrivalTrainPager(
                 title = arrivals[page].destination,
                 minutes = arrivals[page].value,
                 unit = arrivals[page].unit,
+                direction = arrivals[page].direction.toString(),
                 backgroundColor = arrivals[page].trainLine.color,
             )
         }
@@ -819,8 +820,9 @@ private fun TrainStopArrivalTimeView(
     modifier: Modifier = Modifier,
     title: String,
     minutes: String,
+    direction: String? = null,
     unit: String = "min",
-    backgroundColor: Color = MaterialTheme.colorScheme.background,
+    backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant,
 ) {
     Column(
         modifier = modifier
@@ -844,17 +846,31 @@ private fun TrainStopArrivalTimeView(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    text = title,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleSmall,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    Text(
+                        text = title,
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.titleSmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    if (direction != null) {
+                        Text(
+                            text = direction,
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.labelSmall,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                }
             }
             Column(
                 modifier = Modifier
-                    .padding(start = 4.dp, end = 4.dp, bottom = 4.dp)
+                    .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
                     .clip(
                         RoundedCornerShape(
                             topStartPercent = 20,

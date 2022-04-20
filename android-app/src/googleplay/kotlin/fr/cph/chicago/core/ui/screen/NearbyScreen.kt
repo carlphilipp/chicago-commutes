@@ -99,11 +99,11 @@ import fr.cph.chicago.util.mapStyle
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.Calendar
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.Calendar
-import java.util.concurrent.TimeUnit
 
 // FIXME: handle zoom right after permissions has been approved or denied
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
@@ -330,18 +330,15 @@ fun NearbyGoogleMapView(
             )
         }
     }
-
-    MapStationDetailsView(
-        showView = viewModel.uiState.nearbyDetailsShow,
-        title = viewModel.uiState.nearbyDetailsTitle,
-        image = viewModel.uiState.nearbyDetailsIcon,
-        arrivals = viewModel.uiState.nearbyDetailsArrivals,
-    )
 }
 
+// FIXME: To delete, keeping that for now untill bottom sheet is done
 @Composable
 fun MapStationDetailsView(showView: Boolean, title: String, image: ImageVector, arrivals: NearbyResult) {
-    Box(Modifier.fillMaxSize().padding(bottom = 200.dp)) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .padding(bottom = 200.dp)) {
         Surface(
             modifier = Modifier
                 .align(Alignment.BottomCenter)

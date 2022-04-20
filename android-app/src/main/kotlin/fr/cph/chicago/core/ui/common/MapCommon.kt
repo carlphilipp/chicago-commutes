@@ -9,6 +9,7 @@ import fr.cph.chicago.core.model.LastUpdate
 import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.dto.BusArrivalRouteDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
+import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.util.Util
 import java.util.TreeMap
@@ -22,6 +23,7 @@ class Arrival(
     val destination: String,
     val value: String,
     val trainLine: TrainLine,
+    val direction: TrainDirection,
 )
 
 class NearbyResult(
@@ -53,6 +55,7 @@ class NearbyResult(
                         destination = trainEta.destName,
                         value = eta,
                         trainLine = trainEta.routeName,
+                        direction = trainEta.stop.direction
                     )
                 }
         }
