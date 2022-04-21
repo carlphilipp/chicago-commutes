@@ -89,6 +89,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -764,6 +765,45 @@ fun TrainLineStyleText(
         textColor = textColor,
         color = color,
     )
+}
+
+@Composable
+fun TrainLineStyleIconText(
+    modifier: Modifier = Modifier,
+    text: String,
+    color: Color,
+    textColor: Color,
+    icon: ImageVector,
+    minWidth: Dp = 90.dp,
+    onClick: () -> Unit = {},
+) {
+    Surface(
+        modifier = modifier
+            .defaultMinSize(minWidth = minWidth)
+            .clip(RoundedCornerShape(15.0.dp))
+            .clickable(onClick = onClick),
+        color = color,
+        shadowElevation = 1.dp,
+        shape = RoundedCornerShape(15.0.dp),
+    ) {
+        Row(
+            modifier = Modifier.padding(vertical = 7.dp, horizontal = 15.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+            )
+            Text(
+                text = text,
+                color = textColor,
+                style = MaterialTheme.typography.titleSmall,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(start = 8.dp),
+            )
+        }
+    }
 }
 
 @Composable

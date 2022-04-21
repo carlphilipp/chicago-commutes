@@ -511,11 +511,20 @@ fun NearbyBottomSheet(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                TrainLineStyleText(
-                    text = title,
-                    color = MaterialTheme.colorScheme.secondaryContainer,
-                    textColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                )
+                if (viewModel.uiState.nearbyDetailsShow) {
+                    TrainLineStyleIconText(
+                        text = title,
+                        icon = viewModel.uiState.nearbyDetailsIcon,
+                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        textColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    )
+                } else {
+                    TrainLineStyleText(
+                        text = title,
+                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        textColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    )
+                }
                 if (viewModel.uiState.nearbyDetailsShow) {
                     FilledTonalButton(
                         onClick = {
