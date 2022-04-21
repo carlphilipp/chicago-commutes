@@ -54,6 +54,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -584,13 +586,13 @@ private fun NearbyArrivalTrainPager(
     arrivals: List<TrainEta>
 ) {
     val pagerState = rememberPagerState()
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(top = 10.dp, bottom = 10.dp)
-    ) {
+    ConstraintLayout(modifier = modifier.fillMaxWidth()) {
+        val (pager, leftArrow, rightArrow) = createRefs()
         HorizontalPager(
-            modifier = Modifier,
+            modifier = Modifier
+                .constrainAs(pager) {
+                    start.linkTo(anchor = parent.start)
+                },
             state = pagerState,
             count = arrivals.size,
             itemSpacing = 10.dp,
@@ -606,16 +608,19 @@ private fun NearbyArrivalTrainPager(
         AnimatedVisibility(
             visible = arrivals.size > 1 && (pagerState.currentPageOffset > 0 || pagerState.currentPage > 0),
             modifier = Modifier
-                .height(87.dp)
+                .constrainAs(leftArrow) {
+                    start.linkTo(anchor = pager.start)
+                    top.linkTo(anchor = pager.top)
+                    bottom.linkTo(anchor = pager.bottom)
+                    height = Dimension.fillToConstraints
+                }
                 .width(14.dp)
-                .align(Alignment.CenterStart)
                 .clip(RoundedCornerShape(topEnd = 5.dp, bottomEnd = 5.dp))
                 .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)),
             enter = fadeIn(animationSpec = tween(durationMillis = 500)),
             exit = fadeOut(animationSpec = tween(durationMillis = 500)),
         ) {
             Icon(
-                modifier = Modifier.align(Alignment.Center),
                 imageVector = Icons.Filled.ArrowLeft,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
@@ -624,16 +629,19 @@ private fun NearbyArrivalTrainPager(
         AnimatedVisibility(
             visible = arrivals.size > 3 && (arrivals.size - pagerState.currentPage) > 3,
             modifier = Modifier
-                .height(87.dp)
+                .constrainAs(rightArrow) {
+                    end.linkTo(anchor = pager.end)
+                    top.linkTo(anchor = pager.top)
+                    bottom.linkTo(anchor = pager.bottom)
+                    height = Dimension.fillToConstraints
+                }
                 .width(14.dp)
-                .align(Alignment.CenterEnd)
                 .clip(RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
                 .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)),
             enter = fadeIn(animationSpec = tween(durationMillis = 500)),
             exit = fadeOut(animationSpec = tween(durationMillis = 500)),
         ) {
             Icon(
-                modifier = Modifier.align(Alignment.Center),
                 imageVector = Icons.Filled.ArrowRight,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
