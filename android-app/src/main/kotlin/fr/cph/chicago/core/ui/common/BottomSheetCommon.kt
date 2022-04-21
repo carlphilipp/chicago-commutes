@@ -567,8 +567,8 @@ fun NearbyBottomSheet(
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
                 )
                 when (viewModel.uiState.bottomSheetData.bottomSheetState) {
-                    BottomSheetDataState.TRAIN -> NearbyArrivalTrainPager(arrivals = viewModel.uiState.bottomSheetData.trainArrivals)
-                    BottomSheetDataState.BUS -> NearbyArrivalBusPager(arrivals = viewModel.uiState.bottomSheetData.busArrivals)
+                    BottomSheetDataState.TRAIN -> BottomSheetPager(pagerData = viewModel.uiState.bottomSheetData.trainArrivals)
+                    BottomSheetDataState.BUS -> BottomSheetPager(pagerData = viewModel.uiState.bottomSheetData.busArrivals)
                     BottomSheetDataState.BIKE -> NearbyBikePager(bikeStation = viewModel.uiState.bottomSheetData.bikeStation)
                     else -> {}
                 }
@@ -576,142 +576,6 @@ fun NearbyBottomSheet(
         },
         onBackClick = onBackClick,
     )
-}
-
-
-@OptIn(ExperimentalPagerApi::class)
-@Composable
-private fun NearbyArrivalTrainPager(
-    modifier: Modifier = Modifier,
-    arrivals: List<TrainEta>
-) {
-    val pagerState = rememberPagerState()
-    ConstraintLayout(modifier = modifier.fillMaxWidth()) {
-        val (pager, leftArrow, rightArrow) = createRefs()
-        HorizontalPager(
-            modifier = Modifier
-                .constrainAs(pager) {
-                    start.linkTo(anchor = parent.start)
-                },
-            state = pagerState,
-            count = arrivals.size,
-            itemSpacing = 10.dp,
-            contentPadding = PaddingValues(start = 0.dp, end = 250.dp),
-        ) { page ->
-            BottomSheetPage(
-                title = arrivals[page].destName,
-                content = arrivals[page].timeLeftDueDelayNoMinutes,
-                subTitle = arrivals[page].stop.direction.toString(),
-                backgroundColor = arrivals[page].routeName.color,
-            )
-        }
-        AnimatedVisibility(
-            visible = arrivals.size > 1 && (pagerState.currentPageOffset > 0 || pagerState.currentPage > 0),
-            modifier = Modifier
-                .constrainAs(leftArrow) {
-                    start.linkTo(anchor = pager.start)
-                    top.linkTo(anchor = pager.top)
-                    bottom.linkTo(anchor = pager.bottom)
-                    height = Dimension.fillToConstraints
-                }
-                .width(14.dp)
-                .clip(RoundedCornerShape(topEnd = 5.dp, bottomEnd = 5.dp))
-                .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)),
-            enter = fadeIn(animationSpec = tween(durationMillis = 500)),
-            exit = fadeOut(animationSpec = tween(durationMillis = 500)),
-        ) {
-            Icon(
-                imageVector = Icons.Filled.ArrowLeft,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-            )
-        }
-        AnimatedVisibility(
-            visible = arrivals.size > 3 && (arrivals.size - pagerState.currentPage) > 3,
-            modifier = Modifier
-                .constrainAs(rightArrow) {
-                    end.linkTo(anchor = pager.end)
-                    top.linkTo(anchor = pager.top)
-                    bottom.linkTo(anchor = pager.bottom)
-                    height = Dimension.fillToConstraints
-                }
-                .width(14.dp)
-                .clip(RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
-                .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)),
-            enter = fadeIn(animationSpec = tween(durationMillis = 500)),
-            exit = fadeOut(animationSpec = tween(durationMillis = 500)),
-        ) {
-            Icon(
-                imageVector = Icons.Filled.ArrowRight,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalPagerApi::class)
-@Composable
-private fun NearbyArrivalBusPager(
-    modifier: Modifier = Modifier,
-    arrivals: List<BusArrival>
-) {
-    val pagerState = rememberPagerState()
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(top = 10.dp, bottom = 10.dp)
-    ) {
-        HorizontalPager(
-            modifier = Modifier,
-            state = pagerState,
-            count = arrivals.size,
-            itemSpacing = 10.dp,
-            contentPadding = PaddingValues(start = 0.dp, end = 250.dp),
-        ) { page ->
-            BottomSheetPage(
-                title = arrivals[page].busDestination,
-                content = arrivals[page].timeLeftDueDelayNoMinutes,
-                subTitle = BusDirection.fromString(arrivals[page].routeDirection).shortLowerCase,
-            )
-        }
-        AnimatedVisibility(
-            visible = arrivals.size > 1 && (pagerState.currentPageOffset > 0 || pagerState.currentPage > 0),
-            modifier = Modifier
-                .height(87.dp)
-                .width(14.dp)
-                .align(Alignment.CenterStart)
-                .clip(RoundedCornerShape(topEnd = 5.dp, bottomEnd = 5.dp))
-                .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)),
-            enter = fadeIn(animationSpec = tween(durationMillis = 500)),
-            exit = fadeOut(animationSpec = tween(durationMillis = 500)),
-        ) {
-            Icon(
-                modifier = Modifier.align(Alignment.Center),
-                imageVector = Icons.Filled.ArrowLeft,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-            )
-        }
-        AnimatedVisibility(
-            visible = arrivals.size > 3 && (arrivals.size - pagerState.currentPage) > 3,
-            modifier = Modifier
-                .height(87.dp)
-                .width(14.dp)
-                .align(Alignment.CenterEnd)
-                .clip(RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
-                .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)),
-            enter = fadeIn(animationSpec = tween(durationMillis = 500)),
-            exit = fadeOut(animationSpec = tween(durationMillis = 500)),
-        ) {
-            Icon(
-                modifier = Modifier.align(Alignment.Center),
-                imageVector = Icons.Filled.ArrowRight,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-            )
-        }
-    }
 }
 
 @OptIn(ExperimentalPagerApi::class)
@@ -931,6 +795,92 @@ private fun ShowTrainDetailsTrainMapBottomSheet(
         ) {
             Icon(
                 modifier = Modifier.align(Alignment.Center),
+                imageVector = Icons.Filled.ArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        }
+    }
+}
+
+data class BottomSheetPagerData(
+    val title: String,
+    val content: String,
+    val subTitle: String,
+    val backgroundColor: Color? = null,
+)
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+private fun BottomSheetPager(
+    modifier: Modifier = Modifier,
+    pagerData: List<BottomSheetPagerData>,
+) {
+    val pagerState = rememberPagerState()
+    ConstraintLayout(modifier = modifier.fillMaxWidth()) {
+        val (pager, leftArrow, rightArrow) = createRefs()
+        HorizontalPager(
+            modifier = Modifier
+                .constrainAs(pager) {
+                    start.linkTo(anchor = parent.start)
+                },
+            state = pagerState,
+            count = pagerData.size,
+            itemSpacing = 10.dp,
+            contentPadding = PaddingValues(start = 0.dp, end = 250.dp),
+        ) { page ->
+            if (pagerData[page].backgroundColor != null) {
+                BottomSheetPage(
+                    title = pagerData[page].title,
+                    content = pagerData[page].content,
+                    subTitle = pagerData[page].subTitle,
+                    backgroundColor = pagerData[page].backgroundColor!!,
+                )
+            } else {
+                BottomSheetPage(
+                    title = pagerData[page].title,
+                    content = pagerData[page].content,
+                    subTitle = pagerData[page].subTitle,
+                )
+            }
+        }
+        AnimatedVisibility(
+            visible = pagerData.size > 1 && (pagerState.currentPageOffset > 0 || pagerState.currentPage > 0),
+            modifier = Modifier
+                .constrainAs(leftArrow) {
+                    start.linkTo(anchor = pager.start)
+                    top.linkTo(anchor = pager.top)
+                    bottom.linkTo(anchor = pager.bottom)
+                    height = Dimension.fillToConstraints
+                }
+                .width(14.dp)
+                .clip(RoundedCornerShape(topEnd = 5.dp, bottomEnd = 5.dp))
+                .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)),
+            enter = fadeIn(animationSpec = tween(durationMillis = 500)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 500)),
+        ) {
+            Icon(
+                imageVector = Icons.Filled.ArrowLeft,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        }
+        AnimatedVisibility(
+            visible = pagerData.size > 3 && (pagerData.size - pagerState.currentPage) > 3,
+            modifier = Modifier
+                .constrainAs(rightArrow) {
+                    end.linkTo(anchor = pager.end)
+                    top.linkTo(anchor = pager.top)
+                    bottom.linkTo(anchor = pager.bottom)
+                    height = Dimension.fillToConstraints
+                }
+                .width(14.dp)
+                .clip(RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
+                .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)),
+            enter = fadeIn(animationSpec = tween(durationMillis = 500)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 500)),
+        ) {
+            Icon(
                 imageVector = Icons.Filled.ArrowRight,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,

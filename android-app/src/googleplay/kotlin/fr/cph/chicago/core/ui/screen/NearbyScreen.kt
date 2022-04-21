@@ -72,9 +72,11 @@ import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
+import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.permissions.NearbyLocationPermissionView
+import fr.cph.chicago.core.ui.common.BottomSheetPagerData
 import fr.cph.chicago.core.ui.common.BottomSheetScaffoldMaterial3
 import fr.cph.chicago.core.ui.common.LoadingCircle
 import fr.cph.chicago.core.ui.common.LocationViewModel
@@ -387,8 +389,8 @@ fun StateDebugView(
 
 data class BottomSheetData(
     val bottomSheetState: BottomSheetDataState = BottomSheetDataState.HIDDEN,
-    val trainArrivals: List<TrainEta> = listOf(),
-    val busArrivals: List<BusArrival> = listOf(),
+    val trainArrivals: List<BottomSheetPagerData> = listOf(),
+    val busArrivals: List<BottomSheetPagerData> = listOf(),
     val bikeStation: BikeStation = BikeStation.buildUnknownStation(),
 )
 
@@ -523,7 +525,14 @@ class NearbyViewModel(
                         nearbyDetailsTitle = trainStation.name,
                         bottomSheetData = uiState.bottomSheetData.copy(
                             bottomSheetState = BottomSheetDataState.TRAIN,
-                            trainArrivals = it,
+                            trainArrivals = it.map { trainEta ->
+                                BottomSheetPagerData(
+                                    title = trainEta.destName,
+                                    content = trainEta.timeLeftDueDelayNoMinutes,
+                                    subTitle = trainEta.stop.direction.toString(),
+                                    backgroundColor = trainEta.routeName.color,
+                                )
+                            },
                         ),
                         nearbyDetailsShow = true,
                         nearbyDetailsIcon = Icons.Filled.Train,
@@ -544,7 +553,13 @@ class NearbyViewModel(
                         nearbyDetailsTitle = busStop.name,
                         bottomSheetData = uiState.bottomSheetData.copy(
                             bottomSheetState = BottomSheetDataState.BUS,
-                            busArrivals = it,
+                            busArrivals = it.map { busArrival ->
+                                BottomSheetPagerData(
+                                    title = busArrival.busDestination,
+                                    content = busArrival.timeLeftDueDelayNoMinutes,
+                                    subTitle = BusDirection.fromString(busArrival.routeDirection).shortLowerCase,
+                                )
+                            },
                         ),
                         nearbyDetailsShow = true,
                         nearbyDetailsIcon = Icons.Filled.DirectionsBus,
