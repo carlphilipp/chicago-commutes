@@ -69,14 +69,12 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusStop
-import fr.cph.chicago.core.model.LastUpdate
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.permissions.NearbyLocationPermissionView
-import fr.cph.chicago.core.ui.common.Arrival
 import fr.cph.chicago.core.ui.common.BottomSheetScaffoldMaterial3
 import fr.cph.chicago.core.ui.common.LoadingCircle
 import fr.cph.chicago.core.ui.common.LocationViewModel
@@ -97,16 +95,14 @@ import fr.cph.chicago.util.GoogleMapUtil
 import fr.cph.chicago.util.GoogleMapUtil.getBitmapDescriptor
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
-import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.mapStyle
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.util.Calendar
-import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 // FIXME: handle zoom right after permissions has been approved or denied
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
@@ -341,7 +337,8 @@ fun MapStationDetailsView(showView: Boolean, title: String, image: ImageVector, 
     Box(
         Modifier
             .fillMaxSize()
-            .padding(bottom = 200.dp)) {
+            .padding(bottom = 200.dp)
+    ) {
         Surface(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -411,7 +408,6 @@ data class NearbyScreenUiState constructor(
     val nearbyDetailsShow: Boolean = false,
     val nearbyDetailsTitle: String = "",
     val nearbyDetailsIcon: ImageVector = Icons.Filled.Train,
-    //val nearbyDetailsArrivals: NearbyResult = NearbyResult(),
     val bottomSheetData: BottomSheetData = BottomSheetData(),
 
     val nearbyDetailsError: Boolean = false,
@@ -517,12 +513,8 @@ class NearbyViewModel(
 
     fun loadNearbyTrainDetails(trainStation: TrainStation) {
         trainService.loadStationTrainArrival(trainStation.id)
-            .map { trainArrival -> trainArrival.trainEtas.filter { trainEta -> trainEta.trainStation.id == trainStation.id }
-                /*NearbyResult(
-                    arrivals = NearbyResult.toArrivals(trainArrival.trainEtas.filter { trainEta -> trainEta.trainStation.id == trainStation.id }),
-                    arrivalsNew = NearbyResult.toArrivalsNewNearby(trainArrival.trainEtas.filter { trainEta -> trainEta.trainStation.id == trainStation.id })
-                )*/
-
+            .map { trainArrival ->
+                trainArrival.trainEtas.filter { trainEta -> trainEta.trainStation.id == trainStation.id }
             }
             .observeOn(Schedulers.computation())
             .subscribe(
@@ -533,7 +525,6 @@ class NearbyViewModel(
                             bottomSheetState = BottomSheetDataState.TRAIN,
                             trainArrivals = it,
                         ),
-                        //nearbyDetailsArrivals = it,
                         nearbyDetailsShow = true,
                         nearbyDetailsIcon = Icons.Filled.Train,
                     )
@@ -546,9 +537,6 @@ class NearbyViewModel(
 
     fun loadNearbyBusDetails(busStop: BusStop) {
         busService.loadBusArrivals(busStop)
-            /*.map { busArrivals ->
-                NearbyResult(arrivals = NearbyResult.toArrivals(busArrivals))
-            }*/
             .observeOn(Schedulers.computation())
             .subscribe(
                 {
@@ -570,13 +558,6 @@ class NearbyViewModel(
 
     fun loadNearbyBikeDetails(currentBikeStation: BikeStation) {
         bikeService.findBikeStation(currentBikeStation.id)
-            /*.map { bikeStation ->
-                NearbyResult(
-                    arrivals = NearbyResult.toArrivals(bikeStation),
-                    lastUpdate = LastUpdate(TimeUtil.formatTimeDifference(bikeStation.lastReported, Calendar.getInstance().time)),
-                    arrivalsNew = NearbyResult.toArrivalsNewNearby(bikeStation)
-                )
-            }*/
             .observeOn(Schedulers.computation())
             .subscribe(
                 {

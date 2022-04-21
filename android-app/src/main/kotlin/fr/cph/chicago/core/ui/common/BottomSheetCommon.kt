@@ -31,6 +31,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
@@ -67,6 +68,7 @@ import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
+import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.FontSize
@@ -586,10 +588,10 @@ private fun NearbyArrivalTrainPager(
             itemSpacing = 10.dp,
             contentPadding = PaddingValues(start = 0.dp, end = 250.dp),
         ) { page ->
-            TrainStopArrivalTimeView(
+            BottomSheetPage(
                 title = arrivals[page].destName,
-                minutes = arrivals[page].timeLeftDueDelayNoMinutes,
-                direction = arrivals[page].stop.direction.toString(),
+                content = arrivals[page].timeLeftDueDelayNoMinutes,
+                subTitle = arrivals[page].stop.direction.toString(),
                 backgroundColor = arrivals[page].routeName.color,
             )
         }
@@ -651,10 +653,10 @@ private fun NearbyArrivalBusPager(
             itemSpacing = 10.dp,
             contentPadding = PaddingValues(start = 0.dp, end = 250.dp),
         ) { page ->
-            TrainStopArrivalTimeView(
+            BottomSheetPage(
                 title = arrivals[page].busDestination,
-                minutes = arrivals[page].timeLeftDueDelayNoMinutes,
-                direction = arrivals[page].routeDirection,
+                content = arrivals[page].timeLeftDueDelayNoMinutes,
+                subTitle = BusDirection.fromString(arrivals[page].routeDirection).shortLowerCase,
             )
         }
         AnimatedVisibility(
@@ -716,16 +718,16 @@ private fun NearbyBikePager(
             contentPadding = PaddingValues(start = 0.dp, end = 250.dp),
         ) { page ->
             if (page == 0) {
-                TrainStopArrivalTimeView(
+                BottomSheetPage(
                     title = "Bikes",
-                    minutes = bikeStation.availableBikes.toString(),
-                    unit = "available",
+                    content = bikeStation.availableBikes.toString(),
+                    contentBottom = "available",
                 )
             } else {
-                TrainStopArrivalTimeView(
+                BottomSheetPage(
                     title = "Docks",
-                    minutes = bikeStation.availableDocks.toString(),
-                    unit = "available",
+                    content = bikeStation.availableDocks.toString(),
+                    contentBottom = "available",
                 )
             }
         }
@@ -877,9 +879,9 @@ private fun ShowTrainDetailsTrainMapBottomSheet(
             itemSpacing = 10.dp,
             contentPadding = PaddingValues(start = 0.dp, end = 250.dp),
         ) { page ->
-            TrainStopArrivalTimeView(
+            BottomSheetPage(
                 title = arrivals[page].first,
-                minutes = arrivals[page].second,
+                content = arrivals[page].second,
             )
         }
         AnimatedVisibility(
@@ -922,12 +924,12 @@ private fun ShowTrainDetailsTrainMapBottomSheet(
 }
 
 @Composable
-private fun TrainStopArrivalTimeView(
+private fun BottomSheetPage(
     modifier: Modifier = Modifier,
     title: String,
-    minutes: String,
-    direction: String? = null,
-    unit: String = "min",
+    subTitle: String? = null,
+    content: String,
+    contentBottom: String = "min",
     backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant,
 ) {
     Column(
@@ -963,9 +965,9 @@ private fun TrainStopArrivalTimeView(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    if (direction != null) {
+                    if (subTitle != null) {
                         Text(
-                            text = direction,
+                            text = subTitle,
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.labelSmall,
                             maxLines = 1,
@@ -991,12 +993,12 @@ private fun TrainStopArrivalTimeView(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = minutes,
+                    text = content,
                     style = MaterialTheme.typography.headlineLarge,
                     textAlign = TextAlign.Center,
                 )
                 Text(
-                    text = unit,
+                    text = contentBottom,
                     style = MaterialTheme.typography.bodySmall,
                     textAlign = TextAlign.Center,
                 )
