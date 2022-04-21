@@ -110,9 +110,9 @@ fun TrainMapScreen(
     settingsViewModel: SettingsViewModel,
 ) {
     Timber.d("Compose TrainMapScreen ${Thread.currentThread().name}")
+    val scope = rememberCoroutineScope()
     val navController = LocalNavController.current
     val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
-    val scope = rememberCoroutineScope()
     var isMapLoaded by remember { mutableStateOf(false) }
     val cameraPositionState: CameraPositionState by remember {
         mutableStateOf(

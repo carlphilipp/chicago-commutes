@@ -38,7 +38,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -90,7 +89,7 @@ import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.CameraDebugView
-import fr.cph.chicago.util.GoogleMapUtil
+import fr.cph.chicago.util.GoogleMapUtil.defaultZoom
 import fr.cph.chicago.util.GoogleMapUtil.getBitmapDescriptor
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
@@ -115,25 +114,26 @@ fun NearbyScreen(
     settingsViewModel: SettingsViewModel,
     title: String
 ) {
-    Timber.d("Compose NearbyScreen")
+    Timber.d("Compose NearbyScreen ${Thread.currentThread().name}")
     val scope = rememberCoroutineScope()
     val navController = LocalNavController.current
+    val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     var isMapLoaded by remember { mutableStateOf(false) }
     val cameraPositionState: CameraPositionState by remember {
         mutableStateOf(
             CameraPositionState(
-                position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), GoogleMapUtil.defaultZoom)
+                position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)
             )
         )
     }
 
-    LaunchedEffect(key1 = viewModel.uiState.nearbyDetailsShow, block = {
+/*    LaunchedEffect(key1 = viewModel.uiState.nearbyDetailsShow, block = {
         scope.launch {
             if (viewModel.uiState.nearbyDetailsShow) {
                 viewModel.uiState.scaffoldState.bottomSheetState.expand()
             }
         }
-    })
+    })*/
 
     // Show map after 5 seconds. This is needed because there is no callback from the sdk to know if the map can be loaded or not.
     // Meaning that we can have a situation where the onMapLoaded method is never triggered, while the map view has been populated
@@ -159,8 +159,20 @@ fun NearbyScreen(
         )
     }
 
+/*    BottomSheetScaffoldMaterial3(
+        scaffoldState = viewModel.uiState.scaffoldState,
+        sheetPeekHeight = 0.dp,
+        sheetContent = {
+            Text("sheet content")
+        },
+        snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
+        content = {
+            Text("back content")
+        }
+    )*/
+
     BottomSheetScaffoldMaterial3(
-        modifier = Modifier.fillMaxWidth(),
+        scaffoldState = viewModel.uiState.scaffoldState,
         sheetPeekHeight = 120.dp,
         sheetContent = {
             NearbyBottomSheet(
@@ -177,11 +189,11 @@ fun NearbyScreen(
                 cameraPositionState = cameraPositionState,
             )
         },
+        snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
         content = {
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column {
                 Scaffold(
-                    modifier = modifier.fillMaxWidth(),
-                    snackbarHost = { SnackbarHostInsets(state = viewModel.uiState.snackbarHostState) },
+                    modifier = modifier,
                     content = {
                         NearbyGoogleMapView(
                             onMapLoaded = { isMapLoaded = true },
@@ -189,7 +201,6 @@ fun NearbyScreen(
                             settingsViewModel = settingsViewModel,
                             cameraPositionState = cameraPositionState,
                         )
-
                         ConstraintLayout(
                             modifier = modifier
                                 .fillMaxWidth()
@@ -235,7 +246,7 @@ fun NearbyScreen(
                         if (viewModel.uiState.nearbyShowLocationError) {
                             ShowLocationNotFoundSnackBar(
                                 scope = scope,
-                                snackbarHostState = viewModel.uiState.snackbarHostState,
+                                snackbarHostState = snackbarHostState,
                                 showErrorMessage = viewModel.uiState.nearbyShowLocationError,
                                 onComplete = { viewModel.setShowLocationError(false) }
                             )
@@ -243,7 +254,7 @@ fun NearbyScreen(
                         if (viewModel.uiState.nearbyDetailsError) {
                             ShowErrorMessageSnackBar(
                                 scope = scope,
-                                snackbarHostState = viewModel.uiState.snackbarHostState,
+                                snackbarHostState = snackbarHostState,
                                 showError = viewModel.uiState.nearbyDetailsError,
                                 onComplete = { viewModel.setNearbyDetailsError(false) }
                             )
@@ -284,9 +295,6 @@ fun NearbyGoogleMapView(
             val cameraUpdate = CameraUpdateFactory.newLatLngZoom(uiState.nearbyMapCenterLocation.toLatLng(), uiState.nearbyZoomIn)
             cameraPositionState.move(cameraUpdate)
         },
-        onMapClick = {
-            viewModel.setShowNearbyDetails(false)
-        }
     ) {
         val bitmapDescriptorTrain = getBitmapDescriptor(context, R.drawable.train_station_icon)
         val bitmapDescriptorBus = getBitmapDescriptor(context, R.drawable.bus_stop_icon)
@@ -301,7 +309,12 @@ fun NearbyGoogleMapView(
                 icon = bitmapDescriptorTrain,
                 onClick = {
                     job?.cancel()
-                    viewModel.loadNearbyTrainDetails(trainStation = trainStation)
+                    viewModel.expandBottomSheet(
+                        scope = scope,
+                        runBefore = {
+                            viewModel.loadNearbyTrainDetails(trainStation = trainStation)
+                        }
+                    )
                     false
                 },
                 onInfoWindowClose = {
@@ -324,7 +337,12 @@ fun NearbyGoogleMapView(
                 icon = bitmapDescriptorBus,
                 onClick = {
                     job?.cancel()
-                    viewModel.loadNearbyBusDetails(busStop = busStop)
+                    viewModel.expandBottomSheet(
+                        scope = scope,
+                        runBefore = {
+                            viewModel.loadNearbyBusDetails(busStop = busStop)
+                        }
+                    )
                     false
                 },
                 onInfoWindowClose = {
@@ -347,7 +365,12 @@ fun NearbyGoogleMapView(
                 icon = bitmapDescriptorBike,
                 onClick = {
                     job?.cancel()
-                    viewModel.loadNearbyBikeDetails(currentBikeStation = bikeStation)
+                    viewModel.expandBottomSheet(
+                        scope = scope,
+                        runBefore = {
+                            viewModel.loadNearbyBikeDetails(currentBikeStation = bikeStation)
+                        }
+                    )
                     false
                 },
                 onInfoWindowClose = {
@@ -438,14 +461,14 @@ data class NearbyScreenUiState constructor(
     val nearbyZoomIn: Float = 8f,
     val nearbyIsMyLocationEnabled: Boolean = false,
     val nearbyShowLocationError: Boolean = false,
-    val nearbyDetailsShow: Boolean = false,
+
     val nearbyDetailsTitle: String = "",
     val nearbyDetailsIcon: ImageVector = Icons.Filled.Train,
     val bottomSheetData: BottomSheetData = BottomSheetData(),
 
     val nearbyDetailsError: Boolean = false,
 
-    val snackbarHostState: SnackbarHostState = SnackbarHostState(),
+    //val snackbarHostState: SnackbarHostState = SnackbarHostState(),
     val scaffoldState: BottomSheetScaffoldState = BottomSheetScaffoldState(
         drawerState = DrawerState(DrawerValue.Closed),
         bottomSheetState = BottomSheetState(initialValue = BottomSheetValue.Collapsed),
@@ -475,10 +498,6 @@ class NearbyViewModel(
         uiState = uiState.copy(nearbyDetailsError = value)
     }
 
-    fun setShowNearbyDetails(value: Boolean) {
-        uiState = uiState.copy(nearbyDetailsShow = value)
-    }
-
     fun setNearbyIsMyLocationEnabled(value: Boolean) {
         uiState = uiState.copy(nearbyIsMyLocationEnabled = value)
     }
@@ -499,7 +518,6 @@ class NearbyViewModel(
     fun resetDetails() {
         viewModelScope.launch {
             uiState = uiState.copy(
-                nearbyDetailsShow = false,
                 nearbyDetailsTitle = "",
                 bottomSheetData = uiState.bottomSheetData.copy(
                     bottomSheetState = BottomSheetDataState.HIDDEN,
@@ -521,6 +539,23 @@ class NearbyViewModel(
             val job = scope.launch {
                 if (uiState.scaffoldState.bottomSheetState.isExpanded) {
                     uiState.scaffoldState.bottomSheetState.collapse()
+                }
+            }
+            job.join()
+            runAfter()
+        }
+    }
+
+    fun expandBottomSheet(
+        scope: CoroutineScope,
+        runBefore: () -> Unit = {},
+        runAfter: () -> Unit = {},
+    ) {
+        viewModelScope.launch {
+            runBefore()
+            val job = scope.launch {
+                if (uiState.scaffoldState.bottomSheetState.isCollapsed) {
+                    uiState.scaffoldState.bottomSheetState.expand()
                 }
             }
             job.join()
@@ -570,7 +605,6 @@ class NearbyViewModel(
                                 )
                             },
                         ),
-                        nearbyDetailsShow = true,
                         nearbyDetailsIcon = Icons.Filled.Train,
                     )
                 },
@@ -597,7 +631,6 @@ class NearbyViewModel(
                                 )
                             },
                         ),
-                        nearbyDetailsShow = true,
                         nearbyDetailsIcon = Icons.Filled.DirectionsBus,
                     )
                 },
@@ -618,7 +651,6 @@ class NearbyViewModel(
                             bottomSheetState = BottomSheetDataState.BIKE,
                             bikeStation = it,
                         ),
-                        nearbyDetailsShow = true,
                         nearbyDetailsIcon = Icons.Filled.DirectionsBike,
                     )
                 },

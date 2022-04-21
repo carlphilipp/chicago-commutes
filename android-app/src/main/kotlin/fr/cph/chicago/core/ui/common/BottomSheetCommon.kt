@@ -62,14 +62,11 @@ import com.google.accompanist.pager.rememberPagerState
 import com.google.maps.android.compose.CameraPositionState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BikeStation
-import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
-import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.FontSize
@@ -507,13 +504,13 @@ fun NearbyBottomSheet(
     BottomSheet(
         content = {
             val scope = rememberCoroutineScope()
-            val title = if (viewModel.uiState.nearbyDetailsShow) viewModel.uiState.nearbyDetailsTitle else "Nearby"
+            val title = if (viewModel.uiState.bottomSheetData.bottomSheetState != BottomSheetDataState.HIDDEN) viewModel.uiState.nearbyDetailsTitle else "Nearby"
             Row(
                 modifier = modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                if (viewModel.uiState.nearbyDetailsShow) {
+                if (viewModel.uiState.bottomSheetData.bottomSheetState != BottomSheetDataState.HIDDEN) {
                     TrainLineStyleIconText(
                         text = title,
                         icon = viewModel.uiState.nearbyDetailsIcon,
@@ -527,7 +524,7 @@ fun NearbyBottomSheet(
                         textColor = MaterialTheme.colorScheme.onSecondaryContainer,
                     )
                 }
-                if (viewModel.uiState.nearbyDetailsShow) {
+                if (viewModel.uiState.bottomSheetData.bottomSheetState != BottomSheetDataState.HIDDEN) {
                     FilledTonalButton(
                         onClick = {
                             viewModel.collapseBottomSheet(
@@ -560,12 +557,13 @@ fun NearbyBottomSheet(
                 }
             }
 
+            Divider(
+                modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
+            )
+
             if (viewModel.uiState.bottomSheetData.bottomSheetState != BottomSheetDataState.HIDDEN) {
-                Divider(
-                    modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
-                    thickness = 1.dp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
-                )
                 when (viewModel.uiState.bottomSheetData.bottomSheetState) {
                     BottomSheetDataState.TRAIN -> BottomSheetPager(pagerData = viewModel.uiState.bottomSheetData.trainArrivals)
                     BottomSheetDataState.BUS -> BottomSheetPager(pagerData = viewModel.uiState.bottomSheetData.busArrivals)
@@ -817,14 +815,13 @@ private fun BottomSheetPager(
     pagerData: List<BottomSheetPagerData>,
 ) {
     val pagerState = rememberPagerState()
-    ConstraintLayout(modifier = modifier.fillMaxWidth()) {
+    ConstraintLayout(modifier = modifier.fillMaxWidth().padding(bottom = 10.dp)) {
         val (pager, leftArrow, rightArrow) = createRefs()
         HorizontalPager(
             modifier = Modifier
                 .constrainAs(pager) {
                     start.linkTo(anchor = parent.start)
-                }
-                .padding(bottom = 10.dp),
+                },
             state = pagerState,
             count = pagerData.size,
             itemSpacing = 10.dp,

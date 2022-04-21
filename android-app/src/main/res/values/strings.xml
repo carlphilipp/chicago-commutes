@@ -80,7 +80,7 @@
 
     <!-- Error -->
     <string name="error_message">Something went wrong, try again later</string>
-    <string name="error_location">Location could not be found</string>
+    <string name="error_location">Location not found</string>
     <string name="error_button">Retry</string>
 
     <!-- Bus Bound -->
