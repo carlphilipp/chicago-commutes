@@ -37,7 +37,6 @@ import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.getActivity
 import java.net.URLDecoder
 import kotlin.random.Random
-import timber.log.Timber
 
 sealed class Screen(
     val id: Int = Random.nextInt(),
@@ -268,7 +267,6 @@ sealed class Screen(
         component = { _, navigationViewModel ->
             val viewModel = NearbyViewModel()
             NearbyScreen(
-                mainViewModel = mainViewModel,
                 viewModel = viewModel,
                 locationViewModel = locationViewModel,
                 navigationViewModel = navigationViewModel,

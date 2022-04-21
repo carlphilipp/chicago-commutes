@@ -26,6 +26,7 @@ class Arrival(
     val direction: TrainDirection,
 )
 
+// FIXME: To delete?
 class NearbyResult(
     val lastUpdate: LastUpdate = LastUpdate(App.instance.getString(R.string.time_now)),
     val arrivals: TreeMap<NearbyDetailsArrivals, MutableList<String>> = TreeMap<NearbyDetailsArrivals, MutableList<String>>(),

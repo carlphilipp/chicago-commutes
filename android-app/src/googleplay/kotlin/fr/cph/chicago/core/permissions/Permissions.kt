@@ -23,12 +23,12 @@ import timber.log.Timber
 // TODO: Investigate https://google.github.io/accompanist/permissions/
 @Composable
 fun NearbyLocationPermissionView(
-    mainViewModel: MainViewModel,
     locationViewModel: LocationViewModel,
     callBackLoadLocation:(position: Position) -> Unit,
     callBackDefaultLocation: () -> Unit,
 ) {
     val context = LocalContext.current
+    Timber.i("requestPermission, ${locationViewModel.requestPermission}")
     if (locationViewModel.requestPermission) {
         PermissionLocationView(context = context) { permissionAction ->
             when (permissionAction) {
@@ -55,7 +55,6 @@ fun NearbyLocationPermissionView(
                         if (settingsStates!!.isLocationPresent && settingsStates.isLocationUsable) {
                             refreshUserLocation(
                                 context = context,
-                                mainViewModel = mainViewModel,
                                 callBackLoadLocation = callBackLoadLocation,
                                 callBackDefaultLocation = callBackDefaultLocation,
                             )
@@ -77,7 +76,6 @@ fun NearbyLocationPermissionView(
     } else {
         refreshUserLocation(
             context = context,
-            mainViewModel = mainViewModel,
             callBackLoadLocation = callBackLoadLocation,
             callBackDefaultLocation = callBackDefaultLocation,
         )
@@ -87,7 +85,6 @@ fun NearbyLocationPermissionView(
 @SuppressLint("MissingPermission")
 private fun refreshUserLocation(
     context: Context,
-    mainViewModel: MainViewModel,
     callBackLoadLocation:(position: Position) -> Unit,
     callBackDefaultLocation: () -> Unit,
 ) {

@@ -67,10 +67,8 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberMarkerState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BikeStation
-import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.navigation.LocalNavController
@@ -87,7 +85,6 @@ import fr.cph.chicago.core.ui.common.ShowLocationNotFoundSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.runWithDelay
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
-import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
@@ -101,10 +98,11 @@ import fr.cph.chicago.util.mapStyle
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 // FIXME: handle zoom right after permissions has been approved or denied
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
@@ -112,7 +110,6 @@ import java.util.concurrent.TimeUnit
 fun NearbyScreen(
     modifier: Modifier = Modifier,
     viewModel: NearbyViewModel,
-    mainViewModel: MainViewModel,
     locationViewModel: LocationViewModel,
     navigationViewModel: NavigationViewModel,
     settingsViewModel: SettingsViewModel,
@@ -147,16 +144,20 @@ fun NearbyScreen(
         }
     }
 
-    NearbyLocationPermissionView(
-        mainViewModel = mainViewModel,
-        locationViewModel = locationViewModel,
-        callBackLoadLocation = { position ->
-            viewModel.setNearbyIsMyLocationEnabled(true)
-            viewModel.setCurrentUserLocation(position)
-            viewModel.loadNearbyStations(position)
-        },
-        callBackDefaultLocation = { viewModel.setDefaultUserLocation() }
-    )
+    if (viewModel.uiState.findLocation) {
+        NearbyLocationPermissionView(
+            locationViewModel = locationViewModel,
+            callBackLoadLocation = { position ->
+                viewModel.setFindLocation(false)
+                viewModel.setNearbyIsMyLocationEnabled(true)
+                viewModel.setCurrentUserLocation(position)
+                viewModel.loadNearbyStations(position)
+            },
+            callBackDefaultLocation = {
+                viewModel.setDefaultUserLocation()
+            }
+        )
+    }
 
     BottomSheetScaffoldMaterial3(
         modifier = Modifier.fillMaxWidth(),
@@ -263,7 +264,9 @@ fun NearbyGoogleMapView(
     cameraPositionState: CameraPositionState,
 ) {
     val uiState = viewModel.uiState
+    val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    var job: Job? by remember { mutableStateOf(null) }
 
     Timber.d("Set location: ${uiState.nearbyMapCenterLocation.toLatLng()}")
 
@@ -297,8 +300,17 @@ fun NearbyGoogleMapView(
                 title = trainStation.name,
                 icon = bitmapDescriptorTrain,
                 onClick = {
+                    job?.cancel()
                     viewModel.loadNearbyTrainDetails(trainStation = trainStation)
                     false
+                },
+                onInfoWindowClose = {
+                    job = scope.launch {
+                        viewModel.collapseBottomSheet(
+                            scope = scope,
+                            runAfter = { viewModel.resetDetails() }
+                        )
+                    }
                 }
             )
         }
@@ -311,8 +323,17 @@ fun NearbyGoogleMapView(
                 title = busStop.name,
                 icon = bitmapDescriptorBus,
                 onClick = {
+                    job?.cancel()
                     viewModel.loadNearbyBusDetails(busStop = busStop)
                     false
+                },
+                onInfoWindowClose = {
+                    job = scope.launch {
+                        viewModel.collapseBottomSheet(
+                            scope = scope,
+                            runAfter = { viewModel.resetDetails() }
+                        )
+                    }
                 }
             )
         }
@@ -325,15 +346,24 @@ fun NearbyGoogleMapView(
                 title = bikeStation.name,
                 icon = bitmapDescriptorBike,
                 onClick = {
+                    job?.cancel()
                     viewModel.loadNearbyBikeDetails(currentBikeStation = bikeStation)
                     false
+                },
+                onInfoWindowClose = {
+                    job = scope.launch {
+                        viewModel.collapseBottomSheet(
+                            scope = scope,
+                            runAfter = { viewModel.resetDetails() }
+                        )
+                    }
                 }
             )
         }
     }
 }
 
-// FIXME: To delete, keeping that for now untill bottom sheet is done
+// FIXME: To delete, keeping that for now until bottom sheet is done
 @Composable
 fun MapStationDetailsView(showView: Boolean, title: String, image: ImageVector, arrivals: NearbyResult) {
     Box(
@@ -400,6 +430,7 @@ enum class BottomSheetDataState {
 
 @OptIn(ExperimentalMaterialApi::class)
 data class NearbyScreenUiState constructor(
+    val findLocation: Boolean = true,
     val nearbyMapCenterLocation: Position = chicagoPosition,
     val nearbyTrainStations: List<TrainStation> = listOf(),
     val nearbyBusStops: List<BusStop> = listOf(),
@@ -432,6 +463,10 @@ class NearbyViewModel(
     var uiState by mutableStateOf(NearbyScreenUiState())
         private set
 
+    fun setFindLocation(value: Boolean) {
+        uiState = uiState.copy(findLocation = value)
+    }
+
     fun setShowLocationError(value: Boolean) {
         uiState = uiState.copy(nearbyShowLocationError = value)
     }
@@ -449,6 +484,7 @@ class NearbyViewModel(
     }
 
     fun setDefaultUserLocation() {
+        setFindLocation(false)
         setCurrentUserLocation(chicagoPosition)
         loadNearbyStations(chicagoPosition)
         setShowLocationError(true)

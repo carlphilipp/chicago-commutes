@@ -588,7 +588,7 @@ private fun NearbyBikePager(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 10.dp, bottom = 10.dp)
+            .padding(bottom = 10.dp)
     ) {
         HorizontalPager(
             modifier = Modifier,
@@ -823,7 +823,8 @@ private fun BottomSheetPager(
             modifier = Modifier
                 .constrainAs(pager) {
                     start.linkTo(anchor = parent.start)
-                },
+                }
+                .padding(bottom = 10.dp),
             state = pagerState,
             count = pagerData.size,
             itemSpacing = 10.dp,
