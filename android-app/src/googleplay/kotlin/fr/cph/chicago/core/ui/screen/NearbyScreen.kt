@@ -67,13 +67,16 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberMarkerState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.LastUpdate
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.permissions.NearbyLocationPermissionView
+import fr.cph.chicago.core.ui.common.Arrival
 import fr.cph.chicago.core.ui.common.BottomSheetScaffoldMaterial3
 import fr.cph.chicago.core.ui.common.LoadingCircle
 import fr.cph.chicago.core.ui.common.LocationViewModel
@@ -385,6 +388,17 @@ fun StateDebugView(
     }
 }
 
+data class BottomSheetData(
+    val bottomSheetState: BottomSheetDataState = BottomSheetDataState.HIDDEN,
+    val trainArrivals: List<TrainEta> = listOf(),
+    val busArrivals: List<BusArrival> = listOf(),
+    val bikeStation: BikeStation = BikeStation.buildUnknownStation(),
+)
+
+enum class BottomSheetDataState {
+    HIDDEN, TRAIN, BUS, BIKE
+}
+
 @OptIn(ExperimentalMaterialApi::class)
 data class NearbyScreenUiState constructor(
     val nearbyMapCenterLocation: Position = chicagoPosition,
@@ -397,7 +411,9 @@ data class NearbyScreenUiState constructor(
     val nearbyDetailsShow: Boolean = false,
     val nearbyDetailsTitle: String = "",
     val nearbyDetailsIcon: ImageVector = Icons.Filled.Train,
-    val nearbyDetailsArrivals: NearbyResult = NearbyResult(),
+    //val nearbyDetailsArrivals: NearbyResult = NearbyResult(),
+    val bottomSheetData: BottomSheetData = BottomSheetData(),
+
     val nearbyDetailsError: Boolean = false,
 
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
@@ -451,7 +467,12 @@ class NearbyViewModel(
             uiState = uiState.copy(
                 nearbyDetailsShow = false,
                 nearbyDetailsTitle = "",
-                nearbyDetailsArrivals = NearbyResult(),
+                bottomSheetData = uiState.bottomSheetData.copy(
+                    bottomSheetState = BottomSheetDataState.HIDDEN,
+                    trainArrivals = listOf(),
+                    busArrivals = listOf(),
+                    bikeStation = BikeStation.buildUnknownStation(),
+                )
             )
         }
     }
@@ -496,11 +517,11 @@ class NearbyViewModel(
 
     fun loadNearbyTrainDetails(trainStation: TrainStation) {
         trainService.loadStationTrainArrival(trainStation.id)
-            .map { trainArrival ->
-                NearbyResult(
+            .map { trainArrival -> trainArrival.trainEtas.filter { trainEta -> trainEta.trainStation.id == trainStation.id }
+                /*NearbyResult(
                     arrivals = NearbyResult.toArrivals(trainArrival.trainEtas.filter { trainEta -> trainEta.trainStation.id == trainStation.id }),
                     arrivalsNew = NearbyResult.toArrivalsNewNearby(trainArrival.trainEtas.filter { trainEta -> trainEta.trainStation.id == trainStation.id })
-                )
+                )*/
 
             }
             .observeOn(Schedulers.computation())
@@ -508,7 +529,11 @@ class NearbyViewModel(
                 {
                     uiState = uiState.copy(
                         nearbyDetailsTitle = trainStation.name,
-                        nearbyDetailsArrivals = it,
+                        bottomSheetData = uiState.bottomSheetData.copy(
+                            bottomSheetState = BottomSheetDataState.TRAIN,
+                            trainArrivals = it,
+                        ),
+                        //nearbyDetailsArrivals = it,
                         nearbyDetailsShow = true,
                         nearbyDetailsIcon = Icons.Filled.Train,
                     )
@@ -521,13 +546,18 @@ class NearbyViewModel(
 
     fun loadNearbyBusDetails(busStop: BusStop) {
         busService.loadBusArrivals(busStop)
-            .map { busArrivals -> NearbyResult(arrivals = NearbyResult.toArrivals(busArrivals)) }
+            /*.map { busArrivals ->
+                NearbyResult(arrivals = NearbyResult.toArrivals(busArrivals))
+            }*/
             .observeOn(Schedulers.computation())
             .subscribe(
                 {
                     uiState = uiState.copy(
                         nearbyDetailsTitle = busStop.name,
-                        nearbyDetailsArrivals = it,
+                        bottomSheetData = uiState.bottomSheetData.copy(
+                            bottomSheetState = BottomSheetDataState.BUS,
+                            busArrivals = it,
+                        ),
                         nearbyDetailsShow = true,
                         nearbyDetailsIcon = Icons.Filled.DirectionsBus,
                     )
@@ -540,18 +570,22 @@ class NearbyViewModel(
 
     fun loadNearbyBikeDetails(currentBikeStation: BikeStation) {
         bikeService.findBikeStation(currentBikeStation.id)
-            .map { bikeStation ->
+            /*.map { bikeStation ->
                 NearbyResult(
                     arrivals = NearbyResult.toArrivals(bikeStation),
-                    lastUpdate = LastUpdate(TimeUtil.formatTimeDifference(bikeStation.lastReported, Calendar.getInstance().time))
+                    lastUpdate = LastUpdate(TimeUtil.formatTimeDifference(bikeStation.lastReported, Calendar.getInstance().time)),
+                    arrivalsNew = NearbyResult.toArrivalsNewNearby(bikeStation)
                 )
-            }
+            }*/
             .observeOn(Schedulers.computation())
             .subscribe(
                 {
                     uiState = uiState.copy(
                         nearbyDetailsTitle = currentBikeStation.name,
-                        nearbyDetailsArrivals = it,
+                        bottomSheetData = uiState.bottomSheetData.copy(
+                            bottomSheetState = BottomSheetDataState.BIKE,
+                            bikeStation = it,
+                        ),
                         nearbyDetailsShow = true,
                         nearbyDetailsIcon = Icons.Filled.DirectionsBike,
                     )

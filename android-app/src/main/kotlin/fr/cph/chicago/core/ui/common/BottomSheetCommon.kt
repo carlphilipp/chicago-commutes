@@ -59,9 +59,12 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.google.maps.android.compose.CameraPositionState
 import fr.cph.chicago.R
+import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
@@ -69,6 +72,7 @@ import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.FontSize
 import fr.cph.chicago.core.theme.availableFonts
 import fr.cph.chicago.core.ui.screen.BottomSheetContent
+import fr.cph.chicago.core.ui.screen.BottomSheetDataState
 import fr.cph.chicago.core.ui.screen.MapTrainViewModel
 import fr.cph.chicago.core.ui.screen.NearbyViewModel
 import fr.cph.chicago.core.ui.screen.Screen
@@ -544,14 +548,18 @@ fun NearbyBottomSheet(
                 }
             }
 
-            if (viewModel.uiState.nearbyDetailsShow) {
+            if (viewModel.uiState.bottomSheetData.bottomSheetState != BottomSheetDataState.HIDDEN) {
                 Divider(
                     modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
                     thickness = 1.dp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
                 )
-
-                NearbyArrivalTrainPager(arrivals = viewModel.uiState.nearbyDetailsArrivals.arrivalsNew)
+                when (viewModel.uiState.bottomSheetData.bottomSheetState) {
+                    BottomSheetDataState.TRAIN -> NearbyArrivalTrainPager(arrivals = viewModel.uiState.bottomSheetData.trainArrivals)
+                    BottomSheetDataState.BUS -> NearbyArrivalBusPager(arrivals = viewModel.uiState.bottomSheetData.busArrivals)
+                    BottomSheetDataState.BIKE -> NearbyBikePager(bikeStation = viewModel.uiState.bottomSheetData.bikeStation)
+                    else -> {}
+                }
             }
         },
         onBackClick = onBackClick,
@@ -563,7 +571,7 @@ fun NearbyBottomSheet(
 @Composable
 private fun NearbyArrivalTrainPager(
     modifier: Modifier = Modifier,
-    arrivals: List<Arrival>
+    arrivals: List<TrainEta>
 ) {
     val pagerState = rememberPagerState()
     Box(
@@ -579,11 +587,10 @@ private fun NearbyArrivalTrainPager(
             contentPadding = PaddingValues(start = 0.dp, end = 250.dp),
         ) { page ->
             TrainStopArrivalTimeView(
-                title = arrivals[page].destination,
-                minutes = arrivals[page].value,
-                unit = arrivals[page].unit,
-                direction = arrivals[page].direction.toString(),
-                backgroundColor = arrivals[page].trainLine.color,
+                title = arrivals[page].destName,
+                minutes = arrivals[page].timeLeftDueDelayNoMinutes,
+                direction = arrivals[page].stop.direction.toString(),
+                backgroundColor = arrivals[page].routeName.color,
             )
         }
         AnimatedVisibility(
@@ -623,7 +630,106 @@ private fun NearbyArrivalTrainPager(
             )
         }
     }
+}
 
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+private fun NearbyArrivalBusPager(
+    modifier: Modifier = Modifier,
+    arrivals: List<BusArrival>
+) {
+    val pagerState = rememberPagerState()
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = 10.dp, bottom = 10.dp)
+    ) {
+        HorizontalPager(
+            modifier = Modifier,
+            state = pagerState,
+            count = arrivals.size,
+            itemSpacing = 10.dp,
+            contentPadding = PaddingValues(start = 0.dp, end = 250.dp),
+        ) { page ->
+            TrainStopArrivalTimeView(
+                title = arrivals[page].busDestination,
+                minutes = arrivals[page].timeLeftDueDelayNoMinutes,
+                direction = arrivals[page].routeDirection,
+            )
+        }
+        AnimatedVisibility(
+            visible = arrivals.size > 1 && (pagerState.currentPageOffset > 0 || pagerState.currentPage > 0),
+            modifier = Modifier
+                .height(87.dp)
+                .width(14.dp)
+                .align(Alignment.CenterStart)
+                .clip(RoundedCornerShape(topEnd = 5.dp, bottomEnd = 5.dp))
+                .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)),
+            enter = fadeIn(animationSpec = tween(durationMillis = 500)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 500)),
+        ) {
+            Icon(
+                modifier = Modifier.align(Alignment.Center),
+                imageVector = Icons.Filled.ArrowLeft,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        }
+        AnimatedVisibility(
+            visible = arrivals.size > 3 && (arrivals.size - pagerState.currentPage) > 3,
+            modifier = Modifier
+                .height(87.dp)
+                .width(14.dp)
+                .align(Alignment.CenterEnd)
+                .clip(RoundedCornerShape(topStart = 5.dp, bottomStart = 5.dp))
+                .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)),
+            enter = fadeIn(animationSpec = tween(durationMillis = 500)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 500)),
+        ) {
+            Icon(
+                modifier = Modifier.align(Alignment.Center),
+                imageVector = Icons.Filled.ArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+private fun NearbyBikePager(
+    modifier: Modifier = Modifier,
+    bikeStation: BikeStation
+) {
+    val pagerState = rememberPagerState()
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = 10.dp, bottom = 10.dp)
+    ) {
+        HorizontalPager(
+            modifier = Modifier,
+            state = pagerState,
+            count = 2,
+            itemSpacing = 10.dp,
+            contentPadding = PaddingValues(start = 0.dp, end = 250.dp),
+        ) { page ->
+            if (page == 0) {
+                TrainStopArrivalTimeView(
+                    title = "Bikes",
+                    minutes = bikeStation.availableBikes.toString(),
+                    unit = "available",
+                )
+            } else {
+                TrainStopArrivalTimeView(
+                    title = "Docks",
+                    minutes = bikeStation.availableDocks.toString(),
+                    unit = "available",
+                )
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

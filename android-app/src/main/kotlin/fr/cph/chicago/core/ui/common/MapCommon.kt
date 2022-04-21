@@ -98,6 +98,26 @@ class NearbyResult(
 
             return result
         }
+
+        @JvmName("toArrivalsBikeNewNearby")
+        fun toArrivalsNewNearby(bikeStation: BikeStation): List<Arrival> {
+            val availableBikes = Arrival(
+                unit = "bikes",
+                destination = "available",
+                value = bikeStation.availableBikes.toString(),
+                trainLine =  TrainLine.NA,
+                direction = TrainDirection.UNKNOWN,
+            )
+            val availableDocks = Arrival(
+                unit = "docks",
+                destination = "available",
+                value = bikeStation.availableDocks.toString(),
+                trainLine =  TrainLine.NA,
+                direction = TrainDirection.UNKNOWN,
+            )
+
+            return listOf(availableBikes, availableDocks)
+        }
     }
 }
 
