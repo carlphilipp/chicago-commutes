@@ -20,7 +20,6 @@
 package fr.cph.chicago.util
 
 import android.content.Context
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import androidx.annotation.DrawableRes
@@ -65,10 +64,6 @@ object GoogleMapUtil {
 
     const val defaultZoom = 10f
     val chicago: LatLng by lazy { LatLng(chicagoPosition.latitude, chicagoPosition.longitude) }
-
-    fun checkIfPermissionGranted(context: Context, permission: String): Boolean {
-        return (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED)
-    }
 
     fun getBitmapDescriptor(context: Context?, @DrawableRes icon: Int): BitmapDescriptor {
         return if (context != null) {

@@ -75,6 +75,7 @@ object Lib {
     const val accompanist_systemui =            "com.google.accompanist:accompanist-systemuicontroller:${Version.accompanist}"
     const val accompanist_animation =           "com.google.accompanist:accompanist-navigation-animation:${Version.accompanist}"
     const val accompanist_pager =               "com.google.accompanist:accompanist-pager:${Version.accompanist}"
+    const val accompanist_permissions =          "com.google.accompanist:accompanist-permissions:${Version.accompanist}"
     const val commons_collections4 =            "org.apache.commons:commons-collections4:${Version.commons_collections4}"
     const val commons_text =                    "org.apache.commons:commons-text:${Version.commons_text}"
     const val compose_animation =               "androidx.compose.animation:animation:${Version.compose}"

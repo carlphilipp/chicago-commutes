@@ -31,7 +31,6 @@ import fr.cph.chicago.core.ui.screen.settings.DeveloperOptionsViewModel
 import fr.cph.chicago.core.ui.screen.settings.DisplaySettingsScreen
 import fr.cph.chicago.core.ui.screen.settings.SettingsScreen
 import fr.cph.chicago.core.ui.screen.settings.ThemeChooserSettingsScreen
-import fr.cph.chicago.core.viewmodel.locationViewModel
 import fr.cph.chicago.core.viewmodel.mainViewModel
 import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.getActivity
@@ -273,7 +272,6 @@ sealed class Screen(
             val viewModel = ViewModelProvider(activity, factory)[NearbyViewModel::class.java]
             NearbyScreen(
                 viewModel = viewModel,
-                locationViewModel = locationViewModel,
                 navigationViewModel = navigationViewModel,
                 settingsViewModel = settingsViewModel,
             )

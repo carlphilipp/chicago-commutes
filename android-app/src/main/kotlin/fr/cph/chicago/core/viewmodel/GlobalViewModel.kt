@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.core.activity.MainUiState
 import fr.cph.chicago.core.model.Favorites
-import fr.cph.chicago.core.ui.common.LocationViewModel
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.redux.AlertAction
 import fr.cph.chicago.redux.BikeStationAction
@@ -24,12 +23,11 @@ import fr.cph.chicago.redux.ResetBusRoutesFavoritesAction
 import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
+import javax.inject.Inject
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import javax.inject.Inject
 
 val settingsViewModel = SettingsViewModel().initModel()
-val locationViewModel = LocationViewModel()
 
 @OptIn(ExperimentalMaterialApi::class)
 @HiltViewModel
