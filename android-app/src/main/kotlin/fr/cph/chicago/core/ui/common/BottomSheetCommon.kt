@@ -504,7 +504,11 @@ fun NearbyBottomSheet(
     BottomSheet(
         content = {
             val scope = rememberCoroutineScope()
-            val title = if (viewModel.uiState.bottomSheetData.bottomSheetState != BottomSheetDataState.HIDDEN) viewModel.uiState.nearbyDetailsTitle else stringResource(R.string.screen_nearby)
+            val title = if (viewModel.uiState.bottomSheetData.bottomSheetState != BottomSheetDataState.HIDDEN) {
+                viewModel.uiState.bottomSheetData.title
+            } else {
+                stringResource(R.string.screen_nearby)
+            }
             Row(
                 modifier = modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -513,7 +517,7 @@ fun NearbyBottomSheet(
                 if (viewModel.uiState.bottomSheetData.bottomSheetState != BottomSheetDataState.HIDDEN) {
                     TrainLineStyleIconText(
                         text = title,
-                        icon = viewModel.uiState.nearbyDetailsIcon,
+                        icon = viewModel.uiState.bottomSheetData.icon,
                         color = MaterialTheme.colorScheme.secondaryContainer,
                         textColor = MaterialTheme.colorScheme.onSecondaryContainer,
                     )

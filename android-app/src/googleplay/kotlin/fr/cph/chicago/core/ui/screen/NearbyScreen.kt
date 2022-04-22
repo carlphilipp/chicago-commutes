@@ -139,7 +139,6 @@ fun NearbyScreen(
                 getLastUserLocation(
                     context = context,
                     callBackLoadLocation = { position ->
-                        viewModel.setFindLocation(false)
                         viewModel.setNearbyIsMyLocationEnabled(true)
                         viewModel.setCurrentUserLocation(position)
                         viewModel.loadNearbyStations(position)
@@ -226,11 +225,11 @@ fun NearbyScreen(
 
                         LoadingCircle(show = !isMapLoaded)
 
-                        if (viewModel.uiState.nearbyShowLocationError) {
+                        if (viewModel.uiState.showLocationError) {
                             ShowLocationNotFoundSnackBar(
                                 scope = scope,
                                 snackbarHostState = snackbarHostState,
-                                showErrorMessage = viewModel.uiState.nearbyShowLocationError,
+                                showErrorMessage = viewModel.uiState.showLocationError,
                                 onComplete = { viewModel.setShowLocationError(false) }
                             )
                         }
@@ -257,7 +256,7 @@ fun NearbyGoogleMapView(
     settingsViewModel: SettingsViewModel,
     cameraPositionState: CameraPositionState,
 ) {
-    Timber.d("Compose NearbyGoogleMapView with location ${viewModel.uiState.nearbyMapCenterLocation.toLatLng()}")
+    Timber.d("Compose NearbyGoogleMapView with location ${viewModel.uiState.centerMapPosition.toLatLng()}")
     val uiState = viewModel.uiState
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -268,13 +267,13 @@ fun NearbyGoogleMapView(
         cameraPositionState = cameraPositionState,
         properties = MapProperties(
             mapType = MapType.NORMAL,
-            isMyLocationEnabled = uiState.nearbyIsMyLocationEnabled,
+            isMyLocationEnabled = uiState.isMyLocationEnabled,
             mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, mapStyle(settingsViewModel)),
         ),
-        uiSettings = MapUiSettings(compassEnabled = false, myLocationButtonEnabled = uiState.nearbyIsMyLocationEnabled),
+        uiSettings = MapUiSettings(compassEnabled = false, myLocationButtonEnabled = uiState.isMyLocationEnabled),
         onMapLoaded = {
             onMapLoaded()
-            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(uiState.nearbyMapCenterLocation.toLatLng(), uiState.nearbyZoomIn)
+            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(uiState.centerMapPosition.toLatLng(), uiState.currentZoom)
             cameraPositionState.move(cameraUpdate)
         },
     ) {
@@ -282,7 +281,7 @@ fun NearbyGoogleMapView(
         val bitmapDescriptorBus = getBitmapDescriptor(context, R.drawable.bus_stop_icon)
         val bitmapDescriptorBike = getBitmapDescriptor(context, R.drawable.bike_station_icon)
 
-        uiState.nearbyTrainStations.forEach { trainStation ->
+        uiState.trainStations.forEach { trainStation ->
             val markerState = rememberMarkerState()
             markerState.position = trainStation.stops[0].position.toLatLng()
             Marker(
@@ -310,7 +309,7 @@ fun NearbyGoogleMapView(
             )
         }
 
-        uiState.nearbyBusStops.forEach { busStop ->
+        uiState.busStops.forEach { busStop ->
             val markerState = rememberMarkerState()
             markerState.position = busStop.position.toLatLng()
             Marker(
@@ -338,7 +337,7 @@ fun NearbyGoogleMapView(
             )
         }
 
-        uiState.nearbyBikeStations.forEach { bikeStation ->
+        uiState.bikeStations.forEach { bikeStation ->
             val markerState = rememberMarkerState()
             markerState.position = LatLng(bikeStation.latitude, bikeStation.longitude)
             Marker(
@@ -379,16 +378,20 @@ fun StateDebugView(
             .background(color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)),
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "Latitude in state ${viewModel.uiState.nearbyMapCenterLocation.latitude}")
-        Text(text = "Longitude in state ${viewModel.uiState.nearbyMapCenterLocation.longitude}")
-        Text(text = "Train stations: ${viewModel.uiState.nearbyTrainStations.size}")
-        Text(text = "Bus stops: ${viewModel.uiState.nearbyBusStops.size}")
-        Text(text = "Bike stations: ${viewModel.uiState.nearbyBikeStations.size}")
+        Text(text = "Latitude in state ${viewModel.uiState.centerMapPosition.latitude}")
+        Text(text = "Longitude in state ${viewModel.uiState.centerMapPosition.longitude}")
+        Text(text = "Train stations: ${viewModel.uiState.trainStations.size}")
+        Text(text = "Bus stops: ${viewModel.uiState.busStops.size}")
+        Text(text = "Bike stations: ${viewModel.uiState.bikeStations.size}")
     }
 }
 
 data class BottomSheetData(
     val bottomSheetState: BottomSheetDataState = BottomSheetDataState.HIDDEN,
+
+    val title: String = "",
+    val icon: ImageVector = Icons.Filled.Train,
+
     val trainArrivals: List<BottomSheetPagerData> = listOf(),
     val busArrivals: List<BottomSheetPagerData> = listOf(),
     val bikeStation: BikeStation = BikeStation.buildUnknownStation(),
@@ -400,21 +403,15 @@ enum class BottomSheetDataState {
 
 @OptIn(ExperimentalMaterialApi::class)
 data class NearbyScreenUiState constructor(
-    val findLocation: Boolean = true,
-    val nearbyMapCenterLocation: Position = chicagoPosition,
-    val nearbyTrainStations: List<TrainStation> = listOf(),
-    val nearbyBusStops: List<BusStop> = listOf(),
-    val nearbyBikeStations: List<BikeStation> = listOf(),
-    val nearbyZoomIn: Float = 8f,
-    val nearbyIsMyLocationEnabled: Boolean = false,
-    val nearbyShowLocationError: Boolean = false,
-
-    val nearbyDetailsTitle: String = "",
-    val nearbyDetailsIcon: ImageVector = Icons.Filled.Train,
+    val trainStations: List<TrainStation> = listOf(),
+    val busStops: List<BusStop> = listOf(),
+    val bikeStations: List<BikeStation> = listOf(),
+    val centerMapPosition: Position = chicagoPosition,
+    val currentZoom: Float = 8f,
+    val isMyLocationEnabled: Boolean = false,
+    val showLocationError: Boolean = false,
     val bottomSheetData: BottomSheetData = BottomSheetData(),
-
     val nearbyDetailsError: Boolean = false,
-
     val scaffoldState: BottomSheetScaffoldState = BottomSheetScaffoldState(
         drawerState = DrawerState(DrawerValue.Closed),
         bottomSheetState = BottomSheetState(initialValue = BottomSheetValue.Collapsed),
@@ -432,12 +429,8 @@ class NearbyViewModel(
     var uiState by mutableStateOf(NearbyScreenUiState())
         private set
 
-    fun setFindLocation(value: Boolean) {
-        uiState = uiState.copy(findLocation = value)
-    }
-
     fun setShowLocationError(value: Boolean) {
-        uiState = uiState.copy(nearbyShowLocationError = value)
+        uiState = uiState.copy(showLocationError = value)
     }
 
     fun setNearbyDetailsError(value: Boolean) {
@@ -445,11 +438,10 @@ class NearbyViewModel(
     }
 
     fun setNearbyIsMyLocationEnabled(value: Boolean) {
-        uiState = uiState.copy(nearbyIsMyLocationEnabled = value)
+        uiState = uiState.copy(isMyLocationEnabled = value)
     }
 
     fun setDefaultUserLocation() {
-        setFindLocation(false)
         setCurrentUserLocation(chicagoPosition)
         loadNearbyStations(chicagoPosition)
         setShowLocationError(true)
@@ -464,8 +456,8 @@ class NearbyViewModel(
     fun resetDetails() {
         viewModelScope.launch {
             uiState = uiState.copy(
-                nearbyDetailsTitle = "",
                 bottomSheetData = uiState.bottomSheetData.copy(
+                    title = "",
                     bottomSheetState = BottomSheetDataState.HIDDEN,
                     trainArrivals = listOf(),
                     busArrivals = listOf(),
@@ -511,8 +503,8 @@ class NearbyViewModel(
 
     fun setCurrentUserLocation(position: Position, zoom: Float = 16f) {
         uiState = uiState.copy(
-            nearbyMapCenterLocation = position,
-            nearbyZoomIn = zoom,
+            centerMapPosition = position,
+            currentZoom = zoom,
         )
     }
 
@@ -522,9 +514,9 @@ class NearbyViewModel(
         val bikeStationsAround = mapUtil.readNearbyStation(position = position, store.state.bikeStations)
         Single.zip(trainStationAround, busStopsAround, bikeStationsAround) { trains, buses, bikeStations ->
             uiState = uiState.copy(
-                nearbyTrainStations = trains,
-                nearbyBusStops = buses,
-                nearbyBikeStations = bikeStations,
+                trainStations = trains,
+                busStops = buses,
+                bikeStations = bikeStations,
             )
             Any()
         }.subscribe({}, { error -> Timber.e(error) })
@@ -539,8 +531,9 @@ class NearbyViewModel(
             .subscribe(
                 {
                     uiState = uiState.copy(
-                        nearbyDetailsTitle = trainStation.name,
                         bottomSheetData = uiState.bottomSheetData.copy(
+                            title = trainStation.name,
+                            icon = Icons.Filled.Train,
                             bottomSheetState = BottomSheetDataState.TRAIN,
                             trainArrivals = it.map { trainEta ->
                                 BottomSheetPagerData(
@@ -552,7 +545,6 @@ class NearbyViewModel(
                                 )
                             },
                         ),
-                        nearbyDetailsIcon = Icons.Filled.Train,
                     )
                 },
                 { onError ->
@@ -567,8 +559,9 @@ class NearbyViewModel(
             .subscribe(
                 {
                     uiState = uiState.copy(
-                        nearbyDetailsTitle = busStop.name,
                         bottomSheetData = uiState.bottomSheetData.copy(
+                            title = busStop.name,
+                            icon = Icons.Filled.DirectionsBus,
                             bottomSheetState = BottomSheetDataState.BUS,
                             busArrivals = it.map { busArrival ->
                                 BottomSheetPagerData(
@@ -578,7 +571,6 @@ class NearbyViewModel(
                                 )
                             },
                         ),
-                        nearbyDetailsIcon = Icons.Filled.DirectionsBus,
                     )
                 },
                 { onError ->
@@ -593,12 +585,12 @@ class NearbyViewModel(
             .subscribe(
                 {
                     uiState = uiState.copy(
-                        nearbyDetailsTitle = currentBikeStation.name,
                         bottomSheetData = uiState.bottomSheetData.copy(
+                            title = currentBikeStation.name,
+                            icon = Icons.Filled.DirectionsBike,
                             bottomSheetState = BottomSheetDataState.BIKE,
                             bikeStation = it,
                         ),
-                        nearbyDetailsIcon = Icons.Filled.DirectionsBike,
                     )
                 },
                 { onError ->
