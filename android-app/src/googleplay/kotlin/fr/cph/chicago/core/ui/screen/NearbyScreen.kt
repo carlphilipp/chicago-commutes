@@ -32,6 +32,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -120,7 +121,7 @@ fun NearbyScreen(
             )
         )
     }
-    val onResult: (Map<String, Boolean>) -> Unit by remember {
+    val onPermissionsResult: (Map<String, Boolean>) -> Unit by remember {
         mutableStateOf(
             { result ->
                 val allowed =
@@ -161,7 +162,7 @@ fun NearbyScreen(
         }
     }
 
-    NearbyLocationPermissionView(onPermissionsResult = onResult)
+    NearbyLocationPermissionView(onPermissionsResult = onPermissionsResult)
 
     BottomSheetScaffoldMaterial3(
         scaffoldState = viewModel.uiState.scaffoldState,
@@ -256,6 +257,10 @@ fun NearbyScreen(
             }
         }
     )
+
+    DisposableEffect(key1 = viewModel) {
+        onDispose { viewModel.onStop() }
+    }
 }
 
 @Composable
@@ -395,6 +400,7 @@ fun StateDebugView(
     ) {
         Text(text = "Latitude in state ${viewModel.uiState.moveCamera?.latitude}")
         Text(text = "Longitude in state ${viewModel.uiState.moveCamera?.longitude}")
+        Text(text = "Zoom in state ${viewModel.uiState.moveCameraZoom}")
         Text(text = "Train stations: ${viewModel.uiState.trainStations.size}")
         Text(text = "Bus stops: ${viewModel.uiState.busStops.size}")
         Text(text = "Bike stations: ${viewModel.uiState.bikeStations.size}")
@@ -444,6 +450,10 @@ class NearbyViewModel(
     var uiState by mutableStateOf(NearbyScreenUiState())
         private set
 
+    fun onStop() {
+        uiState = NearbyScreenUiState()
+    }
+
     fun setShowLocationError(value: Boolean) {
         uiState = uiState.copy(showLocationError = value)
     }
@@ -454,12 +464,6 @@ class NearbyViewModel(
 
     fun setNearbyIsMyLocationEnabled(value: Boolean) {
         uiState = uiState.copy(isMyLocationEnabled = value)
-    }
-
-    fun setDefaultUserLocation() {
-        setCurrentUserLocation(chicagoPosition)
-        loadNearbyStations(chicagoPosition)
-        setShowLocationError(true)
     }
 
     fun setMapCenterLocationAndLoadNearby(position: Position, zoom: Float) {
@@ -517,10 +521,18 @@ class NearbyViewModel(
     }
 
     fun setCurrentUserLocation(position: Position, zoom: Float = 16f) {
+        Timber.d("Set position $position and zoom $zoom")
         uiState = uiState.copy(
             moveCamera = position,
             moveCameraZoom = zoom,
         )
+    }
+
+    fun setDefaultUserLocation() {
+        Timber.d("Set default user location")
+        setCurrentUserLocation(chicagoPosition)
+        loadNearbyStations(chicagoPosition)
+        setShowLocationError(true)
     }
 
     fun loadNearbyStations(position: Position) {
