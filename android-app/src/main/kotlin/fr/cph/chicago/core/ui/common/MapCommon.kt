@@ -16,6 +16,7 @@ import java.util.TreeMap
 
 class LocationViewModel : ViewModel() {
     var requestPermission: Boolean = true
+    var isAllowed: Boolean? = null
 }
 
 class Arrival(

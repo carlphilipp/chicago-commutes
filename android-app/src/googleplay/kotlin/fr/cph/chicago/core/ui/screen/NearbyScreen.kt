@@ -1,23 +1,17 @@
 package fr.cph.chicago.core.ui.screen
 
-import androidx.compose.animation.AnimatedVisibility
+import android.os.Bundle
 import androidx.compose.animation.core.TweenSpec
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffoldState
 import androidx.compose.material.BottomSheetState
 import androidx.compose.material.BottomSheetValue
@@ -35,24 +29,25 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.lifecycle.AbstractSavedStateViewModelFactory
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.savedstate.SavedStateRegistryOwner
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -65,6 +60,7 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberMarkerState
 import fr.cph.chicago.R
+import fr.cph.chicago.core.location.getLastUserLocation
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
@@ -78,7 +74,6 @@ import fr.cph.chicago.core.ui.common.BottomSheetScaffoldMaterial3
 import fr.cph.chicago.core.ui.common.LoadingCircle
 import fr.cph.chicago.core.ui.common.LocationViewModel
 import fr.cph.chicago.core.ui.common.NearbyBottomSheet
-import fr.cph.chicago.core.ui.common.NearbyResult
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.ShowLocationNotFoundSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
@@ -112,10 +107,10 @@ fun NearbyScreen(
     locationViewModel: LocationViewModel,
     navigationViewModel: NavigationViewModel,
     settingsViewModel: SettingsViewModel,
-    title: String
 ) {
     Timber.d("Compose NearbyScreen ${Thread.currentThread().name}")
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     val navController = LocalNavController.current
     val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     var isMapLoaded by remember { mutableStateOf(false) }
@@ -127,14 +122,6 @@ fun NearbyScreen(
         )
     }
 
-/*    LaunchedEffect(key1 = viewModel.uiState.nearbyDetailsShow, block = {
-        scope.launch {
-            if (viewModel.uiState.nearbyDetailsShow) {
-                viewModel.uiState.scaffoldState.bottomSheetState.expand()
-            }
-        }
-    })*/
-
     // Show map after 5 seconds. This is needed because there is no callback from the sdk to know if the map can be loaded or not.
     // Meaning that we can have a situation where the onMapLoaded method is never triggered, while the map view has been populated
     // with some error messages from the google sdk like: "Play store needs to be updated"
@@ -144,32 +131,28 @@ fun NearbyScreen(
         }
     }
 
-    if (viewModel.uiState.findLocation) {
-        NearbyLocationPermissionView(
-            locationViewModel = locationViewModel,
-            callBackLoadLocation = { position ->
-                viewModel.setFindLocation(false)
-                viewModel.setNearbyIsMyLocationEnabled(true)
-                viewModel.setCurrentUserLocation(position)
-                viewModel.loadNearbyStations(position)
-            },
-            callBackDefaultLocation = {
+    NearbyLocationPermissionView(locationViewModel = locationViewModel)
+
+    LaunchedEffect(key1 = locationViewModel.isAllowed, block = {
+        locationViewModel.isAllowed?.run {
+            if (this) {
+                getLastUserLocation(
+                    context = context,
+                    callBackLoadLocation = { position ->
+                        viewModel.setFindLocation(false)
+                        viewModel.setNearbyIsMyLocationEnabled(true)
+                        viewModel.setCurrentUserLocation(position)
+                        viewModel.loadNearbyStations(position)
+                    },
+                    callBackDefaultLocation = {
+                        viewModel.setDefaultUserLocation()
+                    }
+                )
+            } else {
                 viewModel.setDefaultUserLocation()
             }
-        )
-    }
-
-/*    BottomSheetScaffoldMaterial3(
-        scaffoldState = viewModel.uiState.scaffoldState,
-        sheetPeekHeight = 0.dp,
-        sheetContent = {
-            Text("sheet content")
-        },
-        snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
-        content = {
-            Text("back content")
         }
-    )*/
+    })
 
     BottomSheetScaffoldMaterial3(
         scaffoldState = viewModel.uiState.scaffoldState,
@@ -274,12 +257,11 @@ fun NearbyGoogleMapView(
     settingsViewModel: SettingsViewModel,
     cameraPositionState: CameraPositionState,
 ) {
+    Timber.d("Compose NearbyGoogleMapView with location ${viewModel.uiState.nearbyMapCenterLocation.toLatLng()}")
     val uiState = viewModel.uiState
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     var job: Job? by remember { mutableStateOf(null) }
-
-    Timber.d("Set location: ${uiState.nearbyMapCenterLocation.toLatLng()}")
 
     GoogleMap(
         modifier = modifier,
@@ -386,41 +368,6 @@ fun NearbyGoogleMapView(
     }
 }
 
-// FIXME: To delete, keeping that for now until bottom sheet is done
-@Composable
-fun MapStationDetailsView(showView: Boolean, title: String, image: ImageVector, arrivals: NearbyResult) {
-    Box(
-        Modifier
-            .fillMaxSize()
-            .padding(bottom = 200.dp)
-    ) {
-        Surface(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(start = 50.dp, end = 50.dp, bottom = 50.dp)
-                .clip(RoundedCornerShape(20.dp)),
-        ) {
-            AnimatedVisibility(
-                visible = showView,
-                enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
-                exit = fadeOut(animationSpec = tween(durationMillis = 300)),
-            ) {
-                Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)) {
-                    HeaderCard(name = title, image = image, lastUpdate = arrivals.lastUpdate)
-                    arrivals.arrivals.forEach { entry ->
-                        Arrivals(
-                            destination = entry.key.destination,
-                            arrivals = entry.value,
-                            color = entry.key.trainLine.color,
-                            direction = entry.key.direction
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
 @Composable
 fun StateDebugView(
     modifier: Modifier = Modifier,
@@ -468,7 +415,6 @@ data class NearbyScreenUiState constructor(
 
     val nearbyDetailsError: Boolean = false,
 
-    //val snackbarHostState: SnackbarHostState = SnackbarHostState(),
     val scaffoldState: BottomSheetScaffoldState = BottomSheetScaffoldState(
         drawerState = DrawerState(DrawerValue.Closed),
         bottomSheetState = BottomSheetState(initialValue = BottomSheetValue.Collapsed),
@@ -601,6 +547,7 @@ class NearbyViewModel(
                                     title = trainEta.destName,
                                     content = trainEta.timeLeftDueDelayNoMinutes,
                                     subTitle = trainEta.stop.direction.toString(),
+                                    titleColor = trainEta.routeName.textColor,
                                     backgroundColor = trainEta.routeName.color,
                                 )
                             },
@@ -658,5 +605,22 @@ class NearbyViewModel(
                     Timber.e(onError, "Error while loading bus arrivals")
                     setNearbyDetailsError(true)
                 })
+    }
+
+    companion object {
+        fun provideFactory(
+            owner: SavedStateRegistryOwner,
+            defaultArgs: Bundle? = null,
+        ): AbstractSavedStateViewModelFactory =
+            object : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(
+                    key: String,
+                    modelClass: Class<T>,
+                    handle: SavedStateHandle
+                ): T {
+                    return NearbyViewModel() as T
+                }
+            }
     }
 }

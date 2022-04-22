@@ -264,14 +264,18 @@ sealed class Screen(
         icon = Icons.Filled.NearMe,
         topBar = ScreenTopBar.MediumTopBarDrawer,
         isGestureEnabled = false,
-        component = { _, navigationViewModel ->
-            val viewModel = NearbyViewModel()
+        component = { backStackEntry, navigationViewModel ->
+            val activity = navigationViewModel.uiState.context.getActivity()
+            val factory = NearbyViewModel.provideFactory(
+                owner = activity,
+                defaultArgs = backStackEntry.arguments
+            )
+            val viewModel = ViewModelProvider(activity, factory)[NearbyViewModel::class.java]
             NearbyScreen(
                 viewModel = viewModel,
                 locationViewModel = locationViewModel,
                 navigationViewModel = navigationViewModel,
                 settingsViewModel = settingsViewModel,
-                title = stringResource(R.string.screen_nearby),
             )
         })
 

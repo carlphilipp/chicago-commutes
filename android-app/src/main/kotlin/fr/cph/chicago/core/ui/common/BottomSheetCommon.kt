@@ -504,7 +504,7 @@ fun NearbyBottomSheet(
     BottomSheet(
         content = {
             val scope = rememberCoroutineScope()
-            val title = if (viewModel.uiState.bottomSheetData.bottomSheetState != BottomSheetDataState.HIDDEN) viewModel.uiState.nearbyDetailsTitle else "Nearby"
+            val title = if (viewModel.uiState.bottomSheetData.bottomSheetState != BottomSheetDataState.HIDDEN) viewModel.uiState.nearbyDetailsTitle else stringResource(R.string.screen_nearby)
             Row(
                 modifier = modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -805,6 +805,7 @@ data class BottomSheetPagerData(
     val title: String,
     val content: String,
     val subTitle: String,
+    val titleColor: Color? = null,
     val backgroundColor: Color? = null,
 )
 
@@ -827,11 +828,12 @@ private fun BottomSheetPager(
             itemSpacing = 10.dp,
             contentPadding = PaddingValues(start = 0.dp, end = 250.dp),
         ) { page ->
-            if (pagerData[page].backgroundColor != null) {
+            if (pagerData[page].backgroundColor != null && pagerData[page].titleColor != null) {
                 BottomSheetPage(
                     title = pagerData[page].title,
                     content = pagerData[page].content,
                     subTitle = pagerData[page].subTitle,
+                    titleColor = pagerData[page].titleColor!!,
                     backgroundColor = pagerData[page].backgroundColor!!,
                 )
             } else {
@@ -894,6 +896,7 @@ private fun BottomSheetPage(
     subTitle: String? = null,
     content: String,
     contentBottom: String = "min",
+    titleColor: Color= MaterialTheme.colorScheme.onSurfaceVariant,
     backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant,
 ) {
     Column(
@@ -928,6 +931,7 @@ private fun BottomSheetPage(
                         style = MaterialTheme.typography.titleSmall,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
+                        color = titleColor,
                     )
                     if (subTitle != null) {
                         Text(
@@ -936,6 +940,7 @@ private fun BottomSheetPage(
                             style = MaterialTheme.typography.labelSmall,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
+                            color = titleColor,
                         )
                     }
                 }
