@@ -252,7 +252,7 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) : Vie
                     when {
                         previousScreen == Screen.Favorites && screen == Screen.Favorites -> viewModel.shouldBackSpaceAgainToExit()
                         previousScreen != screen -> navigateTo(screen = screen, arguments = arguments)
-                        else -> Timber.e("Current screen is the same, do not do anything")
+                        else -> Timber.d("Current screen is the same, do not do anything")
                     }
                 }
             }

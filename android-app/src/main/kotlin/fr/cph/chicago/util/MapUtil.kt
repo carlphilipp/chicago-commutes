@@ -71,7 +71,6 @@ object MapUtil {
         var minLatitude = 0.0
         var maxLongitude = 0.0
         var minLongitude = 0.0
-        Timber.e("PPPPPPPPPPPPPPPPPPPP" + positions)
         positions
             .filter { it.latitude != 0.0 && it.latitude != 0.0 }
             .forEachIndexed { i, temp ->
@@ -95,7 +94,6 @@ object MapUtil {
                     }
                 }
             }
-        Timber.e("RRRRRRRRRRRRRRRRRRRR $maxLatitude $minLatitude $maxLongitude $minLongitude")
         return Position(
             latitude = (maxLatitude + minLatitude) / 2,
             longitude = (maxLongitude + minLongitude) / 2

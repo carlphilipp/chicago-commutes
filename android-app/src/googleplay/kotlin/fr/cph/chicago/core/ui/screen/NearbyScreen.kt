@@ -107,7 +107,7 @@ fun NearbyScreen(
     navigationViewModel: NavigationViewModel,
     settingsViewModel: SettingsViewModel,
 ) {
-    Timber.e("Compose NearbyScreen ${Thread.currentThread().name}")
+    Timber.d("Compose NearbyScreen ${Thread.currentThread().name}")
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val navController = LocalNavController.current
@@ -123,7 +123,6 @@ fun NearbyScreen(
     val onResult: (Map<String, Boolean>) -> Unit by remember {
         mutableStateOf(
             { result ->
-                Timber.e("PERMISSION RESULT $result")
                 val allowed =
                     result.getOrElse(
                         key = Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -135,22 +134,18 @@ fun NearbyScreen(
                             defaultValue = { false }
                         )
                 if (allowed) {
-                    Timber.e("is allowed get user permission")
                     getLastUserLocation(
                         context = context,
                         callBackLoadLocation = { position ->
-                            Timber.e("Position found $position")
                             viewModel.setNearbyIsMyLocationEnabled(true)
                             viewModel.setCurrentUserLocation(position)
                             viewModel.loadNearbyStations(position)
                         },
                         callBackDefaultLocation = {
-                            Timber.e("setDefaultUserLocation after loc not found")
                             viewModel.setDefaultUserLocation()
                         }
                     )
                 } else {
-                    Timber.e("setDefaultUserLocation")
                     viewModel.setDefaultUserLocation()
                 }
             }
