@@ -99,7 +99,6 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
-// FIXME: handle zoom right after permissions has been approved or denied
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun NearbyScreen(
@@ -467,9 +466,11 @@ class NearbyViewModel(
     }
 
     fun setMapCenterLocationAndLoadNearby(position: Position, zoom: Float) {
-        setCurrentUserLocation(position, zoom)
-        loadNearbyStations(position)
-        setShowLocationError(false)
+        viewModelScope.launch {
+            setCurrentUserLocation(position, zoom)
+            loadNearbyStations(position)
+            setShowLocationError(false)
+        }
     }
 
     fun resetDetails() {
@@ -521,7 +522,6 @@ class NearbyViewModel(
     }
 
     fun setCurrentUserLocation(position: Position, zoom: Float = 16f) {
-        Timber.d("Current position ${uiState.moveCamera} and zoom  ${uiState.moveCameraZoom}")
         Timber.d("Set position $position and zoom $zoom")
         uiState = uiState.copy(
             moveCamera = position,
@@ -531,100 +531,110 @@ class NearbyViewModel(
 
     fun setDefaultUserLocation() {
         Timber.d("Set default user location")
-        setCurrentUserLocation(chicagoPosition)
-        loadNearbyStations(chicagoPosition)
-        setShowLocationError(true)
+        viewModelScope.launch {
+            setCurrentUserLocation(chicagoPosition)
+            loadNearbyStations(chicagoPosition)
+            setShowLocationError(true)
+        }
     }
 
     fun loadNearbyStations(position: Position) {
-        val trainStationAround = trainService.readNearbyStation(position = position)
-        val busStopsAround = busService.busStopsAround(position = position)
-        val bikeStationsAround = mapUtil.readNearbyStation(position = position, store.state.bikeStations)
-        Single.zip(trainStationAround, busStopsAround, bikeStationsAround) { trains, buses, bikeStations ->
-            uiState = uiState.copy(
-                trainStations = trains,
-                busStops = buses,
-                bikeStations = bikeStations,
-            )
-            Any()
-        }.subscribe({}, { error -> Timber.e(error) })
+        viewModelScope.launch {
+            val trainStationAround = trainService.readNearbyStation(position = position)
+            val busStopsAround = busService.busStopsAround(position = position)
+            val bikeStationsAround = mapUtil.readNearbyStation(position = position, store.state.bikeStations)
+            Single.zip(trainStationAround, busStopsAround, bikeStationsAround) { trains, buses, bikeStations ->
+                uiState = uiState.copy(
+                    trainStations = trains,
+                    busStops = buses,
+                    bikeStations = bikeStations,
+                )
+                Any()
+            }.subscribe({}, { error -> Timber.e(error) })
+        }
     }
 
     fun loadNearbyTrainDetails(trainStation: TrainStation) {
-        trainService.loadStationTrainArrival(trainStation.id)
-            .map { trainArrival ->
-                trainArrival.trainEtas.filter { trainEta -> trainEta.trainStation.id == trainStation.id }
-            }
-            .observeOn(Schedulers.computation())
-            .subscribe(
-                {
-                    uiState = uiState.copy(
-                        bottomSheetData = uiState.bottomSheetData.copy(
-                            title = trainStation.name,
-                            icon = Icons.Filled.Train,
-                            bottomSheetState = BottomSheetDataState.TRAIN,
-                            trainArrivals = it.map { trainEta ->
-                                BottomSheetPagerData(
-                                    title = trainEta.destName,
-                                    content = trainEta.timeLeftDueDelayNoMinutes,
-                                    subTitle = trainEta.stop.direction.toString(),
-                                    titleColor = trainEta.routeName.textColor,
-                                    backgroundColor = trainEta.routeName.color,
-                                )
-                            },
-                        ),
-                    )
-                },
-                { onError ->
-                    Timber.e(onError, "Error while loading train arrivals")
-                    setNearbyDetailsError(true)
-                })
+        viewModelScope.launch {
+            trainService.loadStationTrainArrival(trainStation.id)
+                .map { trainArrival ->
+                    trainArrival.trainEtas.filter { trainEta -> trainEta.trainStation.id == trainStation.id }
+                }
+                .observeOn(Schedulers.computation())
+                .subscribe(
+                    {
+                        uiState = uiState.copy(
+                            bottomSheetData = uiState.bottomSheetData.copy(
+                                title = trainStation.name,
+                                icon = Icons.Filled.Train,
+                                bottomSheetState = BottomSheetDataState.TRAIN,
+                                trainArrivals = it.map { trainEta ->
+                                    BottomSheetPagerData(
+                                        title = trainEta.destName,
+                                        content = trainEta.timeLeftDueDelayNoMinutes,
+                                        subTitle = trainEta.stop.direction.toString(),
+                                        titleColor = trainEta.routeName.textColor,
+                                        backgroundColor = trainEta.routeName.color,
+                                    )
+                                },
+                            ),
+                        )
+                    },
+                    { onError ->
+                        Timber.e(onError, "Error while loading train arrivals")
+                        setNearbyDetailsError(true)
+                    })
+        }
     }
 
     fun loadNearbyBusDetails(busStop: BusStop) {
-        busService.loadBusArrivals(busStop)
-            .observeOn(Schedulers.computation())
-            .subscribe(
-                {
-                    uiState = uiState.copy(
-                        bottomSheetData = uiState.bottomSheetData.copy(
-                            title = busStop.name,
-                            icon = Icons.Filled.DirectionsBus,
-                            bottomSheetState = BottomSheetDataState.BUS,
-                            busArrivals = it.map { busArrival ->
-                                BottomSheetPagerData(
-                                    title = busArrival.busDestination,
-                                    content = busArrival.timeLeftDueDelayNoMinutes,
-                                    subTitle = BusDirection.fromString(busArrival.routeDirection).shortLowerCase,
-                                )
-                            },
-                        ),
-                    )
-                },
-                { onError ->
-                    Timber.e(onError, "Error while loading bus arrivals")
-                    setNearbyDetailsError(true)
-                })
+        viewModelScope.launch {
+            busService.loadBusArrivals(busStop)
+                .observeOn(Schedulers.computation())
+                .subscribe(
+                    {
+                        uiState = uiState.copy(
+                            bottomSheetData = uiState.bottomSheetData.copy(
+                                title = busStop.name,
+                                icon = Icons.Filled.DirectionsBus,
+                                bottomSheetState = BottomSheetDataState.BUS,
+                                busArrivals = it.map { busArrival ->
+                                    BottomSheetPagerData(
+                                        title = busArrival.busDestination,
+                                        content = busArrival.timeLeftDueDelayNoMinutes,
+                                        subTitle = BusDirection.fromString(busArrival.routeDirection).shortLowerCase,
+                                    )
+                                },
+                            ),
+                        )
+                    },
+                    { onError ->
+                        Timber.e(onError, "Error while loading bus arrivals")
+                        setNearbyDetailsError(true)
+                    })
+        }
     }
 
     fun loadNearbyBikeDetails(currentBikeStation: BikeStation) {
-        bikeService.findBikeStation(currentBikeStation.id)
-            .observeOn(Schedulers.computation())
-            .subscribe(
-                {
-                    uiState = uiState.copy(
-                        bottomSheetData = uiState.bottomSheetData.copy(
-                            title = currentBikeStation.name,
-                            icon = Icons.Filled.DirectionsBike,
-                            bottomSheetState = BottomSheetDataState.BIKE,
-                            bikeStation = it,
-                        ),
-                    )
-                },
-                { onError ->
-                    Timber.e(onError, "Error while loading bus arrivals")
-                    setNearbyDetailsError(true)
-                })
+        viewModelScope.launch {
+            bikeService.findBikeStation(currentBikeStation.id)
+                .observeOn(Schedulers.computation())
+                .subscribe(
+                    {
+                        uiState = uiState.copy(
+                            bottomSheetData = uiState.bottomSheetData.copy(
+                                title = currentBikeStation.name,
+                                icon = Icons.Filled.DirectionsBike,
+                                bottomSheetState = BottomSheetDataState.BIKE,
+                                bikeStation = it,
+                            ),
+                        )
+                    },
+                    { onError ->
+                        Timber.e(onError, "Error while loading bus arrivals")
+                        setNearbyDetailsError(true)
+                    })
+        }
     }
 
     companion object {
