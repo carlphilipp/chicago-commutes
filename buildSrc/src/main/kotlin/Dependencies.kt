@@ -14,9 +14,9 @@ object Version {
 
     const val androidx_activity_compose =   "1.6.0-alpha01"
     const val androidx_constraint =         "1.0.0"
-    const val androidx_lifecycle =          "2.5.0-alpha05"
+    const val androidx_lifecycle =          "2.5.0-alpha06"
     const val androidx_navigation =         "2.5.0-alpha04"
-    const val androidx_work =               "2.8.0-alpha01"
+    const val androidx_work =               "2.8.0-alpha02"
     const val accompanist =                 "0.24.6-alpha"
     const val commons_collections4 =        "4.+"
     const val commons_text =                "1.+"
@@ -27,7 +27,7 @@ object Version {
     const val google_maps_compose =         "2.1.0"
     const val hilt =                        "1.0.+"
     const val jackson =                     "2.13.1" // 2.13.2 is not working on android 7 (24)
-    const val material =                    "1.6.0-beta01"
+    const val material =                    "1.7.0-alpha01"
     const val okhttp3 =                     "4.10.0-RC1"
     const val process_phoenix =             "2.1.+"
     const val rx =                          "3.+"
