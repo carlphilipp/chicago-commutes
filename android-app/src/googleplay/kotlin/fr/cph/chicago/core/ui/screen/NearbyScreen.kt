@@ -496,8 +496,8 @@ class NearbyViewModel(
                 bottomSheetData = uiState.bottomSheetData.copy(
                     title = "",
                     bottomSheetState = BottomSheetDataState.HIDDEN,
-                    trainArrivals = listOf(),
-                    busArrivals = listOf(),
+                    //trainArrivals = listOf(),
+                    //busArrivals = listOf(),
                     bikeStation = BikeStation.buildUnknownStation(),
                 )
             )
@@ -586,7 +586,7 @@ class NearbyViewModel(
                                 title = trainStation.name,
                                 icon = Icons.Filled.Train,
                                 bottomSheetState = BottomSheetDataState.TRAIN,
-                                trainArrivals = it.map { trainEta ->
+                                data = it.map { trainEta ->
                                     BottomSheetPagerData(
                                         title = trainEta.destName,
                                         content = trainEta.timeLeftDueDelayNoMinutes,
@@ -617,7 +617,7 @@ class NearbyViewModel(
                                 title = busStop.name,
                                 icon = Icons.Filled.DirectionsBus,
                                 bottomSheetState = BottomSheetDataState.BUS,
-                                busArrivals = it.map { busArrival ->
+                                data = it.map { busArrival ->
                                     BottomSheetPagerData(
                                         title = busArrival.busDestination,
                                         content = busArrival.timeLeftDueDelayNoMinutes,
@@ -646,6 +646,18 @@ class NearbyViewModel(
                                 icon = Icons.Filled.DirectionsBike,
                                 bottomSheetState = BottomSheetDataState.BIKE,
                                 bikeStation = it,
+                                data = listOf(
+                                    BottomSheetPagerData(
+                                        title = "Bikes",
+                                        content = it.availableBikes.toString(),
+                                        bottom = "available",
+                                    ),
+                                    BottomSheetPagerData(
+                                        title = "Docks",
+                                        content = it.availableDocks.toString(),
+                                        bottom = "available",
+                                    )
+                                )
                             ),
                         )
                     },

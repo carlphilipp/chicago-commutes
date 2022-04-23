@@ -550,52 +550,11 @@ fun NearbyBottomSheet(
             )
 
             if (viewModel.uiState.bottomSheetData.bottomSheetState != BottomSheetDataState.HIDDEN) {
-                when (viewModel.uiState.bottomSheetData.bottomSheetState) {
-                    BottomSheetDataState.TRAIN -> BottomSheetPager(pagerData = viewModel.uiState.bottomSheetData.trainArrivals)
-                    BottomSheetDataState.BUS -> BottomSheetPager(pagerData = viewModel.uiState.bottomSheetData.busArrivals)
-                    BottomSheetDataState.BIKE -> NearbyBikePager(bikeStation = viewModel.uiState.bottomSheetData.bikeStation)
-                    else -> {}
-                }
+                BottomSheetPager(pagerData = viewModel.uiState.bottomSheetData.data)
             }
         },
         onBackClick = onBackClick,
     )
-}
-
-@OptIn(ExperimentalPagerApi::class)
-@Composable
-private fun NearbyBikePager(
-    modifier: Modifier = Modifier,
-    bikeStation: BikeStation
-) {
-    val pagerState = rememberPagerState()
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(bottom = 10.dp)
-    ) {
-        HorizontalPager(
-            modifier = Modifier,
-            state = pagerState,
-            count = 2,
-            itemSpacing = 10.dp,
-            contentPadding = PaddingValues(start = 0.dp, end = 250.dp),
-        ) { page ->
-            if (page == 0) {
-                BottomSheetPage(
-                    title = "Bikes",
-                    content = bikeStation.availableBikes.toString(),
-                    contentBottom = "available",
-                )
-            } else {
-                BottomSheetPage(
-                    title = "Docks",
-                    content = bikeStation.availableDocks.toString(),
-                    contentBottom = "available",
-                )
-            }
-        }
-    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -789,8 +748,9 @@ private fun ShowTrainDetailsTrainMapBottomSheet(
 
 data class BottomSheetPagerData(
     val title: String,
+    val subTitle: String? = null,
     val content: String,
-    val subTitle: String,
+    val bottom: String = "min",
     val titleColor: Color? = null,
     val backgroundColor: Color? = null,
 )
@@ -915,18 +875,16 @@ private fun BottomSheetPage(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    Text(
+                    AnimatedText(
                         text = title,
-                        textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.titleSmall,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         color = titleColor,
                     )
                     if (subTitle != null) {
-                        Text(
+                        AnimatedText(
                             text = subTitle,
-                            textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.labelSmall,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -970,12 +928,10 @@ data class BottomSheetData(
     val title: String = "",
     val icon: ImageVector = Icons.Filled.Train,
 
+    val data: List<BottomSheetPagerData> = listOf(),
+
     val trainStation: TrainStation = TrainStation.buildEmptyStation(),
-    val trainArrivals: List<BottomSheetPagerData> = listOf(),
-
-    val busArrivals: List<BottomSheetPagerData> = listOf(),
     val busStop: BusStop = BusStop.buildUnknownStop(),
-
     val bikeStation: BikeStation = BikeStation.buildUnknownStation(),
 )
 

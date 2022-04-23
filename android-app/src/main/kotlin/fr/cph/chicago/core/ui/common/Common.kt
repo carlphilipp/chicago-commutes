@@ -189,6 +189,8 @@ fun ColoredBox(modifier: Modifier = Modifier, color: Color = MaterialTheme.color
 fun AnimatedText(
     modifier: Modifier = Modifier,
     text: String,
+    maxLines: Int = 1,
+    overflow: TextOverflow = TextOverflow.Ellipsis,
     style: TextStyle = LocalTextStyle.current,
     color: Color = Color.Unspecified,
 ) {
@@ -206,9 +208,8 @@ fun AnimatedText(
                 Text(
                     text = target,
                     style = style,
-                    maxLines = 1,
-
-                    overflow = TextOverflow.Ellipsis,
+                    maxLines = maxLines,
+                    overflow = overflow,
                     color = color,
                 )
             }
