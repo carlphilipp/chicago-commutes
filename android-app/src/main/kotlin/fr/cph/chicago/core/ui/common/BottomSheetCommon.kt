@@ -783,6 +783,7 @@ private fun BottomSheetPager(
                     title = pagerData[page].title,
                     content = pagerData[page].content,
                     subTitle = pagerData[page].subTitle,
+                    contentBottom = pagerData[page].bottom,
                     titleColor = pagerData[page].titleColor!!,
                     backgroundColor = pagerData[page].backgroundColor!!,
                 )
@@ -791,6 +792,7 @@ private fun BottomSheetPager(
                     title = pagerData[page].title,
                     content = pagerData[page].content,
                     subTitle = pagerData[page].subTitle,
+                    contentBottom = pagerData[page].bottom,
                 )
             }
         }
