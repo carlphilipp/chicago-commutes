@@ -93,11 +93,11 @@ import fr.cph.chicago.util.mapStyle
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 // FIXME: handle zoom right after permissions has been approved or denied
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
@@ -160,6 +160,14 @@ fun NearbyScreen(
         runWithDelay(5L, TimeUnit.SECONDS) {
             isMapLoaded = true
         }
+    }
+
+    if (viewModel.uiState.moveCamera != null && viewModel.uiState.moveCameraZoom != null && isMapLoaded) {
+        LaunchedEffect(key1 = viewModel.uiState.moveCamera, key2 = viewModel.uiState.moveCameraZoom, block = {
+            scope.launch {
+                cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(viewModel.uiState.moveCamera!!.toLatLng(), viewModel.uiState.moveCameraZoom!!))
+            }
+        })
     }
 
     NearbyLocationPermissionView(onPermissionsResult = onPermissionsResult)
@@ -276,14 +284,6 @@ fun NearbyGoogleMapView(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     var job: Job? by remember { mutableStateOf(null) }
-
-    if (uiState.moveCamera != null && uiState.moveCameraZoom != null) {
-        LaunchedEffect(key1 = uiState.moveCamera, key2 = uiState.moveCameraZoom, block = {
-            scope.launch {
-                cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(uiState.moveCamera.toLatLng(), uiState.moveCameraZoom))
-            }
-        })
-    }
 
     GoogleMap(
         modifier = modifier,
@@ -521,6 +521,7 @@ class NearbyViewModel(
     }
 
     fun setCurrentUserLocation(position: Position, zoom: Float = 16f) {
+        Timber.d("Current position ${uiState.moveCamera} and zoom  ${uiState.moveCameraZoom}")
         Timber.d("Set position $position and zoom $zoom")
         uiState = uiState.copy(
             moveCamera = position,
