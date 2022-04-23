@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsBus
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -92,6 +93,7 @@ import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.mapStyle
 import fr.cph.chicago.util.toLatLng
+import fr.cph.chicago.util.toPosition
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
@@ -178,14 +180,6 @@ fun NearbyScreen(
         sheetContent = {
             NearbyBottomSheet(
                 viewModel = viewModel,
-                onRefreshClick = {
-                    scope.launch {
-                        viewModel.setMapCenterLocationAndLoadNearby(
-                            position = Position(latitude = cameraPositionState.position.target.latitude, longitude = cameraPositionState.position.target.longitude),
-                            zoom = cameraPositionState.position.zoom
-                        )
-                    }
-                },
                 onBackClick = {
                     scope.launch {
                         if (viewModel.uiState.scaffoldState.bottomSheetState.isExpanded) {
@@ -213,9 +207,9 @@ fun NearbyScreen(
                             modifier = modifier
                                 .fillMaxWidth()
                                 .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
-                                .padding(start = 10.dp, top = 5.dp, bottom = 5.dp),
+                                .padding(start = 10.dp, top = 5.dp, bottom = 5.dp, end = 10.dp),
                         ) {
-                            val (left, cameraDebug, stateDebug) = createRefs()
+                            val (left, right, cameraDebug, stateDebug) = createRefs()
                             FilledTonalButton(
                                 modifier = Modifier.constrainAs(left) {
                                     start.linkTo(anchor = parent.start)
@@ -229,6 +223,29 @@ fun NearbyScreen(
                             ) {
                                 Icon(
                                     imageVector = Icons.Filled.Menu,
+                                    contentDescription = null,
+                                )
+                            }
+
+                            FilledTonalButton(
+                                modifier = Modifier.constrainAs(right) {
+                                    end.linkTo(anchor = parent.end)
+                                    width = Dimension.fillToConstraints
+                                },
+                                onClick = {
+                                    scope.launch {
+                                        viewModel.loadNearby(position = cameraPositionState.position.target.toPosition())
+                                        when (viewModel.uiState.bottomSheetData.bottomSheetState) {
+                                            BottomSheetDataState.TRAIN -> viewModel.loadNearbyTrainDetails(trainStation = viewModel.uiState.bottomSheetData.trainStation)
+                                            BottomSheetDataState.BUS -> viewModel.loadNearbyBusDetails(busStop = viewModel.uiState.bottomSheetData.busStop)
+                                            BottomSheetDataState.BIKE -> viewModel.loadNearbyBikeDetails(currentBikeStation = viewModel.uiState.bottomSheetData.bikeStation)
+                                            else -> {}
+                                        }
+                                    }
+                                },
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Refresh,
                                     contentDescription = null,
                                 )
                             }
@@ -466,6 +483,13 @@ class NearbyViewModel(
         }
     }
 
+    fun loadNearby(position: Position) {
+        viewModelScope.launch {
+            loadNearbyStations(position)
+            setShowLocationError(false)
+        }
+    }
+
     fun resetDetails() {
         viewModelScope.launch {
             uiState = uiState.copy(
@@ -558,6 +582,7 @@ class NearbyViewModel(
                     {
                         uiState = uiState.copy(
                             bottomSheetData = uiState.bottomSheetData.copy(
+                                trainStation = trainStation,
                                 title = trainStation.name,
                                 icon = Icons.Filled.Train,
                                 bottomSheetState = BottomSheetDataState.TRAIN,
@@ -588,6 +613,7 @@ class NearbyViewModel(
                     {
                         uiState = uiState.copy(
                             bottomSheetData = uiState.bottomSheetData.copy(
+                                busStop = busStop,
                                 title = busStop.name,
                                 icon = Icons.Filled.DirectionsBus,
                                 bottomSheetState = BottomSheetDataState.BUS,

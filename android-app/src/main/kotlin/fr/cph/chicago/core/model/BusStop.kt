@@ -32,9 +32,15 @@ class BusStop(
     id: String,
     name: String,
     val description: String,
-    val position: Position) : Comparable<BusStop>, Parcelable, Station(id, name) {
+    val position: Position
+) : Comparable<BusStop>, Parcelable, Station(id, name) {
 
     companion object {
+
+        fun buildUnknownStop(): BusStop {
+            return BusStop("", "", "", Position())
+        }
+
         @JvmField
         val CREATOR: Parcelable.Creator<BusStop> = object : Parcelable.Creator<BusStop> {
             override fun createFromParcel(source: Parcel): BusStop {
@@ -51,7 +57,8 @@ class BusStop(
         id = source.readString() ?: "",
         name = source.readString() ?: "",
         description = source.readString() ?: "",
-        position = source.readParcelable<Position>(Position::class.java.classLoader) ?: Position())
+        position = source.readParcelable<Position>(Position::class.java.classLoader) ?: Position()
+    )
 
     override fun toString(): String {
         return "[id:$id;name:$name;description:$description;position:$position]"

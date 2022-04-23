@@ -210,6 +210,11 @@ fun Position.toLatLng(): LatLng {
     return LatLng(this.latitude, this.longitude)
 }
 
+@NonNull
+fun LatLng.toPosition(): Position {
+    return Position(this.latitude, this.longitude)
+}
+
 @Composable
 fun mapStyle(settingsViewModel: SettingsViewModel): Int {
     val isDarkTheme = when (settingsViewModel.uiState.theme) {

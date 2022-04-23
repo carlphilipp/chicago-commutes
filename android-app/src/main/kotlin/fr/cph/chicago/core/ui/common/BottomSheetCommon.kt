@@ -65,6 +65,7 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusRoute
+import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
@@ -496,7 +497,6 @@ fun ShowBusBoundBottomView(
 fun NearbyBottomSheet(
     modifier: Modifier = Modifier,
     viewModel: NearbyViewModel,
-    onRefreshClick: () -> Unit,
     onBackClick: () -> Unit,
 ) {
     BottomSheet(
@@ -537,13 +537,6 @@ fun NearbyBottomSheet(
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Close,
-                            contentDescription = null,
-                        )
-                    }
-                } else {
-                    FilledTonalButton(onClick = onRefreshClick) {
-                        Icon(
-                            imageVector = Icons.Filled.Refresh,
                             contentDescription = null,
                         )
                     }
@@ -809,9 +802,11 @@ private fun BottomSheetPager(
     pagerData: List<BottomSheetPagerData>,
 ) {
     val pagerState = rememberPagerState()
-    ConstraintLayout(modifier = modifier
-        .fillMaxWidth()
-        .padding(bottom = 10.dp)) {
+    ConstraintLayout(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(bottom = 10.dp)
+    ) {
         val (pager, leftArrow, rightArrow) = createRefs()
         HorizontalPager(
             modifier = Modifier
@@ -956,15 +951,13 @@ private fun BottomSheetPage(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(
+                AnimatedText(
                     text = content,
                     style = MaterialTheme.typography.headlineLarge,
-                    textAlign = TextAlign.Center,
                 )
-                Text(
+                AnimatedText(
                     text = contentBottom,
                     style = MaterialTheme.typography.bodySmall,
-                    textAlign = TextAlign.Center,
                 )
             }
         }
@@ -977,8 +970,12 @@ data class BottomSheetData(
     val title: String = "",
     val icon: ImageVector = Icons.Filled.Train,
 
+    val trainStation: TrainStation = TrainStation.buildEmptyStation(),
     val trainArrivals: List<BottomSheetPagerData> = listOf(),
+
     val busArrivals: List<BottomSheetPagerData> = listOf(),
+    val busStop: BusStop = BusStop.buildUnknownStop(),
+
     val bikeStation: BikeStation = BikeStation.buildUnknownStation(),
 )
 
