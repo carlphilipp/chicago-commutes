@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.ArrowLeft
 import androidx.compose.material.icons.filled.ArrowRight
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -47,6 +48,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.toFontFamily
@@ -59,20 +61,16 @@ import androidx.constraintlayout.compose.Dimension
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.google.maps.android.compose.CameraPositionState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusRoute
-import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.FontSize
 import fr.cph.chicago.core.theme.availableFonts
-import fr.cph.chicago.core.ui.screen.BottomSheetContent
-import fr.cph.chicago.core.ui.screen.BottomSheetDataState
 import fr.cph.chicago.core.ui.screen.MapTrainViewModel
 import fr.cph.chicago.core.ui.screen.NearbyViewModel
 import fr.cph.chicago.core.ui.screen.Screen
@@ -498,7 +496,7 @@ fun ShowBusBoundBottomView(
 fun NearbyBottomSheet(
     modifier: Modifier = Modifier,
     viewModel: NearbyViewModel,
-    cameraPositionState: CameraPositionState,
+    onRefreshClick: () -> Unit,
     onBackClick: () -> Unit,
 ) {
     BottomSheet(
@@ -543,16 +541,7 @@ fun NearbyBottomSheet(
                         )
                     }
                 } else {
-                    FilledTonalButton(
-                        onClick = {
-                            scope.launch {
-                                viewModel.setMapCenterLocationAndLoadNearby(
-                                    position = Position(latitude = cameraPositionState.position.target.latitude, longitude = cameraPositionState.position.target.longitude),
-                                    zoom = cameraPositionState.position.zoom
-                                )
-                            }
-                        }
-                    ) {
+                    FilledTonalButton(onClick = onRefreshClick) {
                         Icon(
                             imageVector = Icons.Filled.Refresh,
                             contentDescription = null,
@@ -820,7 +809,9 @@ private fun BottomSheetPager(
     pagerData: List<BottomSheetPagerData>,
 ) {
     val pagerState = rememberPagerState()
-    ConstraintLayout(modifier = modifier.fillMaxWidth().padding(bottom = 10.dp)) {
+    ConstraintLayout(modifier = modifier
+        .fillMaxWidth()
+        .padding(bottom = 10.dp)) {
         val (pager, leftArrow, rightArrow) = createRefs()
         HorizontalPager(
             modifier = Modifier
@@ -900,7 +891,7 @@ private fun BottomSheetPage(
     subTitle: String? = null,
     content: String,
     contentBottom: String = "min",
-    titleColor: Color= MaterialTheme.colorScheme.onSurfaceVariant,
+    titleColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant,
 ) {
     Column(
@@ -978,4 +969,23 @@ private fun BottomSheetPage(
             }
         }
     }
+}
+
+data class BottomSheetData(
+    val bottomSheetState: BottomSheetDataState = BottomSheetDataState.HIDDEN,
+
+    val title: String = "",
+    val icon: ImageVector = Icons.Filled.Train,
+
+    val trainArrivals: List<BottomSheetPagerData> = listOf(),
+    val busArrivals: List<BottomSheetPagerData> = listOf(),
+    val bikeStation: BikeStation = BikeStation.buildUnknownStation(),
+)
+
+enum class BottomSheetDataState {
+    HIDDEN, TRAIN, BUS, BIKE
+}
+
+enum class BottomSheetContent {
+    COLLAPSE, EXPAND,
 }

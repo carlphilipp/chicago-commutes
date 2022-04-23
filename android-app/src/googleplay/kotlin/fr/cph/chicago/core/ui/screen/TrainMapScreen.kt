@@ -66,6 +66,7 @@ import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
+import fr.cph.chicago.core.ui.common.BottomSheetContent
 import fr.cph.chicago.core.ui.common.BottomSheetScaffoldMaterial3
 import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.ui.common.LoadingBar
@@ -694,8 +695,4 @@ class MapTrainViewModel constructor(
                 }
             }
     }
-}
-
-enum class BottomSheetContent {
-    COLLAPSE, EXPAND,
 }

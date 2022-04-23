@@ -40,7 +40,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -71,6 +70,8 @@ import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.permissions.NearbyLocationPermissionView
+import fr.cph.chicago.core.ui.common.BottomSheetData
+import fr.cph.chicago.core.ui.common.BottomSheetDataState
 import fr.cph.chicago.core.ui.common.BottomSheetPagerData
 import fr.cph.chicago.core.ui.common.BottomSheetScaffoldMaterial3
 import fr.cph.chicago.core.ui.common.LoadingCircle
@@ -177,6 +178,14 @@ fun NearbyScreen(
         sheetContent = {
             NearbyBottomSheet(
                 viewModel = viewModel,
+                onRefreshClick = {
+                    scope.launch {
+                        viewModel.setMapCenterLocationAndLoadNearby(
+                            position = Position(latitude = cameraPositionState.position.target.latitude, longitude = cameraPositionState.position.target.longitude),
+                            zoom = cameraPositionState.position.zoom
+                        )
+                    }
+                },
                 onBackClick = {
                     scope.launch {
                         if (viewModel.uiState.scaffoldState.bottomSheetState.isExpanded) {
@@ -186,7 +195,6 @@ fun NearbyScreen(
                         }
                     }
                 },
-                cameraPositionState = cameraPositionState,
             )
         },
         snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
@@ -404,21 +412,6 @@ fun StateDebugView(
         Text(text = "Bus stops: ${viewModel.uiState.busStops.size}")
         Text(text = "Bike stations: ${viewModel.uiState.bikeStations.size}")
     }
-}
-
-data class BottomSheetData(
-    val bottomSheetState: BottomSheetDataState = BottomSheetDataState.HIDDEN,
-
-    val title: String = "",
-    val icon: ImageVector = Icons.Filled.Train,
-
-    val trainArrivals: List<BottomSheetPagerData> = listOf(),
-    val busArrivals: List<BottomSheetPagerData> = listOf(),
-    val bikeStation: BikeStation = BikeStation.buildUnknownStation(),
-)
-
-enum class BottomSheetDataState {
-    HIDDEN, TRAIN, BUS, BIKE
 }
 
 @OptIn(ExperimentalMaterialApi::class)
