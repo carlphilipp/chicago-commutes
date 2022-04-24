@@ -98,10 +98,10 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.cancelAndJoin
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -308,7 +308,6 @@ fun NearbyGoogleMapView(
     val uiState = viewModel.uiState
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    var jobOnOpen: Job? by remember { mutableStateOf(null) }
     var jobOnClose: Job? by remember { mutableStateOf(null) }
 
     GoogleMap(
@@ -392,19 +391,16 @@ fun NearbyGoogleMapView(
                 icon = bitmapDescriptorBike,
                 onClick = {
                     jobOnClose?.cancel()
-                    jobOnOpen = scope.launch {
-                        viewModel.expandBottomSheet(
-                            scope = scope,
-                            runBefore = {
-                                viewModel.loadNearbyBikeDetails(currentBikeStation = bikeStation)
-                            }
-                        )
-                    }
+                    viewModel.expandBottomSheet(
+                        scope = scope,
+                        runBefore = {
+                            viewModel.loadNearbyBikeDetails(currentBikeStation = bikeStation)
+                        }
+                    )
                     false
                 },
                 onInfoWindowClose = {
                     jobOnClose = scope.launch {
-                        jobOnOpen?.cancelAndJoin()
                         viewModel.collapseBottomSheet(
                             scope = scope,
                             runAfter = { viewModel.resetDetails() }
@@ -515,6 +511,15 @@ class NearbyViewModel(
         viewModelScope.launch {
             runBefore()
             val job = scope.launch {
+                /**
+                 * This needs to get done, but it does not feel like the right fix.
+                 * We need to wait a little bit or we obtain in some specific case an exception.
+                 *
+                 * https://issuetracker.google.com/issues/216693030
+                 * https://issuetracker.google.com/issues/178529942?pli=1
+                 * https://github.com/google/accompanist/issues/910
+                 */
+                delay(200)
                 if (uiState.scaffoldState.bottomSheetState.isExpanded) {
                     Timber.e("COLLAPSE BOTTOM SHEET")
                     uiState.scaffoldState.bottomSheetState.collapse()
