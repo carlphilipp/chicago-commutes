@@ -762,6 +762,16 @@ private fun BottomSheetPager(
     pagerData: List<BottomSheetPagerData>,
 ) {
     val pagerState = rememberPagerState()
+    Timber.e("*********** SIZE: ${pagerData.size}")
+    val data = pagerData.ifEmpty {
+        listOf(
+            BottomSheetPagerData(
+                title = "No result",
+                content = "##"
+            )
+        )
+    }
+    Timber.e("*********** NEW SIZE: ${data.size}")
     ConstraintLayout(
         modifier = modifier
             .fillMaxWidth()
@@ -774,25 +784,25 @@ private fun BottomSheetPager(
                     start.linkTo(anchor = parent.start)
                 },
             state = pagerState,
-            count = pagerData.size,
+            count = data.size,
             itemSpacing = 10.dp,
             contentPadding = PaddingValues(start = 0.dp, end = 250.dp),
         ) { page ->
-            if (pagerData[page].backgroundColor != null && pagerData[page].titleColor != null) {
+            if (data[page].backgroundColor != null && data[page].titleColor != null) {
                 BottomSheetPage(
-                    title = pagerData[page].title,
-                    content = pagerData[page].content,
-                    subTitle = pagerData[page].subTitle,
-                    contentBottom = pagerData[page].bottom,
-                    titleColor = pagerData[page].titleColor!!,
-                    backgroundColor = pagerData[page].backgroundColor!!,
+                    title = data[page].title,
+                    content = data[page].content,
+                    subTitle = data[page].subTitle,
+                    contentBottom = data[page].bottom,
+                    titleColor = data[page].titleColor!!,
+                    backgroundColor = data[page].backgroundColor!!,
                 )
             } else {
                 BottomSheetPage(
-                    title = pagerData[page].title,
-                    content = pagerData[page].content,
-                    subTitle = pagerData[page].subTitle,
-                    contentBottom = pagerData[page].bottom,
+                    title = data[page].title,
+                    content = data[page].content,
+                    subTitle = data[page].subTitle,
+                    contentBottom = data[page].bottom,
                 )
             }
         }
