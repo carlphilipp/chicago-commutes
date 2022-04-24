@@ -762,7 +762,6 @@ private fun BottomSheetPager(
     pagerData: List<BottomSheetPagerData>,
 ) {
     val pagerState = rememberPagerState()
-    Timber.e("*********** SIZE: ${pagerData.size}")
     val data = pagerData.ifEmpty {
         listOf(
             BottomSheetPagerData(
@@ -771,7 +770,6 @@ private fun BottomSheetPager(
             )
         )
     }
-    Timber.e("*********** NEW SIZE: ${data.size}")
     ConstraintLayout(
         modifier = modifier
             .fillMaxWidth()

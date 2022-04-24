@@ -101,6 +101,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.cancelAndJoin
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -307,7 +308,8 @@ fun NearbyGoogleMapView(
     val uiState = viewModel.uiState
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    var job: Job? by remember { mutableStateOf(null) }
+    var jobOnOpen: Job? by remember { mutableStateOf(null) }
+    var jobOnClose: Job? by remember { mutableStateOf(null) }
 
     GoogleMap(
         modifier = modifier,
@@ -333,7 +335,7 @@ fun NearbyGoogleMapView(
                 title = trainStation.name,
                 icon = bitmapDescriptorTrain,
                 onClick = {
-                    job?.cancel()
+                    jobOnClose?.cancel()
                     viewModel.expandBottomSheet(
                         scope = scope,
                         runBefore = {
@@ -343,7 +345,7 @@ fun NearbyGoogleMapView(
                     false
                 },
                 onInfoWindowClose = {
-                    job = scope.launch {
+                    jobOnClose = scope.launch {
                         viewModel.collapseBottomSheet(
                             scope = scope,
                             runAfter = { viewModel.resetDetails() }
@@ -361,7 +363,7 @@ fun NearbyGoogleMapView(
                 title = busStop.name,
                 icon = bitmapDescriptorBus,
                 onClick = {
-                    job?.cancel()
+                    jobOnClose?.cancel()
                     viewModel.expandBottomSheet(
                         scope = scope,
                         runBefore = {
@@ -371,7 +373,7 @@ fun NearbyGoogleMapView(
                     false
                 },
                 onInfoWindowClose = {
-                    job = scope.launch {
+                    jobOnClose = scope.launch {
                         viewModel.collapseBottomSheet(
                             scope = scope,
                             runAfter = { viewModel.resetDetails() }
@@ -389,17 +391,20 @@ fun NearbyGoogleMapView(
                 title = bikeStation.name,
                 icon = bitmapDescriptorBike,
                 onClick = {
-                    job?.cancel()
-                    viewModel.expandBottomSheet(
-                        scope = scope,
-                        runBefore = {
-                            viewModel.loadNearbyBikeDetails(currentBikeStation = bikeStation)
-                        }
-                    )
+                    jobOnClose?.cancel()
+                    jobOnOpen = scope.launch {
+                        viewModel.expandBottomSheet(
+                            scope = scope,
+                            runBefore = {
+                                viewModel.loadNearbyBikeDetails(currentBikeStation = bikeStation)
+                            }
+                        )
+                    }
                     false
                 },
                 onInfoWindowClose = {
-                    job = scope.launch {
+                    jobOnClose = scope.launch {
+                        jobOnOpen?.cancelAndJoin()
                         viewModel.collapseBottomSheet(
                             scope = scope,
                             runAfter = { viewModel.resetDetails() }
@@ -496,8 +501,6 @@ class NearbyViewModel(
                 bottomSheetData = uiState.bottomSheetData.copy(
                     title = "",
                     bottomSheetState = BottomSheetDataState.HIDDEN,
-                    //trainArrivals = listOf(),
-                    //busArrivals = listOf(),
                     bikeStation = BikeStation.buildUnknownStation(),
                 )
             )
@@ -513,6 +516,7 @@ class NearbyViewModel(
             runBefore()
             val job = scope.launch {
                 if (uiState.scaffoldState.bottomSheetState.isExpanded) {
+                    Timber.e("COLLAPSE BOTTOM SHEET")
                     uiState.scaffoldState.bottomSheetState.collapse()
                 }
             }
@@ -530,6 +534,7 @@ class NearbyViewModel(
             runBefore()
             val job = scope.launch {
                 if (uiState.scaffoldState.bottomSheetState.isCollapsed) {
+                    Timber.e("EXPAND BOTTOM SHEET")
                     uiState.scaffoldState.bottomSheetState.expand()
                 }
             }
