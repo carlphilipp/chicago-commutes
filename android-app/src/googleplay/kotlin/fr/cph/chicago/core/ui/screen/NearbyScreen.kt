@@ -177,14 +177,14 @@ fun NearbyScreen(
 
     BottomSheetScaffoldMaterial3(
         scaffoldState = viewModel.uiState.scaffoldState,
-        sheetPeekHeight = 120.dp,
+        sheetPeekHeight = 0.dp,
         sheetContent = {
             NearbyBottomSheet(
                 viewModel = viewModel,
                 onBackClick = {
                     scope.launch {
-                        if (viewModel.uiState.scaffoldState.bottomSheetState.isExpanded) {
-                            viewModel.uiState.scaffoldState.bottomSheetState.collapse()
+                        if (viewModel.uiState.bottomSheetData.bottomSheetState != BottomSheetDataState.HIDDEN) {
+                            viewModel.resetDetails()
                         } else {
                             navController.navigateBack()
                         }
@@ -445,7 +445,7 @@ data class NearbyScreenUiState constructor(
     val nearbyDetailsError: Boolean = false,
     val scaffoldState: BottomSheetScaffoldState = BottomSheetScaffoldState(
         drawerState = DrawerState(DrawerValue.Closed),
-        bottomSheetState = BottomSheetState(initialValue = BottomSheetValue.Collapsed),
+        bottomSheetState = BottomSheetState(initialValue = BottomSheetValue.Expanded),
         snackbarHostState = androidx.compose.material.SnackbarHostState(),
     )
 )
@@ -474,14 +474,6 @@ class NearbyViewModel(
 
     fun setNearbyIsMyLocationEnabled(value: Boolean) {
         uiState = uiState.copy(isMyLocationEnabled = value)
-    }
-
-    fun setMapCenterLocationAndLoadNearby(position: Position, zoom: Float) {
-        viewModelScope.launch {
-            setCurrentUserLocation(position, zoom)
-            loadNearbyStations(position)
-            setShowLocationError(false)
-        }
     }
 
     fun loadNearby(position: Position) {
@@ -522,7 +514,7 @@ class NearbyViewModel(
                 delay(200)
                 if (uiState.scaffoldState.bottomSheetState.isExpanded) {
                     Timber.e("COLLAPSE BOTTOM SHEET")
-                    uiState.scaffoldState.bottomSheetState.collapse()
+                    //uiState.scaffoldState.bottomSheetState.collapse()
                 }
             }
             job.join()
@@ -540,7 +532,7 @@ class NearbyViewModel(
             val job = scope.launch {
                 if (uiState.scaffoldState.bottomSheetState.isCollapsed) {
                     Timber.e("EXPAND BOTTOM SHEET")
-                    uiState.scaffoldState.bottomSheetState.expand()
+                    //uiState.scaffoldState.bottomSheetState.expand()
                 }
             }
             job.join()

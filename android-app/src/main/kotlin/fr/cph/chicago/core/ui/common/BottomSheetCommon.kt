@@ -521,6 +521,8 @@ fun NearbyBottomSheet(
                     )
                 } else {
                     TrainLineStyleText(
+                        modifier = modifier
+                            .padding(bottom = 10.dp),
                         text = title,
                         color = MaterialTheme.colorScheme.secondaryContainer,
                         textColor = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -528,12 +530,7 @@ fun NearbyBottomSheet(
                 }
                 if (viewModel.uiState.bottomSheetData.bottomSheetState != BottomSheetDataState.HIDDEN) {
                     FilledTonalButton(
-                        onClick = {
-                            viewModel.collapseBottomSheet(
-                                scope = scope,
-                                runAfter = { viewModel.resetDetails() }
-                            )
-                        }
+                        onClick = { viewModel.resetDetails() }
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Close,
@@ -543,13 +540,13 @@ fun NearbyBottomSheet(
                 }
             }
 
-            Divider(
-                modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
-                thickness = 1.dp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
-            )
-
             if (viewModel.uiState.bottomSheetData.bottomSheetState != BottomSheetDataState.HIDDEN) {
+                Divider(
+                    modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
+                )
+
                 BottomSheetPager(pagerData = viewModel.uiState.bottomSheetData.data)
             }
         },
