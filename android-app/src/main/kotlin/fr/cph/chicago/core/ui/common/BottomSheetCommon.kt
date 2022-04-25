@@ -501,7 +501,6 @@ fun NearbyBottomSheet(
 ) {
     BottomSheet(
         content = {
-            val scope = rememberCoroutineScope()
             val title = if (viewModel.uiState.bottomSheetData.bottomSheetState != BottomSheetDataState.HIDDEN) {
                 viewModel.uiState.bottomSheetData.title
             } else {
@@ -530,7 +529,9 @@ fun NearbyBottomSheet(
                 }
                 if (viewModel.uiState.bottomSheetData.bottomSheetState != BottomSheetDataState.HIDDEN) {
                     FilledTonalButton(
-                        onClick = { viewModel.resetDetails() }
+                        onClick = {
+                            viewModel.resetDetails()
+                        }
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Close,

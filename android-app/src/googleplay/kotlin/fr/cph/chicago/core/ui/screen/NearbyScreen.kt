@@ -96,12 +96,10 @@ import fr.cph.chicago.util.toLatLng
 import fr.cph.chicago.util.toPosition
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.CoroutineScope
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -335,20 +333,12 @@ fun NearbyGoogleMapView(
                 icon = bitmapDescriptorTrain,
                 onClick = {
                     jobOnClose?.cancel()
-                    viewModel.expandBottomSheet(
-                        scope = scope,
-                        runBefore = {
-                            viewModel.loadNearbyTrainDetails(trainStation = trainStation)
-                        }
-                    )
+                    viewModel.loadNearbyTrainDetails(trainStation = trainStation)
                     false
                 },
                 onInfoWindowClose = {
                     jobOnClose = scope.launch {
-                        viewModel.collapseBottomSheet(
-                            scope = scope,
-                            runAfter = { viewModel.resetDetails() }
-                        )
+                        viewModel.resetDetails()
                     }
                 }
             )
@@ -363,20 +353,12 @@ fun NearbyGoogleMapView(
                 icon = bitmapDescriptorBus,
                 onClick = {
                     jobOnClose?.cancel()
-                    viewModel.expandBottomSheet(
-                        scope = scope,
-                        runBefore = {
-                            viewModel.loadNearbyBusDetails(busStop = busStop)
-                        }
-                    )
+                    viewModel.loadNearbyBusDetails(busStop = busStop)
                     false
                 },
                 onInfoWindowClose = {
                     jobOnClose = scope.launch {
-                        viewModel.collapseBottomSheet(
-                            scope = scope,
-                            runAfter = { viewModel.resetDetails() }
-                        )
+                        viewModel.resetDetails()
                     }
                 }
             )
@@ -391,20 +373,12 @@ fun NearbyGoogleMapView(
                 icon = bitmapDescriptorBike,
                 onClick = {
                     jobOnClose?.cancel()
-                    viewModel.expandBottomSheet(
-                        scope = scope,
-                        runBefore = {
-                            viewModel.loadNearbyBikeDetails(currentBikeStation = bikeStation)
-                        }
-                    )
+                    viewModel.loadNearbyBikeDetails(currentBikeStation = bikeStation)
                     false
                 },
                 onInfoWindowClose = {
                     jobOnClose = scope.launch {
-                        viewModel.collapseBottomSheet(
-                            scope = scope,
-                            runAfter = { viewModel.resetDetails() }
-                        )
+                        viewModel.resetDetails()
                     }
                 }
             )
@@ -492,51 +466,6 @@ class NearbyViewModel(
                     bikeStation = BikeStation.buildUnknownStation(),
                 )
             )
-        }
-    }
-
-    fun collapseBottomSheet(
-        scope: CoroutineScope,
-        runBefore: () -> Unit = {},
-        runAfter: () -> Unit = {},
-    ) {
-        viewModelScope.launch {
-            runBefore()
-            val job = scope.launch {
-                /**
-                 * This needs to get done, but it does not feel like the right fix.
-                 * We need to wait a little bit or we obtain in some specific case an exception.
-                 *
-                 * https://issuetracker.google.com/issues/216693030
-                 * https://issuetracker.google.com/issues/178529942?pli=1
-                 * https://github.com/google/accompanist/issues/910
-                 */
-                delay(200)
-                if (uiState.scaffoldState.bottomSheetState.isExpanded) {
-                    Timber.e("COLLAPSE BOTTOM SHEET")
-                    //uiState.scaffoldState.bottomSheetState.collapse()
-                }
-            }
-            job.join()
-            runAfter()
-        }
-    }
-
-    fun expandBottomSheet(
-        scope: CoroutineScope,
-        runBefore: () -> Unit = {},
-        runAfter: () -> Unit = {},
-    ) {
-        viewModelScope.launch {
-            runBefore()
-            val job = scope.launch {
-                if (uiState.scaffoldState.bottomSheetState.isCollapsed) {
-                    Timber.e("EXPAND BOTTOM SHEET")
-                    //uiState.scaffoldState.bottomSheetState.expand()
-                }
-            }
-            job.join()
-            runAfter()
         }
     }
 
