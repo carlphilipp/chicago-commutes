@@ -493,6 +493,7 @@ class MapTrainViewModel constructor(
                         uiState = uiState.copy(isLoading = false)
                     }
                 )
+            // TODO: Reload bottom sheet data too
         }
     }
 
