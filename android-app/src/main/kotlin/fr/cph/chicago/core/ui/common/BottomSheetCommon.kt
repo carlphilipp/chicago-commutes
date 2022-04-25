@@ -600,28 +600,10 @@ private fun ChangeLineTrainMapBottomSheet(
     viewModel: MapTrainViewModel,
 ) {
     val scope = rememberCoroutineScope()
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        TrainLineButton(
-            trainLine = viewModel.uiState.line,
-            showLine = true,
-        )
-        FilledTonalButton(
-            onClick = {
-                scope.launch {
-                    viewModel.reloadData()
-                }
-            }
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Refresh,
-                contentDescription = "Back",
-            )
-        }
-    }
+    TrainLineButton(
+        trainLine = viewModel.uiState.line,
+        showLine = true,
+    )
 
     Divider(
         modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
