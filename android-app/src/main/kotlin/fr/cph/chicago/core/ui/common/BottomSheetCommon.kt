@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.constraintlayout.compose.Visibility
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -506,13 +507,22 @@ fun NearbyBottomSheet(
             } else {
                 stringResource(R.string.screen_nearby)
             }
-            Row(
-                modifier = modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
+            val showRefreshButton = if (viewModel.uiState.bottomSheetData.bottomSheetState != BottomSheetDataState.HIDDEN) {
+                Visibility.Visible
+            } else {
+                Visibility.Invisible
+            }
+
+            ConstraintLayout(modifier = modifier.fillMaxWidth()) {
+                val (left, right) = createRefs()
                 if (viewModel.uiState.bottomSheetData.bottomSheetState != BottomSheetDataState.HIDDEN) {
                     TrainLineStyleIconText(
+                        modifier = Modifier.constrainAs(left) {
+                            start.linkTo(anchor = parent.start, margin = 1.dp)
+                            end.linkTo(anchor = right.start)
+                            centerVerticallyTo(right)
+                            width = Dimension.preferredWrapContent
+                        },
                         text = title,
                         icon = viewModel.uiState.bottomSheetData.icon,
                         color = MaterialTheme.colorScheme.secondaryContainer,
@@ -520,24 +530,31 @@ fun NearbyBottomSheet(
                     )
                 } else {
                     TrainLineStyleText(
-                        modifier = modifier
+                        modifier = Modifier
+                            .constrainAs(left) {
+                                start.linkTo(anchor = parent.start)
+                                centerVerticallyTo(right)
+                                //width = Dimension.fillToConstraints
+                            }
                             .padding(bottom = 10.dp),
                         text = title,
                         color = MaterialTheme.colorScheme.secondaryContainer,
                         textColor = MaterialTheme.colorScheme.onSecondaryContainer,
                     )
                 }
-                if (viewModel.uiState.bottomSheetData.bottomSheetState != BottomSheetDataState.HIDDEN) {
-                    FilledTonalButton(
-                        onClick = {
-                            viewModel.resetDetails()
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Close,
-                            contentDescription = null,
-                        )
-                    }
+                FilledTonalButton(
+                    modifier = Modifier.constrainAs(right) {
+                        end.linkTo(anchor = parent.end)
+                        width = Dimension.wrapContent
+                        visibility = showRefreshButton
+                    },
+                    onClick = { viewModel.resetDetails() },
+                    contentPadding = PaddingValues()
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Close,
+                        contentDescription = null,
+                    )
                 }
             }
 

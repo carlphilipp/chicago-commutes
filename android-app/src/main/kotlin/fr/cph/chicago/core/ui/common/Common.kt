@@ -800,7 +800,9 @@ fun TrainLineStyleIconText(
                 text = text,
                 color = textColor,
                 style = MaterialTheme.typography.titleSmall,
-                textAlign = TextAlign.Center,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                //textAlign = TextAlign.Center,
                 modifier = Modifier.padding(start = 8.dp),
             )
         }
