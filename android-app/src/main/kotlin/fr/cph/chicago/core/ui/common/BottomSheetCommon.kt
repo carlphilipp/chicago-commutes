@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -35,6 +36,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -56,6 +58,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ChainStyle.Companion.SpreadInside
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.constraintlayout.compose.Visibility
@@ -518,10 +521,9 @@ fun NearbyBottomSheet(
                 if (viewModel.uiState.bottomSheetData.bottomSheetState != BottomSheetDataState.HIDDEN) {
                     TrainLineStyleIconText(
                         modifier = Modifier.constrainAs(left) {
-                            start.linkTo(anchor = parent.start, margin = 1.dp)
-                            end.linkTo(anchor = right.start)
+                            start.linkTo(anchor = parent.start)
+                            end.linkTo(anchor = right.start, margin = 50.dp, goneMargin = 50.dp)
                             centerVerticallyTo(right)
-                            width = Dimension.preferredWrapContent
                         },
                         text = title,
                         icon = viewModel.uiState.bottomSheetData.icon,
@@ -534,7 +536,6 @@ fun NearbyBottomSheet(
                             .constrainAs(left) {
                                 start.linkTo(anchor = parent.start)
                                 centerVerticallyTo(right)
-                                //width = Dimension.fillToConstraints
                             }
                             .padding(bottom = 10.dp),
                         text = title,
@@ -545,7 +546,6 @@ fun NearbyBottomSheet(
                 FilledTonalButton(
                     modifier = Modifier.constrainAs(right) {
                         end.linkTo(anchor = parent.end)
-                        width = Dimension.wrapContent
                         visibility = showRefreshButton
                     },
                     onClick = { viewModel.resetDetails() },
@@ -556,6 +556,11 @@ fun NearbyBottomSheet(
                         contentDescription = null,
                     )
                 }
+
+                createHorizontalChain(
+                    left, right,
+                    chainStyle = SpreadInside
+                )
             }
 
             if (viewModel.uiState.bottomSheetData.bottomSheetState != BottomSheetDataState.HIDDEN) {

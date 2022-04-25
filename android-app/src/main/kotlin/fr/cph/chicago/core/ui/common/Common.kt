@@ -789,7 +789,6 @@ fun TrainLineStyleIconText(
     ) {
         Row(
             modifier = Modifier.padding(vertical = 7.dp, horizontal = 15.dp),
-            horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
@@ -802,7 +801,6 @@ fun TrainLineStyleIconText(
                 style = MaterialTheme.typography.titleSmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                //textAlign = TextAlign.Center,
                 modifier = Modifier.padding(start = 8.dp),
             )
         }
