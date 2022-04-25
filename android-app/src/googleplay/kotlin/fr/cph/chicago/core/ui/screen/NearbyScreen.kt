@@ -1,6 +1,7 @@
 package fr.cph.chicago.core.ui.screen
 
 import android.Manifest
+import android.content.Context
 import android.os.Bundle
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.foundation.background
@@ -51,6 +52,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.savedstate.SavedStateRegistryOwner
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
@@ -162,6 +164,12 @@ fun NearbyScreen(
             isMapLoaded = true
         }
     }
+
+    LaunchedEffect(key1 = Unit, block = {
+        if (!viewModel.uiState.bitmapDescriptorLoaded) {
+            viewModel.loadBitmapDescriptor(context = context)
+        }
+    })
 
     if (viewModel.uiState.moveCamera != null && viewModel.uiState.moveCameraZoom != null && isMapLoaded) {
         LaunchedEffect(key1 = viewModel.uiState.moveCamera, key2 = viewModel.uiState.moveCameraZoom, block = {
@@ -319,69 +327,72 @@ fun NearbyGoogleMapView(
         uiSettings = MapUiSettings(compassEnabled = false, myLocationButtonEnabled = uiState.isMyLocationEnabled),
         onMapLoaded = onMapLoaded,
     ) {
-        // FIXME: load that in a different scope
-        val bitmapDescriptorTrain = getBitmapDescriptor(context, R.drawable.train_station_icon)
-        val bitmapDescriptorBus = getBitmapDescriptor(context, R.drawable.bus_stop_icon)
-        val bitmapDescriptorBike = getBitmapDescriptor(context, R.drawable.bike_station_icon)
-
-        uiState.trainStations.forEach { trainStation ->
-            val markerState = rememberMarkerState()
-            markerState.position = trainStation.stops[0].position.toLatLng()
-            Marker(
-                state = markerState,
-                title = trainStation.name,
-                icon = bitmapDescriptorTrain,
-                onClick = {
-                    jobOnClose?.cancel()
-                    viewModel.loadNearbyTrainDetails(trainStation = trainStation)
-                    false
-                },
-                onInfoWindowClose = {
-                    jobOnClose = scope.launch {
-                        viewModel.resetDetails()
-                    }
+        if (viewModel.uiState.bitmapDescriptorLoaded) {
+            viewModel.uiState.bitmapDescriptorTrain?.run {
+                uiState.trainStations.forEach { trainStation ->
+                    val markerState = rememberMarkerState()
+                    markerState.position = trainStation.stops[0].position.toLatLng()
+                    Marker(
+                        state = markerState,
+                        title = trainStation.name,
+                        icon = this,
+                        onClick = {
+                            jobOnClose?.cancel()
+                            viewModel.loadNearbyTrainDetails(trainStation = trainStation)
+                            false
+                        },
+                        onInfoWindowClose = {
+                            jobOnClose = scope.launch {
+                                viewModel.resetDetails()
+                            }
+                        }
+                    )
                 }
-            )
-        }
+            }
 
-        uiState.busStops.forEach { busStop ->
-            val markerState = rememberMarkerState()
-            markerState.position = busStop.position.toLatLng()
-            Marker(
-                state = markerState,
-                title = busStop.name,
-                icon = bitmapDescriptorBus,
-                onClick = {
-                    jobOnClose?.cancel()
-                    viewModel.loadNearbyBusDetails(busStop = busStop)
-                    false
-                },
-                onInfoWindowClose = {
-                    jobOnClose = scope.launch {
-                        viewModel.resetDetails()
-                    }
+            viewModel.uiState.bitmapDescriptorBus?.run {
+                uiState.busStops.forEach { busStop ->
+                    val markerState = rememberMarkerState()
+                    markerState.position = busStop.position.toLatLng()
+                    Marker(
+                        state = markerState,
+                        title = busStop.name,
+                        icon = this,
+                        onClick = {
+                            jobOnClose?.cancel()
+                            viewModel.loadNearbyBusDetails(busStop = busStop)
+                            false
+                        },
+                        onInfoWindowClose = {
+                            jobOnClose = scope.launch {
+                                viewModel.resetDetails()
+                            }
+                        }
+                    )
                 }
-            )
-        }
+            }
 
-        uiState.bikeStations.forEach { bikeStation ->
-            val markerState = rememberMarkerState()
-            markerState.position = LatLng(bikeStation.latitude, bikeStation.longitude)
-            Marker(
-                state = markerState,
-                title = bikeStation.name,
-                icon = bitmapDescriptorBike,
-                onClick = {
-                    jobOnClose?.cancel()
-                    viewModel.loadNearbyBikeDetails(currentBikeStation = bikeStation)
-                    false
-                },
-                onInfoWindowClose = {
-                    jobOnClose = scope.launch {
-                        viewModel.resetDetails()
-                    }
+            viewModel.uiState.bitmapDescriptorBike?.run {
+                uiState.bikeStations.forEach { bikeStation ->
+                    val markerState = rememberMarkerState()
+                    markerState.position = LatLng(bikeStation.latitude, bikeStation.longitude)
+                    Marker(
+                        state = markerState,
+                        title = bikeStation.name,
+                        icon = this,
+                        onClick = {
+                            jobOnClose?.cancel()
+                            viewModel.loadNearbyBikeDetails(currentBikeStation = bikeStation)
+                            false
+                        },
+                        onInfoWindowClose = {
+                            jobOnClose = scope.launch {
+                                viewModel.resetDetails()
+                            }
+                        }
+                    )
                 }
-            )
+            }
         }
     }
 }
@@ -408,20 +419,33 @@ fun StateDebugView(
 
 @OptIn(ExperimentalMaterialApi::class)
 data class NearbyScreenUiState constructor(
+    // data
     val trainStations: List<TrainStation> = listOf(),
     val busStops: List<BusStop> = listOf(),
     val bikeStations: List<BikeStation> = listOf(),
+
+    // map
     val moveCamera: Position? = null,
     val moveCameraZoom: Float? = null,
     val isMyLocationEnabled: Boolean = false,
     val showLocationError: Boolean = false,
-    val bottomSheetData: BottomSheetData = BottomSheetData(),
+
+    // error
     val nearbyDetailsError: Boolean = false,
+
+    // bottom sheet
+    val bottomSheetData: BottomSheetData = BottomSheetData(),
     val scaffoldState: BottomSheetScaffoldState = BottomSheetScaffoldState(
         drawerState = DrawerState(DrawerValue.Closed),
         bottomSheetState = BottomSheetState(initialValue = BottomSheetValue.Expanded),
         snackbarHostState = androidx.compose.material.SnackbarHostState(),
-    )
+    ),
+
+    // bitmap descriptor
+    val bitmapDescriptorLoaded: Boolean = false,
+    val bitmapDescriptorTrain: BitmapDescriptor? = null,
+    val bitmapDescriptorBus: BitmapDescriptor? = null,
+    val bitmapDescriptorBike: BitmapDescriptor? = null,
 )
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -483,6 +507,29 @@ class NearbyViewModel(
             setCurrentUserLocation(chicagoPosition)
             loadNearbyStations(chicagoPosition)
             setShowLocationError(true)
+        }
+    }
+
+    fun loadBitmapDescriptor(context: Context) {
+        viewModelScope.launch {
+            Single.fromCallable {
+                val bitmapDescriptorTrain = getBitmapDescriptor(context, R.drawable.train_station_icon)
+                val bitmapDescriptorBus = getBitmapDescriptor(context, R.drawable.bus_stop_icon)
+                val bitmapDescriptorBike = getBitmapDescriptor(context, R.drawable.bike_station_icon)
+                listOf(bitmapDescriptorTrain, bitmapDescriptorBus, bitmapDescriptorBike)
+            }
+                .subscribe(
+                    {
+                        uiState = uiState.copy(
+                            bitmapDescriptorLoaded = true,
+                            bitmapDescriptorTrain = it[0],
+                            bitmapDescriptorBus = it[1],
+                            bitmapDescriptorBike = it[2],
+                        )
+                    }, {
+                        Timber.e(it, "Could not load bitmap descriptor")
+                    })
+
         }
     }
 

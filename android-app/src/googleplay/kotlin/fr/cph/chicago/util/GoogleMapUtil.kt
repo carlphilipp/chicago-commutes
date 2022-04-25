@@ -68,12 +68,12 @@ object GoogleMapUtil {
     fun getBitmapDescriptor(context: Context?, @DrawableRes icon: Int): BitmapDescriptor {
         return if (context != null) {
             val px = context.resources.getDimensionPixelSize(R.dimen.icon_shadow_2)
-            val bitMapBusStation = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bitMapBusStation)
+            val bitmap = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
             val shape = ContextCompat.getDrawable(context, icon)!!
-            shape.setBounds(0, 0, px, bitMapBusStation.height)
+            shape.setBounds(0, 0, px, bitmap.height)
             shape.draw(canvas)
-            BitmapDescriptorFactory.fromBitmap(bitMapBusStation)
+            BitmapDescriptorFactory.fromBitmap(bitmap)
         } else {
             BitmapDescriptorFactory.defaultMarker()
         }
