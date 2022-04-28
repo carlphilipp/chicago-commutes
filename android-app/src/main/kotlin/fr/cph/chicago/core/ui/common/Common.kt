@@ -56,6 +56,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ButtonDefaults
@@ -64,6 +65,7 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
@@ -460,20 +462,14 @@ fun StationDetailsTitleIconView(
                 }
             }
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                // FIXME:
-                // See to implement that or find something with some ui animation
-/*                var chec = remember { mutableStateOf(true) }
-                IconToggleButton(checked = chec.value, onCheckedChange = {
-                    chec.value = !chec.value
-                }) {
-                    val tint by animateColorAsState(if (chec.value) Color(0xFFEC407A) else Color(0xFFB0BEC5))
-                    Icon(Icons.Filled.Favorite, contentDescription = "Localized description", tint = tint)
-                }*/
-                IconButton(onClick = onFavoriteClick) {
+                IconToggleButton(
+                    checked = isFavorite,
+                    onCheckedChange = { onFavoriteClick(); true }
+                ) {
                     Icon(
                         imageVector = Icons.Filled.Favorite,
-                        contentDescription = "Favorite",
                         tint = if (isFavorite) favorite_yellow else LocalContentColor.current,
+                        contentDescription = null
                     )
                 }
                 IconButton(onClick = onMapClick) {
