@@ -12,12 +12,12 @@ object Version {
     const val realm =                       "10.10.1"
     const val gradle_version =              "0.42.0"
 
-    const val androidx_activity_compose =   "1.6.0-alpha01"
+    const val androidx_activity_compose =   "1.6.0-alpha03"
     const val androidx_constraint =         "1.0.0"
     const val androidx_lifecycle =          "2.5.0-beta01"
     const val androidx_navigation =         "2.5.0-beta01"
     const val androidx_work =               "2.8.0-alpha02"
-    const val accompanist =                 "0.24.6-alpha"
+    const val accompanist =                 "0.24.7-alpha"
     const val commons_collections4 =        "4.+"
     const val commons_text =                "1.+"
     const val compose =                     "1.2.0-alpha08"
@@ -35,7 +35,7 @@ object Version {
     const val rx_kotlin =                   "3.+"
     const val re_kotlin =                   "1.0.4"
     const val retrofit2 =                   "2.+"
-    const val timber =                      "4.+"
+    const val timber =                      "5.+"
     const val univocity =                   "2.+"
 
     // Update
@@ -106,7 +106,7 @@ object Lib {
     const val rx =                              "io.reactivex.rxjava3:rxjava:${Version.rx}"
     const val rx_android =                      "io.reactivex.rxjava3:rxandroid:${Version.rx_android}"
     const val rx_kotlin =                       "io.reactivex.rxjava3:rxkotlin:${Version.rx_kotlin}"
-    const val re_kotlin =                       "org.rekotlin:rekotlin:${Version.re_kotlin}"
+    const val re_kotlin =                       "com.github.ReKotlin:ReKotlin:${Version.re_kotlin}"
     const val retrofit2 =                       "com.squareup.retrofit2:retrofit:${Version.retrofit2}"
     const val retrofit2_converter =             "com.squareup.retrofit2:converter-jackson:${Version.retrofit2}"
     const val retrofit2_rxjava3 =               "com.squareup.retrofit2:adapter-rxjava3:${Version.retrofit2}"
