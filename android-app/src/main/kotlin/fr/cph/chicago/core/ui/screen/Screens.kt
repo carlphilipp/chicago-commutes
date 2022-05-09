@@ -442,6 +442,7 @@ sealed class Screen(
             BusMapScreen(
                 viewModel = viewModel,
                 navigationViewModel = navigationViewModel,
+                settingsViewModel = settingsViewModel,
                 title = busRouteId,
             )
         }

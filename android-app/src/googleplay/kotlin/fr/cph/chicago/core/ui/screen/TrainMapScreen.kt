@@ -75,6 +75,7 @@ import fr.cph.chicago.core.ui.common.LoadingCircle
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.TrainMapBottomSheet
+import fr.cph.chicago.core.ui.common.defaultSheetPeekHeight
 import fr.cph.chicago.core.ui.common.runWithDelay
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.getDefaultPosition
@@ -88,11 +89,11 @@ import fr.cph.chicago.util.mapStyle
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 /**
  *      1. Show loading screen
@@ -144,7 +145,7 @@ fun TrainMapScreen(
 
     BottomSheetScaffoldMaterial3(
         scaffoldState = viewModel.uiState.scaffoldState,
-        sheetPeekHeight = 120.dp,
+        sheetPeekHeight = defaultSheetPeekHeight,
         sheetContent = {
             TrainMapBottomSheet(
                 viewModel = viewModel,
@@ -249,7 +250,6 @@ fun TrainMapScreen(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun GoogleMapTrainMapView(
     modifier: Modifier = Modifier,
@@ -327,7 +327,6 @@ fun TrainStationsMarkers(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TrainsOnMapLayer(
     viewModel: MapTrainViewModel,

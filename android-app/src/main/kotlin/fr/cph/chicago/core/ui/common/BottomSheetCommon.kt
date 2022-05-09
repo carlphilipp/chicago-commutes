@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowLeft
 import androidx.compose.material.icons.filled.ArrowRight
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DirectionsBus
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
@@ -73,6 +74,7 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.FontSize
 import fr.cph.chicago.core.theme.availableFonts
+import fr.cph.chicago.core.ui.screen.MapBusViewModel
 import fr.cph.chicago.core.ui.screen.MapTrainViewModel
 import fr.cph.chicago.core.ui.screen.NearbyViewModel
 import fr.cph.chicago.core.ui.screen.Screen
@@ -497,7 +499,67 @@ fun ShowBusBoundBottomView(
     )
 }
 
-@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun BusBottomSheet(
+    modifier: Modifier = Modifier,
+    viewModel: MapBusViewModel,
+    onBackClick: () -> Unit,
+) {
+    BottomSheet(
+        content = {
+            val showCloseButton = if (viewModel.uiState.bottomSheetContentAndState == BottomSheetContent.EXPAND) {
+                Visibility.Visible
+            } else {
+                Visibility.Invisible
+            }
+            ConstraintLayout(modifier = modifier.fillMaxWidth()) {
+                val (left, right) = createRefs()
+                TrainLineStyleIconText(
+                    modifier = Modifier
+                        .constrainAs(left) {
+                            start.linkTo(anchor = parent.start)
+                            centerVerticallyTo(right)
+                        }
+                        .padding(bottom = 12.dp),
+                    text = viewModel.uiState.busRouteId,
+                    icon = Icons.Filled.DirectionsBus,
+                    color = MaterialTheme.colorScheme.secondaryContainer,
+                    textColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                )
+                FilledTonalButton(
+                    modifier = Modifier
+                        .constrainAs(right) {
+                            end.linkTo(anchor = parent.end)
+                            visibility = showCloseButton
+                        }
+                        .padding(bottom = 12.dp),
+                    onClick = { viewModel.resetDetails() },
+                    contentPadding = PaddingValues()
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Close,
+                        contentDescription = null,
+                    )
+                }
+
+                createHorizontalChain(
+                    left, right,
+                    chainStyle = SpreadInside
+                )
+            }
+            if (viewModel.uiState.bottomSheetContentAndState == BottomSheetContent.EXPAND) {
+                Divider(
+                    modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
+                )
+                BottomSheetPager(pagerData = viewModel.uiState.busData)
+            }
+        },
+        onBackClick = onBackClick,
+    )
+}
+
 @Composable
 fun NearbyBottomSheet(
     modifier: Modifier = Modifier,
@@ -511,7 +573,7 @@ fun NearbyBottomSheet(
             } else {
                 stringResource(R.string.screen_nearby)
             }
-            val showRefreshButton = if (viewModel.uiState.bottomSheetData.bottomSheetState != BottomSheetDataState.HIDDEN) {
+            val showCloseButton = if (viewModel.uiState.bottomSheetData.bottomSheetState != BottomSheetDataState.HIDDEN) {
                 Visibility.Visible
             } else {
                 Visibility.Invisible
@@ -546,7 +608,7 @@ fun NearbyBottomSheet(
                 FilledTonalButton(
                     modifier = Modifier.constrainAs(right) {
                         end.linkTo(anchor = parent.end)
-                        visibility = showRefreshButton
+                        visibility = showCloseButton
                     },
                     onClick = { viewModel.resetDetails() },
                     contentPadding = PaddingValues()
@@ -577,7 +639,6 @@ fun NearbyBottomSheet(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrainMapBottomSheet(
     modifier: Modifier = Modifier,

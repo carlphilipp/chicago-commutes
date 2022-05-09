@@ -1,11 +1,34 @@
 package fr.cph.chicago.core.ui.screen
 
 import android.graphics.BitmapFactory
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material.BottomSheetScaffoldState
+import androidx.compose.material.BottomSheetState
+import androidx.compose.material.BottomSheetValue
+import androidx.compose.material.DrawerState
+import androidx.compose.material.DrawerValue
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,7 +38,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -32,22 +59,28 @@ import com.google.maps.android.compose.rememberMarkerState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Bus
-import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.core.navigation.DisplayTopBar
+import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
+import fr.cph.chicago.core.ui.common.BottomSheetContent
+import fr.cph.chicago.core.ui.common.BottomSheetPagerData
+import fr.cph.chicago.core.ui.common.BottomSheetScaffoldMaterial3
+import fr.cph.chicago.core.ui.common.BusBottomSheet
 import fr.cph.chicago.core.ui.common.LoadingBar
 import fr.cph.chicago.core.ui.common.LoadingCircle
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
+import fr.cph.chicago.core.ui.common.defaultSheetPeekHeight
 import fr.cph.chicago.core.ui.common.runWithDelay
+import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.service.BusService
+import fr.cph.chicago.util.CameraDebugView
 import fr.cph.chicago.util.GoogleMapUtil.createBitMapDescriptor
 import fr.cph.chicago.util.GoogleMapUtil.defaultZoom
 import fr.cph.chicago.util.GoogleMapUtil.isIn
-import fr.cph.chicago.util.InfoWindowsDetails
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.toLatLng
@@ -55,21 +88,32 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun BusMapScreen(
     modifier: Modifier = Modifier,
     viewModel: MapBusViewModel,
     navigationViewModel: NavigationViewModel,
+    settingsViewModel: SettingsViewModel,
     title: String,
 ) {
-    Timber.d("Compose BusMapScreen")
+    Timber.d("Compose BusMapScreen ${Thread.currentThread().name}")
     val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     val scope = rememberCoroutineScope()
+    val navController = LocalNavController.current
     var isMapLoaded by remember { mutableStateOf(false) }
+    val cameraPositionState: CameraPositionState by remember {
+        mutableStateOf(
+            CameraPositionState(
+                position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)
+            )
+        )
+    }
     // Show map after 5 seconds. This is needed because there is no callback from the sdk to know if the map can be loaded or not.
     // Meaning that we can have a situation where the onMapLoaded method is never triggered, while the map view has been populated
     // with some error messages from the google sdk like: "Play store needs to be updated"
@@ -89,40 +133,107 @@ fun BusMapScreen(
         })
     }
 
-    Column {
-        DisplayTopBar(
-            screen = Screen.BusMap,
-            title = title,
-            viewModel = navigationViewModel,
-            onClickRightIcon = listOf {
-                viewModel.reloadData()
-            }
-        )
-
-        Scaffold(
-            modifier = modifier,
-            snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
-            content = {
-
-                GoogleMapBusMapView(
-                    viewModel = viewModel,
-                    onMapLoaded = { isMapLoaded = true },
-                )
-
-                LoadingBar(show = viewModel.uiState.isLoading)
-
-                LoadingCircle(show = !isMapLoaded)
-
-                if (viewModel.uiState.showError) {
-                    ShowErrorMessageSnackBar(
-                        scope = scope,
-                        snackbarHostState = snackbarHostState,
-                        showError = viewModel.uiState.showError,
-                        onComplete = { viewModel.showError(false) }
-                    )
+    BottomSheetScaffoldMaterial3(
+        scaffoldState = viewModel.uiState.scaffoldState,
+        sheetPeekHeight = defaultSheetPeekHeight,
+        sheetContent = {
+            // FIXME: Handle bus stops size and also DUE vs minutes
+            BusBottomSheet(
+                viewModel = viewModel,
+                onBackClick = {
+                    scope.launch {
+                        if (viewModel.uiState.scaffoldState.bottomSheetState.isExpanded) {
+                            viewModel.uiState.scaffoldState.bottomSheetState.collapse()
+                        } else {
+                            navController.navigateBack()
+                        }
+                    }
                 }
+            )
+        },
+        snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
+        content = {
+            Column {
+                Scaffold(
+                    modifier = modifier,
+                    content = {
+
+                        GoogleMapBusMapView(
+                            viewModel = viewModel,
+                            onMapLoaded = { isMapLoaded = true },
+                            cameraPositionState = cameraPositionState,
+                        )
+
+                        ConstraintLayout(
+                            modifier = modifier
+                                .fillMaxWidth()
+                                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
+                                .padding(start = 10.dp, top = 5.dp, bottom = 5.dp, end = 10.dp),
+                        ) {
+                            val (left, right, cameraDebug, stateDebug) = createRefs()
+                            FilledTonalButton(
+                                modifier = Modifier.constrainAs(left) {
+                                    start.linkTo(anchor = parent.start)
+                                    width = Dimension.fillToConstraints
+                                },
+                                onClick = { navController.navigateBack() },
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.ArrowBack,
+                                    contentDescription = "Back",
+                                )
+                            }
+
+                            FilledTonalButton(
+                                modifier = Modifier.constrainAs(right) {
+                                    end.linkTo(anchor = parent.end)
+                                    width = Dimension.fillToConstraints
+                                },
+                                onClick = {
+                                    viewModel.reloadData()
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Refresh,
+                                    contentDescription = null,
+                                )
+                            }
+
+                            if (settingsViewModel.uiState.showMapDebug) {
+                                CameraDebugView(
+                                    modifier = Modifier.constrainAs(cameraDebug) {
+                                        top.linkTo(anchor = left.bottom)
+                                    },
+                                    cameraPositionState = cameraPositionState
+                                )
+                                StateDebugView(
+                                    modifier = Modifier.constrainAs(stateDebug) {
+                                        top.linkTo(anchor = cameraDebug.bottom)
+                                    },
+                                    viewModel = viewModel
+                                )
+                            }
+                        }
+
+                        LoadingBar(show = viewModel.uiState.isLoading)
+
+                        LoadingCircle(show = !isMapLoaded)
+
+                        if (viewModel.uiState.showError) {
+                            ShowErrorMessageSnackBar(
+                                scope = scope,
+                                snackbarHostState = snackbarHostState,
+                                showError = viewModel.uiState.showError,
+                                onComplete = { viewModel.showError(false) }
+                            )
+                        }
+                    }
+                )
             }
-        )
+        })
+
+    DisposableEffect(key1 = viewModel) {
+        onDispose { viewModel.onStop() }
     }
 }
 
@@ -130,23 +241,23 @@ fun BusMapScreen(
 fun GoogleMapBusMapView(
     modifier: Modifier = Modifier,
     viewModel: MapBusViewModel,
+    cameraPositionState: CameraPositionState,
     onMapLoaded: () -> Unit,
 ) {
     val uiState = viewModel.uiState
     val scope = rememberCoroutineScope()
     if (uiState.moveCamera != null && uiState.moveCameraZoom != null) {
         Timber.d("Move camera to ${uiState.moveCamera} with zoom ${uiState.zoom}")
-
-        LaunchedEffect(key1 = Unit, block = {
+        LaunchedEffect(key1 = uiState.moveCamera, key2 = uiState.moveCameraZoom, block = {
             scope.launch {
-                uiState.cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(uiState.moveCamera, uiState.moveCameraZoom))
+                cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(uiState.moveCamera, uiState.moveCameraZoom))
             }
         })
     }
 
     GoogleMap(
         modifier = modifier,
-        cameraPositionState = uiState.cameraPositionState,
+        cameraPositionState = cameraPositionState,
         properties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false),
         uiSettings = MapUiSettings(compassEnabled = false, myLocationButtonEnabled = false, zoomControlsEnabled = false),
         onMapLoaded = onMapLoaded,
@@ -157,28 +268,14 @@ fun GoogleMapBusMapView(
 
         BusStopsMarkers(
             viewModel = viewModel,
-            cameraPositionState = uiState.cameraPositionState,
+            cameraPositionState = cameraPositionState,
         )
 
         BusOnMapLayer(
             viewModel = viewModel,
-            cameraPositionState = uiState.cameraPositionState,
+            cameraPositionState = cameraPositionState,
         )
     }
-
-    //DebugView(cameraPositionState = cameraPositionState)
-
-    InfoWindowsDetails(
-        showView = viewModel.uiState.busArrivals.isNotEmpty(),
-        destination = viewModel.uiState.detailsBus.destination,
-        showAll = viewModel.uiState.detailsShowAll,
-        results = viewModel.uiState.busArrivals.map { busArrival ->
-            Pair(first = busArrival.stopName, second = busArrival.timeLeftDueDelay)
-        },
-        onClick = {
-            viewModel.loadBusEta(viewModel.uiState.detailsBus, true)
-        }
-    )
 }
 
 @Composable
@@ -225,6 +322,8 @@ fun BusOnMapLayer(
     viewModel: MapBusViewModel,
     cameraPositionState: CameraPositionState,
 ) {
+    val scope = rememberCoroutineScope()
+    var job: Job? by remember { mutableStateOf(null) }
     viewModel.updateIconOnZoomChange(cameraPositionState.position.zoom)
 
     if (viewModel.uiState.busIcon != null) {
@@ -240,31 +339,57 @@ fun BusOnMapLayer(
                 anchor = Offset(0.5f, 0.5f),
                 zIndex = 1f,
                 onClick = {
-                    viewModel.loadBusEta(bus, false)
+                    job?.cancel()
+                    scope.launch {
+                        viewModel.loadBusEta(scope, bus, false)
+                    }
                     false
                 },
                 onInfoWindowClose = {
-                    viewModel.resetDetails()
+                    job = scope.launch {
+                        viewModel.collapseBottomSheet(
+                            scope = scope,
+                            runAfter = { viewModel.resetDetails() }
+                        )
+                    }
                 }
             )
         }
     }
 }
 
-data class GoogleMapBusUiState(
+@Composable
+fun StateDebugView(
+    modifier: Modifier = Modifier,
+    viewModel: MapBusViewModel,
+) {
+    Column(
+        modifier = modifier
+            .padding(top = 10.dp)
+            .background(color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(text = "Current bus route id: ${viewModel.uiState.busRouteId}")
+        Text(text = "Buses size: ${viewModel.uiState.buses.size}")
+        Text(text = "Buses arrivals size: ${viewModel.uiState.busData.size}")
+        Text(text = "Buses patterns size: ${viewModel.uiState.busPatterns.size}")
+        Text(text = "Bottom bar state: ${viewModel.uiState.bottomSheetContentAndState.name}")
+        Text(text = "Current bus selected: ${viewModel.uiState.detailsBus.id}")
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+data class GoogleMapBusUiState constructor(
     val isLoading: Boolean = false,
     val showError: Boolean = false,
     val colors: List<Color> = TrainLine.values().map { it.color }.dropLast(1),
     val stopIcons: List<BitmapDescriptor> = listOf(),
-    val cameraPositionState: CameraPositionState = CameraPositionState(
-        position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)
-    ),
 
     val busRouteId: String = "",
 
     val buses: List<Bus> = listOf(),
     val busPatterns: List<BusPattern> = listOf(),
-    val busArrivals: List<BusArrival> = listOf(),
+    val busData: List<BottomSheetPagerData> = listOf(),
 
     val zoom: Float = defaultZoom,
     val shouldMoveCamera: Boolean = true,
@@ -279,8 +404,17 @@ data class GoogleMapBusUiState(
 
     val detailsBus: Bus = Bus(),
     val detailsShowAll: Boolean = false,
+
+    val scaffoldState: BottomSheetScaffoldState = BottomSheetScaffoldState(
+        drawerState = DrawerState(DrawerValue.Closed),
+        bottomSheetState = BottomSheetState(initialValue = BottomSheetValue.Collapsed),
+        snackbarHostState = androidx.compose.material.SnackbarHostState(),
+    ),
+
+    val bottomSheetContentAndState: BottomSheetContent = BottomSheetContent.COLLAPSE,
 )
 
+@OptIn(ExperimentalMaterialApi::class)
 class MapBusViewModel constructor(
     busRouteId: String,
     private val busService: BusService = BusService,
@@ -293,6 +427,7 @@ class MapBusViewModel constructor(
     }
 
     fun reloadData() {
+        // TODO: reload current selected bus so data at the bottom is reloaded
         uiState = uiState.copy(isLoading = true)
         loadBuses()
         if (uiState.busPatterns.isEmpty()) {
@@ -300,7 +435,7 @@ class MapBusViewModel constructor(
         }
     }
 
-    fun loadBusEta(bus: Bus, showAll: Boolean) {
+    fun loadBusEta(scope: CoroutineScope, bus: Bus, showAll: Boolean) {
         uiState = uiState.copy(
             isLoading = true,
             detailsBus = bus,
@@ -310,9 +445,21 @@ class MapBusViewModel constructor(
             .observeOn(Schedulers.computation())
             .subscribe(
                 { busArrivals ->
-                    uiState = uiState.copy(
-                        busArrivals = busArrivals,
-                        isLoading = false,
+                    expandBottomSheet(
+                        scope = scope,
+                        runBefore = {
+                            uiState = uiState.copy(
+                                busData = busArrivals.map { busArrival ->
+                                    BottomSheetPagerData(
+                                        title = busArrival.stopName,
+                                        content = busArrival.timeLeftDueDelayNoMinutes,
+                                        subTitle = BusDirection.fromString(busArrival.routeDirection).shortLowerCase,
+                                    )
+                                },
+                                isLoading = false,
+                                bottomSheetContentAndState = BottomSheetContent.EXPAND,
+                            )
+                        }
                     )
                 },
                 { throwable ->
@@ -325,9 +472,44 @@ class MapBusViewModel constructor(
             )
     }
 
+    fun expandBottomSheet(
+        scope: CoroutineScope,
+        runBefore: () -> Unit = {},
+        runAfter: () -> Unit = {},
+    ) {
+        viewModelScope.launch {
+            runBefore()
+            val job = scope.launch {
+                if (uiState.scaffoldState.bottomSheetState.isCollapsed) {
+                    uiState.scaffoldState.bottomSheetState.expand()
+                }
+            }
+            job.join()
+            runAfter()
+        }
+    }
+
+    fun collapseBottomSheet(
+        scope: CoroutineScope,
+        runBefore: () -> Unit = {},
+        runAfter: () -> Unit = {},
+    ) {
+        viewModelScope.launch {
+            runBefore()
+            val job = scope.launch {
+                if (uiState.scaffoldState.bottomSheetState.isExpanded) {
+                    uiState.scaffoldState.bottomSheetState.collapse()
+                }
+            }
+            job.join()
+            runAfter()
+        }
+    }
+
     fun resetDetails() {
         uiState = uiState.copy(
-            busArrivals = listOf(),
+            busData = listOf(),
+            bottomSheetContentAndState = BottomSheetContent.COLLAPSE,
         )
     }
 
@@ -483,5 +665,9 @@ class MapBusViewModel constructor(
                     )
                 }
             )
+    }
+
+    fun onStop() {
+        uiState = GoogleMapBusUiState(busRouteId = uiState.busRouteId)
     }
 }

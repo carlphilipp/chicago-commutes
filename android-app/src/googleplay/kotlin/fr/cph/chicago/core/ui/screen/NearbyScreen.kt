@@ -82,6 +82,7 @@ import fr.cph.chicago.core.ui.common.NearbyBottomSheet
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.ShowLocationNotFoundSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
+import fr.cph.chicago.core.ui.common.defaultSheetPeekHeight
 import fr.cph.chicago.core.ui.common.runWithDelay
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.redux.store
@@ -183,7 +184,7 @@ fun NearbyScreen(
 
     BottomSheetScaffoldMaterial3(
         scaffoldState = viewModel.uiState.scaffoldState,
-        sheetPeekHeight = 0.dp,
+        sheetPeekHeight = defaultSheetPeekHeight,
         sheetContent = {
             NearbyBottomSheet(
                 viewModel = viewModel,
