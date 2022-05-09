@@ -25,7 +25,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowLeft
 import androidx.compose.material.icons.filled.ArrowRight
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
@@ -461,31 +460,35 @@ fun ShowBusBoundBottomView(
         isLoading = isLoading,
         title = "${busRoute.id} - ${busRoute.name}",
         content = {
-            foundBusDirections.busDirections.forEachIndexed { index, busDirection ->
-                OutlinedButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        val lBusDirections = foundBusDirections.busDirections
-                        scope.launch {
-                            mainViewModel.uiState.busModalBottomSheetState.hide()
-                            while (mainViewModel.uiState.busModalBottomSheetState.isAnimationRunning) {
-                                // wait. Is that actually ok to do that?
+            val modifier = Modifier
+                .padding(bottom = 20.dp)
+                .fillMaxWidth()
+            Row(
+                modifier = modifier,
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                foundBusDirections.busDirections.forEachIndexed { index, busDirection ->
+                    BusDirectionButton(
+                        title = busDirection.text,
+                        onClick = {
+                            val lBusDirections = foundBusDirections.busDirections
+                            scope.launch {
+                                mainViewModel.uiState.busModalBottomSheetState.hide()
+                                while (mainViewModel.uiState.busModalBottomSheetState.isAnimationRunning) {
+                                    // wait. Is that actually ok to do that?
+                                }
+                                navController.navigate(
+                                    screen = Screen.BusBound,
+                                    arguments = mapOf(
+                                        "busRouteId" to busRoute.id,
+                                        "busRouteName" to busRoute.name,
+                                        "bound" to lBusDirections[index].text,
+                                        "boundTitle" to lBusDirections[index].text
+                                    ),
+                                )
                             }
-                            navController.navigate(
-                                screen = Screen.BusBound,
-                                arguments = mapOf(
-                                    "busRouteId" to busRoute.id,
-                                    "busRouteName" to busRoute.name,
-                                    "bound" to lBusDirections[index].text,
-                                    "boundTitle" to lBusDirections[index].text
-                                ),
-                            )
                         }
-                    },
-                ) {
-                    Text(
-                        text = busDirection.text,
-                        style = MaterialTheme.typography.bodyMedium,
                     )
                 }
             }

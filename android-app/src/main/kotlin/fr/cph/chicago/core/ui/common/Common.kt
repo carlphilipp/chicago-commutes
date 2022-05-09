@@ -750,6 +750,22 @@ fun TrainLineButton(
 }
 
 @Composable
+fun BusDirectionButton(
+    modifier: Modifier = Modifier,
+    title: String,
+    onClick: () -> Unit = {},
+) {
+    TrainLineStyle(
+        modifier = modifier,
+        text = title,
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        textColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        minWidth = 90.dp,
+        onClick = onClick,
+    )
+}
+
+@Composable
 fun TrainLineStyleText(
     modifier: Modifier = Modifier,
     text: String,
