@@ -24,12 +24,9 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Point
 import android.graphics.Rect
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.WindowManager
-import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.color.DynamicColors
-import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.ErrorActivity
 import io.reactivex.rxjava3.plugins.RxJavaPlugins
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -48,7 +45,7 @@ class App : Application() {
         lateinit var instance: App
 
         val exceptionHandler = CoroutineExceptionHandler { _, exception ->
-            Timber.e(exception, "Unexpected exception caught in coroutine exception handler")
+            Timber.e(exception, "Unexpected exception caught in coroutine")
             startErrorActivity()
         }
 
@@ -62,10 +59,6 @@ class App : Application() {
 
     val lineWidthGoogleMap: Float by lazy {
         if (screenWidth > 1080) 7f else if (screenWidth > 480) 4f else 2f
-    }
-
-    val streetViewPlaceHolder: Drawable by lazy {
-        ResourcesCompat.getDrawable(resources, R.drawable.placeholder_street_view, this.theme)!!
     }
 
     override fun onCreate() {
