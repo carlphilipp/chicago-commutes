@@ -74,6 +74,7 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.FontSize
 import fr.cph.chicago.core.theme.availableFonts
+import fr.cph.chicago.core.ui.screen.MapBikesViewModel
 import fr.cph.chicago.core.ui.screen.MapBusViewModel
 import fr.cph.chicago.core.ui.screen.MapTrainViewModel
 import fr.cph.chicago.core.ui.screen.NearbyViewModel
@@ -500,6 +501,37 @@ fun ShowBusBoundBottomView(
 }
 
 @Composable
+fun BikeBottomSheet(
+    modifier: Modifier = Modifier,
+    viewModel: MapBikesViewModel,
+    onBackClick: () -> Unit,
+) {
+    BottomSheet(
+        content = {
+            Column(modifier = modifier.fillMaxWidth()) {
+                when (viewModel.uiState.bottomSheetContentAndState) {
+                    BottomSheetContent.COLLAPSE -> {
+                        TrainLineStyleText(
+                            text = viewModel.uiState.bikeStation.name,
+                            color = MaterialTheme.colorScheme.secondaryContainer,
+                            textColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                        )
+                    }
+                    else -> {
+                        TrainLineStyleText(
+                            text = viewModel.uiState.bikeStation.name,
+                            color = MaterialTheme.colorScheme.secondaryContainer,
+                            textColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                        )
+                    }
+                }
+            }
+        },
+        onBackClick = onBackClick,
+    )
+}
+
+@Composable
 fun BusBottomSheet(
     modifier: Modifier = Modifier,
     viewModel: MapBusViewModel,
@@ -660,7 +692,6 @@ fun TrainMapBottomSheet(
 
 @Composable
 private fun ChangeLineTrainMapBottomSheet(
-    modifier: Modifier = Modifier,
     viewModel: MapTrainViewModel,
 ) {
     val scope = rememberCoroutineScope()

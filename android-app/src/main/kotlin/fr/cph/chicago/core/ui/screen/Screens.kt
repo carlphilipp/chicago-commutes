@@ -455,9 +455,18 @@ sealed class Screen(
         isGestureEnabled = false,
         topBar = ScreenTopBar.MediumTopBarBackReload,
         component = { backStackEntry, navigationViewModel ->
+            val activity = navigationViewModel.uiState.context.getActivity()
             val id = URLDecoder.decode(backStackEntry.arguments?.getString("id", "") ?: "", "UTF-8")
 
-            val viewModel = MapBikesViewModel(id = id)
+            val factory = MapBikesViewModel.provideFactory(
+                owner = activity,
+                defaultArgs = backStackEntry.arguments
+            )
+
+            val viewModel = ViewModelProvider(activity, factory)[MapBikesViewModel::class.java]
+            if (viewModel.uiState.id == "") {
+                viewModel.setId(id)
+            }
             BikeMapScreen(
                 viewModel = viewModel,
                 navigationViewModel = navigationViewModel,

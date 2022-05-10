@@ -1,9 +1,16 @@
 package fr.cph.chicago.core.ui.screen
 
 import android.graphics.BitmapFactory
+import android.os.Bundle
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.BottomSheetScaffoldState
+import androidx.compose.material.BottomSheetState
+import androidx.compose.material.BottomSheetValue
+import androidx.compose.material.DrawerState
+import androidx.compose.material.DrawerValue
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -21,7 +28,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.AbstractSavedStateViewModelFactory
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.savedstate.SavedStateRegistryOwner
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -43,12 +53,16 @@ import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.AnimatedText
+import fr.cph.chicago.core.ui.common.BikeBottomSheet
+import fr.cph.chicago.core.ui.common.BottomSheetContent
+import fr.cph.chicago.core.ui.common.BottomSheetScaffoldMaterial3
 import fr.cph.chicago.core.ui.common.ChipMaterial3
 import fr.cph.chicago.core.ui.common.LoadingBar
 import fr.cph.chicago.core.ui.common.LoadingCircle
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.SwipeRefreshThemed
+import fr.cph.chicago.core.ui.common.defaultSheetPeekHeight
 import fr.cph.chicago.core.ui.common.runWithDelay
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.redux.BikeStationAction
@@ -68,7 +82,7 @@ import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun BikeMapScreen(
     modifier: Modifier = Modifier,
@@ -98,46 +112,62 @@ fun BikeMapScreen(
             }
         })
     }
-    Column {
-        DisplayTopBar(
-            screen = Screen.BusMap,
-            title = title,
-            viewModel = navigationViewModel,
-            onClickRightIcon = listOf {
-                viewModel.reloadData()
-            }
-        )
-        SwipeRefreshThemed(
-            modifier = modifier,
-            swipeRefreshState = rememberSwipeRefreshState(viewModel.uiState.isRefreshing),
-            onRefresh = { },
-        ) {
-            Scaffold(
-                modifier = modifier,
-                snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
-                content = {
-                    GoogleBikeBusMapView(
-                        viewModel = viewModel,
-                        settingsViewModel = settingsViewModel,
-                        onMapLoaded = { isMapLoaded = true },
-                    )
 
-                    LoadingBar(show = viewModel.uiState.isMapLoading)
-
-                    LoadingCircle(show = !isMapLoaded)
-
-                    if (viewModel.uiState.showError) {
-                        ShowErrorMessageSnackBar(
-                            scope = scope,
-                            snackbarHostState = snackbarHostState,
-                            showError = viewModel.uiState.showError,
-                            onComplete = { viewModel.showError(false) }
-                        )
-                    }
+    BottomSheetScaffoldMaterial3(
+        scaffoldState = viewModel.uiState.scaffoldState,
+        sheetPeekHeight = defaultSheetPeekHeight,
+        sheetContent = {
+            BikeBottomSheet(
+                viewModel = viewModel,
+                onBackClick = {
+                    // TODO
                 }
             )
+        },
+        snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
+        content = {
+            Column {
+/*                DisplayTopBar(
+                    screen = Screen.BusMap,
+                    title = title,
+                    viewModel = navigationViewModel,
+                    onClickRightIcon = listOf {
+                        viewModel.reloadData()
+                    }
+                )*/
+                SwipeRefreshThemed(
+                    modifier = modifier,
+                    swipeRefreshState = rememberSwipeRefreshState(viewModel.uiState.isRefreshing),
+                    onRefresh = { },
+                ) {
+                    Scaffold(
+                        modifier = modifier,
+                        snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
+                        content = {
+                            GoogleBikeBusMapView(
+                                viewModel = viewModel,
+                                settingsViewModel = settingsViewModel,
+                                onMapLoaded = { isMapLoaded = true },
+                            )
+
+                            LoadingBar(show = viewModel.uiState.isMapLoading)
+
+                            LoadingCircle(show = !isMapLoaded)
+
+                            if (viewModel.uiState.showError) {
+                                ShowErrorMessageSnackBar(
+                                    scope = scope,
+                                    snackbarHostState = snackbarHostState,
+                                    showError = viewModel.uiState.showError,
+                                    onComplete = { viewModel.showError(false) }
+                                )
+                            }
+                        }
+                    )
+                }
+            }
         }
-    }
+    )
 
     DisposableEffect(key1 = viewModel) {
         viewModel.onStart()
@@ -212,9 +242,9 @@ fun BikeStationMarker(
         icon = viewModel.uiState.bikeStationIcon,
         title = bikeStation.name,
         visible = show,
-        content = { _ ->
+        content = {
             val color = Color.Black
-            Column() {
+            Column {
                 Text(
                     text = bikeStation.name,
                     style = MaterialTheme.typography.titleMedium,
@@ -257,14 +287,15 @@ fun BikeStationMarker(
     )
 }
 
-data class GoogleMapBikeUiState(
+@OptIn(ExperimentalMaterialApi::class)
+data class GoogleMapBikeUiState  constructor(
     val isMapLoading: Boolean = false,
     val showError: Boolean = false,
     val isRefreshing: Boolean = false,
 
-    val id: String,
+    val id: String = "",
     val showAllStations: Boolean = false,
-    val bikeStation: BikeStation = BikeStation.buildUnknownStation(),
+    val bikeStation: BikeStation = BikeStation.buildDefaultBikeStationWithName(id = "", name = "Bikes"),
     val bikeStations: List<BikeStation> = listOf(),
     val bikeStationIcon: BitmapDescriptor? = null,
 
@@ -275,15 +306,27 @@ data class GoogleMapBikeUiState(
     val cameraPositionState: CameraPositionState = CameraPositionState(
         position = CameraPosition.fromLatLngZoom(MapUtil.chicagoPosition.toLatLng(), defaultZoom)
     ),
+
+    val scaffoldState: BottomSheetScaffoldState = BottomSheetScaffoldState(
+        drawerState = DrawerState(DrawerValue.Closed),
+        bottomSheetState = BottomSheetState(initialValue = BottomSheetValue.Collapsed),
+        snackbarHostState = androidx.compose.material.SnackbarHostState(),
+    ),
+
+    val bottomSheetContentAndState: BottomSheetContent = BottomSheetContent.COLLAPSE,
 )
 
+@OptIn(ExperimentalMaterialApi::class)
 @HiltViewModel
 class MapBikesViewModel @Inject constructor(
-    id: String,
     private val bikeService: BikeService = BikeService,
 ) : ViewModel(), StoreSubscriber<State> {
-    var uiState by mutableStateOf(GoogleMapBikeUiState(id = id))
+    var uiState by mutableStateOf(GoogleMapBikeUiState())
         private set
+
+    fun setId(id: String) {
+        uiState = uiState.copy(id = id)
+    }
 
     fun showError(showError: Boolean) {
         uiState = uiState.copy(showError = showError)
@@ -357,5 +400,23 @@ class MapBikesViewModel @Inject constructor(
 
     fun onStop() {
         store.unsubscribe(this)
+        uiState = GoogleMapBikeUiState()
+    }
+
+    companion object {
+        fun provideFactory(
+            owner: SavedStateRegistryOwner,
+            defaultArgs: Bundle? = null,
+        ): AbstractSavedStateViewModelFactory =
+            object : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(
+                    key: String,
+                    modelClass: Class<T>,
+                    handle: SavedStateHandle
+                ): T {
+                    return MapBikesViewModel() as T
+                }
+            }
     }
 }
