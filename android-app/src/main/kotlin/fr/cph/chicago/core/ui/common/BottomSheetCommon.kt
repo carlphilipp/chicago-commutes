@@ -523,6 +523,14 @@ fun BikeBottomSheet(
                             color = MaterialTheme.colorScheme.secondaryContainer,
                             textColor = MaterialTheme.colorScheme.onSecondaryContainer,
                         )
+                        Divider(
+                            modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
+                            thickness = 1.dp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
+                        )
+
+                        BottomSheetPager(pagerData = viewModel.uiState.bikeStationBottomSheet)
+
                     }
                 }
             }

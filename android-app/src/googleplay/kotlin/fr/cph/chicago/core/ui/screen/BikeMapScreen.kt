@@ -4,14 +4,25 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.BottomSheetScaffoldState
 import androidx.compose.material.BottomSheetState
 import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.DrawerState
 import androidx.compose.material.DrawerValue
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
@@ -28,9 +39,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.savedstate.SavedStateRegistryOwner
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -38,11 +52,13 @@ import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerInfoWindowContent
 import com.google.maps.android.compose.rememberMarkerState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -50,11 +66,12 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.core.navigation.DisplayTopBar
+import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.AnimatedText
 import fr.cph.chicago.core.ui.common.BikeBottomSheet
 import fr.cph.chicago.core.ui.common.BottomSheetContent
+import fr.cph.chicago.core.ui.common.BottomSheetPagerData
 import fr.cph.chicago.core.ui.common.BottomSheetScaffoldMaterial3
 import fr.cph.chicago.core.ui.common.ChipMaterial3
 import fr.cph.chicago.core.ui.common.LoadingBar
@@ -76,6 +93,7 @@ import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
@@ -94,7 +112,16 @@ fun BikeMapScreen(
     Timber.d("Compose BikeMapScreen $title")
     val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     val scope = rememberCoroutineScope()
+    val navController = LocalNavController.current
     var isMapLoaded by remember { mutableStateOf(false) }
+    val cameraPositionState: CameraPositionState by remember {
+        mutableStateOf(
+            CameraPositionState(
+                position = CameraPosition.fromLatLngZoom(MapUtil.chicagoPosition.toLatLng(), defaultZoom)
+            )
+        )
+    }
+
     // Show map after 5 seconds. This is needed because there is no callback from the sdk to know if the map can be loaded or not.
     // Meaning that we can have a situation where the onMapLoaded method is never triggered, while the map view has been populated
     // with some error messages from the google sdk like: "Play store needs to be updated"
@@ -120,21 +147,19 @@ fun BikeMapScreen(
             BikeBottomSheet(
                 viewModel = viewModel,
                 onBackClick = {
-                    // TODO
+                    scope.launch {
+                        if (viewModel.uiState.scaffoldState.bottomSheetState.isExpanded) {
+                            viewModel.uiState.scaffoldState.bottomSheetState.collapse()
+                        } else {
+                            navController.navigateBack()
+                        }
+                    }
                 }
             )
         },
         snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
         content = {
             Column {
-/*                DisplayTopBar(
-                    screen = Screen.BusMap,
-                    title = title,
-                    viewModel = navigationViewModel,
-                    onClickRightIcon = listOf {
-                        viewModel.reloadData()
-                    }
-                )*/
                 SwipeRefreshThemed(
                     modifier = modifier,
                     swipeRefreshState = rememberSwipeRefreshState(viewModel.uiState.isRefreshing),
@@ -149,6 +174,51 @@ fun BikeMapScreen(
                                 settingsViewModel = settingsViewModel,
                                 onMapLoaded = { isMapLoaded = true },
                             )
+
+                            ConstraintLayout(
+                                modifier = modifier
+                                    .fillMaxWidth()
+                                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
+                                    .padding(start = 10.dp, top = 5.dp, bottom = 5.dp, end = 10.dp),
+                            ) {
+                                val (left, right, cameraDebug, stateDebug) = createRefs()
+                                FilledTonalButton(
+                                    modifier = Modifier.constrainAs(left) {
+                                        start.linkTo(anchor = parent.start)
+                                        width = Dimension.fillToConstraints
+                                    },
+                                    onClick = { navController.navigateBack() },
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.ArrowBack,
+                                        contentDescription = "Back",
+                                    )
+                                }
+
+                                FilledTonalButton(
+                                    modifier = Modifier.constrainAs(right) {
+                                        end.linkTo(anchor = parent.end)
+                                        width = Dimension.fillToConstraints
+                                    },
+                                    onClick = {
+                                        viewModel.reloadData()
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Refresh,
+                                        contentDescription = null,
+                                    )
+                                }
+
+                                if (settingsViewModel.uiState.showMapDebug) {
+                                    CameraDebugView(
+                                        modifier = Modifier.constrainAs(cameraDebug) {
+                                            top.linkTo(anchor = left.bottom)
+                                        },
+                                        cameraPositionState = cameraPositionState
+                                    )
+                                }
+                            }
 
                             LoadingBar(show = viewModel.uiState.isMapLoading)
 
@@ -205,14 +275,31 @@ private fun GoogleBikeBusMapView(
             show = true,
             viewModel = viewModel,
             bikeStation = viewModel.uiState.bikeStation,
+            onInfoWindowClick = {
+                viewModel.expandBottomSheet(
+                    scope = scope,
+                    runBefore = {
+                        viewModel.updateBottomSheetContentAndState(BottomSheetContent.EXPAND)
+                    }
+                )
+                false
+            },
+            onInfoWindowClose = {
+                viewModel.collapseBottomSheet(
+                    scope = scope,
+                    runBefore = {
+                        viewModel.updateBottomSheetContentAndState(BottomSheetContent.COLLAPSE)
+                    }
+                )
+            }
         )
-        viewModel.uiState.bikeStations.forEach { bikeStation ->
+/*        viewModel.uiState.bikeStations.forEach { bikeStation ->
             BikeStationMarker(
                 show = viewModel.uiState.showAllStations,
                 viewModel = viewModel,
                 bikeStation = bikeStation,
             )
-        }
+        }*/
     }
 
     Column {
@@ -233,15 +320,27 @@ private fun GoogleBikeBusMapView(
 fun BikeStationMarker(
     show: Boolean,
     viewModel: MapBikesViewModel,
-    bikeStation: BikeStation
+    bikeStation: BikeStation,
+    onInfoWindowClick: (Marker) -> Boolean,
+    onInfoWindowClose: (Marker) -> Unit,
 ) {
     val markerState = rememberMarkerState()
     markerState.position = Position(latitude = bikeStation.latitude, longitude = bikeStation.longitude).toLatLng()
-    MarkerInfoWindowContent(
+    Marker(
         state = markerState,
         icon = viewModel.uiState.bikeStationIcon,
         title = bikeStation.name,
         visible = show,
+        onClick = onInfoWindowClick,
+        onInfoWindowClose = onInfoWindowClose
+    )
+/*    MarkerInfoWindowContent(
+        state = markerState,
+        icon = viewModel.uiState.bikeStationIcon,
+        title = bikeStation.name,
+        visible = show,
+        onInfoWindowClick = onInfoWindowClick,
+        onInfoWindowClose = onInfoWindowClose,
         content = {
             val color = Color.Black
             Column {
@@ -284,11 +383,11 @@ fun BikeStationMarker(
                 }
             }
         }
-    )
+    )*/
 }
 
 @OptIn(ExperimentalMaterialApi::class)
-data class GoogleMapBikeUiState  constructor(
+data class GoogleMapBikeUiState constructor(
     val isMapLoading: Boolean = false,
     val showError: Boolean = false,
     val isRefreshing: Boolean = false,
@@ -296,6 +395,7 @@ data class GoogleMapBikeUiState  constructor(
     val id: String = "",
     val showAllStations: Boolean = false,
     val bikeStation: BikeStation = BikeStation.buildDefaultBikeStationWithName(id = "", name = "Bikes"),
+    val bikeStationBottomSheet: List<BottomSheetPagerData> = listOf(),
     val bikeStations: List<BikeStation> = listOf(),
     val bikeStationIcon: BitmapDescriptor? = null,
 
@@ -345,6 +445,18 @@ class MapBikesViewModel @Inject constructor(
                         ?: bikeService.createEmptyBikeStation(uiState.id)
                     uiState = uiState.copy(
                         bikeStation = bikeStation,
+                        bikeStationBottomSheet = listOf(
+                            BottomSheetPagerData(
+                                title = "Bikes",
+                                content = bikeStation.availableBikes.toString(),
+                                bottom = "available",
+                            ),
+                            BottomSheetPagerData(
+                                title = "Docks",
+                                content = bikeStation.availableDocks.toString(),
+                                bottom = "available",
+                            )
+                        ),
                         bikeStations = bikeStations,
                         moveCamera = LatLng(bikeStation.latitude, bikeStation.longitude),
                         moveCameraZoom = 14f,
@@ -392,6 +504,44 @@ class MapBikesViewModel @Inject constructor(
             else -> Timber.d("Status not handled")
         }
         uiState = uiState.copy(isRefreshing = false)
+    }
+
+    fun updateBottomSheetContentAndState(state: BottomSheetContent ) {
+        uiState = uiState.copy(bottomSheetContentAndState = state)
+    }
+
+    fun expandBottomSheet(
+        scope: CoroutineScope,
+        runBefore: () -> Unit = {},
+        runAfter: () -> Unit = {},
+    ) {
+        viewModelScope.launch {
+            runBefore()
+            val job = scope.launch {
+                if (uiState.scaffoldState.bottomSheetState.isCollapsed) {
+                    uiState.scaffoldState.bottomSheetState.expand()
+                }
+            }
+            job.join()
+            runAfter()
+        }
+    }
+
+    fun collapseBottomSheet(
+        scope: CoroutineScope,
+        runBefore: () -> Unit = {},
+        runAfter: () -> Unit = {},
+    ) {
+        viewModelScope.launch {
+            runBefore()
+            val job = scope.launch {
+                if (uiState.scaffoldState.bottomSheetState.isExpanded) {
+                    uiState.scaffoldState.bottomSheetState.collapse()
+                }
+            }
+            job.join()
+            runAfter()
+        }
     }
 
     fun onStart() {
