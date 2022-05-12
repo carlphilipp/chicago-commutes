@@ -332,7 +332,7 @@ fun BikeStationMarker(
         title = bikeStation.name,
         visible = show,
         onClick = onInfoWindowClick,
-        onInfoWindowClose = onInfoWindowClose
+        onInfoWindowClose = onInfoWindowClose,
     )
 /*    MarkerInfoWindowContent(
         state = markerState,
@@ -409,11 +409,11 @@ data class GoogleMapBikeUiState constructor(
 
     val scaffoldState: BottomSheetScaffoldState = BottomSheetScaffoldState(
         drawerState = DrawerState(DrawerValue.Closed),
-        bottomSheetState = BottomSheetState(initialValue = BottomSheetValue.Collapsed),
+        bottomSheetState = BottomSheetState(initialValue = BottomSheetValue.Expanded),
         snackbarHostState = androidx.compose.material.SnackbarHostState(),
     ),
 
-    val bottomSheetContentAndState: BottomSheetContent = BottomSheetContent.COLLAPSE,
+    val bottomSheetContentAndState: BottomSheetContent = BottomSheetContent.EXPAND,
 )
 
 @OptIn(ExperimentalMaterialApi::class)
