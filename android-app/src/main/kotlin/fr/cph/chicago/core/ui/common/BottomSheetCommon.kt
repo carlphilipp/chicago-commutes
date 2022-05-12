@@ -512,14 +512,14 @@ fun BikeBottomSheet(
                 when (viewModel.uiState.bottomSheetContentAndState) {
                     BottomSheetContent.COLLAPSE -> {
                         TrainLineStyleText(
-                            text = viewModel.uiState.bikeStation.name,
+                            text = viewModel.uiState.bottomSheetTitle,
                             color = MaterialTheme.colorScheme.secondaryContainer,
                             textColor = MaterialTheme.colorScheme.onSecondaryContainer,
                         )
                     }
                     else -> {
                         TrainLineStyleText(
-                            text = viewModel.uiState.bikeStation.name,
+                            text = viewModel.uiState.bottomSheetTitle,
                             color = MaterialTheme.colorScheme.secondaryContainer,
                             textColor = MaterialTheme.colorScheme.onSecondaryContainer,
                         )

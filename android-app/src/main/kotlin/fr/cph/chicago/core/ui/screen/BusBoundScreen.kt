@@ -81,7 +81,7 @@ fun BusBoundScreen(
                     scrollBehavior = scrollBehavior,
                 )
                 when {
-                    uiState.isRefreshing /*&& uiState.busStops.isEmpty()*/ -> {
+                    uiState.isRefreshing -> {
                         AnimatedPlaceHolderList(isLoading = uiState.isRefreshing)
                     }
                     uiState.isErrorState -> {

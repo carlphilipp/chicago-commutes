@@ -2,7 +2,6 @@ package fr.cph.chicago.core.ui.screen
 
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -65,7 +64,6 @@ import fr.cph.chicago.core.ui.common.BikeBottomSheet
 import fr.cph.chicago.core.ui.common.BottomSheetContent
 import fr.cph.chicago.core.ui.common.BottomSheetPagerData
 import fr.cph.chicago.core.ui.common.BottomSheetScaffoldMaterial3
-import fr.cph.chicago.core.ui.common.ChipMaterial3
 import fr.cph.chicago.core.ui.common.LoadingBar
 import fr.cph.chicago.core.ui.common.LoadingCircle
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
@@ -259,12 +257,11 @@ private fun GoogleBikeBusMapView(
         BikeStationMarker(
             show = true,
             viewModel = viewModel,
-            bikeStation = viewModel.uiState.bikeStation,
             onInfoWindowClick = {
                 viewModel.expandBottomSheet(
                     scope = scope,
                     runBefore = {
-                        viewModel.updateBottomSheetContentAndState(BottomSheetContent.EXPAND)
+                        viewModel.onInfoWindowClose(BottomSheetContent.EXPAND, viewModel.uiState.bikeStation.name)
                     }
                 )
                 false
@@ -273,7 +270,7 @@ private fun GoogleBikeBusMapView(
                 viewModel.collapseBottomSheet(
                     scope = scope,
                     runBefore = {
-                        viewModel.updateBottomSheetContentAndState(BottomSheetContent.COLLAPSE)
+                        viewModel.onInfoWindowClose(BottomSheetContent.COLLAPSE, "Bike")
                     }
                 )
             }
@@ -287,84 +284,33 @@ private fun GoogleBikeBusMapView(
         }*/
     }
 
-    Column {
+/*    Column {
         ChipMaterial3(
             modifier = Modifier.padding(10.dp),
             text = "Show all stations",
             isSelected = viewModel.uiState.showAllStations,
             onClick = { viewModel.showAllStations(!viewModel.uiState.showAllStations) }
         )
-    }
+    }*/
 }
 
 @Composable
 fun BikeStationMarker(
     show: Boolean,
     viewModel: MapBikesViewModel,
-    bikeStation: BikeStation,
     onInfoWindowClick: (Marker) -> Boolean,
     onInfoWindowClose: (Marker) -> Unit,
 ) {
     val markerState = rememberMarkerState()
-    markerState.position = Position(latitude = bikeStation.latitude, longitude = bikeStation.longitude).toLatLng()
+    markerState.position = Position(latitude = viewModel.uiState.bikeStation.latitude, longitude = viewModel.uiState.bikeStation.longitude).toLatLng()
     Marker(
         state = markerState,
         icon = viewModel.uiState.bikeStationIcon,
-        title = bikeStation.name,
+        title = viewModel.uiState.bikeStation.name,
         visible = show,
         onClick = onInfoWindowClick,
         onInfoWindowClose = onInfoWindowClose,
     )
-/*    MarkerInfoWindowContent(
-        state = markerState,
-        icon = viewModel.uiState.bikeStationIcon,
-        title = bikeStation.name,
-        visible = show,
-        onInfoWindowClick = onInfoWindowClick,
-        onInfoWindowClose = onInfoWindowClose,
-        content = {
-            val color = Color.Black
-            Column {
-                Text(
-                    text = bikeStation.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = color,
-                )
-
-                Row(modifier = Modifier.padding(top = 10.dp)) {
-                    Column {
-                        Text(
-                            text = stringResource(R.string.bike_available_bikes),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = color,
-                        )
-                        Text(
-                            text = stringResource(R.string.bike_available_docks),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = color,
-                        )
-                    }
-                    Column(modifier = Modifier.padding(start = 20.dp)) {
-                        var availableBikes by remember { mutableStateOf(bikeStation.availableBikes.toString()) }
-                        availableBikes = if (bikeStation.availableBikes == -1) "?" else bikeStation.availableBikes.toString()
-                        AnimatedText(
-                            text = availableBikes,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = color,
-                        )
-                        var availableDocks by remember { mutableStateOf(viewModel.uiState.bikeStation.availableDocks.toString()) }
-                        availableDocks = if (bikeStation.availableDocks == -1) "?" else bikeStation.availableDocks.toString()
-
-                        AnimatedText(
-                            text = availableDocks,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = color,
-                        )
-                    }
-                }
-            }
-        }
-    )*/
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -395,6 +341,7 @@ data class GoogleMapBikeUiState constructor(
     ),
 
     val bottomSheetContentAndState: BottomSheetContent = BottomSheetContent.EXPAND,
+    val bottomSheetTitle: String = "Bikes",
 )
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -425,6 +372,7 @@ class MapBikesViewModel @Inject constructor(
                     val bikeStation = if (bikeStations.containsKey(uiState.id)) bikeStations[uiState.id]!! else bikeService.createEmptyBikeStation(uiState.id)
                     uiState = uiState.copy(
                         bikeStation = bikeStation,
+                        bottomSheetTitle = bikeStation.name,
                         bikeStationBottomSheet = listOf(
                             BottomSheetPagerData(
                                 title = "Bikes",
@@ -486,8 +434,11 @@ class MapBikesViewModel @Inject constructor(
         uiState = uiState.copy(isRefreshing = false)
     }
 
-    fun updateBottomSheetContentAndState(state: BottomSheetContent) {
-        uiState = uiState.copy(bottomSheetContentAndState = state)
+    fun onInfoWindowClose(state: BottomSheetContent, title: String) {
+        uiState = uiState.copy(
+            bottomSheetContentAndState = state,
+            bottomSheetTitle = title,
+        )
     }
 
     fun expandBottomSheet(
