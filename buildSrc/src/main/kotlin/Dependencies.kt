@@ -7,7 +7,7 @@ object Android {
 }
 
 object Version {
-    const val kotlin =                      "1.6.20"
+    const val kotlin =                      "1.6.21"
     const val android_tools_build =         "7.1.2"
     const val realm =                       "10.10.1"
     const val gradle_version =              "0.42.0"
@@ -20,8 +20,8 @@ object Version {
     const val accompanist =                 "0.24.7-alpha"
     const val commons_collections4 =        "4.+"
     const val commons_text =                "1.+"
-    const val compose =                     "1.2.0-alpha08"
-    const val compose_material3 =           "1.0.0-alpha10"
+    const val compose =                     "1.2.0-beta01"
+    const val compose_material3 =           "1.0.0-alpha11"
     const val google_play_maps =            "18.0.2"
     const val google_play_location =        "19.0.1"
     const val google_maps_compose =         "2.1.0"
