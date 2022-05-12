@@ -101,8 +101,8 @@ fun BusStationScreen(
         ) {
             Scaffold(
                 snackbarHost = { SnackbarHostInsets(state = uiState.snackbarHostState) },
-                content = {
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                content = { paddingValues ->
+                    LazyColumn(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
                         item {
                             StationDetailsImageView(
                                 showGoogleStreetImage = uiState.showGoogleStreetImage,

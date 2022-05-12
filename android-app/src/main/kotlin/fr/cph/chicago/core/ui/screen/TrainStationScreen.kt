@@ -103,9 +103,10 @@ fun TrainStationScreen(
         ) {
             Scaffold(
                 snackbarHost = { SnackbarHostInsets(state = uiState.snackbarHostState) },
-                content = {
+                content = { paddingValues ->
                     Column(
                         modifier = Modifier
+                            .padding(paddingValues)
                             .verticalScroll(uiState.scrollState)
                             .fillMaxWidth()
                     ) {

@@ -45,8 +45,8 @@ import fr.cph.chicago.core.theme.defaultButtonShape
 import fr.cph.chicago.core.ui.common.ChipMaterial3
 import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
-import fr.cph.chicago.core.ui.common.SwitchMaterial3
 import fr.cph.chicago.core.ui.common.SearchTextField
+import fr.cph.chicago.core.ui.common.SwitchMaterial3
 import fr.cph.chicago.core.ui.common.ThemeColorButton
 import fr.cph.chicago.core.ui.screen.Screen
 
@@ -62,8 +62,8 @@ fun ThemeChooserSettingsScreen(
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        content = {
-            Column {
+        content = { paddingValues ->
+            Column(modifier = Modifier.padding(paddingValues)) {
                 DisplayTopBar(
                     screen = Screen.SettingsThemeColorChooser,
                     title = topBarTitle,

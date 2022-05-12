@@ -64,8 +64,8 @@ fun SettingsScreen(
     // Wrapping with Scaffold as the animation is overridden if it's not the case
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        content = {
-            Column {
+        content = { paddingValues ->
+            Column(modifier = Modifier.padding(paddingValues)) {
                 DisplayTopBar(
                     screen = Screen.Settings,
                     title = title,

@@ -24,6 +24,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.Surface
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -178,22 +179,24 @@ fun SplashScreen(
 
         Scaffold(
             snackbarHost = { SnackbarHostInsets(state = viewModel.uiState.snackbarHostState) },
-            content = {
-                LoadingView(show = !viewModel.uiState.isError)
-                AnimatedErrorView(
-                    modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)),
-                    visible = viewModel.uiState.isError,
-                    onClick = { viewModel.setUpDefaultSettings() }
-                )
-                if (viewModel.uiState.showErrorSnackBar) {
-                    ShowErrorMessageSnackBar(
-                        scope = scope,
-                        snackbarHostState = viewModel.uiState.snackbarHostState,
-                        showError = viewModel.uiState.showErrorSnackBar,
-                        onComplete = {
-                            viewModel.showHideSnackBar(false)
-                        }
+            content = { paddingValues ->
+                Surface(modifier = Modifier.padding(paddingValues)) {
+                    LoadingView(show = !viewModel.uiState.isError)
+                    AnimatedErrorView(
+                        modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)),
+                        visible = viewModel.uiState.isError,
+                        onClick = { viewModel.setUpDefaultSettings() }
                     )
+                    if (viewModel.uiState.showErrorSnackBar) {
+                        ShowErrorMessageSnackBar(
+                            scope = scope,
+                            snackbarHostState = viewModel.uiState.snackbarHostState,
+                            showError = viewModel.uiState.showErrorSnackBar,
+                            onComplete = {
+                                viewModel.showHideSnackBar(false)
+                            }
+                        )
+                    }
                 }
             }
         )

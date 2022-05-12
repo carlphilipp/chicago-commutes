@@ -62,8 +62,8 @@ fun TrainLineStopsScreen(
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        content = {
-            Column {
+        content = { paddingValues ->
+            Column(modifier = Modifier.padding(paddingValues)) {
                 DisplayTopBar(
                     screen = Screen.TrainList,
                     title = title,

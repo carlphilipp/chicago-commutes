@@ -17,14 +17,13 @@ import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.DrawerState
 import androidx.compose.material.DrawerValue
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -93,7 +92,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun BusMapScreen(
     modifier: Modifier = Modifier,
@@ -153,82 +152,76 @@ fun BusMapScreen(
         },
         snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
         content = {
-            Column {
-                Scaffold(
-                    modifier = modifier,
-                    content = {
-
-                        GoogleMapBusMapView(
-                            viewModel = viewModel,
-                            onMapLoaded = { isMapLoaded = true },
-                            cameraPositionState = cameraPositionState,
-                        )
-
-                        ConstraintLayout(
-                            modifier = modifier
-                                .fillMaxWidth()
-                                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
-                                .padding(start = 10.dp, top = 5.dp, bottom = 5.dp, end = 10.dp),
-                        ) {
-                            val (left, right, cameraDebug, stateDebug) = createRefs()
-                            FilledTonalButton(
-                                modifier = Modifier.constrainAs(left) {
-                                    start.linkTo(anchor = parent.start)
-                                    width = Dimension.fillToConstraints
-                                },
-                                onClick = { navController.navigateBack() },
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.ArrowBack,
-                                    contentDescription = "Back",
-                                )
-                            }
-
-                            FilledTonalButton(
-                                modifier = Modifier.constrainAs(right) {
-                                    end.linkTo(anchor = parent.end)
-                                    width = Dimension.fillToConstraints
-                                },
-                                onClick = {
-                                    viewModel.reloadData()
-                                }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.Refresh,
-                                    contentDescription = null,
-                                )
-                            }
-
-                            if (settingsViewModel.uiState.showMapDebug) {
-                                CameraDebugView(
-                                    modifier = Modifier.constrainAs(cameraDebug) {
-                                        top.linkTo(anchor = left.bottom)
-                                    },
-                                    cameraPositionState = cameraPositionState
-                                )
-                                StateDebugView(
-                                    modifier = Modifier.constrainAs(stateDebug) {
-                                        top.linkTo(anchor = cameraDebug.bottom)
-                                    },
-                                    viewModel = viewModel
-                                )
-                            }
-                        }
-
-                        LoadingBar(show = viewModel.uiState.isLoading)
-
-                        LoadingCircle(show = !isMapLoaded)
-
-                        if (viewModel.uiState.showError) {
-                            ShowErrorMessageSnackBar(
-                                scope = scope,
-                                snackbarHostState = snackbarHostState,
-                                showError = viewModel.uiState.showError,
-                                onComplete = { viewModel.showError(false) }
-                            )
-                        }
-                    }
+            Surface {
+                GoogleMapBusMapView(
+                    viewModel = viewModel,
+                    onMapLoaded = { isMapLoaded = true },
+                    cameraPositionState = cameraPositionState,
                 )
+
+                ConstraintLayout(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
+                        .padding(start = 10.dp, top = 5.dp, bottom = 5.dp, end = 10.dp),
+                ) {
+                    val (left, right, cameraDebug, stateDebug) = createRefs()
+                    FilledTonalButton(
+                        modifier = Modifier.constrainAs(left) {
+                            start.linkTo(anchor = parent.start)
+                            width = Dimension.fillToConstraints
+                        },
+                        onClick = { navController.navigateBack() },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back",
+                        )
+                    }
+
+                    FilledTonalButton(
+                        modifier = Modifier.constrainAs(right) {
+                            end.linkTo(anchor = parent.end)
+                            width = Dimension.fillToConstraints
+                        },
+                        onClick = {
+                            viewModel.reloadData()
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Refresh,
+                            contentDescription = null,
+                        )
+                    }
+
+                    if (settingsViewModel.uiState.showMapDebug) {
+                        CameraDebugView(
+                            modifier = Modifier.constrainAs(cameraDebug) {
+                                top.linkTo(anchor = left.bottom)
+                            },
+                            cameraPositionState = cameraPositionState
+                        )
+                        StateDebugView(
+                            modifier = Modifier.constrainAs(stateDebug) {
+                                top.linkTo(anchor = cameraDebug.bottom)
+                            },
+                            viewModel = viewModel
+                        )
+                    }
+                }
+
+                LoadingBar(show = viewModel.uiState.isLoading)
+
+                LoadingCircle(show = !isMapLoaded)
+
+                if (viewModel.uiState.showError) {
+                    ShowErrorMessageSnackBar(
+                        scope = scope,
+                        snackbarHostState = snackbarHostState,
+                        showError = viewModel.uiState.showError,
+                        onComplete = { viewModel.showError(false) }
+                    )
+                }
             }
         })
 

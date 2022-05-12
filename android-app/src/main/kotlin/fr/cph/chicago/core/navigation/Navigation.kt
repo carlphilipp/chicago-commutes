@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.animation.core.DecayAnimationSpec
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.rememberSplineBasedDecay
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -100,7 +102,7 @@ fun Navigation(
                 CompositionLocalProvider(LocalNavController provides navController) {
                     Scaffold(
                         snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
-                    ) {
+                    ) { paddingValues ->
                         if (navigationViewModel.uiState.shouldExit) {
                             ShowSnackBar(
                                 scope = scope,
@@ -112,6 +114,7 @@ fun Navigation(
                             )
                         }
                         AnimatedNavHost(
+                            modifier = Modifier.padding(paddingValues),
                             navController = navController.navController(),
                             startDestination = Screen.Favorites.route,
                             enterTransition = fallBackEnterTransition(settingsViewModel.uiState.animationSpeed),

@@ -72,8 +72,8 @@ fun BusBoundScreen(
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         snackbarHost = { SnackbarHostInsets(state = uiState.snackbarHostState) },
-        content = {
-            Column {
+        content = { paddingValues ->
+            Column(modifier = Modifier.padding(paddingValues)) {
                 DisplayTopBar(
                     screen = Screen.BusBound,
                     title = title,

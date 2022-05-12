@@ -70,8 +70,8 @@ fun DivvyScreen(
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
-        content = {
-            Column {
+        content = { paddingValues ->
+            Column(modifier = Modifier.padding(paddingValues)) {
                 DisplayTopBar(
                     screen = Screen.Divvy,
                     title = title,

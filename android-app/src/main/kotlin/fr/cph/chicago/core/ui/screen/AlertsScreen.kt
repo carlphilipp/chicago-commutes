@@ -84,13 +84,12 @@ fun AlertsScreen(
                     .fillMaxWidth()
                     .nestedScroll(scrollBehavior.nestedScrollConnection),
                 snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
-                content = {
-
+                content = { paddingValues ->
                     if (uiState.isRefreshing && uiState.routesAlerts.isEmpty()) {
                         AnimatedPlaceHolderList(isLoading = uiState.isRefreshing)
                     } else {
                         if (!uiState.routeAlertErrorState) {
-                            Column {
+                            Column(modifier = Modifier.padding(paddingValues)) {
                                 SearchTextField(
                                     modifier = Modifier,
                                     text = textSearch.text,

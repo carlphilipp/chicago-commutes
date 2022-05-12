@@ -20,6 +20,7 @@ import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.DrawerState
 import androidx.compose.material.DrawerValue
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsBus
@@ -30,7 +31,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -201,99 +201,94 @@ fun NearbyScreen(
         },
         snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
         content = {
-            Column {
-                Scaffold(
-                    modifier = modifier,
-                    content = {
-                        NearbyGoogleMapView(
-                            onMapLoaded = { isMapLoaded = true },
-                            viewModel = viewModel,
-                            settingsViewModel = settingsViewModel,
-                            cameraPositionState = cameraPositionState,
-                        )
-                        ConstraintLayout(
-                            modifier = modifier
-                                .fillMaxWidth()
-                                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
-                                .padding(start = 10.dp, top = 5.dp, bottom = 5.dp, end = 10.dp),
-                        ) {
-                            val (left, right, cameraDebug, stateDebug) = createRefs()
-                            FilledTonalButton(
-                                modifier = Modifier.constrainAs(left) {
-                                    start.linkTo(anchor = parent.start)
-                                    width = Dimension.fillToConstraints
-                                },
-                                onClick = {
-                                    scope.launch {
-                                        navigationViewModel.uiState.drawerState.animateTo(androidx.compose.material3.DrawerValue.Open, TweenSpec(durationMillis = settingsViewModel.uiState.animationSpeed.openDrawerSlideDuration))
-                                    }
-                                },
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.Menu,
-                                    contentDescription = null,
-                                )
-                            }
-
-                            FilledTonalButton(
-                                modifier = Modifier.constrainAs(right) {
-                                    end.linkTo(anchor = parent.end)
-                                    width = Dimension.fillToConstraints
-                                },
-                                onClick = {
-                                    scope.launch {
-                                        viewModel.loadNearby(position = cameraPositionState.position.target.toPosition())
-                                        when (viewModel.uiState.bottomSheetData.bottomSheetState) {
-                                            BottomSheetDataState.TRAIN -> viewModel.loadNearbyTrainDetails(trainStation = viewModel.uiState.bottomSheetData.trainStation)
-                                            BottomSheetDataState.BUS -> viewModel.loadNearbyBusDetails(busStop = viewModel.uiState.bottomSheetData.busStop)
-                                            BottomSheetDataState.BIKE -> viewModel.loadNearbyBikeDetails(currentBikeStation = viewModel.uiState.bottomSheetData.bikeStation)
-                                            else -> {}
-                                        }
-                                    }
-                                },
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.Refresh,
-                                    contentDescription = null,
-                                )
-                            }
-
-                            if (settingsViewModel.uiState.showMapDebug) {
-                                CameraDebugView(
-                                    modifier = Modifier.constrainAs(cameraDebug) {
-                                        top.linkTo(anchor = left.bottom)
-                                    },
-                                    cameraPositionState = cameraPositionState
-                                )
-                                StateDebugView(
-                                    modifier = Modifier.constrainAs(stateDebug) {
-                                        top.linkTo(anchor = cameraDebug.bottom)
-                                    },
-                                    viewModel = viewModel
-                                )
-                            }
-                        }
-
-                        LoadingCircle(show = !isMapLoaded)
-
-                        if (viewModel.uiState.showLocationError) {
-                            ShowLocationNotFoundSnackBar(
-                                scope = scope,
-                                snackbarHostState = snackbarHostState,
-                                showErrorMessage = viewModel.uiState.showLocationError,
-                                onComplete = { viewModel.setShowLocationError(false) }
-                            )
-                        }
-                        if (viewModel.uiState.nearbyDetailsError) {
-                            ShowErrorMessageSnackBar(
-                                scope = scope,
-                                snackbarHostState = snackbarHostState,
-                                showError = viewModel.uiState.nearbyDetailsError,
-                                onComplete = { viewModel.setNearbyDetailsError(false) }
-                            )
-                        }
-                    }
+            Surface {
+                NearbyGoogleMapView(
+                    onMapLoaded = { isMapLoaded = true },
+                    viewModel = viewModel,
+                    settingsViewModel = settingsViewModel,
+                    cameraPositionState = cameraPositionState,
                 )
+                ConstraintLayout(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
+                        .padding(start = 10.dp, top = 5.dp, bottom = 5.dp, end = 10.dp),
+                ) {
+                    val (left, right, cameraDebug, stateDebug) = createRefs()
+                    FilledTonalButton(
+                        modifier = Modifier.constrainAs(left) {
+                            start.linkTo(anchor = parent.start)
+                            width = Dimension.fillToConstraints
+                        },
+                        onClick = {
+                            scope.launch {
+                                navigationViewModel.uiState.drawerState.animateTo(androidx.compose.material3.DrawerValue.Open, TweenSpec(durationMillis = settingsViewModel.uiState.animationSpeed.openDrawerSlideDuration))
+                            }
+                        },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Menu,
+                            contentDescription = null,
+                        )
+                    }
+
+                    FilledTonalButton(
+                        modifier = Modifier.constrainAs(right) {
+                            end.linkTo(anchor = parent.end)
+                            width = Dimension.fillToConstraints
+                        },
+                        onClick = {
+                            scope.launch {
+                                viewModel.loadNearby(position = cameraPositionState.position.target.toPosition())
+                                when (viewModel.uiState.bottomSheetData.bottomSheetState) {
+                                    BottomSheetDataState.TRAIN -> viewModel.loadNearbyTrainDetails(trainStation = viewModel.uiState.bottomSheetData.trainStation)
+                                    BottomSheetDataState.BUS -> viewModel.loadNearbyBusDetails(busStop = viewModel.uiState.bottomSheetData.busStop)
+                                    BottomSheetDataState.BIKE -> viewModel.loadNearbyBikeDetails(currentBikeStation = viewModel.uiState.bottomSheetData.bikeStation)
+                                    else -> {}
+                                }
+                            }
+                        },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Refresh,
+                            contentDescription = null,
+                        )
+                    }
+
+                    if (settingsViewModel.uiState.showMapDebug) {
+                        CameraDebugView(
+                            modifier = Modifier.constrainAs(cameraDebug) {
+                                top.linkTo(anchor = left.bottom)
+                            },
+                            cameraPositionState = cameraPositionState
+                        )
+                        StateDebugView(
+                            modifier = Modifier.constrainAs(stateDebug) {
+                                top.linkTo(anchor = cameraDebug.bottom)
+                            },
+                            viewModel = viewModel
+                        )
+                    }
+                }
+
+                LoadingCircle(show = !isMapLoaded)
+
+                if (viewModel.uiState.showLocationError) {
+                    ShowLocationNotFoundSnackBar(
+                        scope = scope,
+                        snackbarHostState = snackbarHostState,
+                        showErrorMessage = viewModel.uiState.showLocationError,
+                        onComplete = { viewModel.setShowLocationError(false) }
+                    )
+                }
+                if (viewModel.uiState.nearbyDetailsError) {
+                    ShowErrorMessageSnackBar(
+                        scope = scope,
+                        snackbarHostState = snackbarHostState,
+                        showError = viewModel.uiState.nearbyDetailsError,
+                        onComplete = { viewModel.setNearbyDetailsError(false) }
+                    )
+                }
             }
         }
     )
