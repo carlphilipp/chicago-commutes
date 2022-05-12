@@ -469,7 +469,6 @@ sealed class Screen(
             }
             BikeMapScreen(
                 viewModel = viewModel,
-                navigationViewModel = navigationViewModel,
                 settingsViewModel = settingsViewModel,
                 title = "Bike station",
             )

@@ -3,7 +3,6 @@ package fr.cph.chicago.core.ui.screen
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,16 +16,13 @@ import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.DrawerState
 import androidx.compose.material.DrawerValue
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -36,8 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -46,12 +41,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.savedstate.SavedStateRegistryOwner
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
@@ -59,7 +54,6 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerInfoWindowContent
 import com.google.maps.android.compose.rememberMarkerState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.cph.chicago.R
@@ -67,8 +61,6 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.navigation.LocalNavController
-import fr.cph.chicago.core.navigation.NavigationViewModel
-import fr.cph.chicago.core.ui.common.AnimatedText
 import fr.cph.chicago.core.ui.common.BikeBottomSheet
 import fr.cph.chicago.core.ui.common.BottomSheetContent
 import fr.cph.chicago.core.ui.common.BottomSheetPagerData
@@ -78,7 +70,6 @@ import fr.cph.chicago.core.ui.common.LoadingBar
 import fr.cph.chicago.core.ui.common.LoadingCircle
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
-import fr.cph.chicago.core.ui.common.SwipeRefreshThemed
 import fr.cph.chicago.core.ui.common.defaultSheetPeekHeight
 import fr.cph.chicago.core.ui.common.runWithDelay
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
@@ -90,22 +81,22 @@ import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.util.CameraDebugView
 import fr.cph.chicago.util.GoogleMapUtil.defaultZoom
 import fr.cph.chicago.util.MapUtil
+import fr.cph.chicago.util.mapStyle
 import fr.cph.chicago.util.toLatLng
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun BikeMapScreen(
     modifier: Modifier = Modifier,
     viewModel: MapBikesViewModel,
-    navigationViewModel: NavigationViewModel,
     settingsViewModel: SettingsViewModel,
     title: String,
 ) {
@@ -159,80 +150,68 @@ fun BikeMapScreen(
         },
         snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
         content = {
-            Column {
-                SwipeRefreshThemed(
-                    modifier = modifier,
-                    swipeRefreshState = rememberSwipeRefreshState(viewModel.uiState.isRefreshing),
-                    onRefresh = { },
+            Surface {
+                GoogleBikeBusMapView(
+                    viewModel = viewModel,
+                    settingsViewModel = settingsViewModel,
+                    onMapLoaded = { isMapLoaded = true },
+                )
+
+                ConstraintLayout(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
+                        .padding(start = 10.dp, top = 5.dp, bottom = 5.dp, end = 10.dp),
                 ) {
-                    Scaffold(
-                        modifier = modifier,
-                        snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
-                        content = {
-                            GoogleBikeBusMapView(
-                                viewModel = viewModel,
-                                settingsViewModel = settingsViewModel,
-                                onMapLoaded = { isMapLoaded = true },
-                            )
+                    val (left, right, cameraDebug, stateDebug) = createRefs()
+                    FilledTonalButton(
+                        modifier = Modifier.constrainAs(left) {
+                            start.linkTo(anchor = parent.start)
+                            width = Dimension.fillToConstraints
+                        },
+                        onClick = { navController.navigateBack() },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back",
+                        )
+                    }
 
-                            ConstraintLayout(
-                                modifier = modifier
-                                    .fillMaxWidth()
-                                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
-                                    .padding(start = 10.dp, top = 5.dp, bottom = 5.dp, end = 10.dp),
-                            ) {
-                                val (left, right, cameraDebug, stateDebug) = createRefs()
-                                FilledTonalButton(
-                                    modifier = Modifier.constrainAs(left) {
-                                        start.linkTo(anchor = parent.start)
-                                        width = Dimension.fillToConstraints
-                                    },
-                                    onClick = { navController.navigateBack() },
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.ArrowBack,
-                                        contentDescription = "Back",
-                                    )
-                                }
-
-                                FilledTonalButton(
-                                    modifier = Modifier.constrainAs(right) {
-                                        end.linkTo(anchor = parent.end)
-                                        width = Dimension.fillToConstraints
-                                    },
-                                    onClick = {
-                                        viewModel.reloadData()
-                                    }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Refresh,
-                                        contentDescription = null,
-                                    )
-                                }
-
-                                if (settingsViewModel.uiState.showMapDebug) {
-                                    CameraDebugView(
-                                        modifier = Modifier.constrainAs(cameraDebug) {
-                                            top.linkTo(anchor = left.bottom)
-                                        },
-                                        cameraPositionState = cameraPositionState
-                                    )
-                                }
-                            }
-
-                            LoadingBar(show = viewModel.uiState.isMapLoading)
-
-                            LoadingCircle(show = !isMapLoaded)
-
-                            if (viewModel.uiState.showError) {
-                                ShowErrorMessageSnackBar(
-                                    scope = scope,
-                                    snackbarHostState = snackbarHostState,
-                                    showError = viewModel.uiState.showError,
-                                    onComplete = { viewModel.showError(false) }
-                                )
-                            }
+                    FilledTonalButton(
+                        modifier = Modifier.constrainAs(right) {
+                            end.linkTo(anchor = parent.end)
+                            width = Dimension.fillToConstraints
+                        },
+                        onClick = {
+                            viewModel.reloadData()
                         }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Refresh,
+                            contentDescription = null,
+                        )
+                    }
+
+                    if (settingsViewModel.uiState.showMapDebug) {
+                        CameraDebugView(
+                            modifier = Modifier.constrainAs(cameraDebug) {
+                                top.linkTo(anchor = left.bottom)
+                            },
+                            cameraPositionState = cameraPositionState
+                        )
+                    }
+                }
+
+                LoadingBar(show = viewModel.uiState.isRefreshing)
+
+                LoadingCircle(show = !isMapLoaded)
+
+                if (viewModel.uiState.showError) {
+                    ShowErrorMessageSnackBar(
+                        scope = scope,
+                        snackbarHostState = snackbarHostState,
+                        showError = viewModel.uiState.showError,
+                        onComplete = { viewModel.showError(false) }
                     )
                 }
             }
@@ -254,6 +233,8 @@ private fun GoogleBikeBusMapView(
 ) {
     val uiState = viewModel.uiState
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
     if (uiState.moveCamera != null && uiState.moveCameraZoom != null) {
         Timber.d("Move camera to ${uiState.moveCamera} with zoom ${uiState.zoom}")
 
@@ -267,7 +248,11 @@ private fun GoogleBikeBusMapView(
     GoogleMap(
         modifier = modifier,
         cameraPositionState = uiState.cameraPositionState,
-        properties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false),
+        properties = MapProperties(
+            mapType = MapType.NORMAL,
+            isMyLocationEnabled = false,
+            mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, mapStyle(settingsViewModel)),
+        ),
         uiSettings = MapUiSettings(compassEnabled = false, myLocationButtonEnabled = false, zoomControlsEnabled = false),
         onMapLoaded = onMapLoaded,
     ) {
@@ -309,10 +294,6 @@ private fun GoogleBikeBusMapView(
             isSelected = viewModel.uiState.showAllStations,
             onClick = { viewModel.showAllStations(!viewModel.uiState.showAllStations) }
         )
-
-        if (settingsViewModel.uiState.showMapDebug) {
-            CameraDebugView(cameraPositionState = uiState.cameraPositionState)
-        }
     }
 }
 
@@ -506,7 +487,7 @@ class MapBikesViewModel @Inject constructor(
         uiState = uiState.copy(isRefreshing = false)
     }
 
-    fun updateBottomSheetContentAndState(state: BottomSheetContent ) {
+    fun updateBottomSheetContentAndState(state: BottomSheetContent) {
         uiState = uiState.copy(bottomSheetContentAndState = state)
     }
 
