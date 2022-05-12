@@ -50,7 +50,7 @@ fun DivvyScreen(
 ) {
     Timber.d("Compose DivvyScreen")
     val navController = LocalNavController.current
-    var searchBikeStations by remember { mutableStateOf(mainViewModel.uiState.bikeStations) }
+    var searchBikeStations by remember { mutableStateOf(mainViewModel.uiState.bikeStations.values.toList()) }
     val scope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -152,7 +152,7 @@ fun DivvyScreen(
 }
 
 private fun search(mainViewModel: MainViewModel, searchText: String): List<BikeStation> {
-    return mainViewModel.uiState.bikeStations.filter { bikeStation ->
+    return mainViewModel.uiState.bikeStations.values.filter { bikeStation ->
         bikeStation.name.contains(searchText, true)
     }
 }

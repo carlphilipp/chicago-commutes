@@ -100,7 +100,7 @@ object MapUtil {
         )
     }
 
-    fun readNearbyStation(position: Position, bikeStations: List<BikeStation>): Single<List<BikeStation>> {
+    fun readNearbyStation(position: Position, bikeStations: Map<String, BikeStation>): Single<List<BikeStation>> {
         return singleFromCallable(
             Callable {
                 val latitude = position.latitude
@@ -111,7 +111,7 @@ object MapUtil {
                 val lonMax = longitude + DEFAULT_RANGE
                 val lonMin = longitude - DEFAULT_RANGE
 
-                bikeStations
+                bikeStations.values
                     .filter { station -> station.latitude <= latMax }
                     .filter { station -> station.latitude >= latMin }
                     .filter { station -> station.longitude <= lonMax }

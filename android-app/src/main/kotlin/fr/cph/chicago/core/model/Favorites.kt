@@ -83,9 +83,11 @@ object Favorites {
             busService.getBusRoute(routeId)
         } else {
             val index = position - (trainFavorites.size + busRouteFavorites.size)
-            store.state.bikeStations
-                .filter { bikeStation -> bikeStation.id == bikeFavorites[index] }
-                .getOrElse(0) { bikeService.createEmptyBikeStation(bikeFavorites[index]) }
+            if (store.state.bikeStations.containsKey(bikeFavorites[index])) {
+                store.state.bikeStations[bikeFavorites[index]]!!
+            } else {
+                bikeService.createEmptyBikeStation(bikeFavorites[index])
+            }
         }
     }
 

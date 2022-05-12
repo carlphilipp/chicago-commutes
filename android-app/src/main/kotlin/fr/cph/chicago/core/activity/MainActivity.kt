@@ -142,7 +142,7 @@ data class MainUiState constructor(
     val busRoutesShowError: Boolean = false,
     val busRouteSearch: String = "",
 
-    val bikeStations: List<BikeStation> = listOf(),
+    val bikeStations: Map<String, BikeStation> = mapOf(),
     val bikeStationsShowError: Boolean = false,
     val bikeSearch: String = "",
 

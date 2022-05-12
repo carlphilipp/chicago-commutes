@@ -259,7 +259,7 @@ object PreferenceService {
             .observeOn(Schedulers.computation())
             .map { favorites ->
                 favorites
-                    .flatMap { bikeStationId -> store.state.bikeStations.filter { station -> station.id == bikeStationId } }
+                    .flatMap { bikeStationId -> store.state.bikeStations.values.filter { station -> station.id == bikeStationId } }
                     .sortedWith(util.bikeStationComparator)
                     .map { station -> station.id }
             }

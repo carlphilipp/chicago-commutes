@@ -163,7 +163,7 @@ fun BikeMapScreen(
                         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
                         .padding(start = 10.dp, top = 5.dp, bottom = 5.dp, end = 10.dp),
                 ) {
-                    val (left, right, cameraDebug, stateDebug) = createRefs()
+                    val (left, right, cameraDebug) = createRefs()
                     FilledTonalButton(
                         modifier = Modifier.constrainAs(left) {
                             start.linkTo(anchor = parent.start)
@@ -377,7 +377,7 @@ data class GoogleMapBikeUiState constructor(
     val showAllStations: Boolean = false,
     val bikeStation: BikeStation = BikeStation.buildDefaultBikeStationWithName(id = "", name = "Bikes"),
     val bikeStationBottomSheet: List<BottomSheetPagerData> = listOf(),
-    val bikeStations: List<BikeStation> = listOf(),
+    val bikeStations: Map<String, BikeStation> = mapOf(),
     val bikeStationIcon: BitmapDescriptor? = null,
 
     val zoom: Float = defaultZoom,
@@ -422,8 +422,7 @@ class MapBikesViewModel @Inject constructor(
             .subscribeOn(Schedulers.computation())
             .subscribe(
                 { bikeStations ->
-                    val bikeStation = bikeStations.find { bikeStation -> bikeStation.id == uiState.id }
-                        ?: bikeService.createEmptyBikeStation(uiState.id)
+                    val bikeStation = if (bikeStations.containsKey(uiState.id)) bikeStations[uiState.id]!! else bikeService.createEmptyBikeStation(uiState.id)
                     uiState = uiState.copy(
                         bikeStation = bikeStation,
                         bikeStationBottomSheet = listOf(
