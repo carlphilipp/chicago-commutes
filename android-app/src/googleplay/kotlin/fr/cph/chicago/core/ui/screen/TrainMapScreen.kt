@@ -200,7 +200,7 @@ fun TrainMapScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Refresh,
-                            contentDescription = null,
+                            contentDescription = "Refresh",
                         )
                     }
 

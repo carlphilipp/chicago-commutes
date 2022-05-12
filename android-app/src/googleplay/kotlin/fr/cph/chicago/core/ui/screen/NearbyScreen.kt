@@ -251,7 +251,7 @@ fun NearbyScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Refresh,
-                            contentDescription = null,
+                            contentDescription = "Refresh",
                         )
                     }
 
