@@ -538,7 +538,7 @@ class NearbyViewModel(
                 uiState = uiState.copy(
                     trainStations = trains,
                     busStops = buses,
-                    bikeStations = bikeStations,
+                    bikeStations = bikeStations.values.toList(),
                 )
                 Any()
             }.subscribe({}, { error -> Timber.e(error) })

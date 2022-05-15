@@ -2,6 +2,9 @@ package fr.cph.chicago.core.ui.screen
 
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,7 +24,9 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -71,7 +76,6 @@ import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.defaultSheetPeekHeight
 import fr.cph.chicago.core.ui.common.runWithDelay
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
-import fr.cph.chicago.redux.BikeStationAction
 import fr.cph.chicago.redux.State
 import fr.cph.chicago.redux.Status
 import fr.cph.chicago.redux.store
@@ -81,11 +85,13 @@ import fr.cph.chicago.util.GoogleMapUtil.defaultZoom
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.mapStyle
 import fr.cph.chicago.util.toLatLng
+import fr.cph.chicago.util.toPosition
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
@@ -149,9 +155,10 @@ fun BikeMapScreen(
         snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
         content = {
             Surface {
-                GoogleBikeBusMapView(
+                BikeGoogleBusMapView(
                     viewModel = viewModel,
                     settingsViewModel = settingsViewModel,
+                    cameraPositionState = cameraPositionState,
                     onMapLoaded = { isMapLoaded = true },
                 )
 
@@ -161,10 +168,10 @@ fun BikeMapScreen(
                         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
                         .padding(start = 10.dp, top = 5.dp, bottom = 5.dp, end = 10.dp),
                 ) {
-                    val (left, right, cameraDebug) = createRefs()
+                    val (left, right, cameraDebug, stateDebug) = createRefs()
                     FilledTonalButton(
                         modifier = Modifier.constrainAs(left) {
-                            start.linkTo(anchor = parent.start)
+                            top.linkTo(anchor = parent.top)
                             width = Dimension.fillToConstraints
                         },
                         onClick = { navController.navigateBack() },
@@ -181,7 +188,7 @@ fun BikeMapScreen(
                             width = Dimension.fillToConstraints
                         },
                         onClick = {
-                            viewModel.reloadData()
+                            viewModel.reloadData(position = cameraPositionState.position.target.toPosition())
                         }
                     ) {
                         Icon(
@@ -196,6 +203,12 @@ fun BikeMapScreen(
                                 top.linkTo(anchor = left.bottom)
                             },
                             cameraPositionState = cameraPositionState
+                        )
+                        StateDebugView(
+                            modifier = Modifier.constrainAs(stateDebug) {
+                                top.linkTo(anchor = cameraDebug.bottom)
+                            },
+                            viewModel = viewModel
                         )
                     }
                 }
@@ -223,29 +236,32 @@ fun BikeMapScreen(
 }
 
 @Composable
-private fun GoogleBikeBusMapView(
+private fun BikeGoogleBusMapView(
     modifier: Modifier = Modifier,
     viewModel: MapBikesViewModel,
     settingsViewModel: SettingsViewModel,
+    cameraPositionState: CameraPositionState,
     onMapLoaded: () -> Unit,
 ) {
+    Timber.d("Compose BikeGoogleBusMapView with location ${viewModel.uiState.moveCamera}")
     val uiState = viewModel.uiState
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    var jobOnClose: Job? by remember { mutableStateOf(null) }
 
     if (uiState.moveCamera != null && uiState.moveCameraZoom != null) {
         Timber.d("Move camera to ${uiState.moveCamera} with zoom ${uiState.zoom}")
 
         LaunchedEffect(key1 = Unit, block = {
             scope.launch {
-                uiState.cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(uiState.moveCamera, uiState.moveCameraZoom))
+                cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(uiState.moveCamera, uiState.moveCameraZoom))
             }
         })
     }
 
     GoogleMap(
         modifier = modifier,
-        cameraPositionState = uiState.cameraPositionState,
+        cameraPositionState = cameraPositionState,
         properties = MapProperties(
             mapType = MapType.NORMAL,
             isMyLocationEnabled = false,
@@ -254,63 +270,84 @@ private fun GoogleBikeBusMapView(
         uiSettings = MapUiSettings(compassEnabled = false, myLocationButtonEnabled = false, zoomControlsEnabled = false),
         onMapLoaded = onMapLoaded,
     ) {
-        BikeStationMarker(
-            show = true,
-            viewModel = viewModel,
-            onInfoWindowClick = {
-                viewModel.expandBottomSheet(
-                    scope = scope,
-                    runBefore = {
-                        viewModel.onInfoWindowClose(BottomSheetContent.EXPAND, viewModel.uiState.bikeStation.name)
-                    }
-                )
-                false
-            },
-            onInfoWindowClose = {
-                viewModel.collapseBottomSheet(
-                    scope = scope,
-                    runBefore = {
-                        viewModel.onInfoWindowClose(BottomSheetContent.COLLAPSE, "Bike")
-                    }
-                )
-            }
-        )
-/*        viewModel.uiState.bikeStations.forEach { bikeStation ->
+        viewModel.uiState.bikeStationAround.values.forEach { bikeStation ->
             BikeStationMarker(
-                show = viewModel.uiState.showAllStations,
+                show = true,
                 viewModel = viewModel,
                 bikeStation = bikeStation,
+                onInfoWindowClick = {
+                    jobOnClose?.cancel()
+                    viewModel.expandBottomSheet(
+                        scope = scope,
+                        runBefore = {
+                            viewModel.onInfoWindowClose(BottomSheetContent.EXPAND, bikeStation.name)
+                            viewModel.refreshBottomSheet(bikeStation)
+                        }
+                    )
+                    false
+                },
+                onInfoWindowClose = {
+                    jobOnClose = scope.launch {
+                        viewModel.collapseBottomSheet(
+                            scope = scope,
+                            runBefore = {
+                                viewModel.onInfoWindowClose(BottomSheetContent.COLLAPSE, "Bikes")
+                            }
+                        )
+                    }
+                }
             )
-        }*/
+        }
     }
-
-/*    Column {
-        ChipMaterial3(
-            modifier = Modifier.padding(10.dp),
-            text = "Show all stations",
-            isSelected = viewModel.uiState.showAllStations,
-            onClick = { viewModel.showAllStations(!viewModel.uiState.showAllStations) }
-        )
-    }*/
 }
 
 @Composable
 fun BikeStationMarker(
     show: Boolean,
     viewModel: MapBikesViewModel,
+    bikeStation: BikeStation,
     onInfoWindowClick: (Marker) -> Boolean,
     onInfoWindowClose: (Marker) -> Unit,
 ) {
     val markerState = rememberMarkerState()
-    markerState.position = Position(latitude = viewModel.uiState.bikeStation.latitude, longitude = viewModel.uiState.bikeStation.longitude).toLatLng()
+    val scope = rememberCoroutineScope()
+    markerState.position = Position(latitude = bikeStation.latitude, longitude = bikeStation.longitude).toLatLng()
+    if (bikeStation.id == viewModel.uiState.bikeStationSelected.id) {
+        LaunchedEffect(key1 = Unit, block = {
+            scope.launch {
+                markerState.showInfoWindow()
+            }
+        })
+    }
     Marker(
         state = markerState,
         icon = viewModel.uiState.bikeStationIcon,
-        title = viewModel.uiState.bikeStation.name,
+        title = bikeStation.name,
         visible = show,
         onClick = onInfoWindowClick,
         onInfoWindowClose = onInfoWindowClose,
     )
+}
+
+
+@Composable
+fun StateDebugView(
+    modifier: Modifier = Modifier,
+    viewModel: MapBikesViewModel,
+) {
+    Column(
+        modifier = modifier
+            .padding(top = 10.dp)
+            .background(color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(text = "Latitude in state ${viewModel.uiState.moveCamera?.latitude}")
+        Text(text = "Longitude in state ${viewModel.uiState.moveCamera?.longitude}")
+        Text(text = "Zoom in state ${viewModel.uiState.moveCameraZoom}")
+        Text(text = "Bike station selected id: ${viewModel.uiState.bikeStationSelected.id}")
+        Text(text = "Bike station selected name: ${viewModel.uiState.bikeStationSelected.name}")
+        Text(text = "Bike around: ${viewModel.uiState.bikeStationAround.size}")
+    }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -320,19 +357,16 @@ data class GoogleMapBikeUiState constructor(
     val isRefreshing: Boolean = false,
 
     val id: String = "",
-    val showAllStations: Boolean = false,
-    val bikeStation: BikeStation = BikeStation.buildDefaultBikeStationWithName(id = "", name = "Bikes"),
+    val bikeStationSelected: BikeStation = BikeStation.buildDefaultBikeStationWithName(id = "", name = "Bikes"),
+    val bikeStationAround: Map<String, BikeStation> = mapOf(),
     val bikeStationBottomSheet: List<BottomSheetPagerData> = listOf(),
-    val bikeStations: Map<String, BikeStation> = mapOf(),
+
     val bikeStationIcon: BitmapDescriptor? = null,
 
     val zoom: Float = defaultZoom,
     val shouldMoveCamera: Boolean = true,
     val moveCamera: LatLng? = null,
     val moveCameraZoom: Float? = null,
-    val cameraPositionState: CameraPositionState = CameraPositionState(
-        position = CameraPosition.fromLatLngZoom(MapUtil.chicagoPosition.toLatLng(), defaultZoom)
-    ),
 
     val scaffoldState: BottomSheetScaffoldState = BottomSheetScaffoldState(
         drawerState = DrawerState(DrawerValue.Closed),
@@ -348,6 +382,7 @@ data class GoogleMapBikeUiState constructor(
 @HiltViewModel
 class MapBikesViewModel @Inject constructor(
     private val bikeService: BikeService = BikeService,
+    private val mapUtil: MapUtil = MapUtil,
 ) : ViewModel(), StoreSubscriber<State> {
     var uiState by mutableStateOf(GoogleMapBikeUiState())
         private set
@@ -360,49 +395,85 @@ class MapBikesViewModel @Inject constructor(
         uiState = uiState.copy(showError = showError)
     }
 
-    fun showAllStations(showAllStations: Boolean) {
-        uiState = uiState.copy(showAllStations = showAllStations)
-    }
-
     fun searchBikeStationInState() {
-        Single.fromCallable { bikeService.getAllBikeStationsFromState() }
-            .subscribeOn(Schedulers.computation())
-            .subscribe(
-                { bikeStations ->
-                    val bikeStation = if (bikeStations.containsKey(uiState.id)) bikeStations[uiState.id]!! else bikeService.createEmptyBikeStation(uiState.id)
-                    uiState = uiState.copy(
-                        bikeStation = bikeStation,
-                        bottomSheetTitle = bikeStation.name,
-                        bikeStationBottomSheet = listOf(
-                            BottomSheetPagerData(
-                                title = "Bikes",
-                                content = bikeStation.availableBikes.toString(),
-                                bottom = "available",
-                            ),
-                            BottomSheetPagerData(
-                                title = "Docks",
-                                content = bikeStation.availableDocks.toString(),
-                                bottom = "available",
-                            )
-                        ),
-                        bikeStations = bikeStations,
-                        moveCamera = LatLng(bikeStation.latitude, bikeStation.longitude),
-                        moveCameraZoom = 14f,
-                    )
-                },
-                {
-                    Timber.e(it, "Could not load bike station")
-                }
+        viewModelScope.launch {
+            loadData(
+                Single.fromCallable { bikeService.getAllBikeStationsFromState() }
+                    .map { stations ->
+                        if (stations.containsKey(uiState.id)) {
+                            Position(stations[uiState.id]!!.latitude, stations[uiState.id]!!.longitude)
+                        } else {
+                            MapUtil.chicagoPosition
+                        }
+                    }
+                    .flatMap { position -> mapUtil.readNearbyStation(position = position, store.state.bikeStations) }
             )
+        }
     }
 
-    fun reloadData() {
-        Single.fromCallable {
+    fun reloadData(position: Position) {
+        loadData(
+            bikeService.allBikeStations()
+                .flatMap { bikeStations -> mapUtil.readNearbyStation(position = position, bikeStations) }
+        )
+    }
+
+    private fun loadData(pipe: Single<Map<String, BikeStation>>) {
+        viewModelScope.launch {
             uiState = uiState.copy(isRefreshing = true)
-            store.dispatch(BikeStationAction())
+
+            pipe
+                .subscribeOn(Schedulers.computation())
+                .subscribe(
+                    { bikeStations ->
+                        val bikeStation = if (bikeStations.containsKey(uiState.id)) bikeStations[uiState.id]!! else bikeService.createEmptyBikeStation(uiState.id)
+                        uiState = uiState.copy(
+                            bikeStationSelected = bikeStation,
+                            bottomSheetTitle = bikeStation.name,
+                            bikeStationBottomSheet = listOf(
+                                BottomSheetPagerData(
+                                    title = "Bikes",
+                                    content = bikeStation.availableBikes.toString(),
+                                    bottom = "available",
+                                ),
+                                BottomSheetPagerData(
+                                    title = "Docks",
+                                    content = bikeStation.availableDocks.toString(),
+                                    bottom = "available",
+                                )
+                            ),
+                            bikeStationAround = bikeStations,
+                            moveCamera = LatLng(bikeStation.latitude, bikeStation.longitude),
+                            moveCameraZoom = 14f,
+                            isRefreshing = false,
+                        )
+                    },
+                    {
+                        Timber.e(it, "Could not load bike station")
+                    }
+                )
         }
-            .subscribeOn(Schedulers.computation())
-            .subscribe()
+    }
+
+    fun refreshBottomSheet(bikeStation: BikeStation) {
+        viewModelScope.launch {
+            uiState = uiState.copy(
+                bikeStationSelected = bikeStation,
+                bottomSheetTitle = bikeStation.name,
+                bikeStationBottomSheet = listOf(
+                    BottomSheetPagerData(
+                        title = "Bikes",
+                        content = bikeStation.availableBikes.toString(),
+                        bottom = "available",
+                    ),
+                    BottomSheetPagerData(
+                        title = "Docks",
+                        content = bikeStation.availableDocks.toString(),
+                        bottom = "available",
+                    )
+                ),
+            )
+        }
     }
 
     fun loadIcon() {
