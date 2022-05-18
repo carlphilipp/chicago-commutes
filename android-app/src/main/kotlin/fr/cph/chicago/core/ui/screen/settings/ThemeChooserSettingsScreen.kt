@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
@@ -17,9 +19,12 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -46,7 +51,6 @@ import fr.cph.chicago.core.ui.common.ChipMaterial3
 import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.common.SearchTextField
-import fr.cph.chicago.core.ui.common.SwitchMaterial3
 import fr.cph.chicago.core.ui.common.ThemeColorButton
 import fr.cph.chicago.core.ui.screen.Screen
 
@@ -226,11 +230,23 @@ fun ThemeChooserSettingsScreen(
                                     verticalAlignment = Alignment.CenterVertically,
                                 ) {
                                     val checked = remember { mutableStateOf(true) }
-                                    SwitchMaterial3(
+                                    val icon: (@Composable () -> Unit)? = if (checked.value) {
+                                        {
+                                            Icon(
+                                                imageVector = Icons.Filled.Check,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                                            )
+                                        }
+                                    } else {
+                                        null
+                                    }
+                                    Switch(
                                         onCheckedChange = {
                                             checked.value = !checked.value
                                         },
-                                        checked = checked.value
+                                        checked = checked.value,
+                                        thumbContent = icon,
                                     )
                                     val isSelected = remember { mutableStateOf(true) }
                                     ChipMaterial3(

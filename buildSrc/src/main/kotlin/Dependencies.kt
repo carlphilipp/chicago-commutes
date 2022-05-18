@@ -2,7 +2,7 @@
 object Android {
     const val compile_sdk =             32
     const val min_sdk =                 21
-    const val target_sdk =              "Tiramisu"
+    const val target_sdk =              32
     const val build_tools =             "32.0.0"
 }
 
