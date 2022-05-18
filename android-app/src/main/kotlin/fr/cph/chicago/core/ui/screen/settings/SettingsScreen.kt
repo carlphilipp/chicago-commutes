@@ -1,20 +1,13 @@
-@file:OptIn(ExperimentalMaterialApi::class)
-
 package fr.cph.chicago.core.ui.screen.settings
 
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetState
-import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Brightness6
 import androidx.compose.material.icons.outlined.DeveloperMode
@@ -204,7 +197,6 @@ private fun SettingsElementView(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 data class SettingsState(
     val theme: Theme = Theme.AUTO,
     val themeColor: ThemeColor = ThemeColor.Blue,
