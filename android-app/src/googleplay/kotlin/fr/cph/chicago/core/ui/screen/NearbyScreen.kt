@@ -1,6 +1,5 @@
 package fr.cph.chicago.core.ui.screen
 
-import android.Manifest
 import android.content.Context
 import android.os.Bundle
 import androidx.compose.animation.core.TweenSpec
@@ -64,7 +63,6 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberMarkerState
 import fr.cph.chicago.R
-import fr.cph.chicago.core.location.getLastUserLocation
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
@@ -73,6 +71,7 @@ import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.permissions.NearbyLocationPermissionView
+import fr.cph.chicago.core.permissions.onPermissionsResult
 import fr.cph.chicago.core.ui.common.BottomSheetData
 import fr.cph.chicago.core.ui.common.BottomSheetDataState
 import fr.cph.chicago.core.ui.common.BottomSheetPagerData
@@ -116,45 +115,9 @@ fun NearbyScreen(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val navController = LocalNavController.current
-    val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     var isMapLoaded by remember { mutableStateOf(false) }
-    val cameraPositionState: CameraPositionState by remember {
-        mutableStateOf(
-            CameraPositionState(
-                position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)
-            )
-        )
-    }
     val onPermissionsResult: (Map<String, Boolean>) -> Unit by remember {
-        mutableStateOf(
-            { result ->
-                val allowed =
-                    result.getOrElse(
-                        key = Manifest.permission.ACCESS_COARSE_LOCATION,
-                        defaultValue = { false }
-                    )
-                        &&
-                        result.getOrElse(
-                            key = Manifest.permission.ACCESS_FINE_LOCATION,
-                            defaultValue = { false }
-                        )
-                if (allowed) {
-                    getLastUserLocation(
-                        context = context,
-                        callBackLoadLocation = { position ->
-                            viewModel.setNearbyIsMyLocationEnabled(true)
-                            viewModel.setCurrentUserLocation(position)
-                            viewModel.loadNearbyStations(position)
-                        },
-                        callBackDefaultLocation = {
-                            viewModel.setDefaultUserLocation()
-                        }
-                    )
-                } else {
-                    viewModel.setDefaultUserLocation()
-                }
-            }
-        )
+        mutableStateOf(onPermissionsResult(context = context, viewModel = viewModel))
     }
 
     // Show map after 5 seconds. This is needed because there is no callback from the sdk to know if the map can be loaded or not.
@@ -175,7 +138,7 @@ fun NearbyScreen(
     if (viewModel.uiState.moveCamera != null && viewModel.uiState.moveCameraZoom != null && isMapLoaded) {
         LaunchedEffect(key1 = viewModel.uiState.moveCamera, key2 = viewModel.uiState.moveCameraZoom, block = {
             scope.launch {
-                cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(viewModel.uiState.moveCamera!!.toLatLng(), viewModel.uiState.moveCameraZoom!!))
+                viewModel.uiState.cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(viewModel.uiState.moveCamera!!.toLatLng(), viewModel.uiState.moveCameraZoom!!))
             }
         })
     }
@@ -199,14 +162,13 @@ fun NearbyScreen(
                 },
             )
         },
-        snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
+        snackbarHost = { SnackbarHostInsets(state = viewModel.uiState.snackbarHostState) },
         content = {
             Surface {
                 NearbyGoogleMapView(
                     onMapLoaded = { isMapLoaded = true },
                     viewModel = viewModel,
                     settingsViewModel = settingsViewModel,
-                    cameraPositionState = cameraPositionState,
                 )
                 ConstraintLayout(
                     modifier = modifier
@@ -239,7 +201,7 @@ fun NearbyScreen(
                         },
                         onClick = {
                             scope.launch {
-                                viewModel.loadNearby(position = cameraPositionState.position.target.toPosition())
+                                viewModel.loadNearby(position = viewModel.uiState.cameraPositionState.position.target.toPosition())
                                 when (viewModel.uiState.bottomSheetData.bottomSheetState) {
                                     BottomSheetDataState.TRAIN -> viewModel.loadNearbyTrainDetails(trainStation = viewModel.uiState.bottomSheetData.trainStation)
                                     BottomSheetDataState.BUS -> viewModel.loadNearbyBusDetails(busStop = viewModel.uiState.bottomSheetData.busStop)
@@ -260,7 +222,7 @@ fun NearbyScreen(
                             modifier = Modifier.constrainAs(cameraDebug) {
                                 top.linkTo(anchor = left.bottom)
                             },
-                            cameraPositionState = cameraPositionState
+                            cameraPositionState = viewModel.uiState.cameraPositionState
                         )
                         StateDebugView(
                             modifier = Modifier.constrainAs(stateDebug) {
@@ -276,7 +238,7 @@ fun NearbyScreen(
                 if (viewModel.uiState.showLocationError) {
                     ShowLocationNotFoundSnackBar(
                         scope = scope,
-                        snackbarHostState = snackbarHostState,
+                        snackbarHostState = viewModel.uiState.snackbarHostState,
                         showErrorMessage = viewModel.uiState.showLocationError,
                         onComplete = { viewModel.setShowLocationError(false) }
                     )
@@ -284,7 +246,7 @@ fun NearbyScreen(
                 if (viewModel.uiState.nearbyDetailsError) {
                     ShowErrorMessageSnackBar(
                         scope = scope,
-                        snackbarHostState = snackbarHostState,
+                        snackbarHostState = viewModel.uiState.snackbarHostState,
                         showError = viewModel.uiState.nearbyDetailsError,
                         onComplete = { viewModel.setNearbyDetailsError(false) }
                     )
@@ -304,7 +266,6 @@ fun NearbyGoogleMapView(
     onMapLoaded: () -> Unit,
     viewModel: NearbyViewModel,
     settingsViewModel: SettingsViewModel,
-    cameraPositionState: CameraPositionState,
 ) {
     Timber.d("Compose NearbyGoogleMapView with location ${viewModel.uiState.moveCamera?.toLatLng()}")
     val uiState = viewModel.uiState
@@ -314,7 +275,7 @@ fun NearbyGoogleMapView(
 
     GoogleMap(
         modifier = modifier,
-        cameraPositionState = cameraPositionState,
+        cameraPositionState = viewModel.uiState.cameraPositionState,
         properties = MapProperties(
             mapType = MapType.NORMAL,
             isMyLocationEnabled = uiState.isMyLocationEnabled,
@@ -442,6 +403,9 @@ data class NearbyScreenUiState constructor(
     val bitmapDescriptorTrain: BitmapDescriptor? = null,
     val bitmapDescriptorBus: BitmapDescriptor? = null,
     val bitmapDescriptorBike: BitmapDescriptor? = null,
+
+    val snackbarHostState: SnackbarHostState = SnackbarHostState(),
+    val cameraPositionState: CameraPositionState = CameraPositionState(position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)),
 )
 
 @OptIn(ExperimentalMaterialApi::class)
