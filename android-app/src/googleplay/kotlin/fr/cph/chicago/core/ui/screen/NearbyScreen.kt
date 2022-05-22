@@ -115,7 +115,7 @@ fun NearbyScreen(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val navController = LocalNavController.current
-    var isMapLoaded by remember { mutableStateOf(false) }
+    //var isMapLoaded by remember { mutableStateOf(false) }
     val onPermissionsResult: (Map<String, Boolean>) -> Unit by remember {
         mutableStateOf(onPermissionsResult(context = context, viewModel = viewModel))
     }
@@ -123,10 +123,8 @@ fun NearbyScreen(
     // Show map after 5 seconds. This is needed because there is no callback from the sdk to know if the map can be loaded or not.
     // Meaning that we can have a situation where the onMapLoaded method is never triggered, while the map view has been populated
     // with some error messages from the google sdk like: "Play store needs to be updated"
-    if (!isMapLoaded) {
-        runWithDelay(5L, TimeUnit.SECONDS) {
-            isMapLoaded = true
-        }
+    if (!viewModel.uiState.isMapLoaded) {
+        runWithDelay(5L, TimeUnit.SECONDS) { viewModel.setMapLoaded() }
     }
 
     LaunchedEffect(key1 = Unit, block = {
@@ -135,7 +133,7 @@ fun NearbyScreen(
         }
     })
 
-    if (viewModel.uiState.moveCamera != null && viewModel.uiState.moveCameraZoom != null && isMapLoaded) {
+    if (viewModel.uiState.moveCamera != null && viewModel.uiState.moveCameraZoom != null && viewModel.uiState.isMapLoaded) {
         LaunchedEffect(key1 = viewModel.uiState.moveCamera, key2 = viewModel.uiState.moveCameraZoom, block = {
             scope.launch {
                 viewModel.uiState.cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(viewModel.uiState.moveCamera!!.toLatLng(), viewModel.uiState.moveCameraZoom!!))
@@ -166,7 +164,7 @@ fun NearbyScreen(
         content = {
             Surface {
                 NearbyGoogleMapView(
-                    onMapLoaded = { isMapLoaded = true },
+                    onMapLoaded = { viewModel.setMapLoaded() },
                     viewModel = viewModel,
                     settingsViewModel = settingsViewModel,
                 )
@@ -233,7 +231,7 @@ fun NearbyScreen(
                     }
                 }
 
-                LoadingCircle(show = !isMapLoaded)
+                LoadingCircle(show = !viewModel.uiState.isMapLoaded)
 
                 if (viewModel.uiState.showLocationError) {
                     ShowLocationNotFoundSnackBar(
@@ -382,6 +380,7 @@ data class NearbyScreenUiState constructor(
     val bikeStations: List<BikeStation> = listOf(),
 
     // map
+    val isMapLoaded: Boolean = false,
     val moveCamera: Position? = null,
     val moveCameraZoom: Float? = null,
     val isMyLocationEnabled: Boolean = false,
@@ -420,6 +419,10 @@ class NearbyViewModel(
 
     fun onStop() {
         uiState = NearbyScreenUiState()
+    }
+
+    fun setMapLoaded() {
+        uiState = uiState.copy(isMapLoaded = true)
     }
 
     fun setShowLocationError(value: Boolean) {
