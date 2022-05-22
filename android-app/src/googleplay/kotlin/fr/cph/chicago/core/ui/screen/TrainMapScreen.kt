@@ -114,27 +114,18 @@ fun TrainMapScreen(
     Timber.d("Compose TrainMapScreen ${Thread.currentThread().name}")
     val scope = rememberCoroutineScope()
     val navController = LocalNavController.current
-    val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
-    var isMapLoaded by remember { mutableStateOf(false) }
-    val cameraPositionState: CameraPositionState by remember {
-        mutableStateOf(
-            CameraPositionState(
-                position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)
-            )
-        )
-    }
 
     // Show map after 5 seconds. This is needed because there is no callback from the sdk to know if the map can be loaded or not.
     // Meaning that we can have a situation where the onMapLoaded method is never triggered, while the map view has been populated
     // with some error messages from the google sdk like: "Play store needs to be updated"
-    if (!isMapLoaded) {
+    if (!viewModel.uiState.isMapLoaded) {
         runWithDelay(5L, TimeUnit.SECONDS) {
-            isMapLoaded = true
+            viewModel.setMapLoaded()
         }
     }
 
-    if (isMapLoaded) {
-        LaunchedEffect(key1 = isMapLoaded, block = {
+    if (viewModel.uiState.isMapLoaded) {
+        LaunchedEffect(key1 = viewModel.uiState.isMapLoaded, block = {
             viewModel.loadTrainLine(
                 scope = scope,
                 trainLine = viewModel.uiState.line
@@ -159,14 +150,14 @@ fun TrainMapScreen(
                 }
             )
         },
-        snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
+        snackbarHost = { SnackbarHostInsets(state = viewModel.uiState.snackbarHostState) },
         content = {
             Surface {
                 GoogleMapTrainMapView(
                     viewModel = viewModel,
                     settingsViewModel = settingsViewModel,
-                    cameraPositionState = cameraPositionState,
-                    onMapLoaded = { isMapLoaded = true },
+                    cameraPositionState = viewModel.uiState.cameraPositionState,
+                    onMapLoaded = { viewModel.setMapLoaded() },
                 )
 
                 ConstraintLayout(
@@ -209,7 +200,7 @@ fun TrainMapScreen(
                             modifier = Modifier.constrainAs(cameraDebug) {
                                 top.linkTo(anchor = left.bottom)
                             },
-                            cameraPositionState = cameraPositionState
+                            cameraPositionState = viewModel.uiState.cameraPositionState
                         )
                         StateDebugView(
                             modifier = Modifier.constrainAs(stateDebug) {
@@ -225,12 +216,12 @@ fun TrainMapScreen(
                     color = viewModel.uiState.line.color,
                 )
 
-                LoadingCircle(show = !isMapLoaded)
+                LoadingCircle(show = !viewModel.uiState.isMapLoaded)
 
                 if (viewModel.uiState.showError) {
                     ShowErrorMessageSnackBar(
                         scope = scope,
-                        snackbarHostState = snackbarHostState,
+                        snackbarHostState = viewModel.uiState.snackbarHostState,
                         showError = viewModel.uiState.showError,
                         onComplete = { viewModel.showError(false) }
                     )
@@ -401,6 +392,8 @@ data class GoogleMapTrainUiState constructor(
     val trains: List<Train> = listOf(),
     val stations: List<TrainStation> = listOf(),
 
+    val isMapLoaded: Boolean = false,
+    val cameraPositionState: CameraPositionState = CameraPositionState(position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)),
     val shouldMoveCamera: Boolean = true,
     val moveCamera: LatLng? = null,
     val moveCameraZoom: Float? = null,
@@ -419,7 +412,8 @@ data class GoogleMapTrainUiState constructor(
         drawerState = DrawerState(DrawerValue.Closed),
         bottomSheetState = BottomSheetState(initialValue = BottomSheetValue.Collapsed),
         snackbarHostState = androidx.compose.material.SnackbarHostState(),
-    )
+    ),
+    val snackbarHostState: SnackbarHostState = SnackbarHostState(),
 )
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -429,6 +423,10 @@ class MapTrainViewModel constructor(
 
     var uiState by mutableStateOf(GoogleMapTrainUiState())
         private set
+
+    fun setMapLoaded() {
+        uiState = uiState.copy(isMapLoaded = true)
+    }
 
     fun setTrainLine(trainLine: TrainLine) {
         uiState = uiState.copy(line = trainLine)

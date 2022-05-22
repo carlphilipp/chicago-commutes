@@ -435,15 +435,13 @@ sealed class Screen(
         showOnDrawer = false,
         isGestureEnabled = false,
         topBar = ScreenTopBar.MediumTopBarBackReload,
-        component = { backStackEntry, navigationViewModel ->
+        component = { backStackEntry, _ ->
             val busRouteId = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteId", "") ?: "", "UTF-8")
 
             val viewModel = MapBusViewModel(busRouteId = busRouteId)
             BusMapScreen(
                 viewModel = viewModel,
-                navigationViewModel = navigationViewModel,
                 settingsViewModel = settingsViewModel,
-                title = busRouteId,
             )
         }
     )

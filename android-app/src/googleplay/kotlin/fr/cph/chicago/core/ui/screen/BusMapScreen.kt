@@ -63,7 +63,6 @@ import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
-import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.BottomSheetContent
 import fr.cph.chicago.core.ui.common.BottomSheetPagerData
 import fr.cph.chicago.core.ui.common.BottomSheetScaffoldMaterial3
@@ -97,33 +96,23 @@ import timber.log.Timber
 fun BusMapScreen(
     modifier: Modifier = Modifier,
     viewModel: MapBusViewModel,
-    navigationViewModel: NavigationViewModel,
     settingsViewModel: SettingsViewModel,
-    title: String,
 ) {
     Timber.d("Compose BusMapScreen ${Thread.currentThread().name}")
     val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     val scope = rememberCoroutineScope()
     val navController = LocalNavController.current
-    var isMapLoaded by remember { mutableStateOf(false) }
-    val cameraPositionState: CameraPositionState by remember {
-        mutableStateOf(
-            CameraPositionState(
-                position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)
-            )
-        )
-    }
     // Show map after 5 seconds. This is needed because there is no callback from the sdk to know if the map can be loaded or not.
     // Meaning that we can have a situation where the onMapLoaded method is never triggered, while the map view has been populated
     // with some error messages from the google sdk like: "Play store needs to be updated"
-    if (!isMapLoaded) {
+    if (!viewModel.uiState.isMapLoaded) {
         runWithDelay(5L, TimeUnit.SECONDS) {
-            isMapLoaded = true
+            viewModel.setMapLoaded()
         }
     }
 
-    if (isMapLoaded) {
-        LaunchedEffect(key1 = isMapLoaded, block = {
+    if (viewModel.uiState.isMapLoaded) {
+        LaunchedEffect(key1 = viewModel.uiState.isMapLoaded, block = {
             scope.launch {
                 viewModel.loadPatterns()
                 viewModel.loadIcons()
@@ -155,8 +144,8 @@ fun BusMapScreen(
             Surface {
                 GoogleMapBusMapView(
                     viewModel = viewModel,
-                    onMapLoaded = { isMapLoaded = true },
-                    cameraPositionState = cameraPositionState,
+                    onMapLoaded = { viewModel.setMapLoaded() },
+                    cameraPositionState = viewModel.uiState.cameraPositionState,
                 )
 
                 ConstraintLayout(
@@ -199,7 +188,7 @@ fun BusMapScreen(
                             modifier = Modifier.constrainAs(cameraDebug) {
                                 top.linkTo(anchor = left.bottom)
                             },
-                            cameraPositionState = cameraPositionState
+                            cameraPositionState = viewModel.uiState.cameraPositionState
                         )
                         StateDebugView(
                             modifier = Modifier.constrainAs(stateDebug) {
@@ -212,7 +201,7 @@ fun BusMapScreen(
 
                 LoadingBar(show = viewModel.uiState.isLoading)
 
-                LoadingCircle(show = !isMapLoaded)
+                LoadingCircle(show = !viewModel.uiState.isMapLoaded)
 
                 if (viewModel.uiState.showError) {
                     ShowErrorMessageSnackBar(
@@ -388,6 +377,7 @@ data class GoogleMapBusUiState constructor(
     val shouldMoveCamera: Boolean = true,
     val moveCamera: LatLng? = null,
     val moveCameraZoom: Float? = null,
+    val isMapLoaded: Boolean = false,
 
     val busIcon: BitmapDescriptor? = null,
     val busIconSmall: BitmapDescriptor? = null,
@@ -405,6 +395,7 @@ data class GoogleMapBusUiState constructor(
     ),
 
     val bottomSheetContentAndState: BottomSheetContent = BottomSheetContent.COLLAPSE,
+    val cameraPositionState: CameraPositionState = CameraPositionState(position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)),
 )
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -414,6 +405,10 @@ class MapBusViewModel constructor(
 ) : ViewModel() {
     var uiState by mutableStateOf(GoogleMapBusUiState(busRouteId = busRouteId))
         private set
+
+    fun setMapLoaded() {
+        uiState = uiState.copy(isMapLoaded = true)
+    }
 
     fun showError(showError: Boolean) {
         uiState = uiState.copy(showError = showError)

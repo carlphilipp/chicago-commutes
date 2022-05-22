@@ -115,7 +115,6 @@ fun NearbyScreen(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val navController = LocalNavController.current
-    //var isMapLoaded by remember { mutableStateOf(false) }
     val onPermissionsResult: (Map<String, Boolean>) -> Unit by remember {
         mutableStateOf(onPermissionsResult(context = context, viewModel = viewModel))
     }
@@ -403,6 +402,7 @@ data class NearbyScreenUiState constructor(
     val bitmapDescriptorBus: BitmapDescriptor? = null,
     val bitmapDescriptorBike: BitmapDescriptor? = null,
 
+    // ui state
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
     val cameraPositionState: CameraPositionState = CameraPositionState(position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)),
 )
