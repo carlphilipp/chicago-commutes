@@ -132,7 +132,9 @@ fun DisplaySettingsScreen(
                             title = "Follow System",
                             description = "Select dark/light mode based on system",
                             onClick = {
-                                if (settingsViewModel.uiState.theme != Theme.AUTO) {
+                                if (settingsViewModel.uiState.theme == Theme.AUTO) {
+                                    settingsViewModel.setTheme(Theme.LIGHT)
+                                } else {
                                     settingsViewModel.setTheme(Theme.AUTO)
                                 }
                             },
@@ -143,7 +145,9 @@ fun DisplaySettingsScreen(
                             title = "Light Mode",
                             description = "Enable",
                             onClick = {
-                                if (settingsViewModel.uiState.theme != Theme.LIGHT) {
+                                if (settingsViewModel.uiState.theme == Theme.LIGHT) {
+                                    settingsViewModel.setTheme(Theme.DARK)
+                                } else {
                                     settingsViewModel.setTheme(Theme.LIGHT)
                                 }
                             },
@@ -154,7 +158,9 @@ fun DisplaySettingsScreen(
                             title = "Dark Mode",
                             description = "Enable",
                             onClick = {
-                                if (settingsViewModel.uiState.theme != Theme.DARK) {
+                                if (settingsViewModel.uiState.theme == Theme.DARK) {
+                                    settingsViewModel.setTheme(Theme.LIGHT)
+                                } else {
                                     settingsViewModel.setTheme(Theme.DARK)
                                 }
                             },
