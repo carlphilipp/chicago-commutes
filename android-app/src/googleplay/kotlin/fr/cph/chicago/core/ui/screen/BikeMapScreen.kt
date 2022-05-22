@@ -88,13 +88,13 @@ import fr.cph.chicago.util.toLatLng
 import fr.cph.chicago.util.toPosition
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -105,29 +105,20 @@ fun BikeMapScreen(
     title: String,
 ) {
     Timber.d("Compose BikeMapScreen $title")
-    val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     val scope = rememberCoroutineScope()
     val navController = LocalNavController.current
-    var isMapLoaded by remember { mutableStateOf(false) }
-    val cameraPositionState: CameraPositionState by remember {
-        mutableStateOf(
-            CameraPositionState(
-                position = CameraPosition.fromLatLngZoom(MapUtil.chicagoPosition.toLatLng(), defaultZoom)
-            )
-        )
-    }
 
     // Show map after 5 seconds. This is needed because there is no callback from the sdk to know if the map can be loaded or not.
     // Meaning that we can have a situation where the onMapLoaded method is never triggered, while the map view has been populated
     // with some error messages from the google sdk like: "Play store needs to be updated"
-    if (!isMapLoaded) {
+    if (!viewModel.uiState.isMapLoaded) {
         runWithDelay(5L, TimeUnit.SECONDS) {
-            isMapLoaded = true
+            viewModel.setMapLoaded()
         }
     }
 
-    if (isMapLoaded) {
-        LaunchedEffect(key1 = isMapLoaded, block = {
+    if (viewModel.uiState.isMapLoaded) {
+        LaunchedEffect(key1 = viewModel.uiState.isMapLoaded, block = {
             scope.launch {
                 viewModel.searchBikeStationInState()
                 viewModel.loadIcon()
@@ -152,14 +143,14 @@ fun BikeMapScreen(
                 }
             )
         },
-        snackbarHost = { SnackbarHostInsets(state = snackbarHostState) },
+        snackbarHost = { SnackbarHostInsets(state = viewModel.uiState.snackbarHostState) },
         content = {
             Surface {
                 BikeGoogleBusMapView(
                     viewModel = viewModel,
                     settingsViewModel = settingsViewModel,
-                    cameraPositionState = cameraPositionState,
-                    onMapLoaded = { isMapLoaded = true },
+                    cameraPositionState = viewModel.uiState.cameraPositionState,
+                    onMapLoaded = { viewModel.setMapLoaded() },
                 )
 
                 ConstraintLayout(
@@ -188,7 +179,7 @@ fun BikeMapScreen(
                             width = Dimension.fillToConstraints
                         },
                         onClick = {
-                            viewModel.reloadData(position = cameraPositionState.position.target.toPosition())
+                            viewModel.reloadData(position = viewModel.uiState.cameraPositionState.position.target.toPosition())
                         }
                     ) {
                         Icon(
@@ -202,7 +193,7 @@ fun BikeMapScreen(
                             modifier = Modifier.constrainAs(cameraDebug) {
                                 top.linkTo(anchor = left.bottom)
                             },
-                            cameraPositionState = cameraPositionState
+                            cameraPositionState = viewModel.uiState.cameraPositionState
                         )
                         StateDebugView(
                             modifier = Modifier.constrainAs(stateDebug) {
@@ -215,12 +206,12 @@ fun BikeMapScreen(
 
                 LoadingBar(show = viewModel.uiState.isRefreshing)
 
-                LoadingCircle(show = !isMapLoaded)
+                LoadingCircle(show = !viewModel.uiState.isMapLoaded)
 
                 if (viewModel.uiState.showError) {
                     ShowErrorMessageSnackBar(
                         scope = scope,
-                        snackbarHostState = snackbarHostState,
+                        snackbarHostState = viewModel.uiState.snackbarHostState,
                         showError = viewModel.uiState.showError,
                         onComplete = { viewModel.showError(false) }
                     )
@@ -352,7 +343,7 @@ fun StateDebugView(
 
 @OptIn(ExperimentalMaterialApi::class)
 data class GoogleMapBikeUiState constructor(
-    val isMapLoading: Boolean = false,
+    val isMapLoaded: Boolean = false,
     val showError: Boolean = false,
     val isRefreshing: Boolean = false,
 
@@ -373,6 +364,8 @@ data class GoogleMapBikeUiState constructor(
         bottomSheetState = BottomSheetState(initialValue = BottomSheetValue.Expanded),
         snackbarHostState = androidx.compose.material.SnackbarHostState(),
     ),
+    val cameraPositionState: CameraPositionState = CameraPositionState(position = CameraPosition.fromLatLngZoom(MapUtil.chicagoPosition.toLatLng(), defaultZoom)),
+    val snackbarHostState: SnackbarHostState = SnackbarHostState(),
 
     val bottomSheetContentAndState: BottomSheetContent = BottomSheetContent.EXPAND,
     val bottomSheetTitle: String = "Bikes",
@@ -389,6 +382,10 @@ class MapBikesViewModel @Inject constructor(
 
     fun setId(id: String) {
         uiState = uiState.copy(id = id)
+    }
+
+    fun setMapLoaded() {
+        uiState = uiState.copy(isMapLoaded = true)
     }
 
     fun showError(showError: Boolean) {
