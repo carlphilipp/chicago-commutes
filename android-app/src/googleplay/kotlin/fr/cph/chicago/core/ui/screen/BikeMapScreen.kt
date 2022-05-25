@@ -66,9 +66,9 @@ import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.ui.common.BikeBottomSheet
-import fr.cph.chicago.core.ui.common.BottomSheetContent
 import fr.cph.chicago.core.ui.common.BottomSheetPagerData
 import fr.cph.chicago.core.ui.common.BottomSheetScaffoldMaterial3
+import fr.cph.chicago.core.ui.common.BottomSheetStatus
 import fr.cph.chicago.core.ui.common.LoadingBar
 import fr.cph.chicago.core.ui.common.LoadingCircle
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
@@ -88,13 +88,13 @@ import fr.cph.chicago.util.toLatLng
 import fr.cph.chicago.util.toPosition
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -271,7 +271,7 @@ private fun BikeGoogleBusMapView(
                     viewModel.expandBottomSheet(
                         scope = scope,
                         runBefore = {
-                            viewModel.onInfoWindowClose(BottomSheetContent.EXPAND, bikeStation.name)
+                            viewModel.onInfoWindowClose(BottomSheetStatus.EXPAND, bikeStation.name)
                             viewModel.refreshBottomSheet(bikeStation)
                         }
                     )
@@ -282,7 +282,7 @@ private fun BikeGoogleBusMapView(
                         viewModel.collapseBottomSheet(
                             scope = scope,
                             runBefore = {
-                                viewModel.onInfoWindowClose(BottomSheetContent.COLLAPSE, "Bikes")
+                                viewModel.onInfoWindowClose(BottomSheetStatus.COLLAPSE, "Bikes")
                             }
                         )
                     }
@@ -343,32 +343,36 @@ fun StateDebugView(
 
 @OptIn(ExperimentalMaterialApi::class)
 data class GoogleMapBikeUiState constructor(
-    val isMapLoaded: Boolean = false,
+    // data
     val showError: Boolean = false,
     val isRefreshing: Boolean = false,
-
     val id: String = "",
     val bikeStationSelected: BikeStation = BikeStation.buildDefaultBikeStationWithName(id = "", name = "Bikes"),
     val bikeStationAround: Map<String, BikeStation> = mapOf(),
     val bikeStationBottomSheet: List<BottomSheetPagerData> = listOf(),
 
+    // bitmap descriptor
     val bikeStationIcon: BitmapDescriptor? = null,
 
+    // map
+    val isMapLoaded: Boolean = false,
     val zoom: Float = defaultZoom,
     val shouldMoveCamera: Boolean = true,
     val moveCamera: LatLng? = null,
     val moveCameraZoom: Float? = null,
+    val cameraPositionState: CameraPositionState = CameraPositionState(position = CameraPosition.fromLatLngZoom(MapUtil.chicagoPosition.toLatLng(), defaultZoom)),
 
+    // bottom sheet
     val scaffoldState: BottomSheetScaffoldState = BottomSheetScaffoldState(
         drawerState = DrawerState(DrawerValue.Closed),
         bottomSheetState = BottomSheetState(initialValue = BottomSheetValue.Expanded),
         snackbarHostState = androidx.compose.material.SnackbarHostState(),
     ),
-    val cameraPositionState: CameraPositionState = CameraPositionState(position = CameraPosition.fromLatLngZoom(MapUtil.chicagoPosition.toLatLng(), defaultZoom)),
-    val snackbarHostState: SnackbarHostState = SnackbarHostState(),
-
-    val bottomSheetContentAndState: BottomSheetContent = BottomSheetContent.EXPAND,
+    val bottomSheetStatus: BottomSheetStatus = BottomSheetStatus.EXPAND,
     val bottomSheetTitle: String = "Bikes",
+
+    // snack bar
+    val snackbarHostState: SnackbarHostState = SnackbarHostState(),
 )
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -502,9 +506,9 @@ class MapBikesViewModel @Inject constructor(
         uiState = uiState.copy(isRefreshing = false)
     }
 
-    fun onInfoWindowClose(state: BottomSheetContent, title: String) {
+    fun onInfoWindowClose(state: BottomSheetStatus, title: String) {
         uiState = uiState.copy(
-            bottomSheetContentAndState = state,
+            bottomSheetStatus = state,
             bottomSheetTitle = title,
         )
     }

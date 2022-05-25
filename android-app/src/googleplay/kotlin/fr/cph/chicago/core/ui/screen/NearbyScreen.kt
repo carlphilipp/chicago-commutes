@@ -384,6 +384,7 @@ data class NearbyScreenUiState constructor(
     val moveCameraZoom: Float? = null,
     val isMyLocationEnabled: Boolean = false,
     val showLocationError: Boolean = false,
+    val cameraPositionState: CameraPositionState = CameraPositionState(position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)),
 
     // error
     val nearbyDetailsError: Boolean = false,
@@ -402,9 +403,8 @@ data class NearbyScreenUiState constructor(
     val bitmapDescriptorBus: BitmapDescriptor? = null,
     val bitmapDescriptorBike: BitmapDescriptor? = null,
 
-    // ui state
+    // snack bar
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
-    val cameraPositionState: CameraPositionState = CameraPositionState(position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)),
 )
 
 @OptIn(ExperimentalMaterialApi::class)

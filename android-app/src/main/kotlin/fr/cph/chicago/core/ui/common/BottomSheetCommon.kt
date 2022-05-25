@@ -509,8 +509,8 @@ fun BikeBottomSheet(
     BottomSheet(
         content = {
             Column(modifier = modifier.fillMaxWidth()) {
-                when (viewModel.uiState.bottomSheetContentAndState) {
-                    BottomSheetContent.COLLAPSE -> {
+                when (viewModel.uiState.bottomSheetStatus) {
+                    BottomSheetStatus.COLLAPSE -> {
                         TrainLineStyleText(
                             text = viewModel.uiState.bottomSheetTitle,
                             color = MaterialTheme.colorScheme.secondaryContainer,
@@ -547,7 +547,7 @@ fun BusBottomSheet(
 ) {
     BottomSheet(
         content = {
-            val showCloseButton = if (viewModel.uiState.bottomSheetContentAndState == BottomSheetContent.EXPAND) {
+            val showCloseButton = if (viewModel.uiState.bottomSheetContentAndState == BottomSheetStatus.EXPAND) {
                 Visibility.Visible
             } else {
                 Visibility.Invisible
@@ -587,7 +587,7 @@ fun BusBottomSheet(
                     chainStyle = SpreadInside
                 )
             }
-            if (viewModel.uiState.bottomSheetContentAndState == BottomSheetContent.EXPAND) {
+            if (viewModel.uiState.bottomSheetContentAndState == BottomSheetStatus.EXPAND) {
                 Divider(
                     modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
                     thickness = 1.dp,
@@ -688,8 +688,8 @@ fun TrainMapBottomSheet(
     BottomSheet(
         content = {
             Column(modifier = modifier.fillMaxWidth()) {
-                when (viewModel.uiState.bottomSheetContentAndState) {
-                    BottomSheetContent.COLLAPSE -> ChangeLineTrainMapBottomSheet(viewModel = viewModel)
+                when (viewModel.uiState.bottomSheetStatus) {
+                    BottomSheetStatus.COLLAPSE -> ChangeLineTrainMapBottomSheet(viewModel = viewModel)
                     else -> ShowTrainDetailsTrainMapBottomSheet(viewModel = viewModel)
                 }
             }
@@ -1051,6 +1051,6 @@ enum class BottomSheetDataState {
     HIDDEN, TRAIN, BUS, BIKE
 }
 
-enum class BottomSheetContent {
+enum class BottomSheetStatus {
     COLLAPSE, EXPAND,
 }

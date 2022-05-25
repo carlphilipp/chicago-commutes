@@ -63,9 +63,9 @@ import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
-import fr.cph.chicago.core.ui.common.BottomSheetContent
 import fr.cph.chicago.core.ui.common.BottomSheetPagerData
 import fr.cph.chicago.core.ui.common.BottomSheetScaffoldMaterial3
+import fr.cph.chicago.core.ui.common.BottomSheetStatus
 import fr.cph.chicago.core.ui.common.BusBottomSheet
 import fr.cph.chicago.core.ui.common.LoadingBar
 import fr.cph.chicago.core.ui.common.LoadingCircle
@@ -362,40 +362,40 @@ fun StateDebugView(
 
 @OptIn(ExperimentalMaterialApi::class)
 data class GoogleMapBusUiState constructor(
+    // data
+    val busRouteId: String = "",
     val isLoading: Boolean = false,
     val showError: Boolean = false,
+    val showStopIcon: Boolean = false,
     val colors: List<Color> = TrainLine.values().map { it.color }.dropLast(1),
     val stopIcons: List<BitmapDescriptor> = listOf(),
-
-    val busRouteId: String = "",
-
     val buses: List<Bus> = listOf(),
     val busPatterns: List<BusPattern> = listOf(),
     val busData: List<BottomSheetPagerData> = listOf(),
+    val detailsBus: Bus = Bus(),
+    val detailsShowAll: Boolean = false,
 
+    // map
     val zoom: Float = defaultZoom,
     val shouldMoveCamera: Boolean = true,
     val moveCamera: LatLng? = null,
     val moveCameraZoom: Float? = null,
     val isMapLoaded: Boolean = false,
+    val cameraPositionState: CameraPositionState = CameraPositionState(position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)),
 
+    // bitmap descriptor
     val busIcon: BitmapDescriptor? = null,
     val busIconSmall: BitmapDescriptor? = null,
     val busIconMedium: BitmapDescriptor? = null,
     val busIconLarge: BitmapDescriptor? = null,
-    val showStopIcon: Boolean = false,
 
-    val detailsBus: Bus = Bus(),
-    val detailsShowAll: Boolean = false,
-
+    // bottom sheet
     val scaffoldState: BottomSheetScaffoldState = BottomSheetScaffoldState(
         drawerState = DrawerState(DrawerValue.Closed),
         bottomSheetState = BottomSheetState(initialValue = BottomSheetValue.Collapsed),
         snackbarHostState = androidx.compose.material.SnackbarHostState(),
     ),
-
-    val bottomSheetContentAndState: BottomSheetContent = BottomSheetContent.COLLAPSE,
-    val cameraPositionState: CameraPositionState = CameraPositionState(position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)),
+    val bottomSheetContentAndState: BottomSheetStatus = BottomSheetStatus.COLLAPSE,
 )
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -445,7 +445,7 @@ class MapBusViewModel constructor(
                                     )
                                 },
                                 isLoading = false,
-                                bottomSheetContentAndState = BottomSheetContent.EXPAND,
+                                bottomSheetContentAndState = BottomSheetStatus.EXPAND,
                             )
                         }
                     )
@@ -460,7 +460,7 @@ class MapBusViewModel constructor(
             )
     }
 
-    fun expandBottomSheet(
+    private fun expandBottomSheet(
         scope: CoroutineScope,
         runBefore: () -> Unit = {},
         runAfter: () -> Unit = {},
@@ -497,7 +497,7 @@ class MapBusViewModel constructor(
     fun resetDetails() {
         uiState = uiState.copy(
             busData = listOf(),
-            bottomSheetContentAndState = BottomSheetContent.COLLAPSE,
+            bottomSheetContentAndState = BottomSheetStatus.COLLAPSE,
         )
     }
 

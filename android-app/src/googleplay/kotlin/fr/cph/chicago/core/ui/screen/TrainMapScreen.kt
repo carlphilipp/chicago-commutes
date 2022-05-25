@@ -66,7 +66,7 @@ import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
-import fr.cph.chicago.core.ui.common.BottomSheetContent
+import fr.cph.chicago.core.ui.common.BottomSheetStatus
 import fr.cph.chicago.core.ui.common.BottomSheetScaffoldMaterial3
 import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.ui.common.LoadingBar
@@ -384,35 +384,39 @@ private fun trainIcon(viewModel: MapTrainViewModel, cameraPositionState: CameraP
 
 @OptIn(ExperimentalMaterialApi::class)
 data class GoogleMapTrainUiState constructor(
-    val isLoading: Boolean = false,
-    val showError: Boolean = false,
-
+    // data
     val line: TrainLine = TrainLine.NA,
     val polyLine: List<LatLng> = listOf(),
     val trains: List<Train> = listOf(),
     val stations: List<TrainStation> = listOf(),
+    val train: Train = Train(),
+    val trainEtas: List<Pair<String, String>> = listOf(),
+    val isLoading: Boolean = false,
+    val showError: Boolean = false,
 
+    // map
     val isMapLoaded: Boolean = false,
-    val cameraPositionState: CameraPositionState = CameraPositionState(position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)),
     val shouldMoveCamera: Boolean = true,
     val moveCamera: LatLng? = null,
     val moveCameraZoom: Float? = null,
+    val cameraPositionState: CameraPositionState = CameraPositionState(position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)),
 
-    val trainIcon: BitmapDescriptor? = null, // this has to be null as it needs google map to be loaded to init it
+    // bitmap descriptor
+    val stationIcon: BitmapDescriptor? = null,
+    val trainIcon: BitmapDescriptor? = null,
     val trainIconSmall: BitmapDescriptor? = null,
     val trainIconMedium: BitmapDescriptor? = null,
     val trainIconLarge: BitmapDescriptor? = null,
-    val train: Train = Train(),
-    val trainEtas: List<Pair<String, String>> = listOf(),
-    val bottomSheetContentAndState: BottomSheetContent = BottomSheetContent.COLLAPSE,
 
-    val stationIcon: BitmapDescriptor? = null,
-
+    // bottom sheet
+    val bottomSheetStatus: BottomSheetStatus = BottomSheetStatus.COLLAPSE,
     val scaffoldState: BottomSheetScaffoldState = BottomSheetScaffoldState(
         drawerState = DrawerState(DrawerValue.Closed),
         bottomSheetState = BottomSheetState(initialValue = BottomSheetValue.Collapsed),
         snackbarHostState = androidx.compose.material.SnackbarHostState(),
     ),
+
+    // snack bar
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
 )
 
@@ -515,7 +519,7 @@ class MapTrainViewModel constructor(
                                 train = train,
                                 trainEtas = trainEtas,
                                 isLoading = false,
-                                bottomSheetContentAndState = BottomSheetContent.EXPAND,
+                                bottomSheetStatus = BottomSheetStatus.EXPAND,
                             )
                         }
                     )
@@ -533,7 +537,7 @@ class MapTrainViewModel constructor(
             uiState = uiState.copy(
                 train = Train(),
                 trainEtas = listOf(),
-                bottomSheetContentAndState = BottomSheetContent.COLLAPSE,
+                bottomSheetStatus = BottomSheetStatus.COLLAPSE,
             )
         }
     }
@@ -558,7 +562,7 @@ class MapTrainViewModel constructor(
         )
     }
 
-    fun expandBottomSheet(
+    private fun expandBottomSheet(
         scope: CoroutineScope,
         runBefore: () -> Unit = {},
         runAfter: () -> Unit = {},
