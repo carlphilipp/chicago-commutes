@@ -16,7 +16,6 @@ import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.RateReview
 import androidx.compose.material.rememberModalBottomSheetState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,7 +43,7 @@ import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.launchWithDelay
 import fr.cph.chicago.util.Util
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AboutScreen(
     viewModel: SettingsViewModel,

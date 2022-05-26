@@ -12,8 +12,7 @@ import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
 import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.core.navigation.NavigationViewModel
-import fr.cph.chicago.core.ui.common.BottomSheetContent
+import fr.cph.chicago.core.ui.common.BottomSheetStatus
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.service.TrainService
 import kotlinx.coroutines.CoroutineScope
@@ -29,7 +28,7 @@ fun TrainMapScreen(
 
 data class MapTrainUiState(
     val line: TrainLine = TrainLine.NA,
-    val bottomSheetContentAndState: BottomSheetContent = BottomSheetContent.COLLAPSE,
+    val bottomSheetStatus: BottomSheetStatus = BottomSheetStatus.COLLAPSE,
     val train: Train = Train(),
     val trainEtas: List<Pair<String, String>> = listOf(),
 )

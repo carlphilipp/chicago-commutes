@@ -9,7 +9,6 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
 import java.text.SimpleDateFormat
 import java.util.Date
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Delay
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -35,7 +34,7 @@ fun Context.getActivity(): ComponentActivity = when (this) {
 }
 
 fun TrainLine.getZoom(): Float {
-    return when(this){
+    return when (this) {
         TrainLine.BLUE -> 10.8f
         TrainLine.BROWN -> 12.0728f
         TrainLine.GREEN -> 11.3f
@@ -49,7 +48,7 @@ fun TrainLine.getZoom(): Float {
 }
 
 fun TrainLine.getDefaultPosition(): Position {
-    return when(this){
+    return when (this) {
         TrainLine.BLUE -> Position(41.90, -87.76)
         TrainLine.BROWN -> Position(41.91279956, -87.6583735)
         TrainLine.GREEN -> Position(41.82709704, -87.709279)

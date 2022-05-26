@@ -64,7 +64,7 @@ class App : Application() {
     override fun onCreate() {
         instance = this
         // Enable dynamic color if available
-        DynamicColors.applyToActivitiesIfAvailable(this);
+        DynamicColors.applyToActivitiesIfAvailable(this)
         // Setup Timber
         Timber.plant(DebugTree())
         // Setup RxJava default error handling

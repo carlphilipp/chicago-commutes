@@ -64,7 +64,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SearchViewScreen(
     viewModel: SearchViewModel,
@@ -270,7 +270,7 @@ private fun SearchRow(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 data class SearchUiState constructor(
     val search: String = "",
     val searchLazyListState: LazyListState = LazyListState(),
@@ -288,7 +288,6 @@ data class SearchUiState constructor(
     val bikeStations: List<BikeStation> = listOf(),
 )
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 class SearchViewModel @Inject constructor(
     private val trainService: TrainService = TrainService,
     private val busService: BusService = BusService,

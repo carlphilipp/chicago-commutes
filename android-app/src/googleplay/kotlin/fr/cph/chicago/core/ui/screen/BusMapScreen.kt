@@ -355,7 +355,7 @@ fun StateDebugView(
         Text(text = "Buses size: ${viewModel.uiState.buses.size}")
         Text(text = "Buses arrivals size: ${viewModel.uiState.busData.size}")
         Text(text = "Buses patterns size: ${viewModel.uiState.busPatterns.size}")
-        Text(text = "Bottom bar state: ${viewModel.uiState.bottomSheetContentAndState.name}")
+        Text(text = "Bottom bar state: ${viewModel.uiState.bottomSheetStatus.name}")
         Text(text = "Current bus selected: ${viewModel.uiState.detailsBus.id}")
     }
 }
@@ -395,7 +395,7 @@ data class GoogleMapBusUiState constructor(
         bottomSheetState = BottomSheetState(initialValue = BottomSheetValue.Collapsed),
         snackbarHostState = androidx.compose.material.SnackbarHostState(),
     ),
-    val bottomSheetContentAndState: BottomSheetStatus = BottomSheetStatus.COLLAPSE,
+    val bottomSheetStatus: BottomSheetStatus = BottomSheetStatus.COLLAPSE,
 )
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -445,7 +445,7 @@ class MapBusViewModel constructor(
                                     )
                                 },
                                 isLoading = false,
-                                bottomSheetContentAndState = BottomSheetStatus.EXPAND,
+                                bottomSheetStatus = BottomSheetStatus.EXPAND,
                             )
                         }
                     )
@@ -497,7 +497,7 @@ class MapBusViewModel constructor(
     fun resetDetails() {
         uiState = uiState.copy(
             busData = listOf(),
-            bottomSheetContentAndState = BottomSheetStatus.COLLAPSE,
+            bottomSheetStatus = BottomSheetStatus.COLLAPSE,
         )
     }
 

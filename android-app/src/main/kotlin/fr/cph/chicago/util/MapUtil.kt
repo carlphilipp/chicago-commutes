@@ -21,11 +21,9 @@ package fr.cph.chicago.util
 
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.rx.RxUtil.handleListError
 import fr.cph.chicago.rx.RxUtil.handleMapError
 import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import io.reactivex.rxjava3.core.Single
-import timber.log.Timber
 import java.util.concurrent.Callable
 
 object MapUtil {

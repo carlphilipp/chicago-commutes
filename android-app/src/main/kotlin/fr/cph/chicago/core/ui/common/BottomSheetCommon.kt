@@ -547,7 +547,7 @@ fun BusBottomSheet(
 ) {
     BottomSheet(
         content = {
-            val showCloseButton = if (viewModel.uiState.bottomSheetContentAndState == BottomSheetStatus.EXPAND) {
+            val showCloseButton = if (viewModel.uiState.bottomSheetStatus == BottomSheetStatus.EXPAND) {
                 Visibility.Visible
             } else {
                 Visibility.Invisible
@@ -587,7 +587,7 @@ fun BusBottomSheet(
                     chainStyle = SpreadInside
                 )
             }
-            if (viewModel.uiState.bottomSheetContentAndState == BottomSheetStatus.EXPAND) {
+            if (viewModel.uiState.bottomSheetStatus == BottomSheetStatus.EXPAND) {
                 Divider(
                     modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
                     thickness = 1.dp,

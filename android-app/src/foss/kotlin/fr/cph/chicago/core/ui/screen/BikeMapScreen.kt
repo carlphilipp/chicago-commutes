@@ -11,9 +11,8 @@ import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
-import fr.cph.chicago.core.navigation.NavigationViewModel
-import fr.cph.chicago.core.ui.common.BottomSheetContent
 import fr.cph.chicago.core.ui.common.BottomSheetPagerData
+import fr.cph.chicago.core.ui.common.BottomSheetStatus
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.service.BikeService
 
@@ -30,7 +29,7 @@ fun BikeMapScreen(
 
 data class FossMapBikeUiState(
     val id: String = "",
-    val bottomSheetContentAndState: BottomSheetContent = BottomSheetContent.EXPAND,
+    val bottomSheetStatus: BottomSheetStatus = BottomSheetStatus.EXPAND,
     val bottomSheetTitle: String = "Bikes",
 
     val bikeStationBottomSheet: List<BottomSheetPagerData> = listOf(),

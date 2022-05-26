@@ -7,9 +7,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import fr.cph.chicago.core.navigation.NavigationViewModel
-import fr.cph.chicago.core.ui.common.BottomSheetContent
 import fr.cph.chicago.core.ui.common.BottomSheetPagerData
+import fr.cph.chicago.core.ui.common.BottomSheetStatus
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.service.BusService
 import javax.inject.Inject
@@ -24,7 +23,7 @@ fun BusMapScreen(
 
 data class FossMapBusUiState(
     val busRouteId: String = "",
-    val bottomSheetContentAndState: BottomSheetContent = BottomSheetContent.EXPAND,
+    val bottomSheetStatus: BottomSheetStatus = BottomSheetStatus.EXPAND,
 
     val bikeStationBottomSheet: List<BottomSheetPagerData> = listOf(),
     val busData: List<BottomSheetPagerData> = listOf(),
