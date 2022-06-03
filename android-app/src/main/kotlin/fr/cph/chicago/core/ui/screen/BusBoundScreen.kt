@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.TopAppBarScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -177,7 +178,7 @@ data class BusBoundUiState constructor(
     val showError: Boolean = false,
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
     val lazyListState: LazyListState = LazyListState(),
-    val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
 )
 
 class BusBoundUiViewModel(
@@ -222,7 +223,7 @@ class BusBoundUiViewModel(
                 searchBusStops = listOf(),
                 isRefreshing = true,
                 lazyListState = LazyListState(),
-                scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+                scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
             )
             loadBusStops()
         }

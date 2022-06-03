@@ -15,7 +15,9 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.TopAppBarScrollState
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.rememberTopAppBarScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -155,19 +157,19 @@ data class NavigationUiState constructor(
     val shouldExit: Boolean = false,
 
     // Scroll behavior
-    val favScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val trainScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val busScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val divvyScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val nearbyScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val ctaMapScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val alertsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val searchScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val settingsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val settingsDisplayScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val settingsDeveloperScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val settingsThemeColorScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val settingsAboutScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    val favScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
+    val trainScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
+    val busScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
+    val divvyScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
+    val nearbyScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
+    val ctaMapScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
+    val alertsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
+    val searchScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
+    val settingsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
+    val settingsDisplayScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
+    val settingsDeveloperScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
+    val settingsThemeColorScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
+    val settingsAboutScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
 )
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.animation.ExperimentalAnimationApi::class)
@@ -178,11 +180,12 @@ fun rememberNavigationState(
     navController: NavHostController = rememberAnimatedNavController(),
     currentScreen: Screen = remember { Screen.Favorites },
     decayAnimationSpec: DecayAnimationSpec<Float> = rememberSplineBasedDecay(),
-    settingsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec),
-    settingsDisplayScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec),
-    settingsDeveloperScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec),
-    settingsThemeColorScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec),
-) = remember(drawerState, navController, currentScreen, decayAnimationSpec) {
+    topAppBarScrollState: TopAppBarScrollState = rememberTopAppBarScrollState(),
+    settingsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec, topAppBarScrollState),
+    settingsDisplayScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec, topAppBarScrollState),
+    settingsDeveloperScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec, topAppBarScrollState),
+    settingsThemeColorScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec, topAppBarScrollState),
+) = remember(drawerState, navController, currentScreen, decayAnimationSpec, topAppBarScrollState) {
     NavigationUiState(
         context = context,
         drawerState = drawerState,
@@ -335,7 +338,7 @@ fun DisplayTopBar(
     title: String = "",
     screen: Screen,
     viewModel: NavigationViewModel,
-    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
     onClickRightIcon: List<() -> Unit> = listOf(),
 ) {
     if (screen.topBar != ScreenTopBar.None) {

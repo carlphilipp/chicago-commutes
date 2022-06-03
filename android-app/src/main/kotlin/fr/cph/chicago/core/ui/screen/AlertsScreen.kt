@@ -17,6 +17,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -66,7 +67,8 @@ fun AlertsScreen(
     var textSearch by remember { mutableStateOf(TextFieldValue("")) }
     var searchRoutesAlerts by remember { mutableStateOf<List<RoutesAlertsDTO>>(listOf()) }
     searchRoutesAlerts = uiState.routesAlerts
-    val scrollBehavior by remember { mutableStateOf(TopAppBarDefaults.pinnedScrollBehavior()) }
+    val topAppBarScrollState = rememberTopAppBarScrollState()
+    val scrollBehavior by remember { mutableStateOf(TopAppBarDefaults.pinnedScrollBehavior(topAppBarScrollState)) }
 
     Column {
         DisplayTopBar(

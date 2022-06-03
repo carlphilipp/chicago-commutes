@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.TopAppBarScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -274,7 +275,7 @@ private fun SearchRow(
 data class SearchUiState constructor(
     val search: String = "",
     val searchLazyListState: LazyListState = LazyListState(),
-    val searchScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    val searchScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
 
     val isTrainSelected: Boolean = true,
     val trains: List<TrainStation> = listOf(),
