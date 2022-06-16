@@ -17,7 +17,7 @@ object Version {
     const val androidx_lifecycle =          "2.5.0-rc01"
     const val androidx_navigation =         "2.5.0-rc01"
     const val androidx_work =               "2.8.0-alpha02"
-    const val accompanist =                 "0.24.9-beta"
+    const val accompanist =                 "0.24.10-beta"
     const val commons_collections4 =        "4.+"
     const val commons_text =                "1.+"
     const val compose =                     "1.2.0-beta03"
