@@ -51,7 +51,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion Version.compose
+        kotlinCompilerExtensionVersion Version.compose_compiler
     }
 
     sourceSets {
@@ -172,6 +172,7 @@ dependencies {
 
     // Compose
     implementation(Lib.compose_animation)
+    //implementation("androidx.compose.compiler:compiler:1.2.0")
     implementation(Lib.compose_foundation)
     implementation(Lib.compose_foundation_layout)
     implementation(Lib.compose_material)
