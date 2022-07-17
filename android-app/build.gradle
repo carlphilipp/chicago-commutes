@@ -164,7 +164,7 @@ dependencies {
     implementation(Lib.androidx_activity_compose)
     implementation(Lib.androidx_constraint)
     implementation(Lib.androidx_lifecycle_compose)
-    implementation(Lib.androidx_lifecycle_ktc)
+    implementation(Lib.androidx_lifecycle_ktx)
     implementation(Lib.androidx_navigation_compose)
     implementation(Lib.androidx_navigation_runtime)
     implementation(Lib.androidx_work)
@@ -172,7 +172,6 @@ dependencies {
 
     // Compose
     implementation(Lib.compose_animation)
-    //implementation("androidx.compose.compiler:compiler:1.2.0")
     implementation(Lib.compose_foundation)
     implementation(Lib.compose_foundation_layout)
     implementation(Lib.compose_material)

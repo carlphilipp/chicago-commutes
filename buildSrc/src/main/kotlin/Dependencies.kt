@@ -14,7 +14,7 @@ object Version {
 
     const val androidx_activity_compose =   "1.6.0-alpha05"
     const val androidx_constraint =         "1.1.0-alpha03"
-    const val androidx_lifecycle =          "2.5.0-rc01"
+    const val androidx_lifecycle =          "2.6.0-alpha01"
     const val androidx_navigation =         "2.5.0"
     const val androidx_work =               "2.8.0-alpha02"
     const val accompanist =                 "0.24.13-rc"
@@ -67,7 +67,7 @@ object Lib {
     const val androidx_activity_compose =       "androidx.activity:activity-compose:${Version.androidx_activity_compose}"
     const val androidx_constraint =             "androidx.constraintlayout:constraintlayout-compose:${Version.androidx_constraint}"
     const val androidx_lifecycle_compose =      "androidx.lifecycle:lifecycle-viewmodel-compose:${Version.androidx_lifecycle}"
-    const val androidx_lifecycle_ktc =          "androidx.lifecycle:lifecycle-viewmodel-ktx:${Version.androidx_lifecycle}"
+    const val androidx_lifecycle_ktx =          "androidx.lifecycle:lifecycle-viewmodel-ktx:${Version.androidx_lifecycle}"
     const val androidx_navigation_compose =     "androidx.navigation:navigation-compose:${Version.androidx_navigation}"
     const val androidx_navigation_runtime =     "androidx.navigation:navigation-runtime-ktx:${Version.androidx_navigation}"
     const val androidx_work =                   "androidx.work:work-runtime-ktx:${Version.androidx_work}"
