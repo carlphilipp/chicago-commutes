@@ -170,7 +170,6 @@ private fun TitleBottomSheet(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FontTypefaceBottomView(
     title: String,
@@ -211,7 +210,6 @@ fun FontTypefaceBottomView(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FontSizeBottomView(
     title: String,
@@ -251,7 +249,6 @@ fun FontSizeBottomView(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnimationSpeedBottomView(
     title: String,

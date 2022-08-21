@@ -135,30 +135,6 @@ fun SettingsElementView(
 }
 
 @Composable
-fun SettingsElementView(
-    modifier: Modifier = Modifier,
-    painter: Painter,
-    title: String,
-    description: String,
-    onClick: () -> Unit
-) {
-    SettingsElementView(
-        modifier = modifier,
-        icon = {
-            Image(
-                modifier = Modifier.padding(end = 20.dp),
-                painter = painter,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-            )
-        },
-        title = title,
-        description = description,
-        onClick = onClick,
-    )
-}
-
-@Composable
 private fun SettingsElementView(
     modifier: Modifier = Modifier,
     icon: @Composable () -> Unit = {},

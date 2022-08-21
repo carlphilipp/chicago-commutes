@@ -359,10 +359,8 @@ fun DisplayTopBar(
                 openDrawer()
             }
         }
-        val rightClicks = if (onClickRightIcon.isEmpty()) {
+        val rightClicks = onClickRightIcon.ifEmpty {
             listOf { navController.navigate(Screen.Search) }
-        } else {
-            onClickRightIcon
         }
         val topBar = screen.topBar
 

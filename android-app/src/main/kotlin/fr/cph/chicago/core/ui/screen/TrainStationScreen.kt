@@ -432,7 +432,6 @@ class TrainStopViewModel(val preferenceService: PreferenceService = PreferenceSe
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrainStop(
     modifier: Modifier = Modifier,
