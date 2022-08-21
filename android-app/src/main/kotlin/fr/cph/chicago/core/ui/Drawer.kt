@@ -1,6 +1,7 @@
 package fr.cph.chicago.core.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -36,7 +37,7 @@ import timber.log.Timber
 @Composable
 fun Drawer(modifier: Modifier = Modifier, currentScreen: Screen, onDestinationClicked: (route: Screen) -> Unit) {
     Timber.d("Compose Drawer")
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    LazyColumn(modifier = Modifier.fillMaxSize().background(Color.White)) { // TODO update color
         item {
             Box {
                 Image(

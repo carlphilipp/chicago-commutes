@@ -11,13 +11,14 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.TopAppBarScrollState
+import androidx.compose.material3.TopAppBarState
 import androidx.compose.material3.rememberDrawerState
-import androidx.compose.material3.rememberTopAppBarScrollState
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -88,15 +89,17 @@ fun Navigation(
             drawerState = uiState.drawerState,
             gesturesEnabled = navigationViewModel.isGestureEnabled(),
             drawerContent = {
-                Drawer(
-                    currentScreen = uiState.currentScreen,
-                    onDestinationClicked = { screen ->
-                        scope.launch {
-                            uiState.drawerState.animateTo(DrawerValue.Closed, TweenSpec(durationMillis = settingsViewModel.uiState.animationSpeed.closeDrawerSlideDuration))
-                            navController.navigate(screen)
+                ModalDrawerSheet {
+                    Drawer(
+                        currentScreen = uiState.currentScreen,
+                        onDestinationClicked = { screen ->
+                            scope.launch {
+                                uiState.drawerState.animateTo(DrawerValue.Closed, TweenSpec(durationMillis = settingsViewModel.uiState.animationSpeed.closeDrawerSlideDuration))
+                                navController.navigate(screen)
+                            }
                         }
-                    }
-                )
+                    )
+                }
             },
             content = {
                 Timber.d("Compose Navigation content")
@@ -157,19 +160,19 @@ data class NavigationUiState constructor(
     val shouldExit: Boolean = false,
 
     // Scroll behavior
-    val favScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
-    val trainScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
-    val busScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
-    val divvyScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
-    val nearbyScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
-    val ctaMapScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
-    val alertsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
-    val searchScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
-    val settingsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
-    val settingsDisplayScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
-    val settingsDeveloperScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
-    val settingsThemeColorScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
-    val settingsAboutScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
+    val favScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    val trainScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    val busScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    val divvyScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    val nearbyScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    val ctaMapScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    val alertsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    val searchScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    val settingsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    val settingsDisplayScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    val settingsDeveloperScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    val settingsThemeColorScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    val settingsAboutScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
 )
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.animation.ExperimentalAnimationApi::class)
@@ -180,7 +183,7 @@ fun rememberNavigationState(
     navController: NavHostController = rememberAnimatedNavController(),
     currentScreen: Screen = remember { Screen.Favorites },
     decayAnimationSpec: DecayAnimationSpec<Float> = rememberSplineBasedDecay(),
-    topAppBarScrollState: TopAppBarScrollState = rememberTopAppBarScrollState(),
+    topAppBarScrollState: TopAppBarState = rememberTopAppBarState(),
     settingsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec, topAppBarScrollState),
     settingsDisplayScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec, topAppBarScrollState),
     settingsDeveloperScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec, topAppBarScrollState),
@@ -338,7 +341,7 @@ fun DisplayTopBar(
     title: String = "",
     screen: Screen,
     viewModel: NavigationViewModel,
-    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
+    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
     onClickRightIcon: List<() -> Unit> = listOf(),
 ) {
     if (screen.topBar != ScreenTopBar.None) {

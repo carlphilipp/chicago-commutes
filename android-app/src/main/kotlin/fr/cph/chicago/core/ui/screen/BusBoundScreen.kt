@@ -18,7 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.TopAppBarScrollState
+import androidx.compose.material3.TopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -178,7 +178,7 @@ data class BusBoundUiState constructor(
     val showError: Boolean = false,
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
     val lazyListState: LazyListState = LazyListState(),
-    val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
+    val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
 )
 
 class BusBoundUiViewModel(
@@ -223,18 +223,20 @@ class BusBoundUiViewModel(
                 searchBusStops = listOf(),
                 isRefreshing = true,
                 lazyListState = LazyListState(),
-                scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
+                scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
             )
             loadBusStops()
         }
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun refresh() {
         Timber.d("Start Refreshing")
         uiState = uiState.copy(isRefreshing = true)
         loadBusStops()
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun updateSearch(search: String) {
         uiState = uiState.copy(
             search = search,
@@ -242,6 +244,7 @@ class BusBoundUiViewModel(
         )
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     private fun loadBusStops() {
         busService.loadAllBusStopsForRouteBound(uiState.busRouteId, uiState.bound)
             .subscribeOn(Schedulers.computation())
@@ -271,6 +274,7 @@ class BusBoundUiViewModel(
                 })
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun resetShowError() {
         uiState = uiState.copy(showError = false)
     }

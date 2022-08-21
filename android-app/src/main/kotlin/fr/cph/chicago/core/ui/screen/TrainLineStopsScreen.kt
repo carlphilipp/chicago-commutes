@@ -14,7 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.TopAppBarScrollState
+import androidx.compose.material3.TopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -104,7 +104,7 @@ data class TrainListStationUiState constructor(
     val trainLine: TrainLine = TrainLine.NA,
     val trainStations: List<TrainStation> = listOf(),
     val listState: LazyListState = LazyListState(),
-    val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
+    val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
 )
 
 class TrainListStationViewModel(
@@ -124,11 +124,12 @@ class TrainListStationViewModel(
                 title = title,
                 trainLine = trainLine,
                 trainStations = listOf(),
-                scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
+                scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
             )
         }
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun loadData(trainLine: TrainLine) {
         Single.fromCallable { trainService.getStationsForLine(trainLine) }
             .subscribeOn(Schedulers.computation())

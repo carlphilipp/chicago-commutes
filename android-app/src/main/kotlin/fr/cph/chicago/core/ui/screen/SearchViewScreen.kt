@@ -21,7 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.TopAppBarScrollState
+import androidx.compose.material3.TopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -65,7 +65,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SearchViewScreen(
     viewModel: SearchViewModel,
@@ -275,7 +275,7 @@ private fun SearchRow(
 data class SearchUiState constructor(
     val search: String = "",
     val searchLazyListState: LazyListState = LazyListState(),
-    val searchScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarScrollState(-Float.MAX_VALUE, 0f, 0f)),
+    val searchScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
 
     val isTrainSelected: Boolean = true,
     val trains: List<TrainStation> = listOf(),
@@ -297,10 +297,12 @@ class SearchViewModel @Inject constructor(
     var uiState by mutableStateOf(SearchUiState())
         private set
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun updateText(searchText: String) {
         uiState = uiState.copy(search = searchText)
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun search(query: String) {
         Timber.d("Search text: $query")
         val foundStations = trainService.searchStations(query)
@@ -320,16 +322,19 @@ class SearchViewModel @Inject constructor(
             )
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun trainSelect(value: Boolean) {
         uiState = uiState.copy(isTrainSelected = value)
         search(uiState.search)
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun busSelect(value: Boolean) {
         uiState = uiState.copy(isBusSelected = value)
         search(uiState.search)
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun bikeSelect(value: Boolean) {
         uiState = uiState.copy(isBikeSelected = value)
         search(uiState.search)

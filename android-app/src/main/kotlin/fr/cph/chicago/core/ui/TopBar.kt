@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -18,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LargeTopBar(
     title: String,
@@ -40,6 +42,7 @@ fun LargeTopBar(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MediumTopBar(
     title: String,
@@ -68,10 +71,11 @@ fun MediumTopBar(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun getTopBarBackgroundColor(scrollBehavior: TopAppBarScrollBehavior): Color {
     val backgroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors()
-    return backgroundColors.containerColor(scrollFraction = scrollBehavior.scrollFraction).value
+    return backgroundColors.containerColor(colorTransitionFraction = scrollBehavior.state.contentOffset).value
 }
 
 @Composable

@@ -1,34 +1,34 @@
 // @formatter:off
 object Android {
-    const val compile_sdk =             32
+    const val compile_sdk =             33
     const val min_sdk =                 21
-    const val target_sdk =              32
+    const val target_sdk =              33
     const val build_tools =             "32.0.0"
 }
 
 object Version {
     const val kotlin =                      "1.7.0"
-    const val android_tools_build =         "7.1.2"
+    const val android_tools_build =         "7.2.2"
     const val realm =                       "10.11.0"
     const val gradle_version =              "0.42.0"
 
-    const val androidx_activity_compose =   "1.6.0-alpha05"
+    const val androidx_activity_compose =   "1.6.0-beta01"
     const val androidx_constraint =         "1.1.0-alpha03"
     const val androidx_lifecycle =          "2.6.0-alpha01"
-    const val androidx_navigation =         "2.5.0"
-    const val androidx_work =               "2.8.0-alpha02"
-    const val accompanist =                 "0.24.13-rc"
+    const val androidx_navigation =         "2.5.1"
+    const val androidx_work =               "2.8.0-alpha03"
+    const val accompanist =                 "0.26.1-alpha"
     const val commons_collections4 =        "4.+"
     const val commons_text =                "1.+"
-    const val compose =                     "1.3.0-alpha01"
+    const val compose =                     "1.3.0-alpha03"
     const val compose_compiler =            "1.2.0"
-    const val compose_material3 =           "1.0.0-alpha14"
+    const val compose_material3 =           "1.0.0-alpha16"
     const val google_play_maps =            "18.0.2"
     const val google_play_location =        "19.0.1"
-    const val google_maps_compose =         "2.1.1"
+    const val google_maps_compose =         "2.5.3"
     const val hilt =                        "1.0.+"
     const val jackson =                     "2.13.1" // 2.13.2 is not working on android 7 (24)
-    const val material =                    "1.7.0-alpha02"
+    const val material =                    "1.7.0-beta01"
     const val okhttp3 =                     "4.10.0-RC1"
     const val process_phoenix =             "2.1.+"
     const val rx =                          "3.+"
