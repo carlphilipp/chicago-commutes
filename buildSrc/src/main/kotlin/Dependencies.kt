@@ -12,7 +12,7 @@ object Version {
     const val realm =                       "10.11.0"
     const val gradle_version =              "0.42.0"
 
-    const val androidx_activity_compose =   "1.6.0-beta01"
+    const val androidx_activity_compose =   "1.6.0-rc01"
     const val androidx_constraint =         "1.1.0-alpha03"
     const val androidx_lifecycle =          "2.6.0-alpha01"
     const val androidx_navigation =         "2.5.1"
