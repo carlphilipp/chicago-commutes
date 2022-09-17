@@ -20,7 +20,7 @@ object Version {
     const val accompanist =                 "0.26.3-beta"
     const val commons_collections4 =        "4.+"
     const val commons_text =                "1.+"
-    const val compose =                     "1.3.0-alpha03"
+    const val compose =                     "1.3.0-beta01"
     const val compose_compiler =            "1.3.0"
     const val compose_material3 =           "1.0.0-alpha16"
     const val google_play_maps =            "18.0.2"
