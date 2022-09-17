@@ -9,6 +9,7 @@ plugins {
 apply plugin: 'realm-android'
 
 android {
+    namespace 'fr.cph.chicago'
     compileSdkVersion Android.compile_sdk
     buildToolsVersion Android.build_tools
 
