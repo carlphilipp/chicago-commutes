@@ -46,6 +46,22 @@ class NearbyViewModel() :  ViewModel() {
         TODO("Not yet implemented")
     }
 
+    fun setNearbyIsMyLocationEnabled(value: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    fun setCurrentUserLocation(position: Position) {
+        TODO("Not yet implemented")
+    }
+
+    fun loadNearbyStations(position: Position) {
+        TODO("Not yet implemented")
+    }
+
+    fun setDefaultUserLocation() {
+        TODO("Not yet implemented")
+    }
+
     companion object {
         fun provideFactory(
             owner: SavedStateRegistryOwner,
