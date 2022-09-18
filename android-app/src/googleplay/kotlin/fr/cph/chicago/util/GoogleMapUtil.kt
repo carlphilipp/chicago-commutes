@@ -20,7 +20,6 @@
 package fr.cph.chicago.util
 
 import android.content.Context
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import androidx.annotation.DrawableRes
@@ -30,7 +29,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +38,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -46,7 +46,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -57,6 +56,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.model.Theme
+import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 
 object GoogleMapUtil {
@@ -64,19 +65,15 @@ object GoogleMapUtil {
     const val defaultZoom = 10f
     val chicago: LatLng by lazy { LatLng(chicagoPosition.latitude, chicagoPosition.longitude) }
 
-    fun checkIfPermissionGranted(context: Context, permission: String): Boolean {
-        return (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED)
-    }
-
     fun getBitmapDescriptor(context: Context?, @DrawableRes icon: Int): BitmapDescriptor {
         return if (context != null) {
             val px = context.resources.getDimensionPixelSize(R.dimen.icon_shadow_2)
-            val bitMapBusStation = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bitMapBusStation)
+            val bitmap = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
             val shape = ContextCompat.getDrawable(context, icon)!!
-            shape.setBounds(0, 0, px, bitMapBusStation.height)
+            shape.setBounds(0, 0, px, bitmap.height)
             shape.draw(canvas)
-            BitmapDescriptorFactory.fromBitmap(bitMapBusStation)
+            BitmapDescriptorFactory.fromBitmap(bitmap)
         } else {
             BitmapDescriptorFactory.defaultMarker()
         }
@@ -93,9 +90,14 @@ object GoogleMapUtil {
 }
 
 @Composable
-fun DebugView(cameraPositionState: CameraPositionState) {
+fun CameraDebugView(
+    modifier: Modifier = Modifier,
+    cameraPositionState: CameraPositionState
+) {
     Column(
-        modifier = Modifier.fillMaxWidth().background(color = MaterialTheme.colorScheme.surface),
+        modifier = modifier
+            .fillMaxWidth()
+            .background(color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)),
         verticalArrangement = Arrangement.Center
     ) {
         val moving = if (cameraPositionState.isMoving) "moving" else "not moving"
@@ -117,11 +119,7 @@ fun InfoWindowsDetails(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(start = 50.dp, end = 50.dp, bottom = 50.dp)
-                .clip(RoundedCornerShape(20.dp))
-                .clickable(
-                    enabled = true,
-                    onClick = onClick
-                ),
+                .clip(RoundedCornerShape(20.dp)),
         ) {
             AnimatedVisibility(
                 visible = showView,
@@ -148,16 +146,16 @@ fun InfoWindowsDetails(
                     }
                     if (results.isNotEmpty()) {
                         val max = if (showAll) {
-                            results.size - 1
+                            results.size
                         } else {
                             6
                         }
-                        for (i in 0..max) {
+                        for (i in 0 until max - 1) {
                             val pair = results[i]
                             EtaView(stopName = pair.first, eta = pair.second)
                         }
                         if (!showAll && max >= 6) {
-                            DisplayAllResultsRowView()
+                            DisplayAllResultsRowView(onClick = onClick)
                         }
                     }
                 }
@@ -167,7 +165,7 @@ fun InfoWindowsDetails(
 }
 
 @Composable
-private fun EtaView(stopName: String, eta: String) {
+fun EtaView(stopName: String, eta: String) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -191,24 +189,38 @@ private fun EtaView(stopName: String, eta: String) {
 }
 
 @Composable
-private fun DisplayAllResultsRowView() {
+fun DisplayAllResultsRowView(onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 10.dp),
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            text = "Display all results",
-            style = MaterialTheme.typography.titleSmall,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
+        FilledTonalButton(
+            onClick = onClick,
+        ) {
+            Text(text = "More")
+        }
     }
 }
 
 @NonNull
 fun Position.toLatLng(): LatLng {
     return LatLng(this.latitude, this.longitude)
+}
+
+@NonNull
+fun LatLng.toPosition(): Position {
+    return Position(this.latitude, this.longitude)
+}
+
+@Composable
+fun mapStyle(settingsViewModel: SettingsViewModel): Int {
+    val isDarkTheme = when (settingsViewModel.uiState.theme) {
+        Theme.AUTO -> isSystemInDarkTheme()
+        Theme.LIGHT -> false
+        Theme.DARK -> true
+    }
+    return if (isDarkTheme) R.raw.style_json_dark else R.raw.style_json_light
 }

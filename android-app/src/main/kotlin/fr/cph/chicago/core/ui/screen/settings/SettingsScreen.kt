@@ -1,19 +1,13 @@
-@file:OptIn(ExperimentalMaterialApi::class)
-
 package fr.cph.chicago.core.ui.screen.settings
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetState
-import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Brightness6
 import androidx.compose.material.icons.outlined.DeveloperMode
@@ -35,9 +29,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import fr.cph.chicago.R
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.LocalNavController
@@ -65,8 +57,8 @@ fun SettingsScreen(
     // Wrapping with Scaffold as the animation is overridden if it's not the case
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        content = {
-            Column {
+        content = { paddingValues ->
+            Column(modifier = Modifier.padding(paddingValues)) {
                 DisplayTopBar(
                     screen = Screen.Settings,
                     title = title,
@@ -127,39 +119,6 @@ fun SettingsElementView(
     description: String,
     onClick: () -> Unit
 ) {
-/*    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-    ) {
-        Row(
-            modifier = modifier
-                .padding(horizontal = 20.dp, vertical = 15.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                modifier = Modifier.padding(end = 20.dp),
-                imageVector = imageVector,
-                contentDescription = null
-            )
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.Start,
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                Text(
-                    text = description,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
-        }
-    }*/
     SettingsElementView(
         modifier = modifier,
         icon = {
@@ -167,30 +126,6 @@ fun SettingsElementView(
                 modifier = Modifier.padding(end = 20.dp),
                 imageVector = imageVector,
                 contentDescription = null
-            )
-        },
-        title = title,
-        description = description,
-        onClick = onClick,
-    )
-}
-
-@Composable
-fun SettingsElementView(
-    modifier: Modifier = Modifier,
-    painter: Painter,
-    title: String,
-    description: String,
-    onClick: () -> Unit
-) {
-    SettingsElementView(
-        modifier = modifier,
-        icon = {
-            Image(
-                modifier = Modifier.padding(end = 20.dp),
-                painter = painter,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
             )
         },
         title = title,
@@ -219,11 +154,6 @@ private fun SettingsElementView(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            /*Icon(
-                modifier = Modifier.padding(end = 20.dp),
-                painter = painter,
-                contentDescription = null
-            )*/
             icon()
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -243,7 +173,6 @@ private fun SettingsElementView(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 data class SettingsState(
     val theme: Theme = Theme.AUTO,
     val themeColor: ThemeColor = ThemeColor.Blue,
@@ -253,11 +182,6 @@ data class SettingsState(
     val fontTypeFace: String = "",
     val fontSize: FontSize = FontSize.REGULAR,
     val animationSpeed: AnimationSpeed = AnimationSpeed.Normal,
-    val bottomSheetContent: @Composable ColumnScope.() -> Unit = { Text("Test") },
-    val modalBottomSheetState: ModalBottomSheetState = ModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden,
-        isSkipHalfExpanded = true,
-    ),
 )
 
 class SettingsViewModel(private val preferenceService: PreferenceService = PreferenceService) {
@@ -297,10 +221,6 @@ class SettingsViewModel(private val preferenceService: PreferenceService = Prefe
     fun setFontSize(value: FontSize) {
         preferenceService.saveFontSize(value)
         refreshCurrentTheme()
-    }
-
-    fun updateBottomSheet(component: @Composable ColumnScope.() -> Unit) {
-        uiState = uiState.copy(bottomSheetContent = component)
     }
 
     fun refreshCurrentTheme() {

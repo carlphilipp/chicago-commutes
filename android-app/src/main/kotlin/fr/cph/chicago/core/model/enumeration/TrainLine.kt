@@ -23,12 +23,14 @@ import androidx.compose.ui.graphics.Color
 import fr.cph.chicago.core.theme.blue_line
 import fr.cph.chicago.core.theme.brown_line
 import fr.cph.chicago.core.theme.default_line
+import fr.cph.chicago.core.theme.default_line_text_color
 import fr.cph.chicago.core.theme.green_line
 import fr.cph.chicago.core.theme.orange_line
 import fr.cph.chicago.core.theme.pink_line
 import fr.cph.chicago.core.theme.purple_line
 import fr.cph.chicago.core.theme.red_line
 import fr.cph.chicago.core.theme.yellow_line
+import fr.cph.chicago.core.theme.yellow_line_text_color
 
 /**
  * Enumeration, train line
@@ -36,17 +38,17 @@ import fr.cph.chicago.core.theme.yellow_line
  * @author Carl-Philipp Harmant
  * @version 1
  */
-enum class TrainLine constructor(private val text: String, private val fullText: String, val color: Color) {
+enum class TrainLine constructor(private val text: String, private val fullText: String, val color: Color, val textColor: Color) {
 
-    BLUE("Blue", "Blue", blue_line),
-    BROWN("Brn", "Brown", brown_line),
-    GREEN("G", "Green", green_line),
-    ORANGE("Org", "Orange", orange_line),
-    PINK("Pink", "Pink", pink_line),
-    PURPLE("P", "Purple", purple_line),
-    RED("Red", "Red", red_line),
-    YELLOW("Y", "Yellow", yellow_line),
-    NA("N/A", "N/A", default_line);
+    BLUE("Blue", "Blue", blue_line, default_line_text_color),
+    BROWN("Brn", "Brown", brown_line, default_line_text_color),
+    GREEN("G", "Green", green_line, default_line_text_color),
+    ORANGE("Org", "Orange", orange_line, default_line_text_color),
+    PINK("Pink", "Pink", pink_line, default_line_text_color),
+    PURPLE("P", "Purple", purple_line, default_line_text_color),
+    RED("Red", "Red", red_line, default_line_text_color),
+    YELLOW("Y", "Yellow", yellow_line, yellow_line_text_color),
+    NA("N/A", "N/A", default_line, default_line_text_color);
 
     /**
      * Get to string with line

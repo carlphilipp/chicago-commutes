@@ -93,7 +93,7 @@ class TrainStation(
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeString(id.toString())
+        dest.writeString(id)
         dest.writeString(name)
         dest.writeTypedList(stops)
     }

@@ -62,12 +62,12 @@ import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.TimeUtil
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.Calendar
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.rekotlin.StoreSubscriber
 import timber.log.Timber
-import java.util.Calendar
-import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -98,8 +98,8 @@ fun BikeStationScreen(
         ) {
             Scaffold(
                 snackbarHost = { SnackbarHostInsets(state = uiState.snackbarHostState) },
-                content = {
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                content = { paddingValues ->
+                    LazyColumn(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
                         item {
                             StationDetailsImageView(
                                 showGoogleStreetImage = uiState.showGoogleStreetImage,
@@ -218,9 +218,11 @@ class BikeStationViewModel @Inject constructor(
 
     fun load() {
         Single.fromCallable {
-            store.state.bikeStations
-                .find { bikeStation -> bikeStation.id == uiState.stationId }
-                ?: bikeService.createEmptyBikeStation(uiState.stationId)
+            if (store.state.bikeStations.containsKey(uiState.stationId)) {
+                store.state.bikeStations[uiState.stationId]!!
+            } else {
+                bikeService.createEmptyBikeStation(uiState.stationId)
+            }
         }
             .map { bikeStation ->
                 uiState = uiState.copy(
@@ -249,9 +251,7 @@ class BikeStationViewModel @Inject constructor(
         Timber.d("BikeStationViewModel new state ${state.busStopStatus} thread: ${Thread.currentThread().name}")
         when (state.bikeStationsStatus) {
             Status.SUCCESS -> {
-                val bikeStation = store.state.bikeStations.firstOrNull { bikeStation ->
-                    bikeStation.id == uiState.bikeStation.id
-                }
+                val bikeStation = if (store.state.bikeStations.containsKey(uiState.bikeStation.id)) store.state.bikeStations[uiState.bikeStation.id] else null
                 uiState = if (bikeStation == null) {
                     uiState.copy(showErrorMessage = true)
                 } else {

@@ -5,16 +5,20 @@ import androidx.activity.ComponentActivity
 import androidx.compose.animation.core.DecayAnimationSpec
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.rememberSplineBasedDecay
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.TopAppBarState
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -24,8 +28,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -49,11 +55,12 @@ import fr.cph.chicago.core.ui.screen.TopBarType
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.core.viewmodel.settingsViewModel
+import fr.cph.chicago.stub.DummyTopAppBarScrollBehavior
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.net.URLEncoder
 import java.util.Stack
 import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.launch
-import timber.log.Timber
 
 val LocalNavController = compositionLocalOf<NavHostControllerWrapper> {
     error("No NavHostControllerWrapper provided")
@@ -83,15 +90,17 @@ fun Navigation(
             drawerState = uiState.drawerState,
             gesturesEnabled = navigationViewModel.isGestureEnabled(),
             drawerContent = {
-                Drawer(
-                    currentScreen = uiState.currentScreen,
-                    onDestinationClicked = { screen ->
-                        scope.launch {
-                            uiState.drawerState.animateTo(DrawerValue.Closed, TweenSpec(durationMillis = settingsViewModel.uiState.animationSpeed.closeDrawerSlideDuration))
-                            navController.navigate(screen)
+                ModalDrawerSheet {
+                    Drawer(
+                        currentScreen = uiState.currentScreen,
+                        onDestinationClicked = { screen ->
+                            scope.launch {
+                                uiState.drawerState.animateTo(DrawerValue.Closed, TweenSpec(durationMillis = settingsViewModel.uiState.animationSpeed.closeDrawerSlideDuration))
+                                navController.navigate(screen)
+                            }
                         }
-                    }
-                )
+                    )
+                }
             },
             content = {
                 Timber.d("Compose Navigation content")
@@ -99,7 +108,7 @@ fun Navigation(
                 CompositionLocalProvider(LocalNavController provides navController) {
                     Scaffold(
                         snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
-                    ) {
+                    ) { paddingValues ->
                         if (navigationViewModel.uiState.shouldExit) {
                             ShowSnackBar(
                                 scope = scope,
@@ -111,6 +120,7 @@ fun Navigation(
                             )
                         }
                         AnimatedNavHost(
+                            modifier = Modifier.padding(paddingValues),
                             navController = navController.navController(),
                             startDestination = Screen.Favorites.route,
                             enterTransition = fallBackEnterTransition(settingsViewModel.uiState.animationSpeed),
@@ -151,19 +161,19 @@ data class NavigationUiState constructor(
     val shouldExit: Boolean = false,
 
     // Scroll behavior
-    val favScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val trainScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val busScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val divvyScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val nearbyScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val ctaMapScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val alertsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val searchScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val settingsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val settingsDisplayScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val settingsDeveloperScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val settingsThemeColorScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    val settingsAboutScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    var favScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
+    val trainScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
+    val busScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
+    val divvyScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
+    val nearbyScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
+    val ctaMapScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
+    val alertsScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
+    val searchScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
+    val settingsScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
+    val settingsDisplayScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
+    val settingsDeveloperScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
+    val settingsThemeColorScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
+    val settingsAboutScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
 )
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.animation.ExperimentalAnimationApi::class)
@@ -174,11 +184,21 @@ fun rememberNavigationState(
     navController: NavHostController = rememberAnimatedNavController(),
     currentScreen: Screen = remember { Screen.Favorites },
     decayAnimationSpec: DecayAnimationSpec<Float> = rememberSplineBasedDecay(),
-    settingsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec),
-    settingsDisplayScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec),
-    settingsDeveloperScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec),
-    settingsThemeColorScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec),
-) = remember(drawerState, navController, currentScreen, decayAnimationSpec) {
+    topAppBarScrollState: TopAppBarState = rememberTopAppBarState(),
+    settingsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(state = topAppBarScrollState),
+    settingsDisplayScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(state = topAppBarScrollState),
+    settingsDeveloperScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(state = topAppBarScrollState),
+    settingsThemeColorScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(state = topAppBarScrollState),
+    favScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    trainScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    busScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    divvyScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    nearbyScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    ctaMapScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    alertsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    searchScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    settingsAboutScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+) = remember(drawerState, navController, currentScreen, decayAnimationSpec, topAppBarScrollState) {
     NavigationUiState(
         context = context,
         drawerState = drawerState,
@@ -188,6 +208,15 @@ fun rememberNavigationState(
         settingsDisplayScrollBehavior = settingsDisplayScrollBehavior,
         settingsDeveloperScrollBehavior = settingsDeveloperScrollBehavior,
         settingsThemeColorScrollBehavior = settingsThemeColorScrollBehavior,
+        favScrollBehavior = favScrollBehavior,
+        trainScrollBehavior = trainScrollBehavior,
+        busScrollBehavior = busScrollBehavior,
+        divvyScrollBehavior = divvyScrollBehavior,
+        nearbyScrollBehavior = nearbyScrollBehavior,
+        ctaMapScrollBehavior = ctaMapScrollBehavior,
+        alertsScrollBehavior = alertsScrollBehavior,
+        searchScrollBehavior = searchScrollBehavior,
+        settingsAboutScrollBehavior = settingsAboutScrollBehavior,
     )
 }
 
@@ -228,7 +257,7 @@ class NavigationViewModel : ViewModel() {
 /**
  * Handle manually navigation as the default behavior did not seem to work the way I was expecting it to work
  */
-class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
+class NavHostControllerWrapper(private val viewModel: NavigationViewModel) : ViewModel() {
 
     private val previous: Stack<Pair<Screen, Map<String, String>>> = Stack()
 
@@ -241,55 +270,59 @@ class NavHostControllerWrapper(private val viewModel: NavigationViewModel) {
     }
 
     fun navigate(screen: Screen, arguments: Map<String, String> = mapOf(), closeKeyboard: () -> Unit = {}) {
-        Timber.d("Navigate to ${screen.title} with args $arguments")
-        closeKeyboard()
-        when {
-            previous.isEmpty() -> navigateTo(screen = screen, arguments = arguments)
-            previous.isNotEmpty() -> {
-                val previousScreen = previous.peek().first
-                when {
-                    previousScreen == Screen.Favorites && screen == Screen.Favorites -> viewModel.shouldBackSpaceAgainToExit()
-                    previousScreen != screen -> navigateTo(screen = screen, arguments = arguments)
-                    else -> Timber.e("Current screen is the same, do not do anything")
+        viewModelScope.launch {
+            Timber.d("Navigate to ${screen.title} with args $arguments")
+            closeKeyboard()
+            when {
+                previous.isEmpty() -> navigateTo(screen = screen, arguments = arguments)
+                previous.isNotEmpty() -> {
+                    val previousScreen = previous.peek().first
+                    when {
+                        previousScreen == Screen.Favorites && screen == Screen.Favorites -> viewModel.shouldBackSpaceAgainToExit()
+                        previousScreen != screen -> navigateTo(screen = screen, arguments = arguments)
+                        else -> Timber.d("Current screen is the same, do not do anything")
+                    }
                 }
             }
+            printStackState()
         }
-        printStackState()
     }
 
     fun navigateBack() {
-        Timber.d("Navigate back")
-        when {
-            previous.isEmpty() -> Timber.d("Empty, no where to go, this should not happen")
-            previous.isNotEmpty() -> {
-                val currentScreenData = previous.pop()
-                when (currentScreenData.first) {
-                    Screen.Favorites -> {
-                        previous.push(currentScreenData)
-                        if (viewModel.uiState.shouldExit) {
-                            viewModel.exit()
-                        } else {
-                            viewModel.shouldBackSpaceAgainToExit()
+        viewModelScope.launch {
+            Timber.d("Navigate back")
+            when {
+                previous.isEmpty() -> Timber.d("Empty, no where to go, this should not happen")
+                previous.isNotEmpty() -> {
+                    val currentScreenData = previous.pop()
+                    when (currentScreenData.first) {
+                        Screen.Favorites -> {
+                            previous.push(currentScreenData)
+                            if (viewModel.uiState.shouldExit) {
+                                viewModel.exit()
+                            } else {
+                                viewModel.shouldBackSpaceAgainToExit()
+                            }
                         }
-                    }
-                    else -> {
-                        when {
-                            previous.isEmpty() -> Timber.d("Empty, no where to go, this should not happen")
-                            previous.isNotEmpty() -> {
-                                val previousData = previous.pop()
-                                val newArgs = mutableMapOf<String, String>()
-                                newArgs.putAll(previousData.second)
-                                if (currentScreenData.second.containsKey("search")) {
-                                    newArgs["search"] = currentScreenData.second["search"]!!
+                        else -> {
+                            when {
+                                previous.isEmpty() -> Timber.d("Empty, no where to go, this should not happen")
+                                previous.isNotEmpty() -> {
+                                    val previousData = previous.pop()
+                                    val newArgs = mutableMapOf<String, String>()
+                                    newArgs.putAll(previousData.second)
+                                    if (currentScreenData.second.containsKey("search")) {
+                                        newArgs["search"] = currentScreenData.second["search"]!!
+                                    }
+                                    navigate(screen = previousData.first, arguments = newArgs)
                                 }
-                                navigate(screen = previousData.first, arguments = newArgs)
                             }
                         }
                     }
                 }
             }
+            printStackState()
         }
-        printStackState()
     }
 
     private fun navigateTo(screen: Screen, arguments: Map<String, String>) {
@@ -327,7 +360,7 @@ fun DisplayTopBar(
     title: String = "",
     screen: Screen,
     viewModel: NavigationViewModel,
-    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
     onClickRightIcon: List<() -> Unit> = listOf(),
 ) {
     if (screen.topBar != ScreenTopBar.None) {
@@ -345,10 +378,8 @@ fun DisplayTopBar(
                 openDrawer()
             }
         }
-        val rightClicks = if (onClickRightIcon.isEmpty()) {
+        val rightClicks = onClickRightIcon.ifEmpty {
             listOf { navController.navigate(Screen.Search) }
-        } else {
-            onClickRightIcon
         }
         val topBar = screen.topBar
 

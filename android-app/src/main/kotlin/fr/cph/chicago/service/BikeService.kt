@@ -36,20 +36,23 @@ object BikeService {
     private val util = Util
     private val preferenceService = PreferenceService
 
-    fun getAllBikeStationsFromState(): List<BikeStation> {
+    fun getAllBikeStationsFromState(): Map<String, BikeStation> {
         return store.state.bikeStations
     }
 
-    fun allBikeStations(): Single<List<BikeStation>> {
+    fun allBikeStations(): Single<Map<String, BikeStation>> {
         return loadAllBikeStations()
     }
 
     fun findBikeStation(id: String): Single<BikeStation> {
         return loadAllBikeStations()
-            .toObservable()
-            .flatMapIterable { station -> station }
-            .filter { station -> station.id == id }
-            .firstOrError()
+            .map { stations ->
+                if (stations.containsKey(id)) {
+                    stations[id]!!
+                } else {
+                    throw RuntimeException()
+                }
+            }
             .onErrorReturn { throwable ->
                 Timber.e(throwable, "Could not load bike stations")
                 BikeStation.buildDefaultBikeStationWithName(name = "error")
@@ -59,7 +62,7 @@ object BikeService {
     fun searchBikeStations(query: String): Single<List<BikeStation>> {
         return Single
             .fromCallable {
-                store.state.bikeStations
+                store.state.bikeStations.values
                     .filter { station -> station.name.contains(other = query, ignoreCase = true) || station.address.contains(other = query, ignoreCase = true) }
                     .distinct()
                     .sortedWith(util.bikeStationComparator)
@@ -72,7 +75,7 @@ object BikeService {
         return BikeStation.buildDefaultBikeStationWithName(name = stationName, id = bikeStationId)
     }
 
-    private fun loadAllBikeStations(): Single<List<BikeStation>> {
+    private fun loadAllBikeStations(): Single<Map<String, BikeStation>> {
         val informationSingle = client.getStationsInformation().onErrorReturn(handleMapError())
         val statusSingle = client.getStationsStatus().onErrorReturn(handleMapError())
         return Single.zip(informationSingle, statusSingle) { info, stat ->
@@ -92,7 +95,7 @@ object BikeService {
                     )
                 )
             }
-            res.sortedWith(compareBy(BikeStation::name))
+            res.sortedWith(compareBy(BikeStation::name)).associateBy { it.id }
         }
     }
 }

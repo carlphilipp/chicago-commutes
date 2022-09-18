@@ -80,6 +80,18 @@ data class TrainEta(
             return String.format(Locale.ENGLISH, "%d min", TimeUnit.MILLISECONDS.toMinutes(time))
         }
 
+    val timeLeftDueDelayNoMinutes: String
+        get() {
+            return if (isDly) {
+                "Delay"
+            } else {
+                if (isApp) "Due" else {
+                    val time = arrivalDepartureDate.time - predictionDate.time
+                    return String.format(Locale.ENGLISH, "%d", TimeUnit.MILLISECONDS.toMinutes(time))
+                }
+            }
+        }
+
     val timeLeftDueDelay: String
         get() {
             return if (isDly) {

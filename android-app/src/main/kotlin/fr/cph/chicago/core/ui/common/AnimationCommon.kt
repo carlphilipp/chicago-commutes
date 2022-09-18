@@ -216,6 +216,10 @@ fun exitTransition(animationSpeed: AnimationSpeed): (AnimatedContentScope<NavBac
             origin == Screen.SettingsAbout.route && destination == Screen.Settings.route -> {
                 scaleOut
             }
+            // Settings -> Display/Developer/About
+            origin == Screen.Settings.route && (destination == Screen.SettingsAbout.route || destination == Screen.SettingsDisplay.route || destination == Screen.SettingsDeveloperOptions.route) -> {
+                ExitTransition.None
+            }
             else -> null
         }
     }

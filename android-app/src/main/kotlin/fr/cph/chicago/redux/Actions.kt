@@ -55,7 +55,7 @@ data class FavoritesAction(
         trainArrivalDTO = TrainArrivalDTO(mutableMapOf(), false),
         busArrivalDTO = BusArrivalDTO(listOf(), false),
         bikeError = false,
-        bikeStations = listOf()
+        bikeStations = mapOf()
     )
 ) : Action
 
@@ -69,7 +69,7 @@ data class BusRoutesAction(
 // Bus Routes + Bike stations
 data class BusRoutesAndBikeStationAction(
     val busRoutes: List<BusRoute> = listOf(),
-    val bikeStations: List<BikeStation> = listOf(),
+    val bikeStations: Map<String, BikeStation> = mapOf(),
     val busRoutesError: Boolean = false,
     val bikeStationsError: Boolean = false
 ) : Action
@@ -101,7 +101,7 @@ data class BusStopArrivalsAction(
 
 // Bike station
 data class BikeStationAction(
-    val bikeStations: List<BikeStation> = listOf(),
+    val bikeStations: Map<String, BikeStation> = mapOf(),
     val error: Boolean = false,
     val errorMessage: Int = R.string.message_something_went_wrong
 ) : Action

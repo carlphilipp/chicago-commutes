@@ -17,7 +17,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -61,7 +60,7 @@ fun BusBoundScreen(
     val uiState = viewModel.uiState
     val navController = LocalNavController.current
     val scope = rememberCoroutineScope()
-    val scrollBehavior by remember { mutableStateOf(viewModel.uiState.scrollBehavior) }
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     var textSearch by remember { mutableStateOf(TextFieldValue(viewModel.uiState.search)) }
     textSearch = TextFieldValue(
@@ -72,8 +71,8 @@ fun BusBoundScreen(
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         snackbarHost = { SnackbarHostInsets(state = uiState.snackbarHostState) },
-        content = {
-            Column {
+        content = { paddingValues ->
+            Column(modifier = Modifier.padding(paddingValues)) {
                 DisplayTopBar(
                     screen = Screen.BusBound,
                     title = title,
@@ -81,7 +80,7 @@ fun BusBoundScreen(
                     scrollBehavior = scrollBehavior,
                 )
                 when {
-                    uiState.isRefreshing /*&& uiState.busStops.isEmpty()*/ -> {
+                    uiState.isRefreshing -> {
                         AnimatedPlaceHolderList(isLoading = uiState.isRefreshing)
                     }
                     uiState.isErrorState -> {
@@ -177,7 +176,6 @@ data class BusBoundUiState constructor(
     val showError: Boolean = false,
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
     val lazyListState: LazyListState = LazyListState(),
-    val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
 )
 
 class BusBoundUiViewModel(
@@ -194,7 +192,7 @@ class BusBoundUiViewModel(
             busRouteName = busRouteName,
             bound = bound,
             boundTitle = boundTitle,
-            search = search
+            search = search,
         )
     )
         private set
@@ -221,19 +219,20 @@ class BusBoundUiViewModel(
                 busStops = listOf(),
                 searchBusStops = listOf(),
                 isRefreshing = true,
-                lazyListState = LazyListState(),
-                scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+                lazyListState = LazyListState()
             )
             loadBusStops()
         }
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun refresh() {
         Timber.d("Start Refreshing")
         uiState = uiState.copy(isRefreshing = true)
         loadBusStops()
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun updateSearch(search: String) {
         uiState = uiState.copy(
             search = search,
@@ -241,6 +240,7 @@ class BusBoundUiViewModel(
         )
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     private fun loadBusStops() {
         busService.loadAllBusStopsForRouteBound(uiState.busRouteId, uiState.bound)
             .subscribeOn(Schedulers.computation())
@@ -270,6 +270,7 @@ class BusBoundUiViewModel(
                 })
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun resetShowError() {
         uiState = uiState.copy(showError = false)
     }

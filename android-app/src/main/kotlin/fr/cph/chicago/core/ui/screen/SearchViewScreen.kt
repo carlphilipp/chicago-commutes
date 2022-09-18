@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.TopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -58,13 +59,14 @@ import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
+import fr.cph.chicago.stub.DummyTopAppBarScrollBehavior
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SearchViewScreen(
     viewModel: SearchViewModel,
@@ -174,7 +176,15 @@ fun SearchViewScreen(
                                                 mainViewModel.uiState.busModalBottomSheetState.hide()
                                             } else {
                                                 mainViewModel.updateBottomSheet {
-                                                    ShowBusBoundBottomView(busRoute = busRoute, mainViewModel = mainViewModel)
+                                                    ShowBusBoundBottomView(
+                                                        busRoute = busRoute,
+                                                        mainViewModel = mainViewModel,
+                                                        onBackClick = {
+                                                            scope.launch {
+                                                                mainViewModel.uiState.busModalBottomSheetState.hide()
+                                                            }
+                                                        }
+                                                    )
                                                 }
                                                 mainViewModel.uiState.busModalBottomSheetState.show()
                                             }
@@ -262,11 +272,11 @@ private fun SearchRow(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 data class SearchUiState constructor(
     val search: String = "",
     val searchLazyListState: LazyListState = LazyListState(),
-    val searchScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    val searchScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
 
     val isTrainSelected: Boolean = true,
     val trains: List<TrainStation> = listOf(),
@@ -280,7 +290,6 @@ data class SearchUiState constructor(
     val bikeStations: List<BikeStation> = listOf(),
 )
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 class SearchViewModel @Inject constructor(
     private val trainService: TrainService = TrainService,
     private val busService: BusService = BusService,
@@ -289,10 +298,22 @@ class SearchViewModel @Inject constructor(
     var uiState by mutableStateOf(SearchUiState())
         private set
 
+    @Composable
+    @OptIn(ExperimentalMaterial3Api::class)
+    fun InitModel() {
+        if(uiState.search == "") {
+            SearchUiState(
+                searchScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+            )
+        }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
     fun updateText(searchText: String) {
         uiState = uiState.copy(search = searchText)
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun search(query: String) {
         Timber.d("Search text: $query")
         val foundStations = trainService.searchStations(query)
@@ -312,16 +333,19 @@ class SearchViewModel @Inject constructor(
             )
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun trainSelect(value: Boolean) {
         uiState = uiState.copy(isTrainSelected = value)
         search(uiState.search)
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun busSelect(value: Boolean) {
         uiState = uiState.copy(isBusSelected = value)
         search(uiState.search)
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun bikeSelect(value: Boolean) {
         uiState = uiState.copy(isBikeSelected = value)
         search(uiState.search)

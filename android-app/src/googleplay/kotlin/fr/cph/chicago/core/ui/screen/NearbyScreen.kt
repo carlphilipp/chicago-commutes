@@ -1,129 +1,258 @@
 package fr.cph.chicago.core.ui.screen
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import android.content.Context
+import android.os.Bundle
+import androidx.compose.animation.core.TweenSpec
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ElevatedButton
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material.BottomSheetScaffoldState
+import androidx.compose.material.BottomSheetState
+import androidx.compose.material.BottomSheetValue
+import androidx.compose.material.DrawerState
+import androidx.compose.material.DrawerValue
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Surface
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DirectionsBike
+import androidx.compose.material.icons.filled.DirectionsBus
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Train
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
+import androidx.lifecycle.AbstractSavedStateViewModelFactory
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.savedstate.SavedStateRegistryOwner
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberMarkerState
 import fr.cph.chicago.R
+import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.core.navigation.DisplayTopBar
+import fr.cph.chicago.core.model.TrainStation
+import fr.cph.chicago.core.model.enumeration.BusDirection
+import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.permissions.NearbyLocationPermissionView
+import fr.cph.chicago.core.permissions.onPermissionsResult
+import fr.cph.chicago.core.ui.common.BottomSheetData
+import fr.cph.chicago.core.ui.common.BottomSheetDataState
+import fr.cph.chicago.core.ui.common.BottomSheetPagerData
+import fr.cph.chicago.core.ui.common.BottomSheetScaffoldMaterial3
 import fr.cph.chicago.core.ui.common.LoadingCircle
-import fr.cph.chicago.core.ui.common.LocationViewModel
-import fr.cph.chicago.core.ui.common.NearbyResult
+import fr.cph.chicago.core.ui.common.NearbyBottomSheet
 import fr.cph.chicago.core.ui.common.ShowErrorMessageSnackBar
 import fr.cph.chicago.core.ui.common.ShowLocationNotFoundSnackBar
 import fr.cph.chicago.core.ui.common.SnackbarHostInsets
 import fr.cph.chicago.core.ui.common.runWithDelay
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
-import fr.cph.chicago.core.viewmodel.MainViewModel
-import fr.cph.chicago.util.DebugView
+import fr.cph.chicago.redux.store
+import fr.cph.chicago.service.BikeService
+import fr.cph.chicago.service.BusService
+import fr.cph.chicago.service.TrainService
+import fr.cph.chicago.util.CameraDebugView
+import fr.cph.chicago.util.GoogleMapUtil.defaultZoom
 import fr.cph.chicago.util.GoogleMapUtil.getBitmapDescriptor
+import fr.cph.chicago.util.MapUtil
+import fr.cph.chicago.util.MapUtil.chicagoPosition
+import fr.cph.chicago.util.mapStyle
 import fr.cph.chicago.util.toLatLng
+import fr.cph.chicago.util.toPosition
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
-// FIXME: handle zoom right after permissions has been approved or denied
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun NearbyScreen(
     modifier: Modifier = Modifier,
-    mainViewModel: MainViewModel,
-    locationViewModel: LocationViewModel,
+    viewModel: NearbyViewModel,
     navigationViewModel: NavigationViewModel,
     settingsViewModel: SettingsViewModel,
-    title: String
 ) {
-    Timber.d("Compose NearbyScreen")
+    Timber.d("Compose NearbyScreen ${Thread.currentThread().name}")
     val scope = rememberCoroutineScope()
-    var isMapLoaded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val navController = LocalNavController.current
+    val onPermissionsResult: (Map<String, Boolean>) -> Unit by remember {
+        mutableStateOf(onPermissionsResult(context = context, viewModel = viewModel))
+    }
+
     // Show map after 5 seconds. This is needed because there is no callback from the sdk to know if the map can be loaded or not.
     // Meaning that we can have a situation where the onMapLoaded method is never triggered, while the map view has been populated
     // with some error messages from the google sdk like: "Play store needs to be updated"
-    if (!isMapLoaded) {
-        runWithDelay(5L, TimeUnit.SECONDS) {
-            isMapLoaded = true
-        }
+    if (!viewModel.uiState.isMapLoaded) {
+        runWithDelay(5L, TimeUnit.SECONDS) { viewModel.setMapLoaded() }
     }
 
-    NearbyLocationPermissionView(
-        mainViewModel = mainViewModel,
-        locationViewModel = locationViewModel,
-    )
+    LaunchedEffect(key1 = Unit, block = {
+        if (!viewModel.uiState.bitmapDescriptorLoaded) {
+            viewModel.loadBitmapDescriptor(context = context)
+        }
+    })
 
-    Column {
-        DisplayTopBar(
-            screen = Screen.Nearby,
-            title = title,
-            viewModel = navigationViewModel,
-        )
+    if (viewModel.uiState.moveCamera != null && viewModel.uiState.moveCameraZoom != null && viewModel.uiState.isMapLoaded) {
+        LaunchedEffect(key1 = viewModel.uiState.moveCamera, key2 = viewModel.uiState.moveCameraZoom, block = {
+            scope.launch {
+                viewModel.uiState.cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(viewModel.uiState.moveCamera!!.toLatLng(), viewModel.uiState.moveCameraZoom!!))
+            }
+        })
+    }
 
-        Scaffold(
-            modifier = modifier.fillMaxWidth(),
-            snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
-            content = {
+    NearbyLocationPermissionView(onPermissionsResult = onPermissionsResult)
+
+    BottomSheetScaffoldMaterial3(
+        scaffoldState = viewModel.uiState.scaffoldState,
+        sheetPeekHeight = 1.dp,//defaultSheetPeekHeight,
+        sheetContent = {
+            NearbyBottomSheet(
+                viewModel = viewModel,
+                onBackClick = {
+                    scope.launch {
+                        if (viewModel.uiState.bottomSheetData.bottomSheetState != BottomSheetDataState.HIDDEN) {
+                            viewModel.resetDetails()
+                        } else {
+                            navController.navigateBack()
+                        }
+                    }
+                },
+            )
+        },
+        snackbarHost = { SnackbarHostInsets(state = viewModel.uiState.snackbarHostState) },
+        content = {
+            Surface {
                 NearbyGoogleMapView(
-                    onMapLoaded = { isMapLoaded = true },
-                    mainViewModel = mainViewModel,
+                    onMapLoaded = { viewModel.setMapLoaded() },
+                    viewModel = viewModel,
                     settingsViewModel = settingsViewModel,
                 )
+                ConstraintLayout(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
+                        .padding(start = 10.dp, top = 5.dp, bottom = 5.dp, end = 10.dp),
+                ) {
+                    val (left, right, cameraDebug, stateDebug) = createRefs()
+                    FilledTonalButton(
+                        modifier = Modifier.constrainAs(left) {
+                            start.linkTo(anchor = parent.start)
+                            width = Dimension.fillToConstraints
+                        },
+                        onClick = {
+                            scope.launch {
+                                navigationViewModel.uiState.drawerState.animateTo(androidx.compose.material3.DrawerValue.Open, TweenSpec(durationMillis = settingsViewModel.uiState.animationSpeed.openDrawerSlideDuration))
+                            }
+                        },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Menu,
+                            contentDescription = null,
+                        )
+                    }
 
-                LoadingCircle(show = !isMapLoaded)
+                    FilledTonalButton(
+                        modifier = Modifier.constrainAs(right) {
+                            end.linkTo(anchor = parent.end)
+                            width = Dimension.fillToConstraints
+                        },
+                        onClick = {
+                            scope.launch {
+                                viewModel.loadNearby(position = viewModel.uiState.cameraPositionState.position.target.toPosition())
+                                when (viewModel.uiState.bottomSheetData.bottomSheetState) {
+                                    BottomSheetDataState.TRAIN -> viewModel.loadNearbyTrainDetails(trainStation = viewModel.uiState.bottomSheetData.trainStation)
+                                    BottomSheetDataState.BUS -> viewModel.loadNearbyBusDetails(busStop = viewModel.uiState.bottomSheetData.busStop)
+                                    BottomSheetDataState.BIKE -> viewModel.loadNearbyBikeDetails(currentBikeStation = viewModel.uiState.bottomSheetData.bikeStation)
+                                    else -> {}
+                                }
+                            }
+                        },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Refresh,
+                            contentDescription = "Refresh",
+                        )
+                    }
 
-                if (mainViewModel.uiState.nearbyShowLocationError) {
+                    if (settingsViewModel.uiState.showMapDebug) {
+                        CameraDebugView(
+                            modifier = Modifier.constrainAs(cameraDebug) {
+                                top.linkTo(anchor = left.bottom)
+                            },
+                            cameraPositionState = viewModel.uiState.cameraPositionState
+                        )
+                        StateDebugView(
+                            modifier = Modifier.constrainAs(stateDebug) {
+                                top.linkTo(anchor = cameraDebug.bottom)
+                            },
+                            viewModel = viewModel
+                        )
+                    }
+                }
+
+                LoadingCircle(show = !viewModel.uiState.isMapLoaded)
+
+                if (viewModel.uiState.showLocationError) {
                     ShowLocationNotFoundSnackBar(
                         scope = scope,
-                        snackbarHostState = mainViewModel.uiState.snackbarHostState,
-                        showErrorMessage = mainViewModel.uiState.nearbyShowLocationError,
-                        onComplete = { mainViewModel.setShowLocationError(false) }
+                        snackbarHostState = viewModel.uiState.snackbarHostState,
+                        showErrorMessage = viewModel.uiState.showLocationError,
+                        onComplete = { viewModel.setShowLocationError(false) }
                     )
                 }
-                if (mainViewModel.uiState.nearbyDetailsError) {
+                if (viewModel.uiState.nearbyDetailsError) {
                     ShowErrorMessageSnackBar(
                         scope = scope,
-                        snackbarHostState = mainViewModel.uiState.snackbarHostState,
-                        showError = mainViewModel.uiState.nearbyDetailsError,
-                        onComplete = { mainViewModel.setNearbyDetailsError(false) }
+                        snackbarHostState = viewModel.uiState.snackbarHostState,
+                        showError = viewModel.uiState.nearbyDetailsError,
+                        onComplete = { viewModel.setNearbyDetailsError(false) }
                     )
                 }
             }
-        )
+        }
+    )
+
+    DisposableEffect(key1 = viewModel) {
+        onDispose { viewModel.onStop() }
     }
 }
 
@@ -131,135 +260,368 @@ fun NearbyScreen(
 fun NearbyGoogleMapView(
     modifier: Modifier = Modifier,
     onMapLoaded: () -> Unit,
-    mainViewModel: MainViewModel,
+    viewModel: NearbyViewModel,
     settingsViewModel: SettingsViewModel,
 ) {
-    val uiState = mainViewModel.uiState
+    Timber.d("Compose NearbyGoogleMapView with location ${viewModel.uiState.moveCamera?.toLatLng()}")
+    val uiState = viewModel.uiState
+    val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(uiState.nearbyMapCenterLocation.toLatLng(), uiState.nearbyZoomIn)
-    }
-
-    Timber.d("Set location: ${uiState.nearbyMapCenterLocation.toLatLng()}")
+    var jobOnClose: Job? by remember { mutableStateOf(null) }
 
     GoogleMap(
         modifier = modifier,
-        cameraPositionState = cameraPositionState,
-        properties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = uiState.nearbyIsMyLocationEnabled),
-        uiSettings = MapUiSettings(compassEnabled = false, myLocationButtonEnabled = uiState.nearbyIsMyLocationEnabled),
-        onMapLoaded = {
-            onMapLoaded()
-            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(uiState.nearbyMapCenterLocation.toLatLng(), uiState.nearbyZoomIn)
-            cameraPositionState.move(cameraUpdate)
-        },
-        onMapClick = {
-            mainViewModel.setShowNearbyDetails(false)
-        }
+        cameraPositionState = viewModel.uiState.cameraPositionState,
+        properties = MapProperties(
+            mapType = MapType.NORMAL,
+            isMyLocationEnabled = uiState.isMyLocationEnabled,
+            mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, mapStyle(settingsViewModel)),
+        ),
+        uiSettings = MapUiSettings(compassEnabled = false, myLocationButtonEnabled = uiState.isMyLocationEnabled),
+        onMapLoaded = onMapLoaded,
     ) {
-        val bitmapDescriptorTrain = getBitmapDescriptor(context, R.drawable.train_station_icon)
-        val bitmapDescriptorBus = getBitmapDescriptor(context, R.drawable.bus_stop_icon)
-        val bitmapDescriptorBike = getBitmapDescriptor(context, R.drawable.bike_station_icon)
-
-        uiState.nearbyTrainStations.forEach { trainStation ->
-            Marker(
-                position = trainStation.stops[0].position.toLatLng(),
-                title = trainStation.name,
-                icon = bitmapDescriptorTrain,
-                onClick = {
-                    mainViewModel.loadNearbyTrainDetails(trainStation = trainStation)
-                    false
+        if (viewModel.uiState.bitmapDescriptorLoaded) {
+            viewModel.uiState.bitmapDescriptorTrain?.run {
+                uiState.trainStations.forEach { trainStation ->
+                    val markerState = rememberMarkerState()
+                    markerState.position = trainStation.stops[0].position.toLatLng()
+                    Marker(
+                        state = markerState,
+                        title = trainStation.name,
+                        icon = this,
+                        onClick = {
+                            jobOnClose?.cancel()
+                            viewModel.loadNearbyTrainDetails(trainStation = trainStation)
+                            false
+                        },
+                        onInfoWindowClose = {
+                            jobOnClose = scope.launch {
+                                viewModel.resetDetails()
+                            }
+                        }
+                    )
                 }
-            )
-        }
+            }
 
-        uiState.nearbyBusStops.forEach { busStop ->
-            Marker(
-                position = busStop.position.toLatLng(),
-                title = busStop.name,
-                icon = bitmapDescriptorBus,
-                onClick = {
-                    mainViewModel.loadNearbyBusDetails(busStop = busStop)
-                    false
+            viewModel.uiState.bitmapDescriptorBus?.run {
+                uiState.busStops.forEach { busStop ->
+                    val markerState = rememberMarkerState()
+                    markerState.position = busStop.position.toLatLng()
+                    Marker(
+                        state = markerState,
+                        title = busStop.name,
+                        icon = this,
+                        onClick = {
+                            jobOnClose?.cancel()
+                            viewModel.loadNearbyBusDetails(busStop = busStop)
+                            false
+                        },
+                        onInfoWindowClose = {
+                            jobOnClose = scope.launch {
+                                viewModel.resetDetails()
+                            }
+                        }
+                    )
                 }
-            )
-        }
+            }
 
-        uiState.nearbyBikeStations.forEach { bikeStation ->
-            Marker(
-                position = LatLng(bikeStation.latitude, bikeStation.longitude),
-                title = bikeStation.name,
-                icon = bitmapDescriptorBike,
-                onClick = {
-                    mainViewModel.loadNearbyBikeDetails(currentBikeStation = bikeStation)
-                    false
-                }
-            )
-        }
-    }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(5.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        SearchThisAreaButton(mainViewModel = mainViewModel, cameraPositionState = cameraPositionState)
-        if (settingsViewModel.uiState.showMapDebug) {
-            DebugView(cameraPositionState)
-        }
-    }
-
-    MapStationDetailsView(
-        showView = mainViewModel.uiState.nearbyDetailsShow,
-        title = mainViewModel.uiState.nearbyDetailsTitle,
-        image = mainViewModel.uiState.nearbyDetailsIcon,
-        arrivals = mainViewModel.uiState.nearbyDetailsArrivals,
-    )
-}
-
-@Composable
-private fun SearchThisAreaButton(mainViewModel: MainViewModel, cameraPositionState: CameraPositionState) {
-    AnimatedVisibility(
-        visible = true,
-        enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
-    ) {
-        ElevatedButton(onClick = {
-            mainViewModel.setMapCenterLocationAndLoadNearby(
-                position = Position(latitude = cameraPositionState.position.target.latitude, longitude = cameraPositionState.position.target.longitude),
-                zoom = cameraPositionState.position.zoom
-            )
-        }) {
-            Text(text = stringResource(id = R.string.search_area))
-        }
-    }
-}
-
-@Composable
-fun MapStationDetailsView(showView: Boolean, title: String, image: ImageVector, arrivals: NearbyResult) {
-    Box(Modifier.fillMaxSize()) {
-        Surface(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(start = 50.dp, end = 50.dp, bottom = 50.dp)
-                .clip(RoundedCornerShape(20.dp)),
-        ) {
-            AnimatedVisibility(
-                visible = showView,
-                enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
-                exit = fadeOut(animationSpec = tween(durationMillis = 300)),
-            ) {
-                Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)) {
-                    HeaderCard(name = title, image = image, lastUpdate = arrivals.lastUpdate)
-                    arrivals.arrivals.forEach { entry ->
-                        Arrivals(
-                            destination = entry.key.destination,
-                            arrivals = entry.value,
-                            color = entry.key.trainLine.color,
-                            direction = entry.key.direction
-                        )
-                    }
+            viewModel.uiState.bitmapDescriptorBike?.run {
+                uiState.bikeStations.forEach { bikeStation ->
+                    val markerState = rememberMarkerState()
+                    markerState.position = LatLng(bikeStation.latitude, bikeStation.longitude)
+                    Marker(
+                        state = markerState,
+                        title = bikeStation.name,
+                        icon = this,
+                        onClick = {
+                            jobOnClose?.cancel()
+                            viewModel.loadNearbyBikeDetails(currentBikeStation = bikeStation)
+                            false
+                        },
+                        onInfoWindowClose = {
+                            jobOnClose = scope.launch {
+                                viewModel.resetDetails()
+                            }
+                        }
+                    )
                 }
             }
         }
+    }
+}
+
+@Composable
+fun StateDebugView(
+    modifier: Modifier = Modifier,
+    viewModel: NearbyViewModel,
+) {
+    Column(
+        modifier = modifier
+            .padding(top = 10.dp)
+            .background(color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(text = "Latitude in state ${viewModel.uiState.moveCamera?.latitude}")
+        Text(text = "Longitude in state ${viewModel.uiState.moveCamera?.longitude}")
+        Text(text = "Zoom in state ${viewModel.uiState.moveCameraZoom}")
+        Text(text = "Train stations: ${viewModel.uiState.trainStations.size}")
+        Text(text = "Bus stops: ${viewModel.uiState.busStops.size}")
+        Text(text = "Bike stations: ${viewModel.uiState.bikeStations.size}")
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+data class NearbyScreenUiState constructor(
+    // data
+    val trainStations: List<TrainStation> = listOf(),
+    val busStops: List<BusStop> = listOf(),
+    val bikeStations: List<BikeStation> = listOf(),
+
+    // map
+    val isMapLoaded: Boolean = false,
+    val moveCamera: Position? = null,
+    val moveCameraZoom: Float? = null,
+    val isMyLocationEnabled: Boolean = false,
+    val showLocationError: Boolean = false,
+    val cameraPositionState: CameraPositionState = CameraPositionState(position = CameraPosition.fromLatLngZoom(chicagoPosition.toLatLng(), defaultZoom)),
+
+    // error
+    val nearbyDetailsError: Boolean = false,
+
+    // bottom sheet
+    val bottomSheetData: BottomSheetData = BottomSheetData(),
+    val scaffoldState: BottomSheetScaffoldState = BottomSheetScaffoldState(
+        drawerState = DrawerState(DrawerValue.Closed),
+        bottomSheetState = BottomSheetState(initialValue = BottomSheetValue.Expanded),
+        snackbarHostState = androidx.compose.material.SnackbarHostState(),
+    ),
+
+    // bitmap descriptor
+    val bitmapDescriptorLoaded: Boolean = false,
+    val bitmapDescriptorTrain: BitmapDescriptor? = null,
+    val bitmapDescriptorBus: BitmapDescriptor? = null,
+    val bitmapDescriptorBike: BitmapDescriptor? = null,
+
+    // snack bar
+    val snackbarHostState: SnackbarHostState = SnackbarHostState(),
+)
+
+@OptIn(ExperimentalMaterialApi::class)
+class NearbyViewModel(
+    private val trainService: TrainService = TrainService,
+    private val busService: BusService = BusService,
+    private val bikeService: BikeService = BikeService,
+    private val mapUtil: MapUtil = MapUtil,
+) : ViewModel() {
+    var uiState by mutableStateOf(NearbyScreenUiState())
+        private set
+
+    fun onStop() {
+        uiState = NearbyScreenUiState()
+    }
+
+    fun setMapLoaded() {
+        uiState = uiState.copy(isMapLoaded = true)
+    }
+
+    fun setShowLocationError(value: Boolean) {
+        uiState = uiState.copy(showLocationError = value)
+    }
+
+    fun setNearbyDetailsError(value: Boolean) {
+        uiState = uiState.copy(nearbyDetailsError = value)
+    }
+
+    fun setNearbyIsMyLocationEnabled(value: Boolean) {
+        uiState = uiState.copy(isMyLocationEnabled = value)
+    }
+
+    fun loadNearby(position: Position) {
+        viewModelScope.launch {
+            loadNearbyStations(position)
+            setShowLocationError(false)
+        }
+    }
+
+    fun resetDetails() {
+        viewModelScope.launch {
+            uiState = uiState.copy(
+                bottomSheetData = uiState.bottomSheetData.copy(
+                    title = "",
+                    bottomSheetState = BottomSheetDataState.HIDDEN,
+                    bikeStation = BikeStation.buildUnknownStation(),
+                )
+            )
+        }
+    }
+
+    fun setCurrentUserLocation(position: Position, zoom: Float = 16f) {
+        Timber.d("Set position $position and zoom $zoom")
+        uiState = uiState.copy(
+            moveCamera = position,
+            moveCameraZoom = zoom,
+        )
+    }
+
+    fun setDefaultUserLocation() {
+        Timber.d("Set default user location")
+        viewModelScope.launch {
+            setCurrentUserLocation(chicagoPosition)
+            loadNearbyStations(chicagoPosition)
+            setShowLocationError(true)
+        }
+    }
+
+    fun loadBitmapDescriptor(context: Context) {
+        viewModelScope.launch {
+            Single.fromCallable {
+                val bitmapDescriptorTrain = getBitmapDescriptor(context, R.drawable.train_station_icon)
+                val bitmapDescriptorBus = getBitmapDescriptor(context, R.drawable.bus_stop_icon)
+                val bitmapDescriptorBike = getBitmapDescriptor(context, R.drawable.bike_station_icon)
+                listOf(bitmapDescriptorTrain, bitmapDescriptorBus, bitmapDescriptorBike)
+            }
+                .subscribe(
+                    {
+                        uiState = uiState.copy(
+                            bitmapDescriptorLoaded = true,
+                            bitmapDescriptorTrain = it[0],
+                            bitmapDescriptorBus = it[1],
+                            bitmapDescriptorBike = it[2],
+                        )
+                    }, {
+                        Timber.e(it, "Could not load bitmap descriptor")
+                    })
+
+        }
+    }
+
+    fun loadNearbyStations(position: Position) {
+        viewModelScope.launch {
+            val trainStationAround = trainService.readNearbyStation(position = position)
+            val busStopsAround = busService.busStopsAround(position = position)
+            val bikeStationsAround = mapUtil.readNearbyStation(position = position, store.state.bikeStations)
+            Single.zip(trainStationAround, busStopsAround, bikeStationsAround) { trains, buses, bikeStations ->
+                uiState = uiState.copy(
+                    trainStations = trains,
+                    busStops = buses,
+                    bikeStations = bikeStations.values.toList(),
+                )
+                Any()
+            }.subscribe({}, { error -> Timber.e(error) })
+        }
+    }
+
+    fun loadNearbyTrainDetails(trainStation: TrainStation) {
+        viewModelScope.launch {
+            trainService.loadStationTrainArrival(trainStation.id)
+                .map { trainArrival ->
+                    trainArrival.trainEtas.filter { trainEta -> trainEta.trainStation.id == trainStation.id }
+                }
+                .observeOn(Schedulers.computation())
+                .subscribe(
+                    {
+                        uiState = uiState.copy(
+                            bottomSheetData = uiState.bottomSheetData.copy(
+                                trainStation = trainStation,
+                                title = trainStation.name,
+                                icon = Icons.Filled.Train,
+                                bottomSheetState = BottomSheetDataState.TRAIN,
+                                data = it.map { trainEta ->
+                                    BottomSheetPagerData(
+                                        title = trainEta.destName,
+                                        content = trainEta.timeLeftDueDelayNoMinutes,
+                                        subTitle = trainEta.stop.direction.toString(),
+                                        titleColor = trainEta.routeName.textColor,
+                                        backgroundColor = trainEta.routeName.color,
+                                    )
+                                },
+                            ),
+                        )
+                    },
+                    { onError ->
+                        Timber.e(onError, "Error while loading train arrivals")
+                        setNearbyDetailsError(true)
+                    })
+        }
+    }
+
+    fun loadNearbyBusDetails(busStop: BusStop) {
+        viewModelScope.launch {
+            busService.loadBusArrivals(busStop)
+                .observeOn(Schedulers.computation())
+                .subscribe(
+                    {
+                        uiState = uiState.copy(
+                            bottomSheetData = uiState.bottomSheetData.copy(
+                                busStop = busStop,
+                                title = busStop.name,
+                                icon = Icons.Filled.DirectionsBus,
+                                bottomSheetState = BottomSheetDataState.BUS,
+                                data = it.map { busArrival ->
+                                    BottomSheetPagerData(
+                                        title = busArrival.busDestination,
+                                        content = busArrival.timeLeftDueDelayNoMinutes,
+                                        subTitle = BusDirection.fromString(busArrival.routeDirection).shortLowerCase,
+                                    )
+                                },
+                            ),
+                        )
+                    },
+                    { onError ->
+                        Timber.e(onError, "Error while loading bus arrivals")
+                        setNearbyDetailsError(true)
+                    })
+        }
+    }
+
+    fun loadNearbyBikeDetails(currentBikeStation: BikeStation) {
+        viewModelScope.launch {
+            bikeService.findBikeStation(currentBikeStation.id)
+                .observeOn(Schedulers.computation())
+                .subscribe(
+                    {
+                        uiState = uiState.copy(
+                            bottomSheetData = uiState.bottomSheetData.copy(
+                                title = currentBikeStation.name,
+                                icon = Icons.Filled.DirectionsBike,
+                                bottomSheetState = BottomSheetDataState.BIKE,
+                                bikeStation = it,
+                                data = listOf(
+                                    BottomSheetPagerData(
+                                        title = "Bikes",
+                                        content = it.availableBikes.toString(),
+                                        bottom = "available",
+                                    ),
+                                    BottomSheetPagerData(
+                                        title = "Docks",
+                                        content = it.availableDocks.toString(),
+                                        bottom = "available",
+                                    )
+                                )
+                            ),
+                        )
+                    },
+                    { onError ->
+                        Timber.e(onError, "Error while loading bus arrivals")
+                        setNearbyDetailsError(true)
+                    })
+        }
+    }
+
+    companion object {
+        fun provideFactory(
+            owner: SavedStateRegistryOwner,
+            defaultArgs: Bundle? = null,
+        ): AbstractSavedStateViewModelFactory =
+            object : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(
+                    key: String,
+                    modelClass: Class<T>,
+                    handle: SavedStateHandle
+                ): T {
+                    return NearbyViewModel() as T
+                }
+            }
     }
 }

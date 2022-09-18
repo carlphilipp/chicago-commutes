@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.core.model.enumeration
 
-import java.util.Locale
 import timber.log.Timber
 
 /**

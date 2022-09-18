@@ -71,8 +71,9 @@ fun BusScreen(
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         snackbarHost = { SnackbarHostInsets(state = mainViewModel.uiState.snackbarHostState) },
-        content = {
+        content = { paddingValues ->
             ModalBottomSheetLayoutMaterial3(
+                modifier = Modifier.padding(paddingValues),
                 sheetState = mainViewModel.uiState.busModalBottomSheetState,
                 sheetContent = mainViewModel.uiState.bottomSheetContent,
                 content = {
@@ -111,7 +112,15 @@ fun BusScreen(
                                                         mainViewModel.uiState.busModalBottomSheetState.hide()
                                                     } else {
                                                         mainViewModel.updateBottomSheet {
-                                                            ShowBusBoundBottomView(busRoute = busRoute, mainViewModel = mainViewModel)
+                                                            ShowBusBoundBottomView(
+                                                                busRoute = busRoute,
+                                                                mainViewModel = mainViewModel,
+                                                                onBackClick = {
+                                                                    scope.launch {
+                                                                        mainViewModel.uiState.busModalBottomSheetState.hide()
+                                                                    }
+                                                                }
+                                                            )
                                                         }
                                                         mainViewModel.uiState.busModalBottomSheetState.show()
                                                     }

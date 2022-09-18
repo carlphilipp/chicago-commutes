@@ -21,7 +21,7 @@ package fr.cph.chicago.util
 
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.rx.RxUtil.handleListError
+import fr.cph.chicago.rx.RxUtil.handleMapError
 import fr.cph.chicago.rx.RxUtil.singleFromCallable
 import io.reactivex.rxjava3.core.Single
 import java.util.concurrent.Callable
@@ -99,7 +99,7 @@ object MapUtil {
         )
     }
 
-    fun readNearbyStation(position: Position, bikeStations: List<BikeStation>): Single<List<BikeStation>> {
+    fun readNearbyStation(position: Position, bikeStations: Map<String, BikeStation>): Single<Map<String, BikeStation>> {
         return singleFromCallable(
             Callable {
                 val latitude = position.latitude
@@ -110,12 +110,14 @@ object MapUtil {
                 val lonMax = longitude + DEFAULT_RANGE
                 val lonMin = longitude - DEFAULT_RANGE
 
-                bikeStations
+                bikeStations.values
+                    .asSequence()
                     .filter { station -> station.latitude <= latMax }
                     .filter { station -> station.latitude >= latMin }
                     .filter { station -> station.longitude <= lonMax }
                     .filter { station -> station.longitude >= lonMin }
+                    .associateBy { it.id }
             })
-            .onErrorReturn(handleListError())
+            .onErrorReturn(handleMapError())
     }
 }

@@ -27,6 +27,7 @@ import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import fr.cph.chicago.exception.BaseException
 import fr.cph.chicago.redux.store
 import fr.cph.chicago.rx.RxUtil.handleListError
+import fr.cph.chicago.rx.RxUtil.handleMapError
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
@@ -84,7 +85,7 @@ object MixedService {
         return Single.zip(
             favoritesTrainArrivals,
             favoritesBusArrivals
-        ) { trainArrivalsDTO, busArrivalsDTO -> FavoritesDTO(trainArrivalsDTO, busArrivalsDTO, false, listOf()) }
+        ) { trainArrivalsDTO, busArrivalsDTO -> FavoritesDTO(trainArrivalsDTO, busArrivalsDTO, false, mapOf()) }
     }
 
     fun favorites(): Single<FavoritesDTO> {
@@ -93,7 +94,7 @@ object MixedService {
         // Bus online favorites
         val busArrivals = favoritesBusArrivalDTO().observeOn(Schedulers.computation())
         // Bikes online all stations
-        val bikeStationsObs = bikeService.allBikeStations().observeOn(Schedulers.computation()).onErrorReturn(handleListError())
+        val bikeStationsObs = bikeService.allBikeStations().observeOn(Schedulers.computation()).onErrorReturn(handleMapError())
         return Single.zip(busArrivals, trainArrivals, bikeStationsObs) { busArrivalDTO, trainArrivalsDTO, bikeStations ->
             FavoritesDTO(trainArrivalsDTO, busArrivalDTO, bikeStations.isEmpty(), bikeStations)
         }
@@ -101,7 +102,7 @@ object MixedService {
 
     fun busRoutesAndBikeStation(): Single<FirstLoadDTO> {
         val busRoutesSingle = busService.busRoutes().onErrorReturn(handleListError()).observeOn(Schedulers.computation())
-        val bikeStationsSingle = bikeService.allBikeStations().onErrorReturn(handleListError()).observeOn(Schedulers.computation())
+        val bikeStationsSingle = bikeService.allBikeStations().onErrorReturn(handleMapError()).observeOn(Schedulers.computation())
         return Single.zip(
             busRoutesSingle,
             bikeStationsSingle

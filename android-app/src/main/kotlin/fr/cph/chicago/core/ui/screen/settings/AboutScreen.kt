@@ -2,19 +2,22 @@ package fr.cph.chicago.core.ui.screen.settings
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.RateReview
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,18 +37,20 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.LicenseDialog
+import fr.cph.chicago.core.ui.common.ModalBottomSheetLayoutMaterial3
 import fr.cph.chicago.core.ui.common.RateView
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.launchWithDelay
 import fr.cph.chicago.util.Util
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun AboutScreen(
     viewModel: SettingsViewModel,
     navigationViewModel: NavigationViewModel,
     mainViewModel: MainViewModel,
+    settingsViewModel: SettingsViewModel,
     topBarTitle: String,
 ) {
     val context = LocalContext.current
@@ -53,9 +58,16 @@ fun AboutScreen(
     val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.settingsAboutScrollBehavior) }
     var startMarket by remember { mutableStateOf(false) }
     var showLicense by remember { mutableStateOf(false) }
+    val modalBottomSheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        animationSpec = tween(durationMillis = settingsViewModel.uiState.animationSpeed.slideDuration),
+        skipHalfExpanded = true,
+    )
 
-    Scaffold(
+    ModalBottomSheetLayoutMaterial3(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        sheetState = modalBottomSheetState,
+        sheetContent = { Text("") },
         content = {
             Column {
                 DisplayTopBar(

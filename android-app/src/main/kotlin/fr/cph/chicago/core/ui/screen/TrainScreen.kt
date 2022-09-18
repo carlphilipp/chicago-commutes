@@ -42,11 +42,11 @@ fun TrainScreen(modifier: Modifier = Modifier, title: String, navigationViewMode
             viewModel = navigationViewModel,
             scrollBehavior = scrollBehavior,
         )
-        // Wrapping with Scaffold as the animation is overriden if it's not the case
+        // Wrapping with Scaffold as the animation is overridden if it's not the case
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-            content = {
-                LazyColumn(modifier = modifier.fillMaxWidth()) {
+            content = { paddingValues ->
+                LazyColumn(modifier = modifier.padding(paddingValues).fillMaxWidth()) {
                     items(lines) { line ->
                         TextButton(
                             modifier = Modifier

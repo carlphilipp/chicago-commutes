@@ -2,6 +2,7 @@ package fr.cph.chicago.core.ui.screen.settings
 
 import android.content.Context
 import android.os.Bundle
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,16 +10,18 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.Insights
 import androidx.compose.material.icons.outlined.Map
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,6 +44,7 @@ import com.jakewharton.processphoenix.ProcessPhoenix
 import fr.cph.chicago.core.model.dto.PreferenceDTO
 import fr.cph.chicago.core.navigation.DisplayTopBar
 import fr.cph.chicago.core.navigation.NavigationViewModel
+import fr.cph.chicago.core.ui.common.ModalBottomSheetLayoutMaterial3
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.repository.RealmConfig
@@ -50,7 +54,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun DeveloperOptionsScreen(
     title: String,
@@ -61,6 +65,11 @@ fun DeveloperOptionsScreen(
     Timber.d("Compose DeveloperOptionsScreen")
     val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.settingsDeveloperScrollBehavior) }
     val scope = rememberCoroutineScope()
+    val modalBottomSheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        animationSpec = tween(durationMillis = settingsViewModel.uiState.animationSpeed.slideDuration),
+        skipHalfExpanded = true,
+    )
 
     LaunchedEffect(key1 = Unit, block = {
         scope.launch {
@@ -69,8 +78,10 @@ fun DeveloperOptionsScreen(
         }
     })
 
-    Scaffold(
+    ModalBottomSheetLayoutMaterial3(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        sheetState = modalBottomSheetState,
+        sheetContent = { Text("") },
         content = {
             Column {
                 DisplayTopBar(

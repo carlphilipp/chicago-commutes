@@ -31,7 +31,6 @@ import fr.cph.chicago.core.ui.screen.settings.DeveloperOptionsViewModel
 import fr.cph.chicago.core.ui.screen.settings.DisplaySettingsScreen
 import fr.cph.chicago.core.ui.screen.settings.SettingsScreen
 import fr.cph.chicago.core.ui.screen.settings.ThemeChooserSettingsScreen
-import fr.cph.chicago.core.viewmodel.locationViewModel
 import fr.cph.chicago.core.viewmodel.mainViewModel
 import fr.cph.chicago.core.viewmodel.settingsViewModel
 import fr.cph.chicago.getActivity
@@ -88,7 +87,7 @@ sealed class Screen(
                 defaultArgs = backStackEntry.arguments
             )
             val viewModel = ViewModelProvider(activity, factory)[TrainListStationViewModel::class.java]
-            viewModel.init(line = line)
+            viewModel.Init(line = line)
             TrainLineStopsScreen(
                 viewModel = viewModel,
                 navigationViewModel = navigationViewModel,
@@ -264,13 +263,17 @@ sealed class Screen(
         icon = Icons.Filled.NearMe,
         topBar = ScreenTopBar.MediumTopBarDrawer,
         isGestureEnabled = false,
-        component = { _, navigationViewModel ->
+        component = { backStackEntry, navigationViewModel ->
+            val activity = navigationViewModel.uiState.context.getActivity()
+            val factory = NearbyViewModel.provideFactory(
+                owner = activity,
+                defaultArgs = backStackEntry.arguments
+            )
+            val viewModel = ViewModelProvider(activity, factory)[NearbyViewModel::class.java]
             NearbyScreen(
-                mainViewModel = mainViewModel,
-                locationViewModel = locationViewModel,
+                viewModel = viewModel,
                 navigationViewModel = navigationViewModel,
                 settingsViewModel = settingsViewModel,
-                title = stringResource(R.string.screen_nearby),
             )
         })
 
@@ -346,7 +349,7 @@ sealed class Screen(
         component = { _, navigationViewModel ->
             DisplaySettingsScreen(
                 title = stringResource(R.string.screen_settings_display),
-                viewModel = settingsViewModel,
+                settingsViewModel = settingsViewModel,
                 navigationViewModel = navigationViewModel,
             )
         })
@@ -375,6 +378,7 @@ sealed class Screen(
                 viewModel = settingsViewModel,
                 navigationViewModel = navigationViewModel,
                 mainViewModel = mainViewModel,
+                settingsViewModel = settingsViewModel,
             )
         })
 
@@ -396,6 +400,7 @@ sealed class Screen(
                 mainViewModel = mainViewModel,
                 navigationViewModel = navigationViewModel,
             )
+            viewModel.InitModel()
         }
     )
 
@@ -406,14 +411,21 @@ sealed class Screen(
         isGestureEnabled = false,
         topBar = ScreenTopBar.MediumTopBarBackReloadMenu,
         component = { backStackEntry, navigationViewModel ->
+            val activity = navigationViewModel.uiState.context.getActivity()
             val line = URLDecoder.decode(backStackEntry.arguments?.getString("line", "") ?: "", "UTF-8")
             val trainLine = TrainLine.fromXmlString(line)
 
-            val viewModel = MapTrainViewModel(line = trainLine)
+            val factory = MapTrainViewModel.provideFactory(
+                owner = activity,
+                defaultArgs = backStackEntry.arguments
+            )
+            val viewModel = ViewModelProvider(activity, factory)[MapTrainViewModel::class.java]
+            if (viewModel.uiState.line == TrainLine.NA) {
+                viewModel.setTrainLine(trainLine = trainLine)
+            }
             TrainMapScreen(
                 viewModel = viewModel,
-                navigationViewModel = navigationViewModel,
-                title = trainLine.toStringWithLine(),
+                settingsViewModel = settingsViewModel,
             )
         }
     )
@@ -424,14 +436,13 @@ sealed class Screen(
         showOnDrawer = false,
         isGestureEnabled = false,
         topBar = ScreenTopBar.MediumTopBarBackReload,
-        component = { backStackEntry, navigationViewModel ->
+        component = { backStackEntry, _ ->
             val busRouteId = URLDecoder.decode(backStackEntry.arguments?.getString("busRouteId", "") ?: "", "UTF-8")
 
             val viewModel = MapBusViewModel(busRouteId = busRouteId)
             BusMapScreen(
                 viewModel = viewModel,
-                navigationViewModel = navigationViewModel,
-                title = busRouteId,
+                settingsViewModel = settingsViewModel,
             )
         }
     )
@@ -443,12 +454,20 @@ sealed class Screen(
         isGestureEnabled = false,
         topBar = ScreenTopBar.MediumTopBarBackReload,
         component = { backStackEntry, navigationViewModel ->
+            val activity = navigationViewModel.uiState.context.getActivity()
             val id = URLDecoder.decode(backStackEntry.arguments?.getString("id", "") ?: "", "UTF-8")
 
-            val viewModel = MapBikesViewModel(id = id)
+            val factory = MapBikesViewModel.provideFactory(
+                owner = activity,
+                defaultArgs = backStackEntry.arguments
+            )
+
+            val viewModel = ViewModelProvider(activity, factory)[MapBikesViewModel::class.java]
+            if (viewModel.uiState.id == "") {
+                viewModel.setId(id)
+            }
             BikeMapScreen(
                 viewModel = viewModel,
-                navigationViewModel = navigationViewModel,
                 settingsViewModel = settingsViewModel,
                 title = "Bike station",
             )

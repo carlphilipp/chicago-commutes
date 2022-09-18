@@ -9,6 +9,7 @@ plugins {
 apply plugin: 'realm-android'
 
 android {
+    namespace 'fr.cph.chicago'
     compileSdkVersion Android.compile_sdk
     buildToolsVersion Android.build_tools
 
@@ -51,7 +52,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion '1.1.0-rc02'
+        kotlinCompilerExtensionVersion Version.compose_compiler
     }
 
     sourceSets {
@@ -160,44 +161,38 @@ dependencies {
     implementation(Lib.kotlin)
     implementation(Lib.kotlin_reflect)
 
-    // Jetpack
-    // FIXME clean reorganize new dependencies
-    def composeVersion = "1.2.0-alpha06"
-    implementation("androidx.compose.animation:animation:" + composeVersion)
-    implementation("androidx.compose.foundation:foundation:" + composeVersion)
-    implementation("androidx.compose.foundation:foundation-layout:" + composeVersion)
-    implementation("androidx.compose.material:material:" + composeVersion)
-    implementation("androidx.compose.material:material-icons-core:" + composeVersion)
-    implementation("androidx.compose.material:material-icons-extended:" + composeVersion)
-    implementation("androidx.compose.runtime:runtime:" + composeVersion)
-    implementation("androidx.compose.ui:ui:" + composeVersion)
-    implementation("androidx.compose.ui:ui-tooling:" + composeVersion)
+    // AndroidX
+    implementation(Lib.androidx_activity_compose)
+    implementation(Lib.androidx_constraint)
+    implementation(Lib.androidx_lifecycle_compose)
+    implementation(Lib.androidx_lifecycle_ktx)
+    implementation(Lib.androidx_navigation_compose)
+    implementation(Lib.androidx_navigation_runtime)
+    implementation(Lib.androidx_work)
+    implementation(Lib.hilt_work)
 
-    implementation("androidx.compose.material3:material3:1.0.0-alpha08")
-
-    implementation("androidx.activity:activity-compose:1.6.0-alpha01")
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0-alpha05")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0-alpha05")
-    implementation("androidx.navigation:navigation-compose:2.5.0-alpha03")
-    implementation("androidx.navigation:navigation-runtime-ktx:2.5.0-alpha03")
-    implementation("androidx.work:work-runtime-ktx:2.8.0-alpha01")
-
-    def accompanistVersion = "0.24.5-alpha"
-    implementation("com.google.accompanist:accompanist-appcompat-theme:" + accompanistVersion)
-    implementation("com.google.accompanist:accompanist-swiperefresh:"+ accompanistVersion)
-    implementation("com.google.accompanist:accompanist-systemuicontroller:"+ accompanistVersion)
-    implementation("com.google.accompanist:accompanist-navigation-animation:"+ accompanistVersion)
-
-    implementation("androidx.hilt:hilt-work:1.0.0")
-    kapt("androidx.hilt:hilt-compiler:1.0.0")
-
-    implementation group: 'com.jakewharton', name: 'process-phoenix', version: '2.1.2'
+    // Compose
+    implementation(Lib.compose_animation)
+    implementation(Lib.compose_foundation)
+    implementation(Lib.compose_foundation_layout)
+    implementation(Lib.compose_material)
+    implementation(Lib.compose_material_icon_core)
+    implementation(Lib.compose_material_icon_extended)
+    implementation(Lib.compose_runtime)
+    implementation(Lib.compose_ui)
+    implementation(Lib.compose_ui_tooling)
+    implementation(Lib.compose_material3)
 
     // Google
     implementation(Lib.material)
+    implementation(Lib.accompanist_theme)
+    implementation(Lib.accompanist_swiperefresh)
+    implementation(Lib.accompanist_systemui)
+    implementation(Lib.accompanist_animation)
+    implementation(Lib.accompanist_pager)
+    implementation(Lib.accompanist_permissions)
 
-    // Jackson4
+    // Jackson
     implementation(Lib.jackson_core)
     implementation(Lib.jackson_databind)
     implementation(Lib.jackson_annotations)
@@ -211,10 +206,8 @@ dependencies {
     // Tools
     implementation(Lib.commons_collections4)
     implementation(Lib.commons_text)
-    implementation(Lib.sliding_up_panel)
     implementation(Lib.univocity)
-    implementation(Lib.easypermissions)
-    implementation(Lib.photoview)
+    implementation(Lib.process_phoenix)
     implementation(Lib.re_kotlin)
     implementation(Lib.timber)
     implementation(Lib.retrofit2)
@@ -226,7 +219,7 @@ dependencies {
     // Google play flavor
     googleplayImplementation(Lib.google_services_map)
     googleplayImplementation(Lib.google_services_location)
-    googleplayImplementation("com.google.maps.android:maps-compose:1.2.0")
+    googleplayImplementation(Lib.google_maps_compose)
 
     // Foss flavor
     fossImplementation(Lib.osmdroid)

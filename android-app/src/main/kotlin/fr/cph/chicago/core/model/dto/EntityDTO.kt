@@ -43,14 +43,14 @@ data class FirstLoadDTO(
     val busRoutesError: Boolean,
     val bikeStationsError: Boolean,
     val busRoutes: List<BusRoute>,
-    val bikeStations: List<BikeStation>
+    val bikeStations: Map<String, BikeStation>
 )
 
 data class FavoritesDTO(
     val trainArrivalDTO: TrainArrivalDTO,
     val busArrivalDTO: BusArrivalDTO,
     val bikeError: Boolean,
-    val bikeStations: List<BikeStation>
+    val bikeStations: Map<String, BikeStation>
 )
 
 data class BusFavoriteDTO(val routeId: String, val stopId: String, val bound: String)

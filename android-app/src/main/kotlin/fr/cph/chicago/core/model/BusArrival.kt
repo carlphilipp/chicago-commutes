@@ -41,7 +41,8 @@ data class BusArrival(
     val routeDirection: String,
     val busDestination: String,
     val predictionTime: Date,
-    val isDelay: Boolean) : Parcelable {
+    val isDelay: Boolean
+) : Parcelable {
 
     companion object {
         private const val NO_SERVICE = "No service"
@@ -68,7 +69,8 @@ data class BusArrival(
         routeDirection = source.readString() ?: "",
         busDestination = source.readString() ?: "",
         predictionTime = Date(source.readLong()),
-        isDelay = source.readString()!!.toBoolean())
+        isDelay = source.readString()!!.toBoolean()
+    )
 
     private val timeLeftMinutes: String
         get() {
@@ -85,6 +87,22 @@ data class BusArrival(
             return predictionTime.time - timeStamp.time
         }
 
+    val timeLeftDueDelayNoMinutes: String
+        get() {
+            return if (isDelay) {
+                "Delay"
+            } else {
+                if ("0 min" == timeLeftMinutes.trim { it <= ' ' }) {
+                    "Due"
+                } else {
+                    if (timeLeftMinutes.contains(" min")) {
+                        timeLeftMinutes.split(" min")[0]
+                    } else {
+                        timeLeftMinutes
+                    }
+                }
+            }
+        }
 
     val timeLeftDueDelay: String
         get() {
@@ -99,7 +117,7 @@ data class BusArrival(
             }
         }
 
-    fun formatArrivalTime() : String {
+    fun formatArrivalTime(): String {
         return if (this.isDelay) " Delay" else " " + this.timeLeftMinutes
     }
 

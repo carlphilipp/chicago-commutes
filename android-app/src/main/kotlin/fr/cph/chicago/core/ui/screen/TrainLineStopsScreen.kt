@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.TopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,6 +37,7 @@ import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.service.TrainService
+import fr.cph.chicago.stub.DummyTopAppBarScrollBehavior
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.launch
@@ -62,8 +64,8 @@ fun TrainLineStopsScreen(
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        content = {
-            Column {
+        content = { paddingValues ->
+            Column(modifier = Modifier.padding(paddingValues)) {
                 DisplayTopBar(
                     screen = Screen.TrainList,
                     title = title,
@@ -103,7 +105,7 @@ data class TrainListStationUiState constructor(
     val trainLine: TrainLine = TrainLine.NA,
     val trainStations: List<TrainStation> = listOf(),
     val listState: LazyListState = LazyListState(),
-    val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    val scrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
 )
 
 class TrainListStationViewModel(
@@ -113,8 +115,9 @@ class TrainListStationViewModel(
     var uiState by mutableStateOf(TrainListStationUiState())
         private set
 
+    @Composable
     @OptIn(ExperimentalMaterial3Api::class)
-    fun init(line: String) {
+    fun Init(line: String) {
         if (line != uiState.trainLine.toString()) {
             val trainLine = TrainLine.fromString(line)
             val title = trainLine.toStringWithLine()
@@ -123,11 +126,12 @@ class TrainListStationViewModel(
                 title = title,
                 trainLine = trainLine,
                 trainStations = listOf(),
-                scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+                scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
             )
         }
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun loadData(trainLine: TrainLine) {
         Single.fromCallable { trainService.getStationsForLine(trainLine) }
             .subscribeOn(Schedulers.computation())

@@ -59,7 +59,7 @@ data class State(
     // Bikes
     val bikeStationsStatus: Status = Status.UNKNOWN,
     val bikeStationsErrorMessage: Int = R.string.message_something_went_wrong,
-    val bikeStations: List<BikeStation> = listOf(),
+    val bikeStations: Map<String, BikeStation> = mapOf(),
 
     // Train Station activity state
     val trainStationStatus: Status = Status.UNKNOWN,

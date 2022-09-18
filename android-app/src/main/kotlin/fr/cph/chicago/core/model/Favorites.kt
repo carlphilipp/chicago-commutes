@@ -83,9 +83,11 @@ object Favorites {
             busService.getBusRoute(routeId)
         } else {
             val index = position - (trainFavorites.size + busRouteFavorites.size)
-            store.state.bikeStations
-                .filter { bikeStation -> bikeStation.id == bikeFavorites[index] }
-                .getOrElse(0) { bikeService.createEmptyBikeStation(bikeFavorites[index]) }
+            if (store.state.bikeStations.containsKey(bikeFavorites[index])) {
+                store.state.bikeStations[bikeFavorites[index]]!!
+            } else {
+                bikeService.createEmptyBikeStation(bikeFavorites[index])
+            }
         }
     }
 
@@ -185,7 +187,7 @@ data class LastUpdate(val value: String, private val random: Int = Random.nextIn
 data class StopDirection(val destination: String, val trainDirection: TrainDirection) : Comparable<StopDirection> {
     override fun compareTo(other: StopDirection): Int {
         if (this == other) {
-            return 0;
+            return 0
         }
         val dest = this.destination.compareTo(other.destination)
         return if (dest == 0) {

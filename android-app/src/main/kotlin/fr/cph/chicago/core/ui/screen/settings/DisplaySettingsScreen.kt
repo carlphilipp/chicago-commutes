@@ -1,14 +1,18 @@
 package fr.cph.chicago.core.ui.screen.settings
 
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.Animation
 import androidx.compose.material.icons.outlined.Brightness6
 import androidx.compose.material.icons.outlined.DarkMode
@@ -16,20 +20,25 @@ import androidx.compose.material.icons.outlined.FormatSize
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.TextFormat
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fr.cph.chicago.core.model.Theme
 import fr.cph.chicago.core.navigation.DisplayTopBar
@@ -40,31 +49,48 @@ import fr.cph.chicago.core.ui.common.FontSizeBottomView
 import fr.cph.chicago.core.ui.common.FontTypefaceBottomView
 import fr.cph.chicago.core.ui.common.ModalBottomSheetLayoutMaterial3
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
-import fr.cph.chicago.core.ui.common.SwitchMaterial3
 import fr.cph.chicago.core.ui.screen.Screen
 import fr.cph.chicago.launchWithDelay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun DisplaySettingsScreen(
     modifier: Modifier = Modifier,
     title: String,
-    viewModel: SettingsViewModel,
+    settingsViewModel: SettingsViewModel,
     navigationViewModel: NavigationViewModel,
 ) {
     Timber.d("Compose DisplaySettingsScreen")
-    val uiState = viewModel.uiState
+
+    val uiState = settingsViewModel.uiState
     val navController = LocalNavController.current
 
     val scope = rememberCoroutineScope()
     val scrollBehavior by remember { mutableStateOf(navigationViewModel.uiState.settingsDisplayScrollBehavior) }
+    var bottomSheetState by remember { mutableStateOf(BottomSheetState.FONT_TYPE) }
+
+    val modalBottomSheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        animationSpec = tween(durationMillis = uiState.animationSpeed.slideDuration),
+        skipHalfExpanded = true,
+    )
 
     ModalBottomSheetLayoutMaterial3(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        sheetState = viewModel.uiState.modalBottomSheetState,
-        sheetContent = viewModel.uiState.bottomSheetContent,
+        sheetState = modalBottomSheetState,
+        sheetContent = {
+            BottomSheetContent(
+                viewModel = settingsViewModel,
+                bottomSheetState = bottomSheetState,
+                onBackClick = {
+                    scope.launch {
+                        modalBottomSheetState.hide()
+                    }
+                }
+            )
+        },
         content = {
             Column {
                 DisplayTopBar(
@@ -89,7 +115,7 @@ fun DisplaySettingsScreen(
                             title = "Theme color",
                             description = "Choose a color",
                             onClick = {
-                                scope.launchWithDelay(viewModel.uiState.animationSpeed.clickDelay) {
+                                scope.launchWithDelay(settingsViewModel.uiState.animationSpeed.clickDelay) {
                                     navController.navigate(screen = Screen.SettingsThemeColorChooser)
                                 }
                             },
@@ -107,8 +133,10 @@ fun DisplaySettingsScreen(
                             title = "Follow System",
                             description = "Select dark/light mode based on system",
                             onClick = {
-                                if (viewModel.uiState.theme != Theme.AUTO) {
-                                    viewModel.setTheme(Theme.AUTO)
+                                if (settingsViewModel.uiState.theme == Theme.AUTO) {
+                                    settingsViewModel.setTheme(Theme.LIGHT)
+                                } else {
+                                    settingsViewModel.setTheme(Theme.AUTO)
                                 }
                             },
                             imageVector = Icons.Outlined.Brightness6,
@@ -118,8 +146,10 @@ fun DisplaySettingsScreen(
                             title = "Light Mode",
                             description = "Enable",
                             onClick = {
-                                if (viewModel.uiState.theme != Theme.LIGHT) {
-                                    viewModel.setTheme(Theme.LIGHT)
+                                if (settingsViewModel.uiState.theme == Theme.LIGHT) {
+                                    settingsViewModel.setTheme(Theme.DARK)
+                                } else {
+                                    settingsViewModel.setTheme(Theme.LIGHT)
                                 }
                             },
                             imageVector = Icons.Outlined.LightMode,
@@ -129,8 +159,10 @@ fun DisplaySettingsScreen(
                             title = "Dark Mode",
                             description = "Enable",
                             onClick = {
-                                if (viewModel.uiState.theme != Theme.DARK) {
-                                    viewModel.setTheme(Theme.DARK)
+                                if (settingsViewModel.uiState.theme == Theme.DARK) {
+                                    settingsViewModel.setTheme(Theme.LIGHT)
+                                } else {
+                                    settingsViewModel.setTheme(Theme.DARK)
                                 }
                             },
                             imageVector = Icons.Outlined.DarkMode,
@@ -148,11 +180,9 @@ fun DisplaySettingsScreen(
                             title = "Font type",
                             description = "Choose a font",
                             onClick = {
+                                bottomSheetState = BottomSheetState.FONT_TYPE
                                 scope.launch {
-                                    viewModel.updateBottomSheet {
-                                        FontTypefaceBottomView(title = "Pick a font", viewModel = viewModel)
-                                    }
-                                    viewModel.uiState.modalBottomSheetState.show()
+                                    modalBottomSheetState.show()
                                 }
                             },
                             imageVector = Icons.Outlined.TextFormat,
@@ -161,11 +191,9 @@ fun DisplaySettingsScreen(
                             title = "Font size",
                             description = "Choose a font size",
                             onClick = {
+                                bottomSheetState = BottomSheetState.FONT_SIZE
                                 scope.launch {
-                                    viewModel.updateBottomSheet {
-                                        FontSizeBottomView(title = "Pick a font size", viewModel = viewModel)
-                                    }
-                                    viewModel.uiState.modalBottomSheetState.show()
+                                    modalBottomSheetState.show()
                                 }
                             },
                             imageVector = Icons.Outlined.FormatSize,
@@ -182,11 +210,9 @@ fun DisplaySettingsScreen(
                             title = "Animations speed",
                             description = "Choose how fast the animation are rendered",
                             onClick = {
+                                bottomSheetState = BottomSheetState.ANIMATION_SPEED
                                 scope.launch {
-                                    viewModel.updateBottomSheet {
-                                        AnimationSpeedBottomView(title = "Pick the animation speed", viewModel = viewModel)
-                                    }
-                                    viewModel.uiState.modalBottomSheetState.show()
+                                    modalBottomSheetState.show()
                                 }
                             },
                             imageVector = Icons.Outlined.Animation,
@@ -281,6 +307,8 @@ fun DisplayElementSwitchView(
                     modifier = Modifier.alpha(alpha),
                     text = description,
                     style = MaterialTheme.typography.bodySmall,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
                 )
             }
             Row(
@@ -289,15 +317,62 @@ fun DisplayElementSwitchView(
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                SwitchMaterial3(
+                val icon: (@Composable () -> Unit)? = if (isChecked) {
+                    {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                        )
+                    }
+                } else {
+                    null
+                }
+                Switch(
                     modifier = Modifier,
                     onCheckedChange = {
                         onClick()
                     },
                     enabled = enabled,
                     checked = isChecked,
+                    thumbContent = icon,
                 )
             }
         }
     }
+}
+
+@Composable
+internal fun BottomSheetContent(
+    viewModel: SettingsViewModel,
+    bottomSheetState: BottomSheetState,
+    onBackClick: () -> Unit,
+) {
+    when (bottomSheetState) {
+        BottomSheetState.FONT_TYPE -> {
+            FontTypefaceBottomView(
+                title = "Pick a font",
+                viewModel = viewModel,
+                onBackClick = onBackClick
+            )
+        }
+        BottomSheetState.FONT_SIZE -> {
+            FontSizeBottomView(
+                title = "Pick a font size",
+                viewModel = viewModel,
+                onBackClick = onBackClick
+            )
+        }
+        BottomSheetState.ANIMATION_SPEED -> {
+            AnimationSpeedBottomView(
+                title = "Pick the animation speed",
+                viewModel = viewModel,
+                onBackClick = onBackClick
+            )
+        }
+    }
+}
+
+internal enum class BottomSheetState {
+    FONT_TYPE, FONT_SIZE, ANIMATION_SPEED
 }

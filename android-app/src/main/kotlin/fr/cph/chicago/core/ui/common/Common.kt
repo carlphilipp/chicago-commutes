@@ -23,6 +23,7 @@ import androidx.compose.animation.with
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.calculateRotation
@@ -36,6 +37,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -59,9 +61,11 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
@@ -87,6 +91,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -105,16 +110,17 @@ import com.google.accompanist.swiperefresh.SwipeRefreshState
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.navigation.LocalNavController
 import fr.cph.chicago.core.theme.favorite_yellow
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.functions.Consumer
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 private val googleStreetClient = GoogleStreetClient
 
@@ -185,6 +191,8 @@ fun ColoredBox(modifier: Modifier = Modifier, color: Color = MaterialTheme.color
 fun AnimatedText(
     modifier: Modifier = Modifier,
     text: String,
+    maxLines: Int = 1,
+    overflow: TextOverflow = TextOverflow.Ellipsis,
     style: TextStyle = LocalTextStyle.current,
     color: Color = Color.Unspecified,
 ) {
@@ -202,9 +210,8 @@ fun AnimatedText(
                 Text(
                     text = target,
                     style = style,
-                    maxLines = 1,
-
-                    overflow = TextOverflow.Ellipsis,
+                    maxLines = maxLines,
+                    overflow = overflow,
                     color = color,
                 )
             }
@@ -455,20 +462,14 @@ fun StationDetailsTitleIconView(
                 }
             }
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                // FIXME:
-                // See to implement that or find something with some ui animation
-/*                var chec = remember { mutableStateOf(true) }
-                IconToggleButton(checked = chec.value, onCheckedChange = {
-                    chec.value = !chec.value
-                }) {
-                    val tint by animateColorAsState(if (chec.value) Color(0xFFEC407A) else Color(0xFFB0BEC5))
-                    Icon(Icons.Filled.Favorite, contentDescription = "Localized description", tint = tint)
-                }*/
-                IconButton(onClick = onFavoriteClick) {
+                IconToggleButton(
+                    checked = isFavorite,
+                    onCheckedChange = { onFavoriteClick(); true }
+                ) {
                     Icon(
                         imageVector = Icons.Filled.Favorite,
-                        contentDescription = "Favorite",
                         tint = if (isFavorite) favorite_yellow else LocalContentColor.current,
+                        contentDescription = null
                     )
                 }
                 IconButton(onClick = onMapClick) {
@@ -700,6 +701,7 @@ fun SwipeRefreshThemed(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchTextField(
     modifier: Modifier = Modifier,
@@ -727,4 +729,121 @@ fun SearchTextField(
             unfocusedIndicatorColor = Color.Transparent,
         ),
     )
+}
+
+@Composable
+fun TrainLineButton(
+    modifier: Modifier = Modifier,
+    trainLine: TrainLine,
+    showLine: Boolean = false,
+    onClick: () -> Unit = {},
+) {
+    val text = if (showLine) trainLine.toStringWithLine() else trainLine.toString()
+    val minWidth: Dp = if (showLine) 110.dp else 90.dp
+    TrainLineStyle(
+        modifier = modifier,
+        text = text,
+        color = trainLine.color,
+        textColor = trainLine.textColor,
+        minWidth = minWidth,
+        onClick = onClick,
+    )
+}
+
+@Composable
+fun BusDirectionButton(
+    modifier: Modifier = Modifier,
+    title: String,
+    onClick: () -> Unit = {},
+) {
+    TrainLineStyle(
+        modifier = modifier,
+        text = title,
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        textColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        minWidth = 90.dp,
+        onClick = onClick,
+    )
+}
+
+@Composable
+fun TrainLineStyleText(
+    modifier: Modifier = Modifier,
+    text: String,
+    color: Color,
+    textColor: Color,
+) {
+    TrainLineStyle(
+        modifier = modifier,
+        text = text,
+        textColor = textColor,
+        color = color,
+    )
+}
+
+@Composable
+fun TrainLineStyleIconText(
+    modifier: Modifier = Modifier,
+    text: String,
+    color: Color,
+    textColor: Color,
+    icon: ImageVector,
+    minWidth: Dp = 90.dp,
+    onClick: () -> Unit = {},
+) {
+    Surface(
+        modifier = modifier
+            .defaultMinSize(minWidth = minWidth)
+            .clip(RoundedCornerShape(15.0.dp))
+            .clickable(onClick = onClick),
+        color = color,
+        shadowElevation = 1.dp,
+        shape = RoundedCornerShape(15.0.dp),
+    ) {
+        Row(
+            modifier = Modifier.padding(vertical = 7.dp, horizontal = 15.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+            )
+            Text(
+                text = text,
+                color = textColor,
+                style = MaterialTheme.typography.titleSmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(start = 8.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun TrainLineStyle(
+    modifier: Modifier = Modifier,
+    text: String,
+    color: Color,
+    textColor: Color,
+    minWidth: Dp = 90.dp,
+    onClick: () -> Unit = {},
+) {
+    Surface(
+        modifier = modifier
+            .defaultMinSize(minWidth = minWidth)
+            .clip(RoundedCornerShape(15.0.dp))
+            .clickable(onClick = onClick),
+        color = color,
+        shadowElevation = 1.dp,
+        shape = RoundedCornerShape(15.0.dp),
+    ) {
+        Text(
+            text = text,
+            color = textColor,
+            style = MaterialTheme.typography.titleSmall,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 15.dp, vertical = 7.dp),
+        )
+    }
 }

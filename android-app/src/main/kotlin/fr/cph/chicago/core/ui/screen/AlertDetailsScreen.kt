@@ -70,9 +70,9 @@ fun AlertDetailsScreen(
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             snackbarHost = { SnackbarHostInsets(state = uiState.snackbarHostState) },
-            content = {
+            content = { paddingValues ->
                 SwipeRefreshThemed(
-                    modifier = modifier,
+                    modifier = Modifier.padding(paddingValues),
                     swipeRefreshState = rememberSwipeRefreshState(uiState.isRefreshing),
                     onRefresh = { viewModel.loadAlertDetails() },
                 ) {
