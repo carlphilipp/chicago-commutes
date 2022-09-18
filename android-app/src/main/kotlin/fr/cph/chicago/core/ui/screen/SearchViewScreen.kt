@@ -59,6 +59,7 @@ import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
+import fr.cph.chicago.stub.DummyTopAppBarScrollBehavior
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
@@ -275,7 +276,7 @@ private fun SearchRow(
 data class SearchUiState constructor(
     val search: String = "",
     val searchLazyListState: LazyListState = LazyListState(),
-    val searchScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    val searchScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
 
     val isTrainSelected: Boolean = true,
     val trains: List<TrainStation> = listOf(),
@@ -296,6 +297,16 @@ class SearchViewModel @Inject constructor(
 ) : ViewModel() {
     var uiState by mutableStateOf(SearchUiState())
         private set
+
+    @Composable
+    @OptIn(ExperimentalMaterial3Api::class)
+    fun InitModel() {
+        if(uiState.search == "") {
+            SearchUiState(
+                searchScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+            )
+        }
+    }
 
     @OptIn(ExperimentalMaterial3Api::class)
     fun updateText(searchText: String) {

@@ -29,15 +29,16 @@ fun LargeTopBar(
     val backgroundColor = getTopBarBackgroundColor(scrollBehavior)
     val foregroundColors = getTopBarForegroundColors()
 
-    Surface(color = backgroundColor) {
+    Surface(color = Color.Red) {
         LargeTopAppBar(
             navigationIcon = navigationIcon,
             title = { Text(text = title) },
-            colors = foregroundColors,
+            /*colors = foregroundColors,*/
             scrollBehavior = scrollBehavior,
-            modifier = Modifier.windowInsetsPadding(
+            modifier = Modifier
+/*                .windowInsetsPadding(
                 WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-            )
+            )*/
         )
     }
 }
@@ -52,7 +53,7 @@ fun MediumTopBar(
 ) {
     val backgroundColor = getTopBarBackgroundColor(scrollBehavior)
     val foregroundColors = getTopBarForegroundColors()
-    Surface(color = backgroundColor) {
+    //Surface(color = Color.Red) {
         CenterAlignedTopAppBar(
             title = {
                 Text(
@@ -64,20 +65,25 @@ fun MediumTopBar(
             navigationIcon = navigationIcon,
             actions = actions,
             scrollBehavior = scrollBehavior,
-            modifier = Modifier.windowInsetsPadding(
+/*            modifier = Modifier.windowInsetsPadding(
                 WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-            )
+            )*/
         )
-    }
+    //}
 }
 
+@Deprecated(message = "This was working on older API. Keeping it in case of. Should be deleted at some point")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun getTopBarBackgroundColor(scrollBehavior: TopAppBarScrollBehavior): Color {
     val backgroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors()
-    return backgroundColors.containerColor(colorTransitionFraction = scrollBehavior.state.contentOffset).value
+   //return backgroundColors.containerColor(colorTransitionFraction = scrollBehavior.state.contentOffset)
+    // FIXME
+    return Color.Red
 }
 
+@Deprecated(message = "This was working on older API. Keeping it in case of. Should be deleted at some point")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun getTopBarForegroundColors(): TopAppBarColors {
     return TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent, scrolledContainerColor = Color.Transparent)

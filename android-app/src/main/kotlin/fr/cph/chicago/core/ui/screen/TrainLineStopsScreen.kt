@@ -37,6 +37,7 @@ import fr.cph.chicago.core.navigation.NavigationViewModel
 import fr.cph.chicago.core.ui.common.ColoredBox
 import fr.cph.chicago.core.ui.common.NavigationBarsSpacer
 import fr.cph.chicago.service.TrainService
+import fr.cph.chicago.stub.DummyTopAppBarScrollBehavior
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.launch
@@ -104,7 +105,7 @@ data class TrainListStationUiState constructor(
     val trainLine: TrainLine = TrainLine.NA,
     val trainStations: List<TrainStation> = listOf(),
     val listState: LazyListState = LazyListState(),
-    val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    val scrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
 )
 
 class TrainListStationViewModel(
@@ -114,8 +115,9 @@ class TrainListStationViewModel(
     var uiState by mutableStateOf(TrainListStationUiState())
         private set
 
+    @Composable
     @OptIn(ExperimentalMaterial3Api::class)
-    fun init(line: String) {
+    fun Init(line: String) {
         if (line != uiState.trainLine.toString()) {
             val trainLine = TrainLine.fromString(line)
             val title = trainLine.toStringWithLine()

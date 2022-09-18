@@ -91,10 +91,10 @@ fun TrainStationScreen(
     val context = LocalContext.current
 
     Column {
-        DisplayTopBar(
+/*        DisplayTopBar(
             screen = Screen.TrainDetails,
             viewModel = navigationViewModel
-        )
+        )*/
 
         SwipeRefreshThemed(
             modifier = modifier,

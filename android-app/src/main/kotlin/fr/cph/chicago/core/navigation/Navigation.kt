@@ -55,6 +55,7 @@ import fr.cph.chicago.core.ui.screen.TopBarType
 import fr.cph.chicago.core.ui.screen.settings.SettingsViewModel
 import fr.cph.chicago.core.viewmodel.MainViewModel
 import fr.cph.chicago.core.viewmodel.settingsViewModel
+import fr.cph.chicago.stub.DummyTopAppBarScrollBehavior
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.net.URLEncoder
@@ -160,19 +161,19 @@ data class NavigationUiState constructor(
     val shouldExit: Boolean = false,
 
     // Scroll behavior
-    val favScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
-    val trainScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
-    val busScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
-    val divvyScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
-    val nearbyScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
-    val ctaMapScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
-    val alertsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
-    val searchScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
-    val settingsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
-    val settingsDisplayScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
-    val settingsDeveloperScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
-    val settingsThemeColorScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
-    val settingsAboutScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    var favScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
+    val trainScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
+    val busScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
+    val divvyScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
+    val nearbyScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
+    val ctaMapScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
+    val alertsScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
+    val searchScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
+    val settingsScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
+    val settingsDisplayScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
+    val settingsDeveloperScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
+    val settingsThemeColorScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
+    val settingsAboutScrollBehavior: TopAppBarScrollBehavior = DummyTopAppBarScrollBehavior(),
 )
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.animation.ExperimentalAnimationApi::class)
@@ -184,10 +185,19 @@ fun rememberNavigationState(
     currentScreen: Screen = remember { Screen.Favorites },
     decayAnimationSpec: DecayAnimationSpec<Float> = rememberSplineBasedDecay(),
     topAppBarScrollState: TopAppBarState = rememberTopAppBarState(),
-    settingsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec, topAppBarScrollState),
-    settingsDisplayScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec, topAppBarScrollState),
-    settingsDeveloperScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec, topAppBarScrollState),
-    settingsThemeColorScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec, topAppBarScrollState),
+    settingsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(state = topAppBarScrollState),
+    settingsDisplayScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(state = topAppBarScrollState),
+    settingsDeveloperScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(state = topAppBarScrollState),
+    settingsThemeColorScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(state = topAppBarScrollState),
+    favScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    trainScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    busScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    divvyScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    nearbyScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    ctaMapScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    alertsScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    searchScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+    settingsAboutScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
 ) = remember(drawerState, navController, currentScreen, decayAnimationSpec, topAppBarScrollState) {
     NavigationUiState(
         context = context,
@@ -198,6 +208,15 @@ fun rememberNavigationState(
         settingsDisplayScrollBehavior = settingsDisplayScrollBehavior,
         settingsDeveloperScrollBehavior = settingsDeveloperScrollBehavior,
         settingsThemeColorScrollBehavior = settingsThemeColorScrollBehavior,
+        favScrollBehavior = favScrollBehavior,
+        trainScrollBehavior = trainScrollBehavior,
+        busScrollBehavior = busScrollBehavior,
+        divvyScrollBehavior = divvyScrollBehavior,
+        nearbyScrollBehavior = nearbyScrollBehavior,
+        ctaMapScrollBehavior = ctaMapScrollBehavior,
+        alertsScrollBehavior = alertsScrollBehavior,
+        searchScrollBehavior = searchScrollBehavior,
+        settingsAboutScrollBehavior = settingsAboutScrollBehavior,
     )
 }
 

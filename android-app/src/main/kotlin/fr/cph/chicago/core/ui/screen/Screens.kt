@@ -87,7 +87,7 @@ sealed class Screen(
                 defaultArgs = backStackEntry.arguments
             )
             val viewModel = ViewModelProvider(activity, factory)[TrainListStationViewModel::class.java]
-            viewModel.init(line = line)
+            viewModel.Init(line = line)
             TrainLineStopsScreen(
                 viewModel = viewModel,
                 navigationViewModel = navigationViewModel,
@@ -400,6 +400,7 @@ sealed class Screen(
                 mainViewModel = mainViewModel,
                 navigationViewModel = navigationViewModel,
             )
+            viewModel.InitModel()
         }
     )
 

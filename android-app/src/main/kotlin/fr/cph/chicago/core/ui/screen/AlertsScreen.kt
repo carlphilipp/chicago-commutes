@@ -68,7 +68,7 @@ fun AlertsScreen(
     var searchRoutesAlerts by remember { mutableStateOf<List<RoutesAlertsDTO>>(listOf()) }
     searchRoutesAlerts = uiState.routesAlerts
     val topAppBarScrollState = rememberTopAppBarState()
-    val scrollBehavior by remember { mutableStateOf(TopAppBarDefaults.pinnedScrollBehavior(topAppBarScrollState)) }
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(topAppBarScrollState)
 
     Column {
         DisplayTopBar(

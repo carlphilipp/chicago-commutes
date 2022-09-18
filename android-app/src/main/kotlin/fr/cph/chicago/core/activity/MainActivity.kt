@@ -92,7 +92,7 @@ class MainActivity : ComponentActivity() {
         // Turn off the decor fitting system windows (top and bottom)
         // It means that now we need to handle manually the top padding
         // This allows to have a somewhat fullscreen
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        //WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
             val mainViewModel = mainViewModel

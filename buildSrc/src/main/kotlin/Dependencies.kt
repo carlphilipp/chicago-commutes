@@ -22,7 +22,7 @@ object Version {
     const val commons_text =                "1.+"
     const val compose =                     "1.3.0-beta01"
     const val compose_compiler =            "1.3.0"
-    const val compose_material3 =           "1.0.0-alpha16"
+    const val compose_material3 =           "1.0.0-beta01"
     const val google_play_maps =            "18.0.2"
     const val google_play_location =        "19.0.1"
     const val google_maps_compose =         "2.5.3"

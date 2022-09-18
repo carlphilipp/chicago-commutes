@@ -17,8 +17,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.TopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,7 +60,7 @@ fun BusBoundScreen(
     val uiState = viewModel.uiState
     val navController = LocalNavController.current
     val scope = rememberCoroutineScope()
-    val scrollBehavior by remember { mutableStateOf(viewModel.uiState.scrollBehavior) }
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     var textSearch by remember { mutableStateOf(TextFieldValue(viewModel.uiState.search)) }
     textSearch = TextFieldValue(
@@ -178,7 +176,6 @@ data class BusBoundUiState constructor(
     val showError: Boolean = false,
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
     val lazyListState: LazyListState = LazyListState(),
-    val scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
 )
 
 class BusBoundUiViewModel(
@@ -195,7 +192,7 @@ class BusBoundUiViewModel(
             busRouteName = busRouteName,
             bound = bound,
             boundTitle = boundTitle,
-            search = search
+            search = search,
         )
     )
         private set
@@ -222,8 +219,7 @@ class BusBoundUiViewModel(
                 busStops = listOf(),
                 searchBusStops = listOf(),
                 isRefreshing = true,
-                lazyListState = LazyListState(),
-                scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(TopAppBarState(-Float.MAX_VALUE, 0f, 0f)),
+                lazyListState = LazyListState()
             )
             loadBusStops()
         }
