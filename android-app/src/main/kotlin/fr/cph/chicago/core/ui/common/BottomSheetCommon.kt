@@ -316,9 +316,9 @@ fun ShowBusDetailsBottomView(
                     onClick = {
                         scope.launch {
                             mainViewModel.uiState.favModalBottomSheetState.hide()
-                            while (mainViewModel.uiState.favModalBottomSheetState.isAnimationRunning) {
+                            //while (mainViewModel.uiState.favModalBottomSheetState.isAnimationRunning) {
                                 // wait. Is that actually ok to do that?
-                            }
+                            //}
                             navController.navigate(
                                 screen = Screen.BusDetails,
                                 arguments = mapOf(
@@ -377,9 +377,9 @@ fun ShowMapMultipleTrainLinesBottomView(
                             onClick = {
                                 scope.launch {
                                     mainViewModel.uiState.favModalBottomSheetState.hide()
-                                    while (mainViewModel.uiState.favModalBottomSheetState.isAnimationRunning) {
+                                    //while (mainViewModel.uiState.favModalBottomSheetState.isAnimationRunning) {
                                         // wait. Is that actually ok to do that?
-                                    }
+                                    //}
                                     navController.navigate(Screen.TrainMap, mapOf("line" to trainLine.toTextString()))
                                 }
                             }
@@ -399,9 +399,9 @@ fun ShowMapMultipleTrainLinesBottomView(
                             onClick = {
                                 scope.launch {
                                     mainViewModel.uiState.favModalBottomSheetState.hide()
-                                    while (mainViewModel.uiState.favModalBottomSheetState.isAnimationRunning) {
+                                    //while (mainViewModel.uiState.favModalBottomSheetState.isAnimationRunning) {
                                         // wait. Is that actually ok to do that?
-                                    }
+                                    //}
                                     navController.navigate(Screen.TrainMap, mapOf("line" to trainLine.toTextString()))
                                 }
                             }
@@ -475,9 +475,9 @@ fun ShowBusBoundBottomView(
                             val lBusDirections = foundBusDirections.busDirections
                             scope.launch {
                                 mainViewModel.uiState.busModalBottomSheetState.hide()
-                                while (mainViewModel.uiState.busModalBottomSheetState.isAnimationRunning) {
+                                //while (mainViewModel.uiState.busModalBottomSheetState.isAnimationRunning) {
                                     // wait. Is that actually ok to do that?
-                                }
+                                //}
                                 navController.navigate(
                                     screen = Screen.BusBound,
                                     arguments = mapOf(
