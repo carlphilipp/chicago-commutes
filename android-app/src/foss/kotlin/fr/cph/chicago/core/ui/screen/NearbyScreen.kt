@@ -77,7 +77,6 @@ import fr.cph.chicago.util.MapUtil.chicagoPosition
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapEventsReceiver
@@ -110,11 +109,10 @@ fun NearbyScreen(
     // Meaning that we can have a situation where the onMapLoaded method is never triggered, while the map view has been populated
     // with some error messages from the google sdk like: "Play store needs to be updated"
     if (!isMapLoaded) {
-        runWithDelay(5L, TimeUnit.SECONDS) {
-            isMapLoaded = true
-        }
+        runWithDelay(5L, TimeUnit.SECONDS) { isMapLoaded = true }
     }
     val onPermissionsResult: (Map<String, Boolean>) -> Unit by remember {
+        Timber.d("Calling onPermissionsResult ${Thread.currentThread().name}")
         mutableStateOf(onPermissionsResult(context = context, viewModel = viewModel))
     }
 
