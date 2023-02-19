@@ -56,7 +56,7 @@ class MapTrainViewModel(
     }
 
     fun setTrainLine(trainLine: TrainLine) {
-        TODO("Not yet implemented")
+        uiState = uiState.copy(line = trainLine)
     }
 
     companion object {
