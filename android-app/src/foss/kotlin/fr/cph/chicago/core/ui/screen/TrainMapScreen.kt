@@ -26,7 +26,7 @@ fun TrainMapScreen(
 
 }
 
-data class FossMapTrainUiState(
+data class MapTrainUiState(
     val line: TrainLine = TrainLine.NA,
     val bottomSheetStatus: BottomSheetStatus = BottomSheetStatus.COLLAPSE,
     val train: Train = Train(),
@@ -36,7 +36,7 @@ data class FossMapTrainUiState(
 class MapTrainViewModel(
     private val trainService: TrainService = TrainService,
 ) : ViewModel() {
-    var uiState by mutableStateOf(FossMapTrainUiState())
+    var uiState by mutableStateOf(MapTrainUiState())
         private set
 
     fun reloadData() {
@@ -56,7 +56,7 @@ class MapTrainViewModel(
     }
 
     fun setTrainLine(trainLine: TrainLine) {
-        uiState = uiState.copy(line = trainLine)
+        TODO("Not yet implemented")
     }
 
     companion object {
