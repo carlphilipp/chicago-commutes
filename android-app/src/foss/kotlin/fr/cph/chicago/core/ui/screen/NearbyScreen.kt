@@ -54,6 +54,7 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapEventsReceiver
@@ -65,7 +66,6 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
-import java.util.concurrent.TimeUnit
 
 // FIXME: handle zoom right after permissions has been approved or denied
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -275,119 +275,119 @@ fun NearbyOsmdroidMapView(
             image = nearbyViewModel.uiState.nearbyDetailsIcon,
             arrivals = nearbyViewModel.uiState.nearbyDetailsArrivals,
         )*/
-    }
+}
 
-    @Composable
-    private fun SearchThisAreaButton(mainViewModel: MainViewModel) {
-        AnimatedVisibility(
-            visible = true,
-            enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
+@Composable
+private fun SearchThisAreaButton(mainViewModel: MainViewModel) {
+    AnimatedVisibility(
+        visible = true,
+        enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
+    ) {
+        ElevatedButton(onClick = {
+            //mainViewModel.loadNearby()
+        }) {
+            Text(text = stringResource(id = R.string.search_area))
+        }
+    }
+}
+
+@Composable
+fun MapStationDetailsView(showView: Boolean, title: String, image: ImageVector/*, arrivals: NearbyResult*/) {
+    Box(Modifier.fillMaxSize()) {
+        Surface(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(start = 50.dp, end = 50.dp, bottom = 50.dp)
+                .clip(RoundedCornerShape(20.dp)),
         ) {
-            ElevatedButton(onClick = {
-                //mainViewModel.loadNearby()
-            }) {
-                Text(text = stringResource(id = R.string.search_area))
-            }
-        }
-    }
-
-    @Composable
-    fun MapStationDetailsView(showView: Boolean, title: String, image: ImageVector/*, arrivals: NearbyResult*/) {
-        Box(Modifier.fillMaxSize()) {
-            Surface(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(start = 50.dp, end = 50.dp, bottom = 50.dp)
-                    .clip(RoundedCornerShape(20.dp)),
+            AnimatedVisibility(
+                visible = showView,
+                enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 300)),
             ) {
-                AnimatedVisibility(
-                    visible = showView,
-                    enter = fadeIn(animationSpec = tween(durationMillis = 1500)),
-                    exit = fadeOut(animationSpec = tween(durationMillis = 300)),
-                ) {
-                    Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)) {
-                        /*HeaderCard(name = title, image = image, lastUpdate = arrivals.lastUpdate)
-                        arrivals.arrivals.forEach { entry ->
-                            Arrivals(
-                                destination = entry.key.destination,
-                                arrivals = entry.value,
-                                direction = entry.key.direction
-                            )
-                        }*/
-                    }
+                Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)) {
+                    /*HeaderCard(name = title, image = image, lastUpdate = arrivals.lastUpdate)
+                    arrivals.arrivals.forEach { entry ->
+                        Arrivals(
+                            destination = entry.key.destination,
+                            arrivals = entry.value,
+                            direction = entry.key.direction
+                        )
+                    }*/
                 }
             }
         }
     }
+}
 
-    fun updateMapCenter(mainViewModel: MainViewModel, mapView: MapView) {
-        /*mainViewModel.setCurrentUserLocation(
-            Position(mapView.mapCenter.latitude, mapView.mapCenter.longitude),
-            mapView.zoomLevelDouble.toFloat()
-        )*/
+fun updateMapCenter(mainViewModel: MainViewModel, mapView: MapView) {
+    /*mainViewModel.setCurrentUserLocation(
+        Position(mapView.mapCenter.latitude, mapView.mapCenter.longitude),
+        mapView.zoomLevelDouble.toFloat()
+    )*/
+}
+
+data class NearbyScreenUiState(
+    val currentMapZoom: Double = 10.0,
+    val currentMapCenterLocation: Position = chicagoPosition,
+    val showLocationError: Boolean = false,
+
+    val bottomSheetData: BottomSheetData = BottomSheetData(),
+
+    val snackbarHostState: SnackbarHostState = SnackbarHostState(),
+)
+
+class NearbyViewModel(
+    private val trainService: TrainService = TrainService,
+    private val busService: BusService = BusService,
+    private val bikeService: BikeService = BikeService,
+    private val mapUtil: MapUtil = MapUtil,
+) : ViewModel() {
+    var uiState by mutableStateOf(NearbyScreenUiState())
+        private set
+
+    fun collapseBottomSheet(scope: CoroutineScope, runAfter: () -> Unit) {
+
     }
 
-    data class NearbyScreenUiState(
-        val currentMapZoom: Double = 10.0,
-        val currentMapCenterLocation : Position = chicagoPosition,
-        val showLocationError: Boolean = false,
+    fun resetDetails() {
 
-        val bottomSheetData: BottomSheetData = BottomSheetData(),
+    }
 
-        val snackbarHostState: SnackbarHostState = SnackbarHostState(),
-    )
+    fun setMapCenterLocationAndLoadNearby(position: Position, zoom: Float) {
 
-    class NearbyViewModel(
-        private val trainService: TrainService = TrainService,
-        private val busService: BusService = BusService,
-        private val bikeService: BikeService = BikeService,
-        private val mapUtil: MapUtil = MapUtil,
-    ) : ViewModel() {
-        var uiState by mutableStateOf(NearbyScreenUiState())
-            private set
+    }
 
-        fun collapseBottomSheet(scope: CoroutineScope, runAfter: () -> Unit) {
+    fun setNearbyIsMyLocationEnabled(value: Boolean) {
 
-        }
+    }
 
-        fun resetDetails() {
+    fun setCurrentUserLocation(position: Position) {
 
-        }
+    }
 
-        fun setMapCenterLocationAndLoadNearby(position: Position, zoom: Float) {
+    fun loadNearbyStations(position: Position) {
 
-        }
+    }
 
-        fun setNearbyIsMyLocationEnabled(value: Boolean) {
+    fun setDefaultUserLocation() {
 
-        }
+    }
 
-        fun setCurrentUserLocation(position: Position) {
-
-        }
-
-        fun loadNearbyStations(position: Position) {
-
-        }
-
-        fun setDefaultUserLocation() {
-
-        }
-
-        companion object {
-            fun provideFactory(
-                owner: SavedStateRegistryOwner,
-                defaultArgs: Bundle? = null,
-            ): AbstractSavedStateViewModelFactory =
-                object : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
-                    @Suppress("UNCHECKED_CAST")
-                    override fun <T : ViewModel> create(
-                        key: String,
-                        modelClass: Class<T>,
-                        handle: SavedStateHandle
-                    ): T {
-                        return NearbyViewModel() as T
-                    }
+    companion object {
+        fun provideFactory(
+            owner: SavedStateRegistryOwner,
+            defaultArgs: Bundle? = null,
+        ): AbstractSavedStateViewModelFactory =
+            object : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(
+                    key: String,
+                    modelClass: Class<T>,
+                    handle: SavedStateHandle
+                ): T {
+                    return NearbyViewModel() as T
                 }
-        }
+            }
     }
+}
